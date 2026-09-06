@@ -117,9 +117,48 @@ contexts where possible.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  GuidanceCatalog ||--o{ Guideline : guidelines
+  GuidanceCatalog ||--o{ Exemption : exemptions
+  Guideline ||--o{ Statement : statements
+  Guideline }o--o{ Principle : principles
+  Guideline }o--o{ Vector : vectors
+
+  GuidanceCatalog {
+    string title
+    string type
+    string front_matter
+  }
+
+  Guideline {
+    string id
+    string title
+    string objective
+    string group
+    string applicability
+    string state
+  }
+
+  Statement {
+    string id
+    string title
+    string text
+  }
+
+  Exemption {
+    string description
+    string reason
+  }
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Guidance Catalog schema](https://gemara.openssf.org/schema/)
+- [Gemara Guidance Catalog schema](https://gemara.openssf.org/schema/guidancecatalog.html)
 - [Gemara](/docs/tools/gemara)
 - [FINOS AI Governance Framework](https://air-governance-framework.finos.org)
 

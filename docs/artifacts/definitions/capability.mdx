@@ -135,9 +135,29 @@ dangerous or governable ability each affords.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  CapabilityCatalog ||--o{ Capability : capabilities
+
+  CapabilityCatalog {
+    string title
+  }
+
+  Capability {
+    string id
+    string title
+    string description
+    string group
+  }
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Capability Catalog schema](https://gemara.openssf.org/schema/)
+- [Gemara Capability Catalog schema](https://gemara.openssf.org/schema/capabilitycatalog.html)
 - [FINOS CCC Object Storage](https://ccc.finos.org/catalogs/storage/object)
 - [Gemara](/docs/tools/gemara)
 

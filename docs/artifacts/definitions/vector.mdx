@@ -106,9 +106,30 @@ systems they apply to. Pathways without scope cannot inform controls.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  VectorCatalog ||--o{ Vector : vectors
+
+  VectorCatalog {
+    string title
+  }
+
+  Vector {
+    string id
+    string title
+    string description
+    string group
+    string applicability
+  }
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Vector Catalog schema](https://gemara.openssf.org/schema/)
+- [Gemara Vector Catalog schema](https://gemara.openssf.org/schema/vectorcatalog.html)
 - [Gemara](/docs/tools/gemara)
 
 </References>

@@ -47,6 +47,7 @@ export const Role = createSlot('Role');
 export const Examples = createSlot('Examples');
 export const LinksUpstream = createSlot('LinksUpstream');
 export const LinksDownstream = createSlot('LinksDownstream');
+export const GemaraStructure = createSlot('GemaraStructure');
 
 // Shared with GovernanceFactor so MDX can register one set of slots.
 export {AntiPatterns, References, RelatedFactors};
@@ -57,6 +58,7 @@ const SLOTS = {
   Examples,
   LinksUpstream,
   LinksDownstream,
+  GemaraStructure,
   AntiPatterns,
   RelatedFactors,
   References,
@@ -112,13 +114,14 @@ const GEMARA_DOCS = {
   AuditLog: 'https://gemara.openssf.org/schema/auditlog.html',
   Lexicon: 'https://gemara.openssf.org/schema/lexicon.html',
   MappingDocument: 'https://gemara.openssf.org/schema/mappingdocument.html',
+  RACI: 'https://gemara.openssf.org/schema/base.html',
 };
 
 /**
  * Structured template for a Gemara governance artifact type.
  *
  * Canonical sections: Purpose, Role, Examples, Links Upstream,
- * Links Downstream, Anti-Patterns, Related Factors, References.
+ * Links Downstream, Anti-Patterns, Related Factors, Gemara Structure, References.
  */
 export default function GovernanceArtifact({
   title,
@@ -132,6 +135,7 @@ export default function GovernanceArtifact({
   const examples = getSlot(children, SLOTS.Examples);
   const linksUpstream = getSlot(children, SLOTS.LinksUpstream);
   const linksDownstream = getSlot(children, SLOTS.LinksDownstream);
+  const gemaraStructure = getSlot(children, SLOTS.GemaraStructure);
   const antiPatterns = getSlot(children, SLOTS.AntiPatterns);
   const relatedFactors = getSlot(children, SLOTS.RelatedFactors);
   const references = getSlot(children, SLOTS.References);
@@ -224,6 +228,15 @@ export default function GovernanceArtifact({
         bodyClassName={styles.listContent}
       >
         {relatedFactors}
+      </Section>
+
+      <Section
+        id="gemara-structure"
+        title="Gemara structure"
+        variant="accent"
+        bodyClassName={`${styles.prose} ${styles.diagramContent}`}
+      >
+        {gemaraStructure}
       </Section>
 
       <Section id="references" title="References" bodyClassName={styles.listContent}>

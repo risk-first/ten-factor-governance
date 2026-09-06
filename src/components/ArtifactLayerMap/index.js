@@ -17,6 +17,7 @@ const GROUPS = [
       {to: '/docs/artifacts/definitions/control', label: 'Control'},
       {to: '/docs/artifacts/definitions/risk', label: 'Risk'},
       {to: '/docs/artifacts/definitions/policy', label: 'Policy'},
+      {to: '/docs/artifacts/definitions/raci', label: 'RACI'},
     ],
   },
   {

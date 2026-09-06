@@ -141,9 +141,41 @@ swarm of near-duplicate entries.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  ControlCatalog ||--o{ Control : controls
+  Control ||--o{ AssessmentRequirement : assessment_requirements
+  Control }o--o{ Guideline : guidelines
+  Control }o--o{ Threat : threats
+
+  ControlCatalog {
+    string title
+  }
+
+  Control {
+    string id
+    string title
+    string objective
+    string group
+    string state
+  }
+
+  AssessmentRequirement {
+    string id
+    string text
+    string applicability
+    string recommendation
+    string state
+  }
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Control Catalog schema](https://gemara.openssf.org/schema/)
+- [Gemara Control Catalog schema](https://gemara.openssf.org/schema/controlcatalog.html)
 - [FINOS CCC Object Storage](https://ccc.finos.org/catalogs/storage/object)
 - [OSCAL](/docs/tools/oscal)
 - [Gemara](/docs/tools/gemara)

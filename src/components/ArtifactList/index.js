@@ -6,6 +6,9 @@ import styles from './styles.module.css';
 function layerFromTags(tags = []) {
   for (const tag of tags) {
     const label = tag.label ?? tag;
+    if (/^Cross-cutting$/i.test(label) || /^Cross$/i.test(label)) {
+      return 'cross';
+    }
     const match = /^Layer (\d+)$/.exec(label);
     if (match) {
       return Number(match[1]);
@@ -20,11 +23,13 @@ function layerFromTags(tags = []) {
  *
  * @param {object} props
  * @param {string} [props.tag='Artifact']
- * @param {number[]} [props.layers] - If set, only include those Gemara layers
+ * @param {(number|string)[]} [props.layers] - If set, only include those Gemara layers (1–7 or `'cross'`)
  */
 export default function ArtifactList({tag = 'Artifact', layers} = {}) {
   const listing = usePluginData('category-listing') ?? {};
-  const allowed = layers?.length ? new Set(layers.map(Number)) : null;
+  const allowed = layers?.length
+    ? new Set(layers.map((layer) => (layer === 'cross' ? 'cross' : Number(layer))))
+    : null;
 
   const artifacts = [...(listing[tag] ?? [])]
     .map((doc) => ({
@@ -52,7 +57,11 @@ export default function ArtifactList({tag = 'Artifact', layers} = {}) {
         const description =
           artifact.description ?? artifact.frontMatter?.description ?? '';
         const layerClass =
-          artifact.layer != null ? styles[`layer${artifact.layer}`] : '';
+          artifact.layer === 'cross'
+            ? styles.layerCross
+            : artifact.layer != null
+              ? styles[`layer${artifact.layer}`]
+              : '';
         return (
           <li
             key={artifact.permalink}
@@ -60,7 +69,11 @@ export default function ArtifactList({tag = 'Artifact', layers} = {}) {
             data-layer={artifact.layer ?? undefined}
           >
             <h3 className={styles.heading}>
-              {artifact.layer != null ? (
+              {artifact.layer === 'cross' ? (
+                <span className={styles.numeral} aria-hidden="true">
+                  ×
+                </span>
+              ) : artifact.layer != null ? (
                 <span className={styles.numeral} aria-hidden="true">
                   L{artifact.layer}
                 </span>

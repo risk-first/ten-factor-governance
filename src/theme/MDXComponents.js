@@ -18,6 +18,7 @@ import GovernanceArtifact, {
   Examples,
   LinksUpstream,
   LinksDownstream,
+  GemaraStructure,
 } from '@site/src/components/GovernanceArtifact';
 import FactorList from '@site/src/components/FactorList';
 import ArtifactList from '@site/src/components/ArtifactList';
@@ -47,6 +48,7 @@ export default {
   Examples,
   LinksUpstream,
   LinksDownstream,
+  GemaraStructure,
   FactorList,
   ArtifactList,
   RevealItem,

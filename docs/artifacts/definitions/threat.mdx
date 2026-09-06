@@ -136,9 +136,31 @@ threat belongs—or the reverse. Keep Layer 2 and Layer 3 distinct.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  ThreatCatalog ||--o{ Threat : threats
+  Threat }|--|{ Capability : capabilities
+  Threat }o--o{ Vector : vectors
+
+  ThreatCatalog {
+    string title
+  }
+
+  Threat {
+    string id
+    string title
+    string description
+    string group
+  }
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Threat Catalog schema](https://gemara.openssf.org/schema/)
+- [Gemara Threat Catalog schema](https://gemara.openssf.org/schema/threatcatalog.html)
 - [FINOS CCC Object Storage](https://ccc.finos.org/catalogs/storage/object)
 - [FINOS Open Source Readiness Risks](https://osr.finos.org/docs/bok/Risks/Introduction)
 - [Gemara](/docs/tools/gemara)

@@ -110,9 +110,31 @@ downstream refers to them, they are decoration.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  PrincipleCatalog ||--o{ Principle : principles
+
+  PrincipleCatalog {
+    string title
+  }
+
+  Principle {
+    string id
+    string title
+    string description
+    string group
+    string rationale
+  }
+
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Principle Catalog schema](https://gemara.openssf.org/schema/)
+- [Gemara Principle Catalog schema](https://gemara.openssf.org/schema/principlecatalog.html)
 - [FINOS-AIGF/AIR-PRIN on grc.store](https://grc.store/finos-aigf/air-prin/versions/0.2.0)
 - [Gemara](/docs/tools/gemara)
 

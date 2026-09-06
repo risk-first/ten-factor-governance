@@ -98,6 +98,7 @@ governance is meant to reduce—distinct from any single Layer 2 threat title.
 <LinksDownstream>
 
 - [Policy](/docs/artifacts/definitions/policy) `risks.mitigated` / `risks.accepted`
+- [RACI](/docs/artifacts/definitions/raci) as optional `owner`
 
 </LinksDownstream>
 
@@ -127,9 +128,34 @@ appetite or owners. The layers collapse.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  RiskCatalog ||--o{ Risk : risks
+  Risk }o--o{ Threat : threats
+  Risk }o--o| RACI : owner
+
+  RiskCatalog {
+    string title
+  }
+
+  Risk {
+    string id
+    string title
+    string description
+    string group
+    string severity
+    int rank
+    string impact
+  }
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Risk Catalog schema](https://gemara.openssf.org/schema/)
+- [Gemara Risk Catalog schema](https://gemara.openssf.org/schema/riskcatalog.html)
 - [FINOS Open Source Readiness — Risks](https://osr.finos.org/docs/bok/risks/introduction)
 - [Risk First — Software Development Risks](https://riskfirst.org/risks/Start)
 - [Gemara](/docs/tools/gemara)

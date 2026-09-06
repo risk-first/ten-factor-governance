@@ -89,3 +89,8 @@
   --gf-tone: var(--gf-layer-7);
   --gf-tone-soft: var(--gf-layer-7-soft);
 }
+
+.layerCross {
+  --gf-tone: var(--gf-layer-cross);
+  --gf-tone-soft: var(--gf-layer-cross-soft);
+}

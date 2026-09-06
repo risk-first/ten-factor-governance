@@ -72,6 +72,7 @@ script.
 - [Control](/docs/artifacts/definitions/control) — imported into assessment plans
 - [Risk](/docs/artifacts/definitions/risk) — mitigated or accepted
 - [Guidance](/docs/artifacts/definitions/guidance) — informs organisational rules
+- [RACI](/docs/artifacts/definitions/raci) as `contacts`
 
 </LinksUpstream>
 
@@ -95,9 +96,59 @@ script.
 
 </RelatedFactors>
 
+<GemaraStructure>
+
+```mermaid
+erDiagram
+  Policy ||--|| RACI : contacts
+  Policy ||--|| Scope : scope
+  Policy ||--|| Imports : imports
+  Policy ||--o| ImplementationPlan : implementation_plan
+  Policy ||--o| Risks : risks
+  Policy ||--|| Adherence : adherence
+  Imports }o--o{ ControlCatalog : catalogs
+  Imports }o--o{ GuidanceCatalog : guidance
+  Risks }o--o{ Risk : mitigated_accepted
+
+  Policy {
+    string title
+  }
+
+  Scope {
+    Dimensions in
+    Dimensions out
+  }
+
+  Imports {
+    ArtifactMapping policies
+    CatalogImport catalogs
+    GuidanceImport guidance
+  }
+
+  ImplementationPlan {
+    string notification_process
+    ImplementationDetails evaluation_timeline
+    ImplementationDetails enforcement_timeline
+  }
+
+  Risks {
+    MitigatedRisk mitigated
+    AcceptedRisk accepted
+  }
+
+  Adherence {
+    AcceptedMethod evaluation_methods
+    AssessmentPlan assessment_plans
+    AcceptedMethod enforcement_methods
+    string non_compliance
+  }
+```
+
+</GemaraStructure>
+
 <References>
 
-- [Gemara Policy schema](https://gemara.openssf.org/schema/)
+- [Gemara Policy schema](https://gemara.openssf.org/schema/policy.html)
 - [Gemara](/docs/tools/gemara)
 
 </References>
