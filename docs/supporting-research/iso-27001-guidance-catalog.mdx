@@ -1,0 +1,24 @@
+---
+sidebar_position: 4
+title: ISO/IEC 27001 Guidance Catalog
+description: "The structure of ISO/IEC 27001:2022 re-expressed as a paraphrased Gemara GuidanceCatalog with stable guideline identifiers."
+---
+
+import iso27001 from '@site/src/data/iso-iec-27001-2022-guidance.yaml';
+
+# ISO/IEC 27001 Guidance Catalog
+
+This page renders a [Gemara](/docs/artifacts/) `GuidanceCatalog` that re-expresses the
+*structure* of ISO/IEC 27001:2022 — its management-system clauses and Annex A controls —
+as guidelines with stable identifiers such as `iso27001-6.1.2` and `iso27001-A.8.25`.
+Controls, policies and evaluations elsewhere in this site can cite those identifiers
+instead of restating requirements.
+
+:::caution Paraphrase, not normative text
+Statement text is a non-authoritative paraphrase written for interoperability. It does
+not reproduce ISO normative wording and is not a substitute for a licensed copy of
+ISO/IEC 27001:2022. For the requirement-by-requirement comparison against Ten Factor
+Governance, see the [ISO/IEC 27001 Analysis](./iso-27001-analysis.mdx).
+:::
+
+<GemaraGuidance file={iso27001} />

@@ -20,7 +20,27 @@ const config = {
 
   themes: ['@docusaurus/theme-mermaid'],
 
-  plugins: [require.resolve('./src/plugins/category-listing')],
+  plugins: [
+    require.resolve('./src/plugins/category-listing'),
+    // Lets MDX pages `import catalog from '@site/src/data/....yaml'`.
+    function yamlLoaderPlugin() {
+      return {
+        name: 'yaml-loader',
+        configureWebpack() {
+          return {
+            module: {
+              rules: [
+                {
+                  test: /\.ya?ml$/,
+                  use: 'yaml-loader',
+                },
+              ],
+            },
+          };
+        },
+      };
+    },
+  ],
 
   i18n: {
     defaultLocale: 'en',
