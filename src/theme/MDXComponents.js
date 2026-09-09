@@ -18,13 +18,12 @@ import GovernanceArtifact, {
   Examples,
   LinksUpstream,
   LinksDownstream,
-  GemaraStructure,
+  EntityRelationshipDiagram,
 } from '@site/src/components/GovernanceArtifact';
 import FactorList from '@site/src/components/FactorList';
-import ArtifactList from '@site/src/components/ArtifactList';
 import RevealItem from '@site/src/components/RevealItem';
 import CodeExample, {Output, Outputs} from '@site/src/components/CodeExample';
-import LayerPill from '@site/src/components/LayerPill';
+import BandPill from '@site/src/components/BandPill';
 import ArtifactLayerMap from '@site/src/components/ArtifactLayerMap';
 import Tool, {HelpsWith} from '@site/src/components/Tool';
 import ToolList from '@site/src/components/ToolList';
@@ -55,14 +54,13 @@ export default {
   Examples,
   LinksUpstream,
   LinksDownstream,
-  GemaraStructure,
+  EntityRelationshipDiagram,
   FactorList,
-  ArtifactList,
   RevealItem,
   CodeExample,
   Outputs,
   Output,
-  LayerPill,
+  BandPill,
   ArtifactLayerMap,
   Tool,
   HelpsWith,

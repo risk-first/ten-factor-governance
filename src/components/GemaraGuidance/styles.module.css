@@ -19,8 +19,8 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   border-radius: 4px;
-  color: var(--gf-layer-1);
-  background: var(--gf-layer-1-soft);
+  color: var(--gf-band-define);
+  background: var(--gf-band-define-soft);
 }
 
 .badgeMuted {
@@ -111,7 +111,7 @@
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.82em;
   font-weight: 600;
-  color: var(--gf-layer-1);
+  color: var(--gf-band-define);
 }
 
 .objective {

@@ -1,0 +1,121 @@
+---
+sidebar_position: 16
+title: Sensitive Activity
+sidebar_label: Sensitive Activity
+hide_title: true
+tags:
+  - Artifact
+  - Layer 4
+aka:
+  gemara: SensitiveActivity
+description: "Actions that might introduce risk—the hinge between definition and measurement."
+---
+
+<GovernanceArtifact>
+
+<Purpose>
+
+Actions that might introduce risk—the hinge between definition layers and
+measurement layers.
+
+</Purpose>
+
+<Role>
+
+Layer 4 names the activity being governed. Definitions above (guidance,
+controls, policy) describe what good looks like; measurements below
+(evaluation, enforcement, audit) inspect instances of the activity. In Ten
+Factor terms, this is where Factor I’s sensitive activity meets Factor II’s
+Governance Twin: the activity is the shared identity of implementation and
+governance.
+
+</Role>
+
+<Examples>
+
+<RevealItem title="Employee FOSS contribution" defaultOpen>
+
+Writing open source software and attempting to contribute it from within the
+organisation—across company-moderated, company-interest and personal contexts.
+Catalogs and logs organise around that activity: registration, review, merge
+gates and quarterly audit all refer to contribution instances, not to “GitHub”
+in the abstract.
+
+**Source:** Worked FOSS contribution activity in the [FOSS Contribution Policy](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/policy.yaml) programme (`foss-contribution-policy`).
+
+</RevealItem>
+
+<RevealItem title="Mortgage approval in a lending platform">
+
+Approving or declining a mortgage application is the sensitive activity. The
+Governance Twin binds fair-lending guidance, controls and policy to that
+decision; evaluation and enforcement attach to each approval instance.
+
+**Source:** Worked illustration in [Build a Governance Twin](/docs/factors/build-a-governance-twin) (Approve Mortgage).
+
+</RevealItem>
+
+<RevealItem title="AI-generated credit recommendation">
+
+Producing a credit recommendation from a model is the activity. Principles such
+as least exposure and auditability, plus bias and explainability controls,
+govern that recommendation—not the ML platform as a whole.
+
+**Source:** Worked illustration in [Build a Governance Twin](/docs/factors/build-a-governance-twin), oriented by [AIR-PRIN](https://grc.store/finos-aigf/air-prin/versions/0.2.0) principles such as *Least Exposure* and *Auditability*.
+
+</RevealItem>
+
+</Examples>
+
+<LinksUpstream>
+
+- [Guidance](/docs/artifacts/definitions/define/guidance),
+  [Control](/docs/artifacts/definitions/assess/control),
+  [Policy](/docs/artifacts/definitions/decide/policy) define what good looks like for the
+  activity
+
+</LinksUpstream>
+
+<LinksDownstream>
+
+- [Evaluation Log](/docs/artifacts/definitions/evaluate/evaluation-log) inspects instances
+- [Enforcement Log](/docs/artifacts/definitions/enforce/enforcement-log) acts on those results
+- [Audit Log](/docs/artifacts/definitions/assure/audit-log) reviews programme conformance
+
+</LinksDownstream>
+
+<AntiPatterns>
+
+<RevealItem title="Naming a platform instead of an activity">
+
+“Lending platform” or “AI stack” as the Layer 4 object. You cannot say which
+decision was governed.
+
+</RevealItem>
+
+<RevealItem title="Activity with no definition above it">
+
+A named activity that no guidance, control or policy attaches to. Measurement
+then has nothing to evaluate against.
+
+</RevealItem>
+
+</AntiPatterns>
+
+<RelatedFactors>
+
+- [Govern Sensitive Activities](/docs/factors/govern-sensitive-activities) — identifying Layer 4
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) — twin scoped to the activity
+- [Continuous Governance](/docs/factors/continuous-governance) — instances evaluated in the path of change
+
+</RelatedFactors>
+
+<References>
+
+- [Gemara Sensitive Activities](https://gemara.openssf.org/adrs/0009-sensitive-activities)
+- [Gemara model](https://gemara.openssf.org/model/)
+- [Gemara](/docs/tools/gemara)
+
+</References>
+
+</GovernanceArtifact>

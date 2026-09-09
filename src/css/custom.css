@@ -37,23 +37,23 @@
   --gf-warn: #8a6a1a;
   --gf-warn-soft: rgba(138, 106, 26, 0.1);
 
-  /* Gemara layers */
-  --gf-layer-1: #0d7c6f;
-  --gf-layer-1-soft: rgba(13, 124, 111, 0.12);
-  --gf-layer-2: #2a5f8f;
-  --gf-layer-2-soft: rgba(42, 95, 143, 0.12);
-  --gf-layer-3: #1f6b3a;
-  --gf-layer-3-soft: rgba(31, 107, 58, 0.12);
-  --gf-layer-4: #b45309;
-  --gf-layer-4-soft: rgba(180, 83, 9, 0.12);
-  --gf-layer-5: #0e7490;
-  --gf-layer-5-soft: rgba(14, 116, 144, 0.12);
-  --gf-layer-6: #9a3412;
-  --gf-layer-6-soft: rgba(154, 52, 18, 0.12);
-  --gf-layer-7: #3f4f46;
-  --gf-layer-7-soft: rgba(63, 79, 70, 0.14);
-  --gf-layer-cross: #57534e;
-  --gf-layer-cross-soft: rgba(87, 83, 78, 0.12);
+  /* Governance lifecycle bands — see src/data/bands.js */
+  --gf-band-define: #0d7c6f;
+  --gf-band-define-soft: rgba(13, 124, 111, 0.12);
+  --gf-band-assess: #2a5f8f;
+  --gf-band-assess-soft: rgba(42, 95, 143, 0.12);
+  --gf-band-decide: #1f6b3a;
+  --gf-band-decide-soft: rgba(31, 107, 58, 0.12);
+  --gf-band-operate: #b45309;
+  --gf-band-operate-soft: rgba(180, 83, 9, 0.12);
+  --gf-band-evaluate: #0e7490;
+  --gf-band-evaluate-soft: rgba(14, 116, 144, 0.12);
+  --gf-band-enforce: #9a3412;
+  --gf-band-enforce-soft: rgba(154, 52, 18, 0.12);
+  --gf-band-assure: #3f4f46;
+  --gf-band-assure-soft: rgba(63, 79, 70, 0.14);
+  --gf-band-cross: #57534e;
+  --gf-band-cross-soft: rgba(87, 83, 78, 0.12);
 
   /* Ten Factor Governance — one tone, distinct from layer palette */
   --gf-factor: #4c1d95;
@@ -118,22 +118,22 @@
   --gf-warn: #e0c06a;
   --gf-warn-soft: rgba(224, 192, 106, 0.12);
 
-  --gf-layer-1: #2dd4bf;
-  --gf-layer-1-soft: rgba(45, 212, 191, 0.14);
-  --gf-layer-2: #60a5fa;
-  --gf-layer-2-soft: rgba(96, 165, 250, 0.14);
-  --gf-layer-3: #5ec27d;
-  --gf-layer-3-soft: rgba(94, 194, 125, 0.14);
-  --gf-layer-4: #fbbf24;
-  --gf-layer-4-soft: rgba(251, 191, 36, 0.14);
-  --gf-layer-5: #22d3ee;
-  --gf-layer-5-soft: rgba(34, 211, 238, 0.14);
-  --gf-layer-6: #fb923c;
-  --gf-layer-6-soft: rgba(251, 146, 60, 0.14);
-  --gf-layer-7: #a8b8ae;
-  --gf-layer-7-soft: rgba(168, 184, 174, 0.14);
-  --gf-layer-cross: #a8a29e;
-  --gf-layer-cross-soft: rgba(168, 162, 158, 0.14);
+  --gf-band-define: #2dd4bf;
+  --gf-band-define-soft: rgba(45, 212, 191, 0.14);
+  --gf-band-assess: #60a5fa;
+  --gf-band-assess-soft: rgba(96, 165, 250, 0.14);
+  --gf-band-decide: #5ec27d;
+  --gf-band-decide-soft: rgba(94, 194, 125, 0.14);
+  --gf-band-operate: #fbbf24;
+  --gf-band-operate-soft: rgba(251, 191, 36, 0.14);
+  --gf-band-evaluate: #22d3ee;
+  --gf-band-evaluate-soft: rgba(34, 211, 238, 0.14);
+  --gf-band-enforce: #fb923c;
+  --gf-band-enforce-soft: rgba(251, 146, 60, 0.14);
+  --gf-band-assure: #a8b8ae;
+  --gf-band-assure-soft: rgba(168, 184, 174, 0.14);
+  --gf-band-cross: #a8a29e;
+  --gf-band-cross-soft: rgba(168, 162, 158, 0.14);
 
   --gf-factor: #c4b5fd;
   --gf-factor-soft: rgba(196, 181, 253, 0.16);
@@ -166,6 +166,50 @@
   --ifm-color-emphasis-200: #2e3a33;
   --ifm-color-emphasis-300: #3d4d44;
   --ifm-color-emphasis-700: #b8c9be;
+}
+
+/*
+ * Band tint. Anything carrying data-band picks up the pair of tone variables
+ * its styles read, so components never repeat the palette.
+ */
+[data-band='define'] {
+  --gf-tone: var(--gf-band-define);
+  --gf-tone-soft: var(--gf-band-define-soft);
+}
+
+[data-band='assess'] {
+  --gf-tone: var(--gf-band-assess);
+  --gf-tone-soft: var(--gf-band-assess-soft);
+}
+
+[data-band='decide'] {
+  --gf-tone: var(--gf-band-decide);
+  --gf-tone-soft: var(--gf-band-decide-soft);
+}
+
+[data-band='operate'] {
+  --gf-tone: var(--gf-band-operate);
+  --gf-tone-soft: var(--gf-band-operate-soft);
+}
+
+[data-band='evaluate'] {
+  --gf-tone: var(--gf-band-evaluate);
+  --gf-tone-soft: var(--gf-band-evaluate-soft);
+}
+
+[data-band='enforce'] {
+  --gf-tone: var(--gf-band-enforce);
+  --gf-tone-soft: var(--gf-band-enforce-soft);
+}
+
+[data-band='assure'] {
+  --gf-tone: var(--gf-band-assure);
+  --gf-tone-soft: var(--gf-band-assure-soft);
+}
+
+[data-band='cross'] {
+  --gf-tone: var(--gf-band-cross);
+  --gf-tone-soft: var(--gf-band-cross-soft);
 }
 
 html {

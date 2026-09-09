@@ -1,0 +1,113 @@
+---
+sidebar_position: 26
+title: Audit Log
+sidebar_label: Audit Log
+hide_title: true
+tags:
+  - Artifact
+  - Layer 7
+aka:
+  gemara: AuditLog
+description: "Review of organizational policy and conformance."
+---
+
+<GovernanceArtifact>
+
+<Purpose>
+
+Review of organizational policy and conformance.
+
+</Purpose>
+
+<Role>
+
+Audit steps back from a single merge or deploy: it reviews whether the programme
+is operating—strengths, observations, gaps and findings against policy and
+control criteria, citing prior evaluation and enforcement evidence. 
+
+It is an efficacy review of the operating governance system.
+
+</Role>
+
+<Examples>
+
+<RevealItem title="Q2 FOSS contribution programme audit" defaultOpen>
+
+Internal Audit reviews the FOSS contribution programme against policy and the
+control catalog:  "Strengths include effective pre-publication data-leakage
+controls: PR #417’s failed secret scan was blocked and enforcement recorded. IP
+review dispositions are present for sampled engagements. Gaps remain in annual
+recertification coverage and contributor training completion—findings that feed
+the next policy and control revision."
+
+**Source:** [Q2 2026 FOSS Contribution Programme Audit](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/audit/foss-contribution-q2-2026.yaml) (`foss-audit-q2-2026`).
+
+</RevealItem>
+
+<RevealItem title="Criteria drawn from policy and guidance">
+
+The audit cites policy criteria and guidance expectations explicitly, so
+findings are not free-floating opinions. Evaluation and enforcement logs for
+sampled PRs are attached as evidence.
+
+**Source:** `criteria` and mapped evaluation/enforcement evidence in the [Q2 2026 Audit Log](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/audit/foss-contribution-q2-2026.yaml).
+
+</RevealItem>
+
+</Examples>
+
+<LinksUpstream>
+
+- [Evaluation Log](/docs/artifacts/definitions/evaluate/evaluation-log) — inspection evidence
+- [Enforcement Log](/docs/artifacts/definitions/enforce/enforcement-log) — action evidence
+
+</LinksUpstream>
+
+<LinksDownstream>
+
+Audit closes the measurement loop: findings feed programme remediation and later
+definition updates rather than another log type.
+
+</LinksDownstream>
+
+<AntiPatterns>
+
+<RevealItem title="Audit as screenshot week">
+
+Assembling evidence only when the auditor arrives. If evaluation and enforcement
+were not emitted continuously, Layer 7 cannot review them.
+
+</RevealItem>
+
+<RevealItem title="Findings without criteria">
+
+Observations that never cite which policy or control failed. Remediation cannot
+target a definition.
+
+</RevealItem>
+
+<RevealItem title="Unactioned audit recommendation">
+
+A finding or recommendation is recorded—and then sits.  Audit without remediation is a
+report, not a control loop.
+
+</RevealItem>
+
+</AntiPatterns>
+
+<RelatedFactors>
+
+- [Evidence by Default](/docs/factors/evidence-by-default) — audit consumes continuous receipts
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) — cite definition versions in force
+- [Continuous Governance](/docs/factors/continuous-governance) — day-to-day loop that audit reviews
+
+</RelatedFactors>
+
+<References>
+
+- [Gemara Audit Log schema](https://gemara.openssf.org/schema/auditlog.html)
+- [Gemara](/docs/tools/gemara)
+
+</References>
+
+</GovernanceArtifact>

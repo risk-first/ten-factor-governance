@@ -1,62 +1,21 @@
 ---
 sidebar_position: 0
-title: Governance Definitions
+title: Definitions
+description: "Every governance artifact in one catalogue, whichever standard names it."
 ---
 
-# Governance Definitions
+# Definitions
 
-As discussed in the [Governance Twin Factor](/docs/factors/build-a-governance-twin), your 
-governance definitions should be a created as a set of structured entities, managed alongside the sensitive 
-activity in question.  
+Every governance artifact this site describes, in one catalogue. An artifact has
+one page however you arrive at it: the title is the name used here, and the
+header lists the names [Gemara](/docs/artifacts/gemara),
+[ISO/IEC 27001](/docs/artifacts/iso27001) and
+[ISO/IEC 42001](/docs/artifacts/iso42001) give it. Those three pages are views
+onto this same set, in each standard's own vocabulary.
 
-For machine-readable shapes, see the
-[Gemara schemas](https://gemara.openssf.org/schema/).
+As discussed in the [Governance Twin Factor](/docs/factors/build-a-governance-twin),
+your governance definitions should be created as a set of structured entities,
+managed alongside the sensitive activity in question. For machine-readable
+shapes, see the [Gemara schemas](https://gemara.openssf.org/schema/).
 
-## How the definitions connect
-
-The diagram below shows how definition catalogs relate: principles, vectors and
-guidance feed controls and risks; policy imports those controls and treats the
-risks.
-
-```mermaid
-flowchart LR
-  Principle -->|orients| Guidance
-  Vector -->|cited by| Guidance
-  Vector -->|attack path for| Threat
-  Capability -->|enables| Threat
-
-  Guidance -->|implemented by| Control
-  Threat -->|mitigated by| Control
-  Threat -->|materialises as| Risk
-
-  Control -->|imported by| Policy
-  Risk -->|mitigated or accepted| Policy
-  Guidance -->|informs| Policy
-
-  %% Layer 1 — Definitions (--gf-layer-1-soft)
-  style Principle fill:#e1efed,stroke:#0d7c6f,color:#0d7c6f
-  style Vector fill:#e1efed,stroke:#0d7c6f,color:#0d7c6f
-  style Guidance fill:#e1efed,stroke:#0d7c6f,color:#0d7c6f
-
-  %% Layer 2 — Threats & controls (--gf-layer-2-soft)
-  style Capability fill:#e5ebf1,stroke:#2a5f8f,color:#2a5f8f
-  style Threat fill:#e5ebf1,stroke:#2a5f8f,color:#2a5f8f
-  style Control fill:#e5ebf1,stroke:#2a5f8f,color:#2a5f8f
-
-  %% Layer 3 — Risk & policy (--gf-layer-3-soft)
-  style Risk fill:#e4ede7,stroke:#1f6b3a,color:#1f6b3a
-  style Policy fill:#e4ede7,stroke:#1f6b3a,color:#1f6b3a
-
-  click Principle "/docs/artifacts/definitions/principle" "Principle"
-  click Vector "/docs/artifacts/definitions/vector" "Vector"
-  click Guidance "/docs/artifacts/definitions/guidance" "Guidance"
-  click Capability "/docs/artifacts/definitions/capability" "Capability"
-  click Threat "/docs/artifacts/definitions/threat" "Threat"
-  click Control "/docs/artifacts/definitions/control" "Control"
-  click Risk "/docs/artifacts/definitions/risk" "Risk"
-  click Policy "/docs/artifacts/definitions/policy" "Policy"
-```
-
-## Definition artifacts
-
-<ArtifactList layers={[1, 2, 3]} />
+<ArtifactLayerMap />

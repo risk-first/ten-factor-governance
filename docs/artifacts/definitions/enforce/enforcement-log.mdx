@@ -1,0 +1,102 @@
+---
+sidebar_position: 24
+title: Enforcement Log
+sidebar_label: Enforcement Log
+hide_title: true
+tags:
+  - Artifact
+  - Layer 6
+aka:
+  gemara: EnforcementLog
+description: "Prevention or remediation based on assessment findings."
+---
+
+<GovernanceArtifact>
+
+<Purpose>
+
+Prevention or remediation based on assessment findings.
+
+</Purpose>
+
+<Role>
+
+Enforcement records what was done after evaluation: block a merge, open a
+ticket, notify owners, require remediation. Methods should be those declared on
+policy, justified by assessment results. Without an enforcement log, denials and
+fixes exist only as chat noise or ephemeral CI annotations.
+
+</Role>
+
+<Examples>
+
+<RevealItem title="Merge blocked after PR #417 secret-scan failure" defaultOpen>
+
+When the evaluation log fails data-leakage checks, enforcement blocks the pull
+request merge, posts a failing check run, and notifies the contributor and
+OSPO—citing the policy enforcement method and the failed assessment as
+justification.
+
+**Source:** [internal-tools PR #417 Enforcement Log](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/logs/enforcement-internal-tools-pr417.yaml) (`foss-enforcement-internal-tools-pr417`), citing `em-foss-block-merge`.
+
+</RevealItem>
+
+<RevealItem title="Remediation notification, not only hard deny">
+
+Enforcement can obligate follow-up (notify, ticket, re-run) rather than only
+refuse. The log still records disposition, method and timing so audit can see
+the closed loop.
+
+**Source:** [em-foss-notify-noncompliance](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/policy.yaml) in the *FOSS Contribution Policy*, used alongside block-merge enforcement in the [PR #417 Enforcement Log](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/logs/enforcement-internal-tools-pr417.yaml).
+
+</RevealItem>
+
+</Examples>
+
+<LinksUpstream>
+
+- [Evaluation Log](/docs/artifacts/definitions/evaluate/evaluation-log) — results that justify
+  action
+
+</LinksUpstream>
+
+<LinksDownstream>
+
+- [Audit Log](/docs/artifacts/definitions/assure/audit-log) cites enforcement evidence
+
+</LinksDownstream>
+
+<AntiPatterns>
+
+<RevealItem title="Enforcement without evaluation">
+
+Blocking or remediating with no cited assessment. You cannot show the action was
+policy-justified.
+
+</RevealItem>
+
+<RevealItem title="Silent CI failure">
+
+A red check that leaves no durable enforcement record. Weeks later, nobody can
+prove what was blocked or why.
+
+</RevealItem>
+
+</AntiPatterns>
+
+<RelatedFactors>
+
+- [Continuous Governance](/docs/factors/continuous-governance) — enforcement in the path of change
+- [Evidence by Default](/docs/factors/evidence-by-default) — dispositions as attributable receipts
+- [Governance Has Owners](/docs/factors/governance-has-owners) — who is notified and who remediates
+
+</RelatedFactors>
+
+<References>
+
+- [Gemara Enforcement Log schema](https://gemara.openssf.org/schema/enforcementlog.html)
+- [Gemara](/docs/tools/gemara)
+
+</References>
+
+</GovernanceArtifact>

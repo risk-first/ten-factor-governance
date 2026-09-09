@@ -42,7 +42,7 @@
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.85em;
   font-weight: 600;
-  color: var(--gf-layer-1);
+  color: var(--gf-band-define);
 }
 
 .result {
@@ -146,7 +146,7 @@
   width: 0.32rem;
   height: 0.32rem;
   border-radius: 50%;
-  background: var(--gf-layer-1, var(--ifm-color-primary));
+  background: var(--gf-band-define, var(--ifm-color-primary));
 }
 
 .assessment {

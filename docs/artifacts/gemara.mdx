@@ -1,0 +1,91 @@
+---
+sidebar_position: 2
+sidebar_label: Gemara
+title: Gemara Artifacts
+description: "The governance artifacts under the names Gemara gives them."
+---
+
+# Gemara Artifacts
+
+[Gemara](https://gemara.openssf.org) is the OpenSSF model and schemas this site
+uses for typed, linkable governance records. This is the
+[artifact catalogue](/docs/artifacts/definitions/) under the names Gemara gives
+it, in the order governance runs: definitions first, then the activity being
+governed, then the records that activity produces.
+
+## How the artifacts connect
+
+Principles, vectors and guidance feed controls and risks; policy imports those
+controls and treats the risks.
+
+```mermaid
+flowchart LR
+  Principle -->|orients| Guidance
+  Vector -->|cited by| Guidance
+  Vector -->|attack path for| Threat
+  Capability -->|enables| Threat
+
+  Guidance -->|implemented by| Control
+  Threat -->|mitigated by| Control
+  Threat -->|materialises as| Risk
+
+  Control -->|imported by| Policy
+  Risk -->|mitigated or accepted| Policy
+  Guidance -->|informs| Policy
+
+  %% Layer 1 — Definitions (--gf-band-define-soft)
+  style Principle fill:#e1efed,stroke:#0d7c6f,color:#0d7c6f
+  style Vector fill:#e1efed,stroke:#0d7c6f,color:#0d7c6f
+  style Guidance fill:#e1efed,stroke:#0d7c6f,color:#0d7c6f
+
+  %% Layer 2 — Threats & controls (--gf-band-assess-soft)
+  style Capability fill:#e5ebf1,stroke:#2a5f8f,color:#2a5f8f
+  style Threat fill:#e5ebf1,stroke:#2a5f8f,color:#2a5f8f
+  style Control fill:#e5ebf1,stroke:#2a5f8f,color:#2a5f8f
+
+  %% Layer 3 — Risk & policy (--gf-band-decide-soft)
+  style Risk fill:#e4ede7,stroke:#1f6b3a,color:#1f6b3a
+  style Policy fill:#e4ede7,stroke:#1f6b3a,color:#1f6b3a
+
+  click Principle "/docs/artifacts/definitions/define/principle" "Principle"
+  click Vector "/docs/artifacts/definitions/define/vector" "Vector"
+  click Guidance "/docs/artifacts/definitions/define/guidance" "Guidance"
+  click Capability "/docs/artifacts/definitions/assess/capability" "Capability"
+  click Threat "/docs/artifacts/definitions/assess/threat" "Threat"
+  click Control "/docs/artifacts/definitions/assess/control" "Control"
+  click Risk "/docs/artifacts/definitions/decide/risk" "Risk"
+  click Policy "/docs/artifacts/definitions/decide/policy" "Policy"
+```
+
+Evaluation inspects an activity instance against policy and controls;
+enforcement acts on those results; audit reviews both as evidence of programme
+conformance.
+
+```mermaid
+flowchart LR
+  SensitiveActivity["Sensitive Activity"] -->|inspected by| EvaluationLog["Evaluation Log"]
+  EvaluationLog -->|justifies| EnforcementLog["Enforcement Log"]
+  EvaluationLog -->|evidence for| AuditLog["Audit Log"]
+  EnforcementLog -->|evidence for| AuditLog
+
+  %% Layer 4 — Activity (--gf-band-operate-soft)
+  style SensitiveActivity fill:#f5ebe1,stroke:#b45309,color:#b45309
+
+  %% Layer 5 — Evaluation (--gf-band-evaluate-soft)
+  style EvaluationLog fill:#e2eef1,stroke:#0e7490,color:#0e7490
+
+  %% Layer 6 — Enforcement (--gf-band-enforce-soft)
+  style EnforcementLog fill:#f2e6e2,stroke:#9a3412,color:#9a3412
+
+  %% Layer 7 — Audit (--gf-band-assure-soft)
+  style AuditLog fill:#e7e9e8,stroke:#3f4f46,color:#3f4f46
+
+  click SensitiveActivity "/docs/artifacts/definitions/operate/sensitive-activity" "Sensitive Activity"
+  click EvaluationLog "/docs/artifacts/definitions/evaluate/evaluation-log" "Evaluation Log"
+  click EnforcementLog "/docs/artifacts/definitions/enforce/enforcement-log" "Enforcement Log"
+  click AuditLog "/docs/artifacts/definitions/assure/audit-log" "Audit Log"
+```
+
+## Gemara artifacts by layer
+
+<ArtifactLayerMap filter="gemara" />
