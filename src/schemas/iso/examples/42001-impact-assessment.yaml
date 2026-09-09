@@ -1,0 +1,223 @@
+# Example ImpactAssessment — ISO/IEC 42001 Clauses 6.1.4 and 8.4, Annex A.5
+# Illustrative only. Not ISO normative text; conformity assessment requires a
+# licensed copy of the standard (and, for the process, ISO/IEC 42005).
+# iso-type: ImpactAssessment
+
+title: "Customer Contact Assistant — AI system impact assessment"
+
+metadata:
+  id: cca-impact-2026-09
+  type: ImpactAssessment
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-09T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: "AI Governance Office"
+    type: Human
+  description: |
+    Consequences of the Customer Contact Assistant for the customers it answers
+    and the agents who work alongside it, rated from their point of view and
+    fed into risk treatment.
+  mapping-references:
+    - id: systems
+      title: "AI system register"
+      version: "0.1.0"
+    - id: parties
+      title: "Parties to the Customer Contact Assistant"
+      version: "0.1.0"
+    - id: controls
+      title: "AI control catalog"
+      version: "0.1.0"
+    - id: risks
+      title: "AI risk catalog"
+      version: "0.1.0"
+  approval:
+    approved-by:
+      name: "Chief Operating Officer"
+    date: "2026-09-08T00:00:00Z"
+    effective-date: "2026-09-09T00:00:00Z"
+
+clauses: ["6.1.4", "8.4", "A.5.2", "A.5.3", "A.5.4", "A.5.5"]
+
+system:
+  reference-id: systems
+  entry-id: customer-contact-assistant
+system-version: "2.3.0"
+
+purpose-assessed: |
+  Drafting replies to routine retail customer enquiries for agent review. The
+  conclusions below do not hold for autonomous sending or for eligibility
+  decisions, both of which are prohibited uses.
+
+deployment-context: |
+  UK retail contact centre, roughly 400 agents, 12,000 enquiries a week.
+  Customers reach the service by web form and email; the assistant sees the
+  enquiry text and the customer's product holdings, and drafts a reply an agent
+  must review.
+
+assessor:
+  id: ai-governance-office
+  name: "AI Governance Office"
+  type: Human
+
+date: "2026-09-05T00:00:00Z"
+trigger: Change
+methodology: "ISO/IEC 42005 impact assessment process, adapted"
+
+consultation:
+  - party:
+      reference-id: parties
+      entry-id: consumer-advocacy
+    method: "Structured workshop and written response"
+    date: "2026-08-14T00:00:00Z"
+    summary: |
+      Raised the risk that confidently worded drafts discourage agents from
+      checking the answer for customers who describe financial difficulty.
+    influence: |
+      Added the vulnerability-signal suppression control and changed the draft
+      presentation to show retrieval sources inline.
+  - party:
+      reference-id: parties
+      entry-id: staff-forum
+    method: "Consultation with contact centre staff representatives"
+    date: "2026-08-19T00:00:00Z"
+    summary: |
+      Concern that handling-time targets would be tightened on the assumption
+      the assistant makes every enquiry faster.
+    influence: "Handling-time targets frozen for two quarters after release."
+
+impacts:
+  - id: wrong-answer-vulnerable
+    title: "Incorrect answer to a customer in vulnerable circumstances"
+    description: |
+      A confidently drafted but incorrect answer about arrears, hardship
+      arrangements or account restrictions is approved by an agent under time
+      pressure, and the customer acts on it.
+    category: "Access to Services"
+    affected:
+      - reference-id: parties
+        entry-id: vulnerable-customers
+    differentiated:
+      groups:
+        - "Customers who have disclosed financial difficulty"
+        - "Customers whose first language is not English"
+      description: |
+        Both groups are likelier to receive an answer outside the validated
+        corpus and less likely to challenge it.
+      basis: ["Financial vulnerability", "Language"]
+    severity: High
+    likelihood: Possible
+    reversibility: Partially Reversible
+    scale: Group
+    duration: Temporary
+    source: |
+      Retrieval returns adjacent but inapplicable guidance; generation presents
+      it without hedging.
+    mitigations:
+      - reference-id: controls
+        entry-id: vulnerability-signal-suppression
+      - reference-id: controls
+        entry-id: inline-source-display
+      - reference-id: controls
+        entry-id: mandatory-agent-review
+    residual:
+      severity: Medium
+      justification: |
+        Suppression removes the assistant from the highest-consequence
+        enquiries entirely; the remainder are recoverable through the existing
+        complaints route within one business day.
+      accepted-by:
+        name: "Chief Operating Officer"
+      redress: |
+        Complaints route with same-day escalation, and proactive contact where
+        an incorrect answer is identified after the fact.
+    evidence:
+      - reference-id: controls
+        entry-id: vulnerability-signal-suppression
+        remarks: "Pre-release evaluation, release 2.3.0"
+
+  - id: agent-deskilling
+    title: "Erosion of agent judgement"
+    description: |
+      Sustained reliance on drafted replies reduces agents' familiarity with
+      the underlying guidance, degrading the quality of the review the whole
+      control model depends on.
+    category: Autonomy
+    affected:
+      - reference-id: parties
+        entry-id: contact-centre-staff
+    severity: Medium
+    likelihood: Likely
+    reversibility: Reversible
+    scale: Group
+    duration: Persistent
+    source: "Automation bias under handling-time pressure."
+    mitigations:
+      - reference-id: controls
+        entry-id: review-quality-sampling
+    residual:
+      severity: Low
+      justification: |
+        Sampling detects declining review quality within a quarter, and the
+        target freeze removes the pressure that drives it.
+      accepted-by:
+        name: "Contact Assistant Product Owner"
+
+  - id: differential-service-quality
+    title: "Uneven service quality across customer groups"
+    description: |
+      The assistant performs better on enquiry types well represented in the
+      indexed corpus, so customers whose needs are less common receive slower
+      or less accurate service.
+    category: "Fairness and Discrimination"
+    affected:
+      - reference-id: parties
+        entry-id: customers
+      - reference-id: parties
+        entry-id: vulnerable-customers
+    severity: Medium
+    likelihood: Possible
+    reversibility: Reversible
+    scale: Population
+    source: "Corpus coverage follows historical enquiry volume."
+    mitigations:
+      - reference-id: controls
+        entry-id: coverage-monitoring
+    residual:
+      severity: Low
+      justification: "Monitored quarterly by enquiry category with a coverage target."
+      accepted-by:
+        name: "Contact Assistant Product Owner"
+
+conclusion:
+  outcome: "Proceed With Conditions"
+  narrative: |
+    The assistant's consequences for customers are acceptable while a person
+    remains between the draft and the customer, and while the highest-
+    consequence enquiries are routed away from it. Both conditions are
+    load-bearing: without them the assessment does not hold.
+  conditions:
+    - "Vulnerability-signal suppression remains enabled in production"
+    - "No release removes mandatory agent review"
+    - "Handling-time targets stay frozen for two quarters after release"
+  approved-by:
+    name: "Chief Operating Officer"
+
+risks:
+  - reference-id: risks
+    entry-id: incorrect-customer-guidance
+  - reference-id: risks
+    entry-id: automation-bias
+
+review:
+  cadence: Biannual
+  last-reviewed: "2026-09-05T00:00:00Z"
+  next-review: "2027-03-05T00:00:00Z"
+  triggers:
+    - "Change to the intended use or the prohibited-use list"
+    - "Change of foundation model or model version"
+    - "Extension to a new customer segment or language"
+    - "Any incident involving an incorrect answer acted on by a customer"

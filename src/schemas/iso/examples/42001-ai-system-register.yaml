@@ -1,0 +1,133 @@
+# Example AISystemRegister — ISO/IEC 42001 Annex A.6, A.8.2, A.9.4
+# Illustrative only. Not ISO normative text; conformity assessment requires a
+# licensed copy of the standard.
+# iso-type: AISystemRegister
+
+title: "AI systems in the scope of the AIMS"
+
+metadata:
+  id: cca-ai-system-register
+  type: AISystemRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-09T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: "AI Governance Office"
+    type: Human
+  description: |
+    The AI systems the management system governs, what each is for and what it
+    is not for. Technical documentation is referenced rather than restated.
+  mapping-references:
+    - id: datasets
+      title: "Data resources register"
+      version: "0.1.0"
+    - id: tools
+      title: "Tooling resources register"
+      version: "0.1.0"
+    - id: impact
+      title: "Customer Contact Assistant impact assessment"
+      version: "0.1.0"
+    - id: suppliers
+      title: "Supplier assurance register"
+      version: "0.1.0"
+
+clauses: ["A.6.2.2", "A.6.2.7", "A.6.2.8", "A.8.2", "A.9.4"]
+
+systems:
+  - id: customer-contact-assistant
+    name: "Customer Contact Assistant"
+    description: |
+      Retrieval-augmented assistant that triages inbound customer enquiries and
+      drafts replies for an agent to review and send.
+    version: "2.3.0"
+    role: [Deployer, Developer]
+    stage: Operation
+    owner:
+      responsible:
+        - name: "Contact Assistant Engineering"
+          affiliation: "Customer Operations"
+      accountable:
+        - name: "Contact Assistant Product Owner"
+          affiliation: "Customer Operations"
+      consulted:
+        - name: "AI Governance Office"
+      informed:
+        - name: "Chief Operating Officer"
+
+    intended-use:
+      purpose: |
+        Reduce time to first response by drafting replies to routine enquiries
+        for an agent to review, amend and send.
+      domain: "Retail customer service"
+      users: ["Contact centre agents"]
+      subjects: ["Retail customers whose enquiries are triaged"]
+      prohibited:
+        - "Sending a reply to a customer without agent review"
+        - "Deciding eligibility for a product, refund or hardship arrangement"
+        - "Any use in a complaint that has been escalated to the ombudsman"
+      foreseeable-misuse:
+        - "Agents accepting drafts unread when queue pressure is high"
+        - "Use as a knowledge source for questions outside the indexed corpus"
+      limitations:
+        - "Indexed corpus excludes products withdrawn before 2024"
+        - "Not validated for enquiries in languages other than English"
+      out-of-scope-populations:
+        - "Business banking customers"
+
+    autonomy:
+      level: Human In The Loop
+      description: |
+        Every outbound reply is reviewed by an agent. The assistant cannot send.
+      intervention: "Agent edits or discards the draft before sending."
+      override: "Agents may bypass the assistant entirely for any enquiry."
+
+    techniques:
+      - "Retrieval-augmented generation over a curated knowledge base"
+      - "Third-party foundation model, accessed as a service"
+
+    datasets:
+      - reference-id: datasets
+        entry-id: support-knowledge-base
+      - reference-id: datasets
+        entry-id: historical-transcripts
+
+    tools:
+      - reference-id: tools
+        entry-id: evaluation-harness
+
+    dependencies:
+      - reference-id: suppliers
+        entry-id: foundation-model-provider
+        remarks: "Model is consumed as a hosted service; version pinned per release."
+
+    impact-assessments:
+      - reference-id: impact
+        entry-id: cca-impact-2026-09
+
+    documentation:
+      - type: System Card
+        title: "Customer Contact Assistant system card"
+        audience: Internal
+        version: "2.3.0"
+      - type: User Information
+        title: "Agent guidance: working with drafted replies"
+        audience: User
+      - type: Evaluation Report
+        title: "Pre-release evaluation, release 2.3.0"
+        audience: Internal
+
+    event-logging:
+      description: |
+        Every draft records the enquiry id, retrieved sources, model version,
+        agent action taken and any edit made before sending.
+      retention: "13 months"
+
+review:
+  cadence: Quarterly
+  next-review: "2026-12-01T00:00:00Z"
+  triggers:
+    - "A new AI system enters development"
+    - "A system's intended use changes"
