@@ -9,10 +9,6 @@ function textOf(value) {
   return String(value).trim();
 }
 
-function pluralize(count, singular, plural = `${singular}s`) {
-  return `${count} ${count === 1 ? singular : plural}`;
-}
-
 function getCatalogEntries(catalog) {
   if (Array.isArray(catalog?.principles)) {
     return {entries: catalog.principles, entryLabel: 'principle'};
@@ -28,6 +24,60 @@ function getCatalogEntries(catalog) {
   }
   if (Array.isArray(catalog?.controls)) {
     return {entries: catalog.controls, entryLabel: 'control'};
+  }
+  if (Array.isArray(catalog?.risks)) {
+    return {entries: catalog.risks, entryLabel: 'risk'};
+  }
+  if (Array.isArray(catalog?.terms)) {
+    return {
+      entries: catalog.terms.map((term) => ({
+        ...term,
+        description: term.definition ?? term.description,
+      })),
+      entryLabel: 'term',
+    };
+  }
+  if (catalog?.metadata?.type === 'Policy') {
+    const plans = catalog.adherence?.['assessment-plans'] ?? [];
+    return {
+      entries: plans.map((plan) => ({
+        id: plan.id,
+        title: plan['requirement-id'] || plan.id,
+        group: 'assessment-plans',
+        description: textOf(plan['evidence-requirements']),
+        frequency: plan.frequency,
+        'evaluation-methods': plan['evaluation-methods'] ?? [],
+      })),
+      entryLabel: 'assessment plan',
+    };
+  }
+  if (catalog?.metadata?.type === 'EvaluationLog') {
+    return {
+      entries: (catalog.evaluations ?? []).map((evaluation) => ({
+        id: evaluation.name,
+        title: evaluation.name,
+        group: 'evaluations',
+        description: textOf(evaluation.message),
+        result: evaluation.result,
+        control: evaluation.control,
+        'assessment-logs': evaluation['assessment-logs'] ?? [],
+      })),
+      entryLabel: 'evaluation',
+    };
+  }
+  if (catalog?.metadata?.type === 'EnforcementLog') {
+    return {
+      entries: (catalog.actions ?? []).map((action, index) => ({
+        id: action.method?.['entry-id'] || `action-${index + 1}`,
+        title: action.method?.['entry-id'] || `Action ${index + 1}`,
+        group: 'actions',
+        description: textOf(action.message),
+        result: action.disposition,
+        method: action.method,
+        steps: action.steps ?? [],
+      })),
+      entryLabel: 'action',
+    };
   }
   return {entries: [], entryLabel: 'entry'};
 }
@@ -144,6 +194,13 @@ function matchesQuery(entry, query) {
     entry.title,
     entry.description,
     entry.objective,
+    entry.definition,
+    entry.impact,
+    entry.severity,
+    entry.frequency,
+    entry.result,
+    ...(entry.synonyms ?? []),
+    ...(entry.steps ?? []),
     entry.__importedFrom,
     entry.__importRemarks,
     ...(entry.__externalMappings ?? []).flatMap((section) => [
@@ -165,13 +222,34 @@ function matchesQuery(entry, query) {
 
 /** Doc pages for known Gemara catalog reference-ids (imports). */
 const CATALOG_HREF = {
-  'CCC.K8S.Capabilities': '/docs/artifacts/finos-ccc-k8s/capabilities-catalog',
-  'CCC.K8S.Threats': '/docs/artifacts/finos-ccc-k8s/threats-catalog',
-  'CCC.K8S.Controls': '/docs/artifacts/finos-ccc-k8s/controls-catalog',
-  'CCC.K8S.TH': '/docs/artifacts/finos-ccc-k8s/threats-catalog',
-  'AIR-PRIN': '/docs/artifacts/finos-ai-governance/principles-catalog',
-  'AIR-VEC': '/docs/artifacts/finos-ai-governance/vectors-catalog',
-  'FINOS-AIR': '/docs/artifacts/finos-ai-governance/guidance-catalog',
+  'CCC.K8S.Capabilities': '/docs/artifacts/finos/ccc-k8s/capabilities-catalog',
+  'CCC.K8S.Threats': '/docs/artifacts/finos/ccc-k8s/threats-catalog',
+  'CCC.K8S.Controls': '/docs/artifacts/finos/ccc-k8s/controls-catalog',
+  'CCC.K8S.TH': '/docs/artifacts/finos/ccc-k8s/threats-catalog',
+  'AIR-PRIN': '/docs/artifacts/finos/ai-governance/principles-catalog',
+  'AIR-VEC': '/docs/artifacts/finos/ai-governance/vectors-catalog',
+  'FINOS-AIR': '/docs/artifacts/finos/ai-governance/guidance-catalog',
+  'foss-contribution-lexicon': '/docs/artifacts/finos/foss-contribution/lexicon',
+  'foss-contribution-principles':
+    '/docs/artifacts/finos/foss-contribution/principles-catalog',
+  'foss-contribution-vectors':
+    '/docs/artifacts/finos/foss-contribution/vectors-catalog',
+  'foss-contribution-guidance':
+    '/docs/artifacts/finos/foss-contribution/guidance-catalog',
+  'foss-contribution-capabilities':
+    '/docs/artifacts/finos/foss-contribution/capabilities-catalog',
+  'foss-contribution-threat-catalog':
+    '/docs/artifacts/finos/foss-contribution/threats-catalog',
+  'foss-contribution-controls':
+    '/docs/artifacts/finos/foss-contribution/controls-catalog',
+  'foss-risk-catalog': '/docs/artifacts/finos/foss-contribution/risks-catalog',
+  'foss-contribution-policy': '/docs/artifacts/finos/foss-contribution/policy',
+  'foss-eval-commons-lang-pr482':
+    '/docs/artifacts/finos/foss-contribution/evaluation-commons-lang-pr482',
+  'foss-eval-internal-tools-pr417':
+    '/docs/artifacts/finos/foss-contribution/evaluation-internal-tools-pr417',
+  'foss-enforcement-internal-tools-pr417':
+    '/docs/artifacts/finos/foss-contribution/enforcement-internal-tools-pr417',
 };
 
 /** Optional external URLs for MappingDocument target frameworks. */
@@ -380,11 +458,50 @@ function ExternalMappings({entry}) {
 }
 
 function EntryBody({entry}) {
+  const methods = entry['evaluation-methods'] ?? [];
+  const assessmentLogs = entry['assessment-logs'] ?? [];
+  const steps = entry.steps ?? [];
   return (
     <>
       {entry.__importedFrom ? (
         <p className={styles.importedNote}>
           Imported from <CatalogRef id={entry.__importedFrom} />
+        </p>
+      ) : null}
+      {entry.result ? (
+        <p className={styles.metaInline}>
+          <span className={styles.sectionLabel}>Result</span>{' '}
+          <code>{entry.result}</code>
+        </p>
+      ) : null}
+      {entry.severity ? (
+        <p className={styles.metaInline}>
+          <span className={styles.sectionLabel}>Severity</span>{' '}
+          {entry.severity}
+        </p>
+      ) : null}
+      {entry.frequency ? (
+        <p className={styles.metaInline}>
+          <span className={styles.sectionLabel}>Frequency</span>{' '}
+          {entry.frequency}
+        </p>
+      ) : null}
+      {(entry.synonyms ?? []).length > 0 ? (
+        <p className={styles.metaInline}>
+          <span className={styles.sectionLabel}>Synonyms</span>{' '}
+          {entry.synonyms.join(', ')}
+        </p>
+      ) : null}
+      {entry.control?.['entry-id'] ? (
+        <p className={styles.metaInline}>
+          <span className={styles.sectionLabel}>Control</span>{' '}
+          <code>{entry.control['entry-id']}</code>
+        </p>
+      ) : null}
+      {entry.method?.['entry-id'] ? (
+        <p className={styles.metaInline}>
+          <span className={styles.sectionLabel}>Method</span>{' '}
+          <code>{entry.method['entry-id']}</code>
         </p>
       ) : null}
       {textOf(entry.objective) ? (
@@ -395,8 +512,65 @@ function EntryBody({entry}) {
       ) : null}
       {textOf(entry.description) ? (
         <div className={styles.description}>
-          <span className={styles.sectionLabel}>Description</span>
+          <span className={styles.sectionLabel}>
+            {entry.definition ? 'Definition' : 'Description'}
+          </span>
           <p className={styles.descriptionText}>{textOf(entry.description)}</p>
+        </div>
+      ) : null}
+      {textOf(entry.impact) ? (
+        <div className={styles.description}>
+          <span className={styles.sectionLabel}>Impact</span>
+          <p className={styles.descriptionText}>{textOf(entry.impact)}</p>
+        </div>
+      ) : null}
+      {methods.length > 0 ? (
+        <div className={styles.mappingBlock}>
+          <span className={styles.sectionLabel}>Evaluation Methods</span>
+          <ul className={styles.mappingList}>
+            {methods.map((method) => (
+              <li key={method.id} className={styles.mappingItem}>
+                <code>{method.id}</code>
+                <span className={styles.mappingRemarks}>
+                  {[method.type, method.mode, method.description]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {assessmentLogs.length > 0 ? (
+        <div className={styles.mappingBlock}>
+          <span className={styles.sectionLabel}>Assessment Logs</span>
+          <ul className={styles.mappingList}>
+            {assessmentLogs.map((log, index) => (
+              <li
+                key={`${entry.id}-assessment-${index}`}
+                className={styles.mappingItem}
+              >
+                <code>{log.result}</code>
+                {textOf(log.message) ? (
+                  <span className={styles.mappingRemarks}>
+                    {textOf(log.message)}
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {steps.length > 0 ? (
+        <div className={styles.mappingBlock}>
+          <span className={styles.sectionLabel}>Steps</span>
+          <ul className={styles.mappingList}>
+            {steps.map((step) => (
+              <li key={step} className={styles.mappingItem}>
+                <code>{step}</code>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
       <AssessmentRequirements entry={entry} />
@@ -484,6 +658,18 @@ export default function GemaraCatalog({file, resolve, mappings}) {
   // Local groups first (service catalog order), then any Core groups only
   // needed by resolved imports.
   const groups = useMemo(() => {
+    if (entryLabel === 'term' && localGroups.length === 0) {
+      return [{id: 'terms', title: 'Terms'}];
+    }
+    if (entryLabel === 'assessment plan' && localGroups.length === 0) {
+      return [{id: 'assessment-plans', title: 'Assessment Plans'}];
+    }
+    if (entryLabel === 'evaluation' && localGroups.length === 0) {
+      return [{id: 'evaluations', title: 'Evaluations'}];
+    }
+    if (entryLabel === 'action' && localGroups.length === 0) {
+      return [{id: 'actions', title: 'Actions'}];
+    }
     if (!expandImports) {
       return localGroups;
     }
@@ -496,11 +682,19 @@ export default function GemaraCatalog({file, resolve, mappings}) {
       }
     }
     return merged;
-  }, [expandImports, localGroups, importedGroups]);
+  }, [entryLabel, expandImports, localGroups, importedGroups]);
+
+  // Lexicon terms have no group field — put them all under "terms".
+  const entriesForGrouping = useMemo(() => {
+    if (entryLabel !== 'term') {
+      return entries;
+    }
+    return entries.map((entry) => ({...entry, group: entry.group || 'terms'}));
+  }, [entryLabel, entries]);
 
   const grouped = useMemo(
-    () => groupEntries(entries, groups, normalizedQuery),
-    [entries, groups, normalizedQuery],
+    () => groupEntries(entriesForGrouping, groups, normalizedQuery),
+    [entriesForGrouping, groups, normalizedQuery],
   );
 
   if (!file) {
@@ -533,32 +727,17 @@ export default function GemaraCatalog({file, resolve, mappings}) {
         {metadata.draft ? (
           <span className={`${styles.badge} ${styles.badgeMuted}`}>draft</span>
         ) : null}
-      </div>
-
-      <p className={styles.meta}>
-        {metadata.id ? (
-          <>
-            <code>{metadata.id}</code>
-            {' · '}
-          </>
+        {catalog.result ? (
+          <span className={`${styles.badge} ${styles.badgeMuted}`}>
+            {catalog.result}
+          </span>
         ) : null}
-        {pluralize(localEntries.length, entryLabel)}
-        {expandImports && resolvedCount > 0
-          ? ` · ${pluralize(resolvedCount, 'imported ' + entryLabel)}`
-          : null}
-        {!expandImports && imports.length > 0
-          ? ` · ${pluralize(
-              imports.reduce(
-                (sum, mapping) => sum + (mapping.entries?.length ?? 0),
-                0,
-              ),
-              'import',
-            )}`
-          : null}
-        {externalBySource.size > 0
-          ? ` · ${pluralize(mappings?.length ?? 0, 'external mapping')}`
-          : null}
-      </p>
+        {catalog.disposition ? (
+          <span className={`${styles.badge} ${styles.badgeMuted}`}>
+            {catalog.disposition}
+          </span>
+        ) : null}
+      </div>
 
       {textOf(metadata.description) ? (
         <div className={styles.frontMatter}>{textOf(metadata.description)}</div>

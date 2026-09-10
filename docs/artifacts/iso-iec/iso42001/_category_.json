@@ -1,9 +1,9 @@
 {
   "label": "ISO/IEC 42001",
-  "position": 4,
+  "position": 2,
   "collapsed": true,
   "link": {
     "type": "doc",
-    "id": "artifacts/iso42001/index"
+    "id": "artifacts/iso-iec/iso42001/index"
   }
 }

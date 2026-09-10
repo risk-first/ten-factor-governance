@@ -1,0 +1,121 @@
+title: FOSS Contribution Capability Catalog
+
+metadata:
+  id: foss-contribution-capabilities
+  type: CapabilityCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    System capabilities that create the attack surface for employee contribution
+    to Free and Open Source Software projects.
+
+groups:
+  - id: publication
+    title: Public Publication
+    description: >
+      Capabilities that publish company-associated material to publicly
+      accessible FOSS platforms.
+
+  - id: legal-commitment
+    title: Legal Commitment
+    description: >
+      Capabilities that create license grants, contributor obligations, or
+      other legal commitments through FOSS participation.
+
+  - id: infrastructure
+    title: Contribution Infrastructure
+    description: >
+      Capabilities governing where and how FOSS contribution activity is
+      performed.
+
+  - id: governance
+    title: Governance and Engagement
+    description: >
+      Capabilities for registering, approving, reviewing, and engaging with
+      FOSS projects and communities.
+
+capabilities:
+  - id: public-source-publication
+    title: Public Source Publication
+    description: >
+      Ability to publish source code, configuration, or build artifacts to
+      publicly accessible FOSS repositories or collaboration platforms.
+    group: publication
+
+  - id: perpetual-license-grant
+    title: Perpetual License Grant Through Contribution
+    description: >
+      Ability to grant perpetual, royalty-free rights to consumers of a FOSS
+      project by contributing software under an open source license.
+    group: legal-commitment
+
+  - id: contributor-agreement-acceptance
+    title: Contributor Agreement Acceptance
+    description: >
+      Ability to accept Contributor License Agreements, Corporate CLAs,
+      Developer Certificates of Origin, or similar contribution agreements
+      on behalf of or as a company employee.
+    group: legal-commitment
+
+  - id: company-attributed-identity
+    title: Company-Attributed Public Identity
+    description: >
+      Ability to represent contribution activity using a company-associated
+      public identity such as a company external email address.
+    group: infrastructure
+
+  - id: company-infrastructure-contribution
+    title: Company Infrastructure Contribution
+    description: >
+      Ability to perform FOSS contribution activity from the company network
+      or on company-managed hardware using company-approved tooling.
+    group: infrastructure
+
+  - id: personal-infrastructure-contribution
+    title: Personal Infrastructure Contribution
+    description: >
+      Ability to perform personal FOSS contribution activity outside the
+      company network on non-company-managed hardware.
+    group: infrastructure
+
+  - id: cross-border-collaboration
+    title: Cross-Border FOSS Collaboration
+    description: >
+      Ability to participate in globally distributed FOSS communities,
+      repositories, and working groups across national boundaries.
+    group: governance
+
+  - id: cryptographic-software-contribution
+    title: Cryptographic Software Contribution
+    description: >
+      Ability to publish software that implements or incorporates
+      cryptography, authentication mechanisms, or export-sensitive
+      functionality to public FOSS projects.
+    group: publication
+
+  - id: community-engagement
+    title: Public Community Engagement
+    description: >
+      Ability to participate in public FOSS community meetings, forums,
+      mailing lists, and other collaboration channels.
+    group: governance
+
+  - id: project-inventory-registration
+    title: FOSS Project Inventory Registration
+    description: >
+      Ability to register, classify, and maintain FOSS project engagement
+      records in an OSPO-approved inventory system.
+    group: governance
+
+  - id: reviewed-contribution
+    title: Reviewed Contribution Submission
+    description: >
+      Ability to submit contributions through a source code management
+      workflow that records review, approver identity, and approval date.
+    group: governance

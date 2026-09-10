@@ -160,16 +160,6 @@ export default function GemaraGuidance({
         ) : null}
       </div>
 
-      <p className={styles.meta}>
-        {metadata.id ? (
-          <>
-            <code>{metadata.id}</code>
-            {' · '}
-          </>
-        ) : null}
-        {guidelines.length} guideline{guidelines.length === 1 ? '' : 's'}
-      </p>
-
       {showFrontMatter && textOf(catalog['front-matter']) ? (
         <div className={styles.frontMatter}>
           {textOf(catalog['front-matter'])}

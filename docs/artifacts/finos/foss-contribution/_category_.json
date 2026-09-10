@@ -1,0 +1,9 @@
+{
+  "label": "FOSS Contribution",
+  "position": 3,
+  "collapsed": true,
+  "link": {
+    "type": "doc",
+    "id": "artifacts/finos/foss-contribution/index"
+  }
+}

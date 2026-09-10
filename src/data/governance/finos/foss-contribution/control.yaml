@@ -1,0 +1,682 @@
+title: FOSS Contribution Control Catalog
+
+metadata:
+  id: foss-contribution-controls
+  type: ControlCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Threat-informed controls for governing employee contribution to Free and
+    Open Source Software projects.
+  mapping-references:
+    - id: foss-contribution-threat-catalog
+      title: FOSS Contribution Threat Catalog
+      version: "0.1.0"
+      url: file://threat.yaml
+      description: >
+        Layer 2 threats mitigated by these controls.
+    - id: foss-contribution-guidance
+      title: FOSS Contribution Guidelines
+      version: "0.1.0"
+      url: file://guidance.yaml
+      description: >
+        Layer 1 guidance implemented by these controls.
+  applicability-groups:
+    - id: all-contributions
+      title: All FOSS Contributions
+      description: >
+        Applies to every employee FOSS contribution activity regardless of
+        project category.
+    - id: company-moderated
+      title: Company Moderated Projects
+      description: >
+        Applies to company-moderated FOSS contribution activity.
+    - id: company-interest
+      title: Company Interest Projects
+      description: >
+        Applies to company-interest-major and company-interest-minor projects.
+    - id: company-interest-major
+      title: Company Interest (Major) Projects
+      description: >
+        Applies to company-interest-major contribution activity.
+    - id: company-interest-minor
+      title: Company Interest (Minor) Projects
+      description: >
+        Applies to company-interest-minor contribution activity.
+    - id: company-attributed
+      title: Company-Attributed Contributions
+      description: >
+        Applies when contribution is performed on behalf of or attributed to
+        the company.
+    - id: personal-contribution
+      title: Personal Contributions
+      description: >
+        Applies to personal FOSS contribution activity.
+    - id: company-infrastructure
+      title: Company Infrastructure Use
+      description: >
+        Applies when contribution uses company-managed hardware, company
+        network, or OSPO-approved tooling on company infrastructure.
+
+groups:
+  - id: governance-classification
+    title: Governance and Classification
+    description: >
+      Controls for classifying contribution activity and establishing OSPO
+      governance boundaries.
+
+  - id: registration-approval
+    title: Registration and Approval
+    description: >
+      Controls for inventory registration, OSPO approval, and line manager
+      authorization.
+
+  - id: legal-license
+    title: Legal and License Compliance
+    description: >
+      Controls for license approval, legal review, and contributor agreement
+      assessment.
+
+  - id: information-protection
+    title: Information Protection
+    description: >
+      Controls for preventing disclosure of non-public or sensitive information.
+
+  - id: export-compliance
+    title: Export and Cross-Border Compliance
+    description: >
+      Controls for export-control and cross-border contribution review.
+
+  - id: infrastructure-tooling
+    title: Infrastructure and Tooling
+    description: >
+      Controls for approved tooling and compliance scanning on company
+      infrastructure.
+
+  - id: contribution-review
+    title: Contribution Review
+    description: >
+      Controls for peer review and separation of duties.
+
+  - id: identity-separation
+    title: Identity and Separation
+    description: >
+      Controls for proper public identity use and personal contribution
+      boundaries.
+
+  - id: security-engagement
+    title: Security and Engagement Operations
+    description: >
+      Controls for vulnerability reporting and engagement maintenance.
+
+  - id: lifecycle-training
+    title: Lifecycle and Training
+    description: >
+      Controls for contributor training, recertification, risk-change review,
+      and project retirement.
+
+controls:
+  - id: foss-ctl-001-project-classification
+    title: FOSS Project Category Classification
+    objective: >
+      Ensure every employee FOSS contribution activity is classified into one
+      of four project categories and that governed contribution does not proceed
+      without the correct category on record.
+    group: governance-classification
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-001-project-classification.ar01
+        text: >
+          Staff-associated contribution activity MUST NOT occur against FOSS
+          projects that lack a recorded category classification in the OSPO
+          inventory system of record.
+        applicability:
+          - all-contributions
+        recommendation: >
+          Compare staff SCM identities, pull requests, and commits against OSPO
+          inventory records; every observed engagement must map to one of:
+          company-moderated, company-interest-major, company-interest-minor,
+          or personal-contribution.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-project-categories
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+
+  - id: foss-ctl-002-ospo-registration
+    title: OSPO Inventory Registration
+    objective: >
+      Register governed FOSS contribution activity in an OSPO-approved inventory
+      before contribution proceeds.
+    group: registration-approval
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-002-ospo-registration.ar01
+        text: >
+          Staff-associated contribution activity for company-moderated or
+          company-interest projects MUST NOT occur unless a corresponding OSPO
+          inventory registration predates that activity.
+        applicability:
+          - company-moderated
+          - company-interest
+        recommendation: >
+          Verify inventory creation timestamps precede first observed
+          contribution for each governed project engagement.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-inventory-registration
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+
+  - id: foss-ctl-003-ospo-approval
+    title: OSPO Project Approval
+    objective: >
+      Obtain OSPO approval before contributions to governed high-impact projects.
+    group: registration-approval
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-003-ospo-approval.ar01
+        text: >
+          Contribution activity MUST NOT be observed for company-moderated or
+          company-interest-major projects that lack a recorded OSPO approval in
+          the inventory system of record.
+        applicability:
+          - company-moderated
+          - company-interest-major
+        recommendation: >
+          Check inventory approval status before evaluating SCM activity for
+          governed high-impact projects.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-ospo-project-approval
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+
+  - id: foss-ctl-004-minor-project-manager-approval
+    title: Line Manager Approval for Minor Projects
+    objective: >
+      Require line manager approval for company-interest-minor contribution
+      access.
+    group: registration-approval
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-004-minor-project-manager-approval.ar01
+        text: >
+          Active company-interest-minor contribution access MUST NOT exist
+          without a recorded line-manager approval in an OSPO-approved tool.
+        applicability:
+          - company-interest-minor
+        recommendation: >
+          Validate workflow approval records for each active minor-project
+          access grant.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-minor-project-access
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+          - reference-id: employee-conflict-of-interest
+
+  - id: foss-ctl-005-approved-license
+    title: Approved FOSS License
+    objective: >
+      Ensure contribution activity is associated with an OSPO-approved license.
+    group: legal-license
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-005-approved-license.ar01
+        text: >
+          Company-attributed contribution activity MUST NOT occur against
+          projects whose license is not recorded as approved for contribution
+          in the OSPO license inventory.
+        applicability:
+          - company-attributed
+        recommendation: >
+          Compare project SPDX or license identifiers against the OSPO license
+          inventory before evaluating contribution activity.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-license-inventory
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: unapproved-license-contribution
+
+  - id: foss-ctl-006-legal-review
+    title: Legal Review for License and Contributor Agreements
+    objective: >
+      Obtain legal review when licenses or contributor agreements require
+      assessment.
+    group: legal-license
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-006-legal-review.ar01
+        text: >
+          Company-attributed contribution activity MUST NOT proceed when
+          triggered license or contributor-agreement conditions are present
+          unless a recorded Legal review disposition exists in the system of
+          record.
+        applicability:
+          - company-attributed
+        recommendation: >
+          Trigger on unapproved licenses, license changes, and CLA, CCLA, DCO,
+          or equivalent contributor agreement requirements.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-legal-support
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: contributor-agreement-exposure
+          - reference-id: unapproved-license-contribution
+
+  - id: foss-ctl-007-ip-review
+    title: Intellectual Property Review
+    objective: >
+      Review contributions for intellectual property and competing-interest
+      concerns before publication.
+    group: legal-license
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-007-ip-review.ar01
+        text: >
+          Recorded intellectual-property review disposition MUST approve
+          contribution before company-attributed activity is observed.
+        applicability:
+          - company-attributed
+        recommendation: >
+          Verify review records for each project engagement and material
+          contribution before publication.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-ip-review
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: intellectual-property-disclosure
+          - reference-id: asset-financial-write-down
+
+  - id: foss-ctl-008-data-leakage-review
+    title: Non-Public Information Review
+    objective: >
+      Prevent disclosure of non-public information through FOSS contributions.
+    group: information-protection
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-008-data-leakage-review.ar01
+        text: >
+          Pre-publication evaluation outputs MUST report no uncleared prohibited
+          disclosures before contribution content is published.
+        applicability:
+          - all-contributions
+        recommendation: >
+          Use secret scanning, sensitive-data detection, and reviewer sign-off
+          before publication; treat uncleared findings as non-compliance.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-information-classification
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: sensitive-data-disclosure
+
+  - id: foss-ctl-009-export-control-review
+    title: Export-Control Review
+    objective: >
+      Assess contributions involving export-sensitive functionality before
+      approval.
+    group: export-compliance
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-009-export-control-review.ar01
+        text: >
+          Contribution activity involving detected export-control triggers MUST
+          NOT be approved or published without a recorded export-control
+          review disposition.
+        applicability:
+          - company-attributed
+        recommendation: >
+          Trigger on non-standard cryptography, non-standard authentication
+          mechanisms, and other export-sensitive functionality indicators.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-export-control
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: export-control-violation
+
+  - id: foss-ctl-010-approved-tools
+    title: Approved Tools and Compliance Scanning
+    objective: >
+      Require OSPO-approved tooling and compliance scanning when contributing
+      from company infrastructure.
+    group: infrastructure-tooling
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-010-approved-tools.ar01
+        text: >
+          Contribution activity observed from company-managed hardware or the
+          company network MUST NOT occur outside OSPO-approved tooling or
+          without recorded compliance scanning results.
+        applicability:
+          - company-infrastructure
+        recommendation: >
+          Correlate SCM activity with approved tool inventory and scan logs for
+          license, maker-checker, sensitive-data, copyright, and export checks.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-standard-tools
+          - reference-id: foss-guidance-company-infrastructure
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+          - reference-id: sensitive-data-disclosure
+
+  - id: foss-ctl-011-peer-review
+    title: Peer Review Record
+    objective: >
+      Maintain auditable peer review records for company-moderated contributions.
+    group: contribution-review
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-011-peer-review.ar01
+        text: >
+          Each company-moderated contribution MUST have a recorded peer review
+          showing reviewer identity and approval date in the transaction history.
+        applicability:
+          - company-moderated
+        recommendation: >
+          Inspect pull-request or equivalent review records for every merged or
+          published company-moderated change.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-peer-review
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+          - reference-id: reputational-harm-from-contribution
+
+  - id: foss-ctl-012-maker-checker
+    title: Maker-Checker Separation
+    objective: >
+      Enforce separation of duties between contributor and reviewer.
+    group: contribution-review
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-012-maker-checker.ar01
+        text: >
+          Peer review records MUST NOT show the same identity as both
+          contributor and reviewer where company controls apply.
+        applicability:
+          - company-attributed
+        recommendation: >
+          Compare contributor and reviewer identities on each governed
+          contribution transaction.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-peer-review
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+
+  - id: foss-ctl-013-company-identity
+    title: Company External Identity
+    objective: >
+      Require proper company external identity for attributed contributions.
+    group: identity-separation
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-013-company-identity.ar01
+        text: >
+          Company-attributed contribution activity MUST NOT be publicly
+          attributed to internal usernames or internal email addresses.
+        applicability:
+          - company-attributed
+        recommendation: >
+          Verify commits, pull requests, and platform profiles use company
+          external email identities for attributed contributions.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-foss-identity
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: identity-misattribution
+
+  - id: foss-ctl-014-personal-identity
+    title: Personal Contribution Identity
+    objective: >
+      Prevent company-associated identity use for personal contributions.
+    group: identity-separation
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-014-personal-identity.ar01
+        text: >
+          Personal contribution activity MUST NOT be publicly attributed to a
+          company-associated identity or represented as acting on behalf of the
+          company.
+        applicability:
+          - personal-contribution
+        recommendation: >
+          Review public platform identities used for personal engagements during
+          periodic personal-contribution reviews.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-personal-contribution
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: identity-misattribution
+
+  - id: foss-ctl-015-personal-infrastructure
+    title: Personal Contribution Infrastructure
+    objective: >
+      Restrict personal contributions to non-company infrastructure.
+    group: identity-separation
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-015-personal-infrastructure.ar01
+        text: >
+          Recorded personal contribution engagements MUST NOT indicate use of
+          company-owned hardware, company-managed hardware, or the company
+          network.
+        applicability:
+          - personal-contribution
+        recommendation: >
+          Collect contributor attestation and investigate indicators of
+          company-infrastructure use during personal-contribution reviews.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-personal-contribution
+          - reference-id: foss-guidance-company-infrastructure
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: identity-misattribution
+          - reference-id: employee-conflict-of-interest
+
+  - id: foss-ctl-016-security-policy
+    title: Vulnerability Reporting Instructions
+    objective: >
+      Publish OSPO-approved security vulnerability reporting instructions for
+      company-moderated projects.
+    group: security-engagement
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-016-security-policy.ar01
+        text: >
+          Each active company-moderated project repository MUST contain
+          published, OSPO-approved instructions describing how to report
+          security vulnerabilities.
+        applicability:
+          - company-moderated
+        recommendation: >
+          Check for SECURITY.md or equivalent approved reporting instructions
+          in the default branch of active repositories.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-vulnerability-reporting
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: reputational-harm-from-contribution
+
+  - id: foss-ctl-017-annual-training
+    title: Annual FOSS Contributor Training
+    objective: >
+      Ensure contributors complete role-appropriate FOSS training annually.
+    group: lifecycle-training
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-017-annual-training.ar01
+        text: >
+          Employees with active FOSS contribution activity MUST have a current
+          annual training completion record on file appropriate to their role.
+        applicability:
+          - all-contributions
+        recommendation: >
+          Compare training-system records against the population of active
+          contributors, administrators, maintainers, and sponsors.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-training
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+          - reference-id: reputational-harm-from-contribution
+
+  - id: foss-ctl-018-annual-recertification
+    title: Annual Engagement Recertification
+    objective: >
+      Recertify FOSS engagements and access requests at least annually.
+    group: lifecycle-training
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-018-annual-recertification.ar01
+        text: >
+          Active company-moderated and company-interest engagements MUST have a
+          recorded annual recertification within the required review period.
+        applicability:
+          - company-interest
+          - company-moderated
+        recommendation: >
+          Verify recertification timestamps, access status, license status, and
+          continued business need for each active engagement.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-engagement-maintenance
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity
+          - reference-id: employee-conflict-of-interest
+
+  - id: foss-ctl-019-risk-change-review
+    title: Material Risk Change Review
+    objective: >
+      Record and review material changes in FOSS project risk.
+    group: lifecycle-training
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-019-risk-change-review.ar01
+        text: >
+          Detected material risk changes MUST NOT remain unrecorded in the FOSS
+          inventory without OSPO or SME disposition.
+        applicability:
+          - company-interest
+          - company-moderated
+        recommendation: >
+          Monitor for license changes, inactivity, export-control impact,
+          cross-border impact, and project retirement signals.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-risk-change-management
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: unapproved-license-contribution
+          - reference-id: export-control-violation
+
+  - id: foss-ctl-020-retirement
+    title: FOSS Engagement Retirement
+    objective: >
+      Transition, archive, or decommission retired FOSS engagements and remove
+      contribution entitlements.
+    group: lifecycle-training
+    state: Active
+    assessment-requirements:
+      - id: foss-ctl-020-retirement.ar01
+        text: >
+          Retired, archived, or withdrawn FOSS engagements MUST NOT retain
+          active contribution entitlements in OSPO-approved tooling.
+        applicability:
+          - company-interest
+          - company-moderated
+        recommendation: >
+          Verify inventory retirement status, repository transition or archive
+          records, and entitlement removal in approved SCM and workflow tools.
+        state: Active
+    guidelines:
+      - reference-id: foss-contribution-guidance
+        entries:
+          - reference-id: foss-guidance-project-retirement
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: ungoverned-contribution-activity

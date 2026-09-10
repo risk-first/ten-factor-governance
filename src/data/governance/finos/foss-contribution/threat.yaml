@@ -1,0 +1,373 @@
+title: FOSS Contribution Threat Catalog
+
+metadata:
+  id: foss-contribution-threat-catalog
+  type: ThreatCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Threat catalog describing opportunities for negative impact arising from
+    employee contribution to Free and Open Source Software projects.
+  mapping-references:
+    - id: finos-osr-risks
+      title: FINOS Open Source Readiness Risks
+      version: "2023"
+      url: https://osr.finos.org/docs/bok/Risks/Introduction
+      description: >
+        Enterprise open source risk taxonomy from the FINOS Open Source
+        Readiness Body of Knowledge.
+    - id: foss-contribution-capabilities
+      title: FOSS Contribution Capability Catalog
+      version: "0.1.0"
+      url: file://capability.yaml
+      description: >
+        Scope-specific capabilities for FOSS contribution threat assessment.
+    - id: foss-contribution-vectors
+      title: FOSS Contribution Vector Catalog
+      version: "0.1.0"
+      url: file://vector.yaml
+
+extends:
+  - reference-id: finos-osr-risks
+    remarks: >
+      FOSS contribution threats are aligned to the FINOS Open Source Readiness
+      risk taxonomy for interoperability with OSR guidance and activities.
+
+imports:
+  - reference-id: finos-osr-risks
+    entries:
+      - reference-id: data-leakage-risk
+        remarks: https://osr.finos.org/docs/bok/Risks/Data-Leakage-Risk
+      - reference-id: legal-risk
+        remarks: https://osr.finos.org/docs/bok/Risks/Legal-Risk
+      - reference-id: operational-risk
+        remarks: https://osr.finos.org/docs/bok/Risks/Operational-Risk
+      - reference-id: reputational-risk
+        remarks: https://osr.finos.org/docs/bok/Risks/Reputational-Risk
+      - reference-id: staff-risk
+        remarks: https://osr.finos.org/docs/bok/Risks/Staff-Risk
+      - reference-id: strategic-risk
+        remarks: https://osr.finos.org/docs/bok/Risks/Strategic-Risk
+
+groups:
+  - id: information-disclosure
+    title: Information Disclosure
+    description: >
+      Threats involving unauthorized or inadvertent disclosure of non-public
+      information through FOSS contribution activity.
+
+  - id: financial-impact
+    title: Financial Impact
+    description: >
+      Threats involving financial loss or asset write-down from FOSS
+      contribution activity.
+
+  - id: intellectual-property
+    title: Intellectual Property
+    description: >
+      Threats involving loss, weakening, or misuse of intellectual property
+      through FOSS contribution activity.
+
+  - id: reputation-and-conduct
+    title: Reputation and Conduct
+    description: >
+      Threats that could damage organizational reputation or arise from
+      inappropriate public conduct in FOSS communities.
+
+  - id: legal-and-compliance
+    title: Legal and Compliance
+    description: >
+      Threats involving license, contributor obligation, export-control, or
+      broader regulatory non-compliance through FOSS contribution activity.
+
+threats:
+  - id: sensitive-data-disclosure
+    title: Disclosure of Sensitive or Non-Public Information
+    description: >
+      A contributor may publish confidential, proprietary, client, security,
+      credential, architectural, or other non-public information in source
+      code, documentation, comments, or community communications.
+    group: information-disclosure
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: public-source-publication
+          - reference-id: company-infrastructure-contribution
+          - reference-id: community-engagement
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: data-leakage-risk
+            remarks: >
+              Aligns with FINOS OSR Data Leakage Risk for contribution context.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: accidental-sensitive-commit
+          - reference-id: unreviewed-public-release
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+        description: >
+          An employee contributing to a FOSS project from company or personal
+          infrastructure.
+
+  - id: asset-financial-write-down
+    title: Financial Write-Down of Contributed Software Assets
+    description: >
+      A contributor may grant perpetual, royalty-free rights to software that
+      has material financial value, resulting in an unplanned write-down of a
+      company software asset.
+    group: financial-impact
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: perpetual-license-grant
+          - reference-id: public-source-publication
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: strategic-risk
+            remarks: >
+              Financial write-down of contributed assets aligns with FINOS OSR
+              Strategic Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: perpetual-license-grant-without-approval
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+      - id: business-sponsor
+        name: FOSS Business Sponsor
+        type: Human
+        description: >
+          A sponsor accountable for budgetary approval of contributed works.
+
+  - id: intellectual-property-disclosure
+    title: Unauthorized Publication of Intellectual Property
+    description: >
+      A contributor may publish patentable material, trade secrets,
+      trademarks, proprietary methods, or other protected works without
+      appropriate intellectual property review or rights retention.
+    group: intellectual-property
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: public-source-publication
+          - reference-id: perpetual-license-grant
+          - reference-id: contributor-agreement-acceptance
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: legal-risk
+            remarks: >
+              Unauthorized IP publication aligns with FINOS OSR Legal Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: perpetual-license-grant-without-approval
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+
+  - id: reputational-harm-from-contribution
+    title: Reputational Harm from Public Contribution Activity
+    description: >
+      A contributor or project engagement may reflect poorly on the company
+      through poor code quality, inappropriate public statements, association
+      with controversial projects, or abandonment of company-moderated
+      projects.
+    group: reputation-and-conduct
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: public-source-publication
+          - reference-id: company-attributed-identity
+          - reference-id: community-engagement
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: reputational-risk
+            remarks: >
+              Public contribution conduct aligns with FINOS OSR Reputational Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: reputational-public-conduct
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+
+  - id: employee-conflict-of-interest
+    title: Conflict of Interest in FOSS Participation
+    description: >
+      An employee may participate in FOSS activity where personal interests,
+      external employment, commercial relationships, or competing obligations
+      interfere with or appear to interfere with company interests.
+    group: reputation-and-conduct
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: personal-infrastructure-contribution
+          - reference-id: community-engagement
+          - reference-id: project-inventory-registration
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: staff-risk
+            remarks: >
+              Employee conflict of interest aligns with FINOS OSR Staff Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: conflict-of-interest-participation
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+
+  - id: unapproved-license-contribution
+    title: Contribution Under Unapproved or Incompatible License
+    description: >
+      A contributor may contribute to a project governed by a license that is
+      not approved for contribution, has changed without reassessment, or
+      creates incompatible obligations for the company.
+    group: legal-and-compliance
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: perpetual-license-grant
+          - reference-id: public-source-publication
+          - reference-id: project-inventory-registration
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: legal-risk
+            remarks: >
+              License non-compliance aligns with FINOS OSR Legal Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: unapproved-license-contribution
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+
+  - id: contributor-agreement-exposure
+    title: Unreviewed Contributor Agreement Obligations
+    description: >
+      A contributor may accept a CLA, CCLA, DCO, or similar agreement that
+      creates unreviewed patent grants, warranty disclaimers, liability
+      exposure, or other legal obligations for the company.
+    group: legal-and-compliance
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: contributor-agreement-acceptance
+          - reference-id: public-source-publication
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: legal-risk
+            remarks: >
+              Contributor agreement obligations align with FINOS OSR Legal Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: unreviewed-contributor-agreement
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+
+  - id: export-control-violation
+    title: Export-Control or Cross-Border Compliance Violation
+    description: >
+      A contributor may publish cryptography, authentication mechanisms, or
+      other export-sensitive functionality, or participate in cross-border
+      collaboration that violates export-control or data-transfer obligations.
+    group: legal-and-compliance
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: cryptographic-software-contribution
+          - reference-id: cross-border-collaboration
+          - reference-id: public-source-publication
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: legal-risk
+            remarks: >
+              Export-control violations align with FINOS OSR Legal Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: non-standard-crypto-publication
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+
+  - id: identity-misattribution
+    title: Improper Public Identity Attribution
+    description: >
+      A contributor may use a company-associated identity for personal
+      contributions, continue using a company email after employment ends, or
+      fail to use the required company external identity for company
+      contributions.
+    group: reputation-and-conduct
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: company-attributed-identity
+          - reference-id: personal-infrastructure-contribution
+          - reference-id: public-source-publication
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: staff-risk
+            remarks: >
+              Employee identity misuse aligns with FINOS OSR Staff Risk.
+          - reference-id: reputational-risk
+            remarks: >
+              Misattributed public identity aligns with FINOS OSR Reputational Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: company-identity-misuse
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human
+
+  - id: ungoverned-contribution-activity
+    title: Ungoverned or Unapproved Contribution Activity
+    description: >
+      A contributor may contribute to a FOSS project without required OSPO
+      registration, approval, scanning, peer review, or use of approved
+      tooling when operating on company infrastructure.
+    group: legal-and-compliance
+    capabilities:
+      - reference-id: foss-contribution-capabilities
+        entries:
+          - reference-id: company-infrastructure-contribution
+          - reference-id: project-inventory-registration
+          - reference-id: reviewed-contribution
+      - reference-id: finos-osr-risks
+        entries:
+          - reference-id: operational-risk
+            remarks: >
+              Process and control failures align with FINOS OSR Operational Risk.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: ungoverned-project-contribution
+          - reference-id: unapproved-tooling-use
+          - reference-id: peer-review-bypass
+    actors:
+      - id: employee-contributor
+        name: Company Employee Contributor
+        type: Human

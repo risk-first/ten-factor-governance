@@ -1,0 +1,104 @@
+metadata:
+  id: foss-eval-commons-lang-pr482
+  type: EvaluationLog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T14:22:00Z"
+  description: >
+    Per-contribution evaluation for company-interest-major pull request #482
+  author:
+    id: foss-compliance-pipeline
+    name: FOSS Contribution Compliance Pipeline
+    type: Software
+    version: "0.4.2"
+    uri: https://example.com/ospo/compliance-pipeline
+  mapping-references:
+    - id: foss-contribution-controls
+      title: FOSS Contribution Control Catalog
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: foss-contribution-policy
+      title: FOSS Contribution Policy
+      version: "0.1.0"
+      url: file://../policy.yaml
+
+result: Passed
+
+target:
+  id: foss-engagement-commons-lang
+  name: apache/commons-lang
+  type: Software
+  uri: https://github.com/apache/commons-lang
+  environment: company-interest-major
+  owner:
+    name: FOSS Project Administrator
+    affiliation: Open Source Program Office
+    email: foss-admin@example.com
+
+evaluations:
+  - name: foss-ctl-007-ip-review
+    result: Passed
+    message: >
+      Recorded sponsor and Legal IP review dispositions approve PR #482 and
+      predate the pull request.
+    control:
+      reference-id: foss-contribution-controls
+      entry-id: foss-ctl-007-ip-review
+    assessment-logs:
+      - requirement:
+          reference-id: foss-contribution-controls
+          entry-id: foss-ctl-007-ip-review.ar01
+        plan:
+          reference-id: foss-contribution-policy
+          entry-id: ap-foss-007-ip-review
+        description: >
+          Verify recorded IP review disposition approves contribution before
+          company-attributed activity.
+        result: Passed
+        message: >
+          Sponsor review REC-2026-0412 and Legal review LEG-IP-2026-0098 both
+          record Approved disposition for commons-lang engagement PR #482.
+        applicability:
+          - company-attributed
+        steps:
+          - ospo/workflow/ip-review.lookupEngagementRecord
+          - ospo/workflow/ip-review.verifyDispositionApproved
+          - ospo/workflow/ip-review.verifyReviewPredatesActivity
+        steps-executed: 3
+        start: "2026-07-06T14:22:01Z"
+        end: "2026-07-06T14:22:02Z"
+        confidence-level: High
+
+  - name: foss-ctl-008-data-leakage-review
+    result: Passed
+    message: >
+      Secret scan, sensitive-data scan, and manual reviewer sign-off report no
+      uncleared prohibited disclosures for PR #482.
+    control:
+      reference-id: foss-contribution-controls
+      entry-id: foss-ctl-008-data-leakage-review
+    assessment-logs:
+      - requirement:
+          reference-id: foss-contribution-controls
+          entry-id: foss-ctl-008-data-leakage-review.ar01
+        plan:
+          reference-id: foss-contribution-policy
+          entry-id: ap-foss-008-data-leakage-review
+        description: >
+          Aggregate pre-publication evaluation outputs for prohibited disclosure
+          checks on pull request #482.
+        result: Passed
+        message: >
+          Gitleaks reported 0 findings; Presidio reported 0 uncleared sensitive
+          data matches; reviewer jsmith@example.com signed off at 2026-07-06T14:21:48Z.
+        applicability:
+          - all-contributions
+        steps:
+          - ospo/scanner/gitleaks.scanPullRequest
+          - ospo/scanner/presidio.scanPullRequestDiff
+          - ospo/review/manual.verifyReviewerSignOff
+        steps-executed: 3
+        start: "2026-07-06T14:22:03Z"
+        end: "2026-07-06T14:22:18Z"
+        confidence-level: High
