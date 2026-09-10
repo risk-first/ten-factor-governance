@@ -28,6 +28,7 @@ import ArtifactLayerMap from '@site/src/components/ArtifactLayerMap';
 import Tool, {HelpsWith} from '@site/src/components/Tool';
 import ToolList from '@site/src/components/ToolList';
 import GemaraGuidance from '@site/src/components/GemaraGuidance';
+import GemaraCatalog from '@site/src/components/GemaraCatalog';
 import Comparison, {
   Requirement,
   AddressedBy,
@@ -66,6 +67,7 @@ export default {
   HelpsWith,
   ToolList,
   GemaraGuidance,
+  GemaraCatalog,
   Comparison,
   Requirement,
   AddressedBy,

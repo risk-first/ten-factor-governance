@@ -1,0 +1,25 @@
+---
+sidebar_position: 1
+sidebar_label: Capabilities Catalog
+title: CCC Kubernetes Capabilities Catalog
+description: "FINOS Common Cloud Controls Managed Kubernetes capabilities rendered as a Gemara CapabilityCatalog."
+---
+
+import k8sCapabilities from '@site/src/data/governance/finos/ccc-k8s/k8s/capabilities.yaml';
+import coreCapabilities from '@site/src/data/governance/finos/ccc-core/core/capabilities.yaml';
+
+# CCC Kubernetes Capabilities Catalog
+
+This page renders the FINOS Common Cloud Controls Managed Kubernetes capabilities
+as a [Gemara](/docs/artifacts/gemara) `CapabilityCatalog`, including the shared
+CCC Core capabilities this service catalog imports. Native K8S entries and
+imported Core entries appear together, grouped by capability domain.
+
+For the companion catalogs, see the
+[Threats Catalog](./threats-catalog) and
+[Controls Catalog](./controls-catalog).
+
+<GemaraCatalog
+  file={k8sCapabilities}
+  resolve={{'CCC.Core.Capabilities': coreCapabilities}}
+/>

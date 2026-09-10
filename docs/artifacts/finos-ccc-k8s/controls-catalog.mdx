@@ -1,0 +1,25 @@
+---
+sidebar_position: 3
+sidebar_label: Controls Catalog
+title: CCC Kubernetes Controls Catalog
+description: "FINOS Common Cloud Controls Managed Kubernetes controls rendered as a Gemara ControlCatalog."
+---
+
+import k8sControls from '@site/src/data/governance/finos/ccc-k8s/k8s/controls.yaml';
+import coreControls from '@site/src/data/governance/finos/ccc-core/core/controls.yaml';
+
+# CCC Kubernetes Controls Catalog
+
+This page renders the FINOS Common Cloud Controls Managed Kubernetes controls as a
+[Gemara](/docs/artifacts/gemara) `ControlCatalog`, including the shared CCC Core
+controls this service catalog imports. Native K8S controls and imported Core
+controls appear together with their assessment requirements.
+
+For the companion catalogs, see the
+[Capabilities Catalog](./capabilities-catalog) and
+[Threats Catalog](./threats-catalog).
+
+<GemaraCatalog
+  file={k8sControls}
+  resolve={{'CCC.Core.Controls': coreControls}}
+/>

@@ -1,0 +1,3166 @@
+title: AI Governance Framework
+metadata:
+  id: FINOS-AIR
+  type: GuidanceCatalog
+  gemara-version: "1.1.0"
+  version: "0.2.0"
+  description: >
+    A Gemara representation of the FINOS AI Governance Framework
+    mitigations. All 23 AIGF mitigations are represented as guidelines;
+    see the gemara/ README for the migration roadmap. The Markdown
+    collections remain the canonical source of truth.
+  author:
+    id: FINOS-AIGF
+    name: FINOS-AIGF
+    type: Human
+  mapping-references:
+    - id: AIR-PRIN
+      title: AI Governance Framework Principles
+      version: "0.2.0"
+      description: Core principles underpinning the FINOS AI Governance Framework
+    - id: AIR-VEC
+      title: AI Governance Framework Risk Vectors
+      version: "0.2.0"
+      description: AIGF risks expressed as Gemara vectors
+  draft: true
+type: Framework
+front-matter: |
+  AI, especially Generative AI, is reshaping financial services, enhancing products, client interactions, and productivity. However, challenges like hallucinations and model unpredictability make safe deployment complex. Rapid advancements require flexible governance.
+  Financial institutions are eager to adopt AI but face regulatory hurdles. Existing frameworks may not address AI's unique risks, necessitating an adaptive governance model for safe and compliant integration.
+  The following framework has been developed by FINOS (Fintech Open Source Foundation) members, providing a comprehensive catalogue of risks and associated mitigations. We suggest using our heuristic risk identification framework to determine which risks are most relevant for a given use case.
+groups:
+  - id: DET
+    title: Detective
+    description: Detection and Continuous Improvement
+  - id: PREV
+    title: Preventive
+    description: Prevention and Risk Mitigation
+guidelines:
+  - id: AIR-PREV-002
+    group: PREV
+    title: Data Filtering From External Knowledge Bases
+    objective: >
+      This control addresses the critical need to sanitize, filter, and appropriately 
+      manage sensitive information when AI systems ingest data from internal knowledge 
+      sources such as wikis, document management systems, databases, or collaboration 
+      platforms (e.g., Confluence, SharePoint, internal websites). The primary objective 
+      is to prevent the inadvertent exposure, leakage, or manipulation of confidential 
+      organizational knowledge when this data is processed by AI models, converted into 
+      embeddings for vector databases, or used in Retrieval Augmented Generation (RAG) systems.
+      Given that many AI applications, particularly RAG systems, rely on internal knowledge bases to 
+      provide contextually relevant and organization-specific responses, ensuring that sensitive 
+      information within these sources is appropriately handled is paramount for maintaining 
+      data confidentiality and preventing unauthorized access.
+    rationale:
+      importance: >
+        This control is particularly important given the evolving nature of AI technologies 
+        and the sophisticated ways they interact with and process large volumes of organizational 
+        information. A proactive approach to data sanitization helps maintain confidentiality, 
+        integrity, and compliance while enabling the organization to benefit from AI capabilities.
+      goals:
+        - "Prevention of Data Leakage: Significantly reduces the risk of sensitive organizational information being inadvertently exposed through AI system outputs or stored in less secure external services."
+        - "Regulatory Compliance: Helps meet requirements under data protection regulations (e.g., GDPR, CCPA, GLBA) that mandate the protection of personal and sensitive business information."
+        - "Intellectual Property Protection: Safeguards valuable trade secrets, strategic information, and proprietary data from unauthorized disclosure or competitive exposure."
+        - "Reduced Attack Surface: By controlling the information that enters AI operational environments, organizations minimize the potential impact of AI-specific attacks like prompt injection or data extraction attempts."
+        - "Enhanced Trust and Confidence: Builds stakeholder confidence in AI systems by demonstrating rigorous data protection practices."
+        - "Compliance with Internal Data Governance: Supports adherence to internal data classification and handling policies within AI contexts."
+        - "Mitigation of Insider Risk: Reduces the risk of sensitive information being accessed by unauthorized internal users through AI interfaces."
+    see-also:
+      - AIR-DET-001
+      - AIR-PREV-006
+      - AIR-DET-016
+    statements:
+      - id: AIR-PREV-002.1
+        title: Rigorous Data Cleansing and Anonymization at Ingestion
+        text: "Identify and remove or appropriately anonymize sensitive details to ensure that data fed into the AI system is free from information that could pose a security or privacy risk if inadvertently exposed."
+        recommendations:
+          - >
+            Pre-Processing Review and Cleansing: Before any information from
+            internal knowledge sources is ingested by an AI system, it must
+            undergo a thorough review and cleansing process to identify and
+            remove or appropriately anonymize sensitive details.
+          - >
+            Categories of Data to Target for Filtering: Personally
+            Identifiable Information (PII), Proprietary Business Information,
+            Sensitive Internal Operational Data, Confidential Customer Data,
+            and Regulatory or Compliance-Sensitive Information.
+          - >
+            Filtering and Anonymization Methods: Data Masking, Redaction,
+            Generalization, Tokenization, and Synthetic Data Generation.
+      - id: AIR-PREV-002.2
+        title: Segregation for Highly Sensitive Data
+        text: ""
+        recommendations:
+          - >
+            Isolated AI Systems for Critical Data: For datasets containing
+            exceptionally sensitive information that cannot be adequately
+            protected through standard cleansing, implement separate, isolated
+            AI systems with stricter access controls, enhanced encryption,
+            and limited network connectivity.
+          - >
+            Access Domain-Based Segregation: Segment data and AI system access
+            based on clearly defined access domains that mirror the
+            organization's existing data classification and access control
+            structures.
+      - id: AIR-PREV-002.3
+        title: Filtering AI System Outputs (Secondary Defense)
+        text: ""
+        recommendations:
+          - >
+            Response Filtering and Validation: Responses generated by the AI
+            system should be monitored and filtered before being presented to
+            users, acting as a safety net to detect sensitive data that might
+            have bypassed initial input cleansing.
+          - >
+            Contextual Output Analysis: Implement intelligent filtering that
+            considers the context of the user's query and their authorization
+            level to determine what information should be included in the
+            response.
+      - id: AIR-PREV-002.4
+        title: Integration with Source System Access Controls
+        text: ""
+        recommendations:
+          - "Respect Original Permissions: Design the AI system to respect and replicate the original access control permissions from source systems."
+          - "Dynamic Source Querying: For real-time RAG systems, consider querying source systems dynamically while respecting user permissions, rather than pre-processing all data indiscriminately."
+      - id: AIR-PREV-002.5
+        title: Monitoring and Continuous Improvement
+        text: >
+          Periodically audit the effectiveness of data filtering processes
+          by sampling processed data and checking for any sensitive
+          information that may have been missed.
+        recommendations:
+          - "Regular Review of Filtering Effectiveness: Periodically audit the effectiveness of data filtering processes by sampling processed data."
+          - "Feedback Loop Integration: Establish mechanisms for users and reviewers to report instances where sensitive information may have been inappropriately exposed."
+          - "Threat Intelligence Integration: Stay informed about new types of data leakage vectors and attack techniques that might affect AI systems."
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-001
+            remarks: Filtering and anonymization applied before data enters AI pipelines
+          - reference-id: AIR-PRIN-002
+            remarks: Filtering strategies respect source data sensitivity and access controls
+          - reference-id: AIR-PRIN-003
+            remarks: Only necessary data included in AI systems, de-identified where possible
+          - reference-id: AIR-PRIN-004
+            remarks: Multiple filtering layers at ingestion, processing, and output
+          - reference-id: AIR-PRIN-005
+            remarks: Audit trails document what filtering has been applied and why
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+          - reference-id: AIR-SEC-009-01
+          - reference-id: AIR-SEC-009-02
+          - reference-id: AIR-SEC-009-03
+          - reference-id: AIR-SEC-009-04
+    state: Active
+
+  - id: AIR-PREV-003
+    group: PREV
+    title: User/App/Model Firewalling
+    objective: >
+      User/App/Model Firewalling encompasses the set of security controls
+      applied at the boundaries between users, applications, AI models,
+      and supporting data stores such as RAG databases. When internal
+      company information is used to enrich a RAG database, especially if
+      this involves processing by external services, this data and the
+      external communication pathways must be carefully managed and
+      secured. Any proprietary or sensitive information sent to an external
+      service for such processing requires rigorous filtering before
+      transmission to prevent data leakage.
+    rationale:
+      importance: >
+        Implementing comprehensive user/app/model firewalling provides
+        critical security benefits including attack prevention, data
+        protection, service availability, reputation protection, and
+        compliance support. Firewalling blocks prompt injection attacks
+        and malicious inputs before they reach AI models, prevents
+        sensitive information leakage through AI outputs or RAG processing,
+        and helps meet regulatory requirements for data handling and
+        system security.
+      goals:
+        - "RAG Data Ingestion: Filter sensitive or private data before transmitting internal information to external services for embedding creation"
+        - "User Input to AI Model: Detect and block malicious or abusive user inputs such as Prompt Injection attacks"
+        - "AI Model Output: Detect excessively long responses, format deviations, evasion patterns, data leakage, and inappropriate content"
+    see-also:
+      - AIR-PREV-017
+      - AIR-PREV-008
+      - AIR-DET-015
+    statements:
+      - id: AIR-PREV-003.1
+        title: RAG Data Ingestion Filtering
+        text: ""
+        recommendations:
+          - >
+            RAG Database Security: While it's often more practical to
+            pre-process and filter data for RAG systems before sending it
+            for external embedding creation, organizations might also
+            consider in-line filters for real-time checks. Once internal
+            information is converted into embeddings and stored in vector
+            databases, the data becomes largely opaque to traditional
+            security tools.
+          - >
+            Filtering Efficacy: Static filters based on regular expressions
+            or keyword blocklists are effective for well-defined patterns
+            but less effective at identifying nuanced issues such as
+            generic private information or subtle Prompt Injection attacks.
+          - >
+            Streaming Outputs: Streaming responses improve user experience
+            but implementing output filtering can be challenging. An
+            approach is to stream while performing on-the-fly detection,
+            cancelling output if an issue is found.
+      - id: AIR-PREV-003.2
+        title: Remediation Techniques
+        text: ""
+        recommendations:
+          - >
+            Basic Filters: Simple static checks using blocklists and
+            regular expressions can detect rudimentary attacks or policy
+            violations.
+          - >
+            System Prompts (Caution Advised): While system prompts can
+            instruct an LLM on what to avoid, they are generally not a
+            robust security control. Attackers can often bypass these
+            instructions.
+          - >
+            LLM as a Judge: A secondary, specialized LLM analyzes user
+            queries and the primary LLM's responses, categorizing
+            inputs/outputs for various risks such as prompt injection,
+            abuse, hate speech, and data leakage.
+          - >
+            Human Feedback Loop: Implementing a system where users can
+            easily report problematic AI responses provides a valuable
+            complementary control.
+      - id: AIR-PREV-003.3
+        title: Additional Considerations
+        text: ""
+        recommendations:
+          - >
+            API Security and Observability: Implementing a comprehensive
+            API monitoring and security solution offers benefits beyond
+            AI-specific threats. A security proxy can enforce encrypted
+            communication between all AI system components.
+          - >
+            Logging and Analysis: Detailed logging of interactions is
+            essential for understanding user behavior, system performance,
+            and detection of sophisticated attacks or anomalies.
+      - id: AIR-PREV-003.4
+        title: Challenges and Considerations
+        text: >
+          RAG Database Security: Vector databases make traditional security
+          filtering difficult once data is embedded. Filtering Efficacy:
+          Static filters may miss nuanced attacks or sophisticated content.
+          Streaming Outputs: Real-time filtering creates trade-offs between
+          security and user experience.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-001
+            remarks: RAG data filtered before transmission to external services
+          - reference-id: AIR-PRIN-004
+            remarks: Layered filtering at user input, model output, and RAG ingestion boundaries
+          - reference-id: AIR-PRIN-005
+            remarks: Logging and analysis of all interactions for audit and anomaly detection
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-007-01
+          - reference-id: AIR-OP-007-02
+          - reference-id: AIR-OP-007-03
+          - reference-id: AIR-SEC-010-01
+          - reference-id: AIR-SEC-010-02
+          - reference-id: AIR-SEC-010-03
+          - reference-id: AIR-OP-018
+          - reference-id: AIR-OP-020
+    state: Active
+
+  - id: AIR-DET-001
+    group: DET
+    title: AI Data Leakage Prevention and Detection
+    objective: >
+      Data Leakage Prevention and Detection (DLP&D) for Artificial
+      Intelligence (AI) systems encompasses a combination of proactive
+      measures to prevent sensitive data from unauthorized egress or exposure
+      through these systems, and detective measures to identify such incidents
+      promptly if they occur. This control is critical for safeguarding
+      various types of information associated with AI, including: Session
+      Data: Information exchanged during interactions with AI models (e.g.,
+      user prompts, model responses, intermediate data); Training Data:
+      Proprietary or sensitive datasets used to train or fine-tune AI models;
+      Model Intellectual Property: The AI models themselves (weights,
+      architecture) which represent significant intellectual property. This
+      control applies to both internally developed AI systems and, crucially,
+      to scenarios involving Third-Party Service Providers (TSPs) for
+      LLM-powered services or raw model endpoints, where data may cross
+      organizational boundaries.
+    rationale:
+      importance: >
+        Implementing comprehensive Data Leakage Prevention and Detection
+        controls for AI systems is vital for financial institutions.
+      goals:
+        - "Protection of Highly Sensitive Information: Safeguards customer Personally Identifiable Information (PII), confidential corporate data, financial records, and strategic information that may be processed by or embedded within AI systems."
+        - "Preservation of Valuable Intellectual Property: Protects proprietary AI models, unique training datasets, and related innovations from theft, unauthorized use, or competitive disadvantage."
+        - "Adherence to Regulatory Compliance: Helps meet stringent obligations under various data protection laws (e.g., GDPR, CCPA, GLBA) and industry-specific regulations which mandate the security of sensitive data and often carry severe penalties for breaches."
+        - "Maintaining Customer and Stakeholder Trust: Prevents data breaches and unauthorized disclosures that can severely damage customer trust, institutional reputation, and investor confidence."
+        - "Mitigating Financial and Operational Loss: Avoids direct financial costs associated with data leakage incidents (e.g., fines, legal fees, incident response costs) and indirect costs from business disruption or loss of competitive edge."
+        - "Enabling Safe Innovation with Third-Party AI: Provides crucial mechanisms to reduce and monitor risks when leveraging external AI services and foundational models, allowing the institution to innovate confidently while managing data exposure."
+        - "Early Warning System: Detective controls act as an early warning system, enabling rapid response to contain leaks and minimize their impact before they escalate."
+    see-also:
+      - AIR-PREV-002
+      - AIR-DET-004
+    statements:
+      - id: AIR-DET-001.1
+        title: "Proactive Measures: Preventing Data Leakage"
+        text: ""
+        recommendations:
+          - >
+            Secure Communication Channels: Mandate and verify the use of
+            strong, industry-best-practice encryption protocols (e.g., TLS
+            1.3+) for all data in transit.
+          - >
+            Secure Network Architectures: Where feasible, prefer architectural
+            patterns like private endpoints or dedicated clusters within the
+            institution's secure cloud tenant to minimize data transmission
+            over the public internet.
+          - >
+            Control over Data Persistence: Contractually require and
+            technically verify that TSPs default to "zero persistence" or
+            minimal, time-bound persistence of logs and session data.
+          - >
+            Secure Data Disposal: Ensure vendor contracts include commitments
+            to secure and certified disposal of storage media.
+          - >
+            Scrutiny of Multi-Tenant Architectures: Thoroughly review the
+            TSP's architecture, security certifications (e.g., SOC 2 Type II),
+            and penetration test results to assess the adequacy of logical
+            tenant isolation.
+          - >
+            Prohibition on Unauthorized Data Use: Legal agreements must
+            explicitly prohibit AI providers from using proprietary data for
+            training their general-purpose models without explicit consent.
+          - >
+            Transparency in Performance Optimizations: Require TSPs to provide
+            clear information about caching or other performance optimizations
+            that might create new data leakage vectors.
+          - >
+            Robust Access Controls and Secure Storage: Implement strict access
+            controls (e.g., Role-Based Access Control), strong encryption at
+            rest, and secure, isolated storage environments for all
+            proprietary datasets.
+          - >
+            Guardrails Against Extraction via Prompts: Implement and
+            continuously evaluate input/output filtering mechanisms
+            ("guardrails") to detect and block attempts by users to extract
+            training data through crafted prompts.
+          - >
+            Secure Model Storage and Access Control: Treat trained model
+            weights and configurations as highly sensitive intellectual
+            property, storing them in secure, access-controlled repositories
+            with strong encryption.
+          - >
+            Prevent Unauthorized Distribution: Implement technical and
+            contractual controls to prevent unauthorized copying or transfer
+            of model artifacts.
+      - id: AIR-DET-001.2
+        title: "Detective Measures: Identifying Data Leakage"
+        text: ""
+        recommendations:
+          - >
+            Canary Tokens ("Honey Tokens"): Embed uniquely identifiable,
+            non-sensitive markers ("canaries") within data streams sent to AI
+            models. Continuously monitor public and dark web sources for the
+            appearance of these canaries.
+          - >
+            Data Fingerprinting: Generate unique cryptographic hashes
+            ("fingerprints") of sensitive data before it is processed by an AI
+            system. Monitor for the appearance of these fingerprints in
+            unauthorized locations.
+          - >
+            Integration into AI Interaction Points: Integrate canary token
+            generation and fingerprinting at key data touchpoints like API
+            gateways or data ingestion pipelines.
+          - >
+            Automated Detection and Incident Response: Develop automated
+            systems to scan for exposed canaries or fingerprints. Upon
+            detection, trigger an immediate alert to the security operations
+            team to initiate a predefined incident response plan.
+          - >
+            Monitoring Guardrail Effectiveness: Continuously monitor the
+            performance and logs of input/output guardrails. Investigate
+            suspicious prompt patterns that might indicate attempts to
+            circumvent these protections.
+          - >
+            Emerging Techniques: Stay informed about and evaluate emerging
+            research for "fingerprinting" or watermarking AI models (e.g.,
+            "Instructional Fingerprinting") to detect unauthorized copies of
+            proprietary models.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-001
+            remarks: Input/output guardrails sanitize data before it leaves the AI trust boundary
+          - reference-id: AIR-PRIN-003
+            remarks: Minimizes sensitive data exposed to third-party model services
+          - reference-id: AIR-PRIN-004
+            remarks: Layered preventive and detective controls across transmission, storage, and model layers
+          - reference-id: AIR-PRIN-005
+            remarks: Canary tokens, fingerprinting, and monitoring provide audit evidence of leakage
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+    state: Active
+
+  - id: AIR-DET-004
+    group: DET
+    title: AI System Observability
+    objective: >
+      AI System Observability encompasses the comprehensive collection,
+      analysis, and monitoring of data about AI system behavior, performance,
+      interactions, and outcomes. This control is essential for maintaining
+      operational awareness, detecting anomalies, ensuring performance
+      standards, and supporting incident response for AI-driven applications
+      and services within a financial institution. The goal is to provide deep
+      visibility into all aspects of AI system operations—from user
+      interactions and model behavior to resource utilization and security
+      events—enabling proactive management, rapid issue resolution, and
+      continuous improvement.
+    rationale:
+      importance: >
+        Comprehensive AI system observability provides numerous critical
+        benefits for a financial institution.
+      goals:
+        - "Early Anomaly and Threat Detection: Enables the proactive identification of unusual system behaviors, performance degradation, data drift, potential security breaches (e.g., unauthorized access, prompt injection attempts), or misuse that other specific controls might not explicitly cover."
+        - "Enhanced Security Incident Response: Provides vital data for thoroughly investigating security incidents, understanding attack vectors, assessing the scope and impact, performing root cause analysis, and informing remediation efforts."
+        - "Support for Audit, Compliance, and Regulatory Reporting: Generates essential, auditable records to demonstrate operational integrity, adherence to internal policies, and compliance with external regulatory requirements (e.g., event logging for accountability)."
+        - "Effective Performance Management and Optimization: Allows for continuous tracking of AI model performance (e.g., accuracy, latency, throughput) and resource utilization, facilitating the identification of bottlenecks and opportunities for optimization."
+        - "Proactive Management of Model and System Drift: Helps detect and diagnose changes in model behavior or overall system performance that may occur due to updates in models, system architecture, or shifts in underlying data distributions."
+        - "Improved SLA Adherence and Cost Control (FinOps): Provides the necessary data to monitor Service Level Agreement (SLA) compliance for AI services. Monitoring API call volumes, resource consumption (CPU, GPU), and frontend activity is crucial for managing operational costs and preventing \"Denial of Wallet\" attacks (ri-7). Alerts can be configured for when usage approaches predefined limits."
+        - "Detection and Understanding of System Misuse: Capturing inputs, including user prompts (while respecting privacy), can help identify patterns of external misuse, such as individuals or coordinated campaigns attempting to exploit the system or bypass established guardrails, even if individual attempts are initially blocked."
+        - "Identification of Data Integrity and Leakage Issues: Aids in detecting potential data integrity problems, such as \"data bleeding\" (unintended information leakage between different user sessions) or unintended data persistence across sessions (\"data pollution\")."
+        - "Crucial Support for Responsible AI Implementation: Logging and monitoring AI system behavior against specific metrics (e.g., related to fairness, bias, transparency, explainability) is necessary to provide ongoing assurance that responsible AI principles are being effectively implemented and maintained in practice."
+        - "Informed Troubleshooting and Debugging: Offers deep insights into system operations and interactions, facilitating faster diagnosis and resolution of both technical and model-related issues."
+        - "Increased Trust and Transparency: Demonstrates robust control, understanding, and transparent operation of AI systems, fostering trust among users, stakeholders, and regulatory bodies."
+    see-also:
+      - AIR-DET-009
+      - AIR-DET-011
+    statements:
+      - id: AIR-DET-004.1
+        title: Establish an Observability Strategy
+        text: ""
+        recommendations:
+          - >
+            Define Objectives: Clearly articulate the goals for AI system
+            observability based on business requirements, specific AI risks
+            (e.g., fairness, security, operational resilience), compliance
+            obligations, and operational support needs.
+          - >
+            Identify Stakeholders: Determine who needs access to observability
+            data and insights (e.g., MLOps teams, data scientists, security
+            analysts, risk managers, compliance officers) and their specific
+            information requirements.
+      - id: AIR-DET-004.2
+        title: Identify Key Data Points for Logging and Monitoring
+        text: ""
+        recommendations:
+          - >
+            User Interactions and Inputs:
+          - >
+            AI Model Behavior and Outputs:
+          - >
+            API Traffic and System Interactions:
+          - >
+            Model Performance Metrics (as per ISO 42001 A.6.2.6):
+          - >
+            Resource Utilization and System Health:
+          - >
+            Security-Specific Events:
+          - >
+            Versioning Information:
+      - id: AIR-DET-004.3
+        title: Implement Appropriate Tooling and Architecture
+        text: ""
+        recommendations:
+          - >
+            Logging Frameworks & Libraries: Utilize robust logging libraries
+            within AI applications and infrastructure components to generate
+            structured and informative log data.
+          - >
+            Centralized Log Management: Aggregate logs from all components
+            into a centralized system (e.g., SIEM, specialized log management
+            platforms) to facilitate efficient searching, analysis,
+            correlation, and long-term retention.
+          - >
+            Monitoring and Visualization Platforms: Employ dashboards and
+            visualization tools to display key metrics, operational trends,
+            system health, and security events in real-time or near real-time.
+          - >
+            Alerting Mechanisms: Configure automated alerts based on
+            predefined thresholds, significant deviations from baselines,
+            critical errors, or specific security event signatures (linking to
+            concepts such as MI-9 Alerting / DoW spend alert).
+          - >
+            Distributed Tracing: For complex AI systems composed of multiple
+            interacting microservices, implement distributed tracing
+            capabilities to map end-to-end request flows, identify performance
+            bottlenecks, and understand component dependencies.
+          - >
+            Horizontal Monitoring Solutions: Consider solutions that enable
+            monitoring and correlation of activities across various inputs,
+            outputs, and components simultaneously to achieve a holistic
+            architectural view.
+      - id: AIR-DET-004.4
+        title: Establish Baselines and Implement Anomaly Detection
+        text: ""
+        recommendations:
+          - >
+            Baseline Definition: Collect observability data over a sufficient
+            period under normal operating conditions to establish baselines
+            for key performance, behavioral, and resource utilization metrics.
+          - >
+            Anomaly Detection Techniques: Implement methods (ranging from
+            statistical approaches to machine learning-based techniques) to
+            automatically detect significant deviations from these established
+            baselines. Anomalies can indicate performance issues, emerging
+            security threats, data drift, or unexpected model behavior.
+      - id: AIR-DET-004.5
+        title: Define Data Retention and Archival Policies
+        text: ""
+        recommendations:
+          - >
+            Formulate and implement clear policies for the retention and
+            secure archival of observability data, balancing operational needs
+            (e.g., troubleshooting, trend analysis), regulatory requirements
+            (e.g., audit trails), and storage cost considerations.
+      - id: AIR-DET-004.6
+        title: Ensure Regular Review and Iteration
+        text: ""
+        recommendations:
+          - >
+            Periodically review the effectiveness of the observability
+            strategy, the relevance of data points being collected, the
+            accuracy of alerting thresholds, and the utility of dashboards.
+            Adapt and refine the observability setup as the AI system evolves,
+            new risks are identified, or business and compliance requirements
+            change.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Observability complements preventive controls as a detective defensive layer
+          - reference-id: AIR-PRIN-005
+            remarks: Comprehensive logging and monitoring provide auditability of AI system behaviour
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+          - reference-id: AIR-OP-005-01
+          - reference-id: AIR-OP-005-02
+          - reference-id: AIR-OP-005-03
+          - reference-id: AIR-OP-005-04
+          - reference-id: AIR-OP-006-01
+          - reference-id: AIR-OP-006-02
+          - reference-id: AIR-OP-006-03
+          - reference-id: AIR-OP-006-04
+          - reference-id: AIR-OP-007-01
+          - reference-id: AIR-OP-007-02
+          - reference-id: AIR-OP-007-03
+          - reference-id: AIR-OP-014-01
+          - reference-id: AIR-OP-014-02
+          - reference-id: AIR-OP-014-03
+          - reference-id: AIR-OP-014-04
+          - reference-id: AIR-OP-014-05
+          - reference-id: AIR-OP-018
+          - reference-id: AIR-OP-019-01
+          - reference-id: AIR-OP-019-02
+          - reference-id: AIR-OP-019-03
+    state: Active
+
+  - id: AIR-PREV-005
+    group: PREV
+    title: System Acceptance Testing
+    objective: >
+      System Acceptance Testing (SAT) for AI systems is a crucial validation
+      phase within a financial institution. Its primary goal is to confirm
+      that a developed AI solution rigorously meets all agreed-upon business
+      and user requirements, functions as intended from an end-user
+      perspective, and is fit for its designated purpose before being deployed
+      into any live operational environment. This testing focuses on the
+      user's viewpoint and verifies the system's overall operational
+      readiness, including its alignment with risk and compliance standards.
+    rationale:
+      importance: >
+        System Acceptance Testing provides critical value for financial
+        institutions.
+      goals:
+        - "Risk Mitigation: Identifies and mitigates operational and reputational risks before deployment"
+        - "Compliance Assurance: Provides documented evidence of thorough vetting for regulatory requirements"
+        - "User Confidence: Builds trust through stakeholder involvement in validation processes"
+        - "Cost Prevention: Prevents expensive post-deployment failures and remediation efforts"
+        - "Quality Assurance: Ensures AI systems meet business objectives and performance standards"
+    see-also:
+      - AIR-DET-015
+      - AIR-DET-011
+    statements:
+      - id: AIR-PREV-005.1
+        title: Establishing Clear and Comprehensive Acceptance Criteria
+        text: ""
+        recommendations:
+          - >
+            Action: Before testing begins, collaborate with all relevant
+            stakeholders – including business owners, end-users, AI
+            development teams, operations, risk management, compliance, and
+            information security – to define, document, and agree upon clear,
+            measurable, and testable acceptance criteria.
+          - >
+            Considerations for Criteria:; Functional Integrity:; Performance
+            and Scalability:; Security and Access Control:; Ethical AI
+            Principles & Responsible AI:; Usability and User Experience (UX):;
+            Regulatory Compliance and Policy Adherence:; Resilience and Error
+            Handling:
+      - id: AIR-PREV-005.2
+        title: Preparing a Representative Test Environment and Data
+        text: ""
+        recommendations:
+          - >
+            Action: Conduct SAT in a dedicated test environment that mirrors
+            the intended production environment as closely as possible in
+            terms of infrastructure, configurations, and dependencies.
+          - >
+            Test Data: Utilize comprehensive, high-quality test datasets that
+            are representative of the data the AI system will encounter in
+            real-world operations. This should include:
+      - id: AIR-PREV-005.3
+        title: Ensuring Active User Involvement
+        text: ""
+        recommendations:
+          - >
+            Action: Actively involve actual end-users, or designated
+            representatives who understand the business processes, in the
+            execution of test cases and the validation of results.
+          - >
+            Rationale: Their hands-on participation and feedback are paramount
+            to confirming that the system genuinely meets practical business
+            needs and usability expectations.
+      - id: AIR-PREV-005.4
+        title: Systematic Test Execution and Rigorous Documentation
+        text: ""
+        recommendations:
+          - >
+            Action: Execute test cases methodically according to a predefined
+            test plan, ensuring all acceptance criteria are covered.
+          - >
+            Documentation: Maintain meticulous records of all testing
+            activities:
+      - id: AIR-PREV-005.5
+        title: Managing Issues and Validating Resolutions
+        text: ""
+        recommendations:
+          - >
+            Action: Implement a formal process for reporting, prioritizing,
+            tracking, and resolving any defects, gaps, or issues identified
+            during SAT.
+          - >
+            Resolution: Ensure that all critical and high-priority issues are
+            satisfactorily addressed, re-tested, and validated before granting
+            system acceptance.
+      - id: AIR-PREV-005.6
+        title: Obtaining Formal Acceptance and Sign-off
+        text: ""
+        recommendations:
+          - >
+            Action: Secure a formal, documented sign-off from the designated
+            business owner(s) and other key stakeholders (e.g., Head of Risk,
+            CISO delegate where appropriate).
+          - >
+            Significance: This sign-off confirms that the AI system has
+            successfully met all acceptance criteria and is approved for
+            deployment, acknowledging any accepted risks or limitations.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Pre-deployment validation is a preventive layer against unsafe releases
+          - reference-id: AIR-PRIN-005
+            remarks: Documented acceptance criteria and test evidence support auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-004-01
+          - reference-id: AIR-OP-004-02
+          - reference-id: AIR-OP-004-03
+          - reference-id: AIR-OP-004-04
+          - reference-id: AIR-OP-005-01
+          - reference-id: AIR-OP-005-02
+          - reference-id: AIR-OP-005-03
+          - reference-id: AIR-OP-005-04
+          - reference-id: AIR-OP-006-01
+          - reference-id: AIR-OP-006-02
+          - reference-id: AIR-OP-006-03
+          - reference-id: AIR-OP-006-04
+          - reference-id: AIR-OP-014-01
+          - reference-id: AIR-OP-014-02
+          - reference-id: AIR-OP-014-03
+          - reference-id: AIR-OP-014-04
+          - reference-id: AIR-OP-014-05
+          - reference-id: AIR-OP-016-01
+          - reference-id: AIR-OP-016-02
+          - reference-id: AIR-OP-016-03
+          - reference-id: AIR-OP-016-04
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+    state: Active
+
+  - id: AIR-PREV-006
+    group: PREV
+    title: Data Quality & Classification/Sensitivity
+    objective: >
+      The integrity, security, and effectiveness of any AI system deployed
+      within a financial institution are fundamentally dependent on the
+      quality and appropriate handling of the data it uses. This control
+      establishes the necessity for robust processes to: Ensure Data Quality:
+      Verify that data used for training, testing, and operating AI systems is
+      accurate, complete, relevant, timely, and fit for its intended purpose;
+      Implement Data Classification: Systematically categorize data based on
+      its sensitivity (e.g., public, internal, confidential, restricted) to
+      dictate appropriate security measures, access controls, and handling
+      procedures throughout the AI lifecycle. Adherence to these practices is
+      critical for building trustworthy AI, minimizing risks, and meeting
+      regulatory obligations.
+    rationale:
+      importance: >
+        Implementing robust data quality assurance and sensitivity
+        classification for AI systems yields significant benefits.
+      goals:
+        - "Data Protection: Accurate classification protects sensitive information and mitigates unauthorized access risks"
+        - "Model Performance: High-quality data ensures accurate, robust, and dependable AI model outputs"
+        - "Bias Mitigation: Rigorous data quality practices support ethical, fair, and unbiased AI outcomes"
+        - "Regulatory Compliance: Provides framework for meeting data protection regulations and audit requirements"
+        - "Stakeholder Trust: Demonstrates strong governance practices that build confidence in AI systems"
+        - "Operational Efficiency: Prevents wasted resources from data-related issues and rework"
+    see-also:
+      - AIR-PREV-002
+      - AIR-PREV-012
+    statements:
+      - id: AIR-PREV-006.1
+        title: Implementation Guidance
+        text: ""
+        recommendations:
+          - >
+            Data Source Vetting: Before incorporating any new data source,
+            assess its origin, reliability, existing quality controls, and the
+            accuracy of any pre-existing classifications, prioritising
+            well-governed, trusted internal sources.
+          - >
+            Automated Tools: Leverage automated tools for data discovery,
+            profiling, and classification (pattern matching, metadata
+            analysis, or ML-based classifiers) to manage data at scale, and
+            implement automated quality checks and validation rules within
+            data pipelines.
+          - >
+            Manual Oversight and QA: Supplement automation with targeted
+            manual review for highly sensitive data, data used in critical AI
+            applications, and validation of automated classification and
+            quality results.
+          - >
+            Filtering and Control Based on Classification/Quality: Implement
+            technical controls to filter, segregate, or restrict data from AI
+            ingestion pipelines based on sensitivity and quality metrics, and
+            ensure quality issues below a threshold trigger alerts or block
+            use until remediated.
+          - >
+            Data Pre-processing for Quality Enhancement: Address quality
+            issues through handling missing values, correcting inaccuracies,
+            standardising formats, normalising, and removing duplicates,
+            documenting all transformations to maintain lineage.
+          - >
+            Regular Audits and Continuous Monitoring: Periodically audit
+            classification accuracy and quality-management effectiveness, and
+            continuously monitor pipelines for data-distribution drift or
+            quality degradation that can impact model performance, fairness,
+            and reliability.
+          - >
+            Training and Awareness Programs: Provide regular training to
+            personnel involved in data management and AI operations on
+            classification policies, quality standards, ethical data use, and
+            secure data handling.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-001
+            remarks: Data cleansing and pre-processing applied before AI ingestion
+          - reference-id: AIR-PRIN-002
+            remarks: Source data classified by sensitivity to drive handling decisions
+          - reference-id: AIR-PRIN-003
+            remarks: Classification restricts unnecessary or unfit data from AI pipelines
+          - reference-id: AIR-PRIN-005
+            remarks: Data lineage, metadata, and audits document quality and classification
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+          - reference-id: AIR-SEC-002-01
+          - reference-id: AIR-SEC-002-02
+          - reference-id: AIR-SEC-002-03
+          - reference-id: AIR-SEC-002-04
+          - reference-id: AIR-SEC-002-05
+          - reference-id: AIR-OP-004-01
+          - reference-id: AIR-OP-004-02
+          - reference-id: AIR-OP-004-03
+          - reference-id: AIR-OP-004-04
+          - reference-id: AIR-SEC-009-01
+          - reference-id: AIR-SEC-009-02
+          - reference-id: AIR-SEC-009-03
+          - reference-id: AIR-SEC-009-04
+          - reference-id: AIR-OP-016-01
+          - reference-id: AIR-OP-016-02
+          - reference-id: AIR-OP-016-03
+          - reference-id: AIR-OP-016-04
+          - reference-id: AIR-OP-019-01
+          - reference-id: AIR-OP-019-02
+          - reference-id: AIR-OP-019-03
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+          - reference-id: AIR-RC-023-01
+          - reference-id: AIR-RC-023-02
+          - reference-id: AIR-RC-023-03
+    state: Active
+
+  - id: AIR-PREV-007
+    group: PREV
+    title: Legal and Contractual Frameworks for AI Systems
+    objective: >
+      Robust legal and contractual agreements are essential for governing the
+      development, procurement, deployment, and use of AI systems within a
+      financial institution. This control ensures that comprehensive
+      frameworks are established and maintained to manage risks, define
+      responsibilities, protect data, and ensure compliance with legal and
+      regulatory obligations when engaging with AI technology vendors, data
+      providers, partners, and even in defining terms for end-users. These
+      agreements must be thoroughly understood and actively managed to ensure
+      adherence to all stipulated requirements.
+    rationale:
+      importance: >
+        Well-drafted legal and contractual frameworks establish clear
+        accountability between the institution and third parties, safeguard
+        institutional data and intellectual property, and ensure AI
+        development and use align with legal, regulatory, and ethical
+        obligations.
+      goals:
+        - "Risk Mitigation: Well-drafted contracts mitigate legal, financial, operational, and reputational risks associated with AI systems"
+        - "Clear Accountability: Establishes clear lines of responsibility between the institution and third parties"
+        - "Asset Protection: Safeguards the institution's data, intellectual property, and other assets"
+        - "Compliance Assurance: Ensures AI system development and use align with legal, regulatory, and ethical obligations"
+        - "Responsible AI Support: Contractual requirements mandate practices supporting responsible AI development"
+        - "Partnership Foundation: Transparent agreements form the basis of trustworthy relationships with AI vendors"
+    see-also:
+      - AIR-DET-001
+      - AIR-PREV-010
+    statements:
+      - id: AIR-PREV-007.1
+        title: Data Governance, Privacy, and Security
+        text: ""
+        recommendations:
+          - >
+            Data Usage and Processing: Clearly define how any data provided to
+            or processed by a third party (e.g., prompts, proprietary
+            datasets, customer information) will be used, processed, stored,
+            and protected. Specifically clarify:
+          - >
+            Regulatory Compliance: Ensure the agreement mandates compliance
+            with all applicable data protection and privacy regulations (e.g.,
+            GDPR, CCPA). Address requirements for:
+          - >
+            Security Standards and Breach Notification: Stipulate required
+            information security standards, controls, and certifications.
+            Include clear procedures and timelines for notifying the
+            institution in the event of a data breach or security incident.
+      - id: AIR-PREV-007.2
+        title: Intellectual Property (IP) Rights and Indemnification
+        text: ""
+        recommendations:
+          - >
+            Training Data Provenance: If the vendor provides pre-trained
+            models, seek information regarding the data used for training,
+            particularly concerning third-party IP.
+          - >
+            Indemnity Protections: Does the vendor provide indemnification
+            against claims of IP infringement (e.g., if copyrighted materials
+            were used without authorization in model training)?
+          - >
+            Ownership of Outputs and Derivatives: Clearly define ownership of
+            AI model outputs, any new IP created (e.g., custom models
+            developed using vendor tools), and data derivatives.
+          - >
+            Licensing Terms: Ensure clarity on licensing terms for AI models,
+            software, and tools, including scope of use, restrictions, and any
+            dependencies.
+      - id: AIR-PREV-007.3
+        title: Allocation of Responsibilities, Liabilities, and Risk
+        text: ""
+        recommendations:
+          - >
+            Clearly Defined Roles: Explicitly allocate responsibilities for
+            the AI system's lifecycle (development, deployment, operation,
+            maintenance, decommissioning) between the institution and the
+            third party (as per ISO 42001 A.10.2, A.10.3).
+          - >
+            Liability and Warranties: Address limitations of liability,
+            warranties (e.g., regarding performance, accuracy), and any
+            disclaimers. Ensure these are appropriate for the risk level of
+            the AI application.
+      - id: AIR-PREV-007.4
+        title: Model Transparency, Explainability, and Data Provenance
+        text: ""
+        recommendations:
+          - >
+            Transparency into Model Operation: To the extent feasible and
+            permissible, seek rights to understand the AI model's general
+            architecture, methodologies, and key operational parameters.
+          - >
+            Explainability Support: If the AI system is used for decisions
+            impacting customers or for regulatory purposes, ensure the
+            contract supports the institution's explainability requirements.
+          - >
+            Information on Training Data: As appropriate, seek information on
+            the characteristics and sources of data used to train models
+            provided by vendors.
+      - id: AIR-PREV-007.5
+        title: Service Levels, Performance, and Model Management
+        text: ""
+        recommendations:
+          - >
+            Service Level Agreements (SLAs): Define clear SLAs for AI system
+            availability, performance metrics (e.g., response times, accuracy
+            levels), and support responsiveness.
+          - >
+            Model Versioning and Change Management: The contract should
+            specify the vendor's policy on model versioning, updates, and
+            changes. Ensure timely notification of any changes that could
+            impact model performance, behavior ("drift"), or compliance,
+            allowing the institution to re-validate.
+          - >
+            Maintenance and Support: Outline provisions for ongoing
+            maintenance, technical support, and updates.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-002
+            remarks: Contracts require classification-aware data handling by third parties
+          - reference-id: AIR-PRIN-005
+            remarks: Contractual transparency, provenance, and reporting obligations support auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+          - reference-id: AIR-SEC-008-01
+          - reference-id: AIR-SEC-008-02
+          - reference-id: AIR-SEC-008-03
+          - reference-id: AIR-SEC-008-04
+          - reference-id: AIR-SEC-008-05
+          - reference-id: AIR-OP-020
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+          - reference-id: AIR-RC-023-01
+          - reference-id: AIR-RC-023-02
+          - reference-id: AIR-RC-023-03
+    state: Active
+
+  - id: AIR-PREV-008
+    group: PREV
+    title: Quality of Service (QoS) and DDoS Prevention for AI Systems
+    objective: >
+      The increasing integration of Artificial Intelligence (AI) into
+      financial applications, particularly through Generative AI, Retrieval
+      Augmented Generation (RAG), and Agentic workflows, introduces
+      significant operational risks. These include potential disruptions in
+      service availability, degradation of performance, and inequities in
+      service delivery. This control addresses the critical need to ensure
+      Quality of Service (QoS) and implement robust Distributed Denial of
+      Service (DDoS) prevention measures for AI systems. AI systems,
+      especially those exposed via APIs or public interfaces, are susceptible
+      to various attacks that can impact QoS. These include volumetric attacks
+      (overwhelming the system with traffic), prompt flooding (sending a high
+      volume of complex queries), and inference spam (repeated,
+      resource-intensive model calls). Such activities can exhaust
+      computational resources, induce unacceptable latency, or deny legitimate
+      users access to critical AI-driven services. This control aims to
+      maintain system resilience, ensure fair access, and protect against
+      malicious attempts to disrupt AI operations.
+    rationale:
+      importance: >
+        Implementing robust QoS and DDoS prevention measures for AI systems
+        provides several key benefits for financial institutions.
+      goals:
+        - "Service Availability: Protects critical AI-driven services from disruption, ensuring business continuity for legitimate users"
+        - "Performance Maintenance: Prevents degradation of AI system performance, ensuring timely responses and positive user experience"
+        - "Financial Protection: Mitigates costs from service downtime, resource abuse, and reputational damage"
+        - "Reputation Safeguarding: Demonstrates reliability and security, preserving customer trust"
+        - "Fair Access: Enables equitable distribution of AI resources, preventing monopolization during peak loads"
+        - "Operational Stability: Contributes to overall stability and predictability of IT operations"
+    see-also:
+      - AIR-DET-009
+      - AIR-PREV-017
+    statements:
+      - id: AIR-PREV-008.1
+        title: QoS and DDoS Prevention Measures
+        text: ""
+        recommendations:
+          - >
+            Rate Limiting: Enforce per-user or per-API-key request quotas to
+            prevent abuse and avoid monopolization of AI system resources.
+          - >
+            Traffic Shaping: Use dynamic throttling to control bursts of
+            traffic and maintain steady system load.
+          - >
+            Traffic Filtering and Validation: Employ anomaly detection to
+            identify traffic indicative of DDoS or abuse, and rigorously
+            validate incoming data to filter out malformed or
+            resource-intensive inputs.
+          - >
+            Load Balancing and Redundancy: Distribute traffic intelligently
+            across instances and zones, and provide redundant infrastructure
+            for failover to maintain uptime during high load or attacks.
+          - >
+            Edge Protection: Integrate with network-level DDoS protection
+            services.
+          - >
+            Prioritization Policies: Implement QoS tiers so critical
+            operations receive priority during congestion.
+          - >
+            Monitoring and Anomaly Detection: Track performance metrics and
+            traffic volume in real time, using ML-based detection to spot
+            low-and-slow DDoS attacks or prompt-based abuse.
+          - >
+            Resource Isolation: Use container-level isolation to protect core
+            inference or decision systems from overloaded upstream components.
+      - id: AIR-PREV-008.2
+        title: Additional Consideration - Prompt Filtering/Firewall
+        text: >
+          Simple static filters may not suffice against evolving prompt
+          injection attacks; use fixed rules as a first filter rather than the
+          sole protection, and combine them with adaptive systems that learn
+          from traffic patterns, aligning with broader AI firewall strategies
+          for layered input validation.
+      - id: AIR-PREV-008.3
+        title: Reference Implementation
+        text: >
+          A common approach is to deploy an API gateway and generate API keys
+          specific to each use case, which enables:
+        recommendations:
+          - >
+            Revocation of keys on a per-use-case basis to block misbehaving
+            applications.
+          - >
+            Attribution of cost at the use-case level so shared infrastructure
+            is funded and ROI can be measured.
+          - >
+            Prioritization of LLM requests when capacity is saturated and SLAs
+            across all consumers cannot be satisfied.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Layered rate limiting, filtering, isolation, and edge protection provide defense in depth
+          - reference-id: AIR-PRIN-005
+            remarks: Real-time monitoring and anomaly detection provide operational visibility
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-007-01
+          - reference-id: AIR-OP-007-02
+          - reference-id: AIR-OP-007-03
+    state: Active
+
+  - id: AIR-DET-009
+    group: DET
+    title: AI System Alerting and Denial of Wallet (DoW) / Spend Monitoring
+    objective: >
+      The consumption-based pricing models common in AI services (especially
+      cloud-hosted Large Language Models and compute-intensive AI workloads)
+      create unique financial and operational risks. "Denial of Wallet" (DoW)
+      attacks specifically target these cost structures by attempting to
+      exhaust an organization's AI service budgets through excessive resource
+      consumption, potentially leading to service suspension, degraded
+      performance, or unexpected financial impact. This control establishes
+      comprehensive alerting and spend monitoring mechanisms to detect,
+      prevent, and respond to both malicious and accidental overconsumption of
+      AI resources, ensuring financial predictability and service
+      availability.
+    rationale:
+      importance: >
+        Implementing comprehensive spend monitoring and DoW prevention
+        provides critical advantages.
+      goals:
+        - "Financial Predictability: Prevents unexpected AI service costs that could impact budget and financial planning"
+        - "Service Availability: Ensures AI services remain available by preventing budget exhaustion that could lead to service suspension"
+        - "Resource Optimization: Enables better understanding and optimization of AI resource consumption patterns"
+        - "Security Protection: Detects and mitigates attacks that attempt to exhaust AI service budgets"
+        - "Operational Transparency: Provides clear visibility into AI resource usage patterns and costs across the organization"
+        - "Compliance Support: Supports financial controls and audit requirements related to technology spending"
+        - "Business Enablement: Allows organizations to confidently deploy AI services knowing that costs are monitored and controlled"
+    see-also:
+      - AIR-PREV-008
+      - AIR-DET-004
+    statements:
+      - id: AIR-DET-009.1
+        title: Establish Financial Guardrails
+        text: ""
+        recommendations:
+          - >
+            Enterprise-Level Caps: Implement hard spending limits at the
+            organizational level through payment providers or cloud service
+            billing controls as an ultimate failsafe.
+          - >
+            Hierarchical Budget Controls: Set up cascading budget limits from
+            enterprise → department → project → individual user/API key
+            levels.
+          - >
+            Automated Spend Cutoffs: Configure automatic service suspension or
+            throttling when predefined spending thresholds are reached.
+      - id: AIR-DET-009.2
+        title: Real-time Monitoring and Alerting
+        text: ""
+        recommendations:
+          - >
+            Cost Tracking: Implement real-time monitoring of AI service
+            consumption costs across all services, projects, and users.
+          - >
+            Multi-Threshold Alerts: Configure alerts at multiple spending
+            levels (e.g., 50%, 75%, 90%, 100% of budget) with escalating
+            notification procedures.
+          - >
+            Anomaly Detection: Deploy systems to detect unusual spending
+            patterns that might indicate malicious activity or system
+            malfunction.
+      - id: AIR-DET-009.3
+        title: Granular Resource Controls
+        text: ""
+        recommendations:
+          - >
+            API Key Management: Use API gateways to implement per-key quotas
+            for:
+          - >
+            User-Based Quotas: Implement individual user spending and usage
+            limits based on roles and business needs.
+          - >
+            Project-Level Controls: Set resource quotas at the project or
+            environment level to prevent any single initiative from consuming
+            excessive resources.
+      - id: AIR-DET-009.4
+        title: Usage Attribution and Accountability
+        text: ""
+        recommendations:
+          - >
+            Cost Attribution: Ensure all AI resource consumption can be
+            attributed to specific:
+          - >
+            Chargeback Mechanisms: Implement internal chargeback systems to
+            allocate AI costs to the appropriate business units.
+      - id: AIR-DET-009.5
+        title: Proactive Management and Optimization
+        text: ""
+        recommendations:
+          - >
+            Usage Analytics: Regularly analyze spending patterns to identify
+            optimization opportunities and predict future resource needs.
+          - >
+            Right-sizing: Continuously evaluate whether AI resource
+            allocations match actual business requirements.
+          - >
+            Vendor Management: Monitor and negotiate with AI service providers
+            to optimize pricing and contract terms.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Guardrails and granular resource controls form a preventive and detective layer
+          - reference-id: AIR-PRIN-005
+            remarks: Spend monitoring, attribution, and alerting provide financial and operational auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-007-01
+          - reference-id: AIR-OP-007-02
+          - reference-id: AIR-OP-007-03
+    state: Active
+
+  - id: AIR-PREV-010
+    group: PREV
+    title: AI Model Version Pinning
+    objective: >
+      Model Version Pinning is the deliberate practice of selecting and using
+      a specific, fixed version of an Artificial Intelligence (AI) model
+      within a production environment, rather than automatically adopting the
+      latest available version. This is particularly crucial when utilizing
+      externally sourced models, such as foundation models provided by
+      third-party vendors. The primary goal of model version pinning is to
+      ensure operational stability, maintain predictable AI system behavior,
+      and enable a controlled, risk-managed approach to adopting model
+      updates. This practice helps prevent unexpected disruptions, performance
+      degradation, or the introduction of new vulnerabilities that might arise
+      from unvetted changes in newer model versions.
+    rationale:
+      importance: >
+        Adopting AI model version pinning offers significant advantages for
+        financial institutions.
+      goals:
+        - "Operational Stability: Prevents unexpected disruptions and ensures consistent AI system behavior"
+        - "Predictable Performance: Guarantees AI systems perform as expected based on tested model versions"
+        - "Risk Management: Enables thorough assessment of risks before deploying new model versions"
+        - "Change Control: Facilitates systematic, auditable change management for AI model updates"
+        - "Compliance Support: Provides documentation and traceability for regulatory requirements"
+        - "Incident Response: Simplifies troubleshooting by providing stable, known baselines for AI behavior"
+    see-also:
+      - AIR-PREV-005
+    statements:
+      - id: AIR-PREV-010.1
+        title: Establishing Expectations with AI Model Suppliers
+        text: ""
+        recommendations:
+          - >
+            Clear Versioning Scheme and Detailed Release Notes:; Requirement:;
+            Details:
+          - >
+            Advance Notification of New Versions and Deprecation:;
+            Requirement:
+          - >
+            API Flexibility for Version Selection and Backward Compatibility:;
+            Requirement:; Support:
+          - >
+            Support for Testing New Versions:; Requirement:
+          - >
+            Transparency into Supplier's Testing Practices:; Due Diligence:
+          - >
+            Feedback Mechanisms:; Requirement:
+      - id: AIR-PREV-010.2
+        title: Internal Organizational Practices for Model Version Management
+        text: ""
+        recommendations:
+          - >
+            Explicit Version Selection and Pinning:; Action:
+          - >
+            Develop a Version Upgrade Strategy and Process:; Action:; Testing
+            Scope:
+          - >
+            Implement Controlled Deployment and Rollback Procedures:; Action:;
+            Rollback Plan:
+          - >
+            Continuous Monitoring of Pinned Models:; Action:
+          - >
+            Maintain an Inventory and Conduct Regular Audits:; Action:;
+            Audits:
+          - >
+            Ensure Traceability and Comprehensive Logging:; Action:; Metadata:
+          - >
+            Thorough Documentation:; Action:
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Controlled version management prevents unvalidated model changes reaching production
+          - reference-id: AIR-PRIN-005
+            remarks: Version pinning and change records make model behaviour traceable and auditable
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-005-01
+          - reference-id: AIR-OP-005-02
+          - reference-id: AIR-OP-005-03
+          - reference-id: AIR-OP-005-04
+          - reference-id: AIR-OP-006-01
+          - reference-id: AIR-OP-006-02
+          - reference-id: AIR-OP-006-03
+          - reference-id: AIR-OP-006-04
+    state: Active
+
+  - id: AIR-DET-011
+    group: DET
+    title: Human Feedback Loop for AI Systems
+    objective: >
+      A Human Feedback Loop is a critical detective and continuous improvement
+      mechanism that involves systematically collecting, analyzing, and acting
+      upon feedback provided by human users, subject matter experts (SMEs), or
+      reviewers regarding an AI system's performance, outputs, or behavior. In
+      the context of financial institutions, this feedback is invaluable for:
+      Monitoring AI System Efficacy: Understanding how well the AI system is
+      meeting its objectives in real-world scenarios; Identifying Issues:
+      Detecting problems such as inaccuracies, biases, unexpected behaviors
+      (ri-5, ri-6), security vulnerabilities (e.g., successful prompt
+      injections, data leakage observed by users), usability challenges, or
+      instances where the AI generates inappropriate or harmful content;
+      Enabling Continuous Improvement: Providing data-driven insights to
+      refine AI models, update underlying data (e.g., for RAG systems), tune
+      prompts, and enhance user experience; Supporting Incident Response:
+      Offering a channel for users to report critical failures or adverse
+      impacts, which can trigger incident response processes; Informing
+      Governance: Providing qualitative and quantitative data to AI governance
+      bodies and ethics committees. This control emphasizes the importance of
+      structuring how human insights are captured and integrated into the AI
+      system's lifecycle for ongoing refinement and risk management.
+    rationale:
+      importance: >
+        A well-designed human feedback loop provides essential value for AI
+        systems in financial services.
+      goals:
+        - "Performance Improvement: Provides ongoing insights that drive iterative refinement of AI models and systems"
+        - "Safety and Risk Detection: Identifies unsafe, biased, or unintended AI behaviors not caught during testing"
+        - "Human Alignment: Ensures AI systems remain aligned with human values and ethical considerations"
+        - "User Trust: Builds trust when users see their feedback is valued and acted upon"
+        - "Vulnerability Discovery: Users often discover novel failures or vulnerabilities through real-world interaction"
+        - "Governance Support: Provides data for AI governance bodies to monitor impact and make decisions"
+        - "Cost Reduction: Proactively addresses issues, reducing costs from AI failures and poor decisions"
+    see-also:
+      - AIR-DET-015
+      - AIR-DET-004
+    statements:
+      - id: AIR-DET-011.1
+        title: Designing the Feedback Mechanism
+        text: ""
+        recommendations:
+          - >
+            Define Intended Use and KPIs:; Objectives:; KPI Alignment:
+          - >
+            User Experience (UX) Considerations:; Ease of Use:; Willingness to
+            Participate:
+          - >
+            Determine Feedback Scope (Wide vs. Narrow):; Wide Feedback:;
+            Narrow Feedback:
+      - id: AIR-DET-011.2
+        title: Types of Feedback and Collection Methods
+        text: ""
+        recommendations:
+          - >
+            Quantitative Feedback:; Description:; Use Cases:
+          - >
+            Qualitative Feedback:; Description:; Use Cases:
+          - >
+            Implicit Feedback:; Description:; Use Cases:
+          - >
+            Channels for Collection:
+      - id: AIR-DET-011.3
+        title: Processing and Utilizing Feedback
+        text: ""
+        recommendations:
+          - >
+            Systematic Analysis: Implement processes for regularly collecting,
+            aggregating, and analyzing both quantitative and qualitative
+            feedback.
+          - >
+            Specific Use Cases for Feedback Data:; Prompt Engineering and
+            Fine-tuning:; RAG System Improvement:; Model and Data Drift
+            Detection:; Identifying Security Vulnerabilities:; Highlighting
+            Ethical Concerns and Bias:; Improving User Documentation and
+            Training:
+      - id: AIR-DET-011.4
+        title: "Advanced Feedback Integration: Reinforcement Learning from Human Feedback (RLHF)"
+        text: ""
+        recommendations:
+          - >
+            Conceptual Overview for Risk Audience: RLHF is an advanced machine
+            learning technique where AI models, particularly LLMs, are further
+            refined using direct human judgments on their outputs. Instead of
+            solely relying on pre-existing data, human evaluators assess model
+            responses (e.g., rating helpfulness, correctness, safety,
+            adherence to instructions). This feedback is then used to
+            systematically adjust the model's internal decision-making
+            processes, effectively "rewarding" desired behaviors and
+            "penalizing" undesired ones.
+          - >
+            Key Objective: The primary goal of RLHF is to better align the AI
+            model's behavior with human goals, nuanced preferences, ethical
+            considerations, and complex instructions that are hard to specify
+            in traditional training datasets.
+          - >
+            Process Simplification: 1. Feedback Collection: Systematically
+            gather human evaluations on model outputs for a diverse set of
+            inputs. 2. Reward Modeling: This feedback is often used to train a
+            separate "reward model" that learns to predict human preferences.
+            3. Policy Optimization: The primary AI model is then fine-tuned
+            using reinforcement learning techniques, with the reward model
+            providing signals to guide its learning towards generating more
+            highly-rated outputs.
+          - >
+            Benefits for Control: RLHF can significantly improve model safety,
+            reduce the generation of harmful or biased content, and enhance
+            the model's ability to follow instructions faithfully.
+      - id: AIR-DET-011.5
+        title: Integration with "LLM-as-a-Judge" Concepts
+        text: ""
+        recommendations:
+          - >
+            Context: As organizations explore using LLMs to evaluate the
+            outputs of other LLMs ("LLM-as-a-Judge" - see CT-15), human
+            feedback loops remain essential.
+          - >
+            Application: Implement mechanisms for humans (especially SMEs) to
+            provide quantitative and qualitative feedback on the judgments
+            made by these LLM judges.
+          - >
+            Benefits: This allows for:
+      - id: AIR-DET-011.6
+        title: Feedback Review, Actioning, and Governance Process
+        text: ""
+        recommendations:
+          - >
+            Defined Responsibilities: Assign clear roles and responsibilities
+            for collecting, reviewing, triaging, and actioning feedback (e.g.,
+            product owners, MLOps teams, data science teams, AI governance
+            committees).
+          - >
+            Triage and Prioritization: Establish a process to categorize and
+            prioritize incoming feedback based on severity, frequency,
+            potential impact, and alignment with strategic goals.
+          - >
+            Feedback Participation Monitoring: Track submission rates and
+            feedback quality over time as early indicators of feedback loop
+            degradation. A sustained decline is often caused by feedback
+            fatigue, when the effort required outweighs the perceived impact,
+            and can make feedback statistically unrepresentative, weakening
+            triage and governance decisions. If participation drops,
+            corrective actions should be taken, such as simplifying feedback
+            channels, rotating SME reviewers, or clearly communicating the
+            impact of prior submissions.
+          - >
+            Tracking and Resolution: Implement a system to track feedback
+            items, the actions taken in response, and their outcomes.
+          - >
+            Closing the Loop: Where appropriate and feasible, inform users or
+            feedback providers about how their input has been used or what
+            changes have been made, fostering a sense of engagement. (Supports
+            ISO 42001 A.6.2.6 for repairs/updates based on feedback).
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Human review forms a detective layer over automated outputs
+          - reference-id: AIR-PRIN-005
+            remarks: Captured feedback and governance processes document model quality over time
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-005-01
+          - reference-id: AIR-OP-005-02
+          - reference-id: AIR-OP-005-03
+          - reference-id: AIR-OP-005-04
+          - reference-id: AIR-OP-006-01
+          - reference-id: AIR-OP-006-02
+          - reference-id: AIR-OP-006-03
+          - reference-id: AIR-OP-006-04
+          - reference-id: AIR-OP-014-01
+          - reference-id: AIR-OP-014-02
+          - reference-id: AIR-OP-014-03
+          - reference-id: AIR-OP-014-04
+          - reference-id: AIR-OP-014-05
+          - reference-id: AIR-OP-016-01
+          - reference-id: AIR-OP-016-02
+          - reference-id: AIR-OP-016-03
+          - reference-id: AIR-OP-016-04
+          - reference-id: AIR-OP-020
+    state: Active
+
+  - id: AIR-PREV-012
+    group: PREV
+    title: Role-Based Access Control for AI Data
+    objective: >
+      Role-Based Access Control (RBAC) is a fundamental security mechanism
+      designed to ensure that users, AI models, and other systems are granted
+      access only to the specific data assets and functionalities necessary to
+      perform their authorized tasks. Within the context of AI systems in a
+      financial institution, RBAC is critical for protecting the
+      confidentiality, integrity, and availability of data used throughout the
+      AI lifecycle – from data sourcing and preparation to model training,
+      validation, deployment, and operation. This control ensures that access
+      to sensitive information is strictly managed based on defined roles and
+      responsibilities.
+    rationale:
+      importance: >
+        Implementing robust Role-Based Access Control for AI data provides
+        significant advantages to financial institutions.
+      goals:
+        - "Data Protection: Safeguards sensitive data from unauthorized access and reduces breach risks"
+        - "Data Poisoning Mitigation: Limits access to training datasets, reducing attack surfaces for data poisoning"
+        - "Regulatory Compliance: Meets requirements for controlled access to sensitive and personal information"
+        - "Internal Controls: Reinforces security posture and demonstrates due diligence in data management"
+        - "Insider Threat Reduction: Limits impact of malicious insiders through role-based access restrictions"
+        - "Auditability: Provides clear trails of data access for compliance reporting and investigations"
+        - "Operational Efficiency: Streamlines access management through role-level permission administration"
+    see-also:
+      - AIR-DET-016
+      - AIR-PREV-006
+    statements:
+      - id: AIR-PREV-012.1
+        title: Define Roles and Responsibilities for AI Data Access
+        text: ""
+        recommendations:
+          - >
+            Identify Entities: Systematically identify all human roles and
+            non-human entities (e.g., AI models, MLOps pipelines, service
+            accounts) that require access to data used by, or generated from,
+            AI systems.
+          - >
+            Document Access Needs: For each identified role/entity,
+            meticulously document the specific data access requirements (e.g.,
+            read, write, modify, delete, execute) based on their tasks and
+            responsibilities across the different phases of the AI lifecycle
+            (e.g., data collection, annotation, model training, validation,
+            inference, monitoring). (Aligns with ISO 42001 A.3.2)
+      - id: AIR-PREV-012.2
+        title: Data Discovery, Classification, and Inventory
+        text: ""
+        recommendations:
+          - >
+            Data Asset Inventory: Maintain a comprehensive inventory of all
+            data assets relevant to AI systems, including datasets, databases,
+            data streams, model artifacts, and configuration files.
+          - >
+            Data Classification: Ensure all data is classified according to
+            the institution's data sensitivity scheme (e.g., Public, Internal,
+            Confidential, Highly Restricted). This classification is
+            fundamental to determining appropriate access controls. (Aligns
+            with ISO 42001 A.7.2)
+      - id: AIR-PREV-012.3
+        title: Develop and Maintain an Access Control Matrix
+        text: ""
+        recommendations:
+          - >
+            Mapping Roles to Data: Create and regularly update an access
+            control matrix (or equivalent policy documentation) that clearly
+            maps the defined roles to specific data categories/assets and the
+            corresponding permitted access levels. This matrix serves as the
+            blueprint for configuring technical controls.
+      - id: AIR-PREV-012.4
+        title: Implement Technical Access Controls
+        text: ""
+        recommendations:
+          - >
+            Multi-Layered Enforcement: Enforce RBAC policies at all relevant
+            layers where AI data is stored, processed, transmitted, or
+            accessed:; Data Repositories:; AI/ML Platforms & Tools:; APIs:;
+            Applications:
+      - id: AIR-PREV-012.5
+        title: Employ Strong Authentication and Authorization Mechanisms
+        text: ""
+        recommendations:
+          - >
+            Authentication: Mandate strong authentication methods for all
+            entities accessing AI data. This includes multi-factor
+            authentication (MFA) for human users and robust, managed
+            credentials (e.g., certificates, API keys, service principals) for
+            applications, AI models, and system accounts.
+          - >
+            Authorization: Implement rigorous authorization mechanisms that
+            verify an authenticated identity's permissions against the defined
+            access control matrix before granting access to specific data or
+            functions.
+          - >
+            Attestation for Systems: For critical systems or sensitive data
+            access (e.g., data stored in encrypted file systems or specialized
+            AI data stores), consider requiring systems (including AI models
+            or processing components) to prove their identity and
+            authorization status through robust attestation mechanisms
+            (hardware-based or software-based) before they can process, train
+            with, or retrieve data.
+      - id: AIR-PREV-012.6
+        title: Conduct Regular Access Reviews and Recertification
+        text: ""
+        recommendations:
+          - >
+            Periodic Reviews: Establish a formal process for periodic review
+            (e.g., quarterly, semi-annually) and recertification of all access
+            rights by data owners, business managers, or system owners.
+          - >
+            Timely Adjustments: Ensure that access permissions are promptly
+            updated or revoked when an individual's role changes, they leave
+            the organization, or a system's function is modified or
+            decommissioned.
+      - id: AIR-PREV-012.7
+        title: Manage Access for Non-Human Identities
+        text: ""
+        recommendations:
+          - >
+            Principle of Least Privilege for Systems: Treat AI models, MLOps
+            pipelines, automation scripts, and other non-human entities as
+            distinct identities. Assign them specific roles and grant them
+            only the minimum necessary permissions to perform their automated
+            tasks.
+          - >
+            Secure Credential Management: Implement secure practices for
+            managing the lifecycle of credentials (e.g., secrets management,
+            regular rotation) used by these non-human identities.
+      - id: AIR-PREV-012.8
+        title: Log and Monitor Data Access
+        text: ""
+        recommendations:
+          - >
+            Comprehensive Logging: Implement detailed logging of all data
+            access attempts, including successful accesses and denied
+            attempts. Logs should record the identity, data accessed, type of
+            access, and timestamp.
+          - >
+            Security Monitoring: Regularly monitor access logs for anomalous
+            activities, patterns of unauthorized access attempts, or other
+            potential security policy violations.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-002
+            remarks: Access decisions are driven by data classification
+          - reference-id: AIR-PRIN-003
+            remarks: Least-privilege access limits exposure of AI data
+          - reference-id: AIR-PRIN-005
+            remarks: Access logging and recertification provide auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+          - reference-id: AIR-SEC-008-01
+          - reference-id: AIR-SEC-008-02
+          - reference-id: AIR-SEC-008-03
+          - reference-id: AIR-SEC-008-04
+          - reference-id: AIR-SEC-008-05
+          - reference-id: AIR-SEC-009-01
+          - reference-id: AIR-SEC-009-02
+          - reference-id: AIR-SEC-009-03
+          - reference-id: AIR-SEC-009-04
+    state: Active
+
+  - id: AIR-DET-013
+    group: DET
+    title: Providing Citations and Source Traceability for AI-Generated Information
+    objective: >
+      This control outlines the practice of designing Artificial Intelligence
+      (AI) systems—particularly Large Language Models (LLMs) and Retrieval
+      Augmented Generation (RAG) systems that produce informational content to
+      provide verifiable citations, references, or traceable links back to the
+      original source data or knowledge used to formulate their outputs. The
+      primary purpose of providing citations is to enhance the transparency,
+      verifiability, and trustworthiness of AI-generated information. By
+      enabling users, reviewers, and auditors to trace claims to their
+      origins, this control acts as a crucial detective mechanism. It allows
+      for the independent assessment of the AI's informational basis, thereby
+      helping to detect and mitigate risks associated with misinformation, AI
+      "hallucinations," lack of accountability, and reliance on inappropriate
+      or outdated sources.
+    rationale:
+      importance: >
+        Despite the challenges, providing citations and source traceability
+        for AI-generated information offers significant benefits to financial
+        institutions.
+      goals:
+        - "Trust and Transparency: Allows users to verify the basis for AI-generated information, reducing \"black box\" perceptions"
+        - "Verifiability and Accountability: Enables independent verification of AI claims through source checking"
+        - "Misinformation Detection: Provides paths to trace information back to sources and identify hallucinations"
+        - "Critical Evaluation: Empowers users to assess the quality and relevance of underlying sources"
+        - "System Improvement: User feedback on citation accuracy helps debug and refine AI systems"
+        - "Compliance Support: Provides traceable sources for regulatory requirements and audit processes"
+        - "Knowledge Discovery: Citations guide users to relevant documents for deeper understanding"
+    see-also:
+      - AIR-DET-004
+      - AIR-PREV-006
+    statements:
+      - id: AIR-DET-013.1
+        title: Designing AI Systems for Citability (Especially RAG Systems)
+        text: ""
+        recommendations:
+          - >
+            Source Tracking in RAG Pipelines: For RAG systems, it is essential
+            that the pipeline maintains a robust and auditable link between
+            the specific "chunks" of text retrieved from knowledge bases and
+            the segments of the generated output that are based on those
+            chunks. This linkage is fundamental for accurate citation.
+          - >
+            Optimal Content Chunking Strategies: Develop and implement
+            appropriate strategies for breaking down source documents into
+            smaller, uniquely identifiable, and addressable "chunks" that can
+            be precisely referenced in citations.
+          - >
+            Preservation and Use of Metadata: Ensure that relevant metadata
+            from source documents (e.g., document titles, authors, original
+            URLs, document IDs, page numbers, section headers, last updated
+            dates) is ingested, preserved, and made available for constructing
+            meaningful citations.
+          - >
+            Internal Knowledge Base Integration: When using internal data
+            sources (e.g., company wikis, document management systems,
+            databases), ensure these systems have stable, persistent
+            identifiers for content that can be reliably used in citations.
+      - id: AIR-DET-013.2
+        title: Presentation of Citations to Users
+        text: ""
+        recommendations:
+          - >
+            Clear Visual Indicators: Implement clear and intuitive visual cues
+            within the user interface to indicate that a piece of information
+            is cited (e.g., footnotes, endnotes, inline numerical references,
+            highlighted text with hover-over citation details, clickable icons
+            or links).
+          - >
+            Accessible Source Information: Provide users with easy mechanisms
+            to access the full source information corresponding to a citation.
+            This might involve direct links to source documents (if hosted and
+            accessible), display of relevant text snippets from the source
+            within the UI, or clear references to find the source material
+            offline.
+          - >
+            Contextual Snippets (Optional but Recommended): Consider
+            displaying a brief, relevant snippet of the cited source text
+            directly alongside the citation. This can give users immediate
+            context for the AI's claim without requiring them to open and
+            search the full source document.
+      - id: AIR-DET-013.3
+        title: Quality, Relevance, and Limitations of Citations
+        text: ""
+        recommendations:
+          - >
+            Source Vetting (Upstream Process): While the AI system provides
+            the citation, the quality and authoritativeness of the underlying
+            knowledge base are critical. Curation processes for RAG sources
+            should aim to include reliable and appropriate materials.
+          - >
+            Handling Uncitable or Abstractive Content: If the AI generates
+            content based on its general parametric knowledge (i.e., knowledge
+            learned during its foundational training, not from a specific
+            retrieved document) or if it highly synthesizes information from
+            multiple sources in an abstractive manner, the system should
+            clearly indicate when a direct document-level citation is not
+            applicable. Avoid generating misleading or fabricated citations.
+          - >
+            Assessing Citation Relevance: Where technically feasible,
+            implement mechanisms (potentially AI-assisted) to evaluate the
+            semantic relevance of the specific cited source segment to the
+            precise claim being made in the generated output. Flag or provide
+            confidence scores for citations where relevance might be lower.
+      - id: AIR-DET-013.4
+        title: Maintaining Citation Integrity Over Time
+        text: ""
+        recommendations:
+          - >
+            Managing "Link Rot": For citations that are URLs to external web
+            pages or internal documents, implement strategies to monitor for
+            and manage "link rot" (links becoming broken or leading to changed
+            content). This might involve periodic link checking, caching key
+            cited public web content, or prioritizing the use of persistent
+            identifiers like Digital Object Identifiers (DOIs) where
+            available.
+          - >
+            Versioning of Source Documents: Establish a clear strategy for how
+            citations will behave if the underlying source documents are
+            updated, versioned, or archived. Ideally, citations should point
+            to the specific version of the source material used at the time
+            the AI generated the information, or at least clearly indicate if
+            a source has been updated since citation.
+      - id: AIR-DET-013.5
+        title: User Education and Guidance (as per ISO 42001 A.8.2)
+        text: ""
+        recommendations:
+          - >
+            Provide users with clear, accessible information and guidance on:
+      - id: AIR-DET-013.6
+        title: Technical Documentation (as per ISO 42001 A.6.2.7)
+        text: ""
+        recommendations:
+          - >
+            For internal technical teams, auditors, or regulators, ensure that
+            AI system documentation clearly describes:
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Source grounding is a detective check against unsupported outputs
+          - reference-id: AIR-PRIN-005
+            remarks: Citations make AI outputs traceable to their sources, supporting transparency
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-004-01
+          - reference-id: AIR-OP-004-02
+          - reference-id: AIR-OP-004-03
+          - reference-id: AIR-OP-004-04
+          - reference-id: AIR-OP-017
+          - reference-id: AIR-OP-020
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+    state: Active
+
+  - id: AIR-PREV-014
+    group: PREV
+    title: Encryption of AI Data at Rest
+    objective: >
+      Encryption of data at rest is a fundamental security control that
+      involves transforming stored information into a cryptographically
+      secured format using robust encryption algorithms. This process renders
+      the data unintelligible and inaccessible to unauthorized parties unless
+      they possess the corresponding decryption key. The primary objective is
+      to protect the confidentiality and integrity of sensitive data
+      associated with AI systems, even if the underlying storage medium (e.g.,
+      disks, servers, backup tapes) is physically or logically compromised.
+      While considered a standard security practice across IT, its diligent
+      application to all components of AI systems, including newer
+      technologies like vector databases, is critical.
+    rationale:
+      importance: >
+        Implementing strong encryption for AI data at rest provides crucial
+        benefits to financial institutions.
+      goals:
+        - "Data Confidentiality: Protects sensitive corporate, customer, and AI model data from unauthorized disclosure"
+        - "Breach Impact Reduction: Encrypted data remains unintelligible to attackers without decryption keys"
+        - "Regulatory Compliance: Meets stringent data protection requirements mandated by various regulations"
+        - "Intellectual Property Protection: Safeguards valuable AI models and proprietary datasets from theft"
+        - "Trust and Confidence: Demonstrates strong commitment to data security for stakeholders"
+        - "Security Best Practices: Aligns with widely recognized information security standards"
+    see-also:
+      - AIR-PREV-006
+      - AIR-PREV-012
+    statements:
+      - id: AIR-PREV-014.1
+        title: Define Policies and Standards
+        text: ""
+        recommendations:
+          - >
+            Establish clear organizational policies and standards for data
+            encryption at rest. These should specify approved encryption
+            algorithms (e.g., AES-256), key lengths, modes of operation, and
+            mandatory key management procedures. (Aligns with ISO 42001 A.7.2
+            regarding data management processes).
+      - id: AIR-PREV-014.2
+        title: Select Appropriate Encryption Mechanisms
+        text: ""
+        recommendations:
+          - >
+            Storage-Level Encryption:; Full-Disk Encryption (FDE):; File
+            System-Level Encryption:; Database Encryption:
+          - >
+            Application-Level Encryption: Data is encrypted by the application
+            before being written to any storage medium. This provides granular
+            control but requires careful implementation within the AI
+            applications or data pipelines.
+      - id: AIR-PREV-014.3
+        title: Implement Robust Key Management
+        text: ""
+        recommendations:
+          - >
+            Utilize a dedicated, hardened Key Management System (KMS) for the
+            secure lifecycle management of encryption keys (generation,
+            storage, distribution, rotation, backup, and revocation).
+          - >
+            Enforce strict access controls to encryption keys based on the
+            principle of least privilege and separation of duties.
+          - >
+            Regularly rotate encryption keys according to policy and best
+            practices.
+      - id: AIR-PREV-014.4
+        title: Specific Considerations for AI Components and New Technologies
+        text: ""
+        recommendations:
+          - >
+            Vector Databases:; Criticality:; Cloud-Native Vector Stores:;
+            Managed SaaS Vector Databases:; Self-Hosted Vector Databases:
+          - >
+            In-Memory Data Processing (e.g., FAISS):
+      - id: AIR-PREV-014.5
+        title: Regular Verification and Audit
+        text: ""
+        recommendations:
+          - >
+            Periodically verify that encryption controls are correctly
+            implemented, active, and effective across all relevant AI data
+            storage systems.
+          - >
+            Include encryption at rest configurations and key management
+            practices as part of regular information security audits and
+            assessments.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-003
+            remarks: Encryption limits exposure of AI data if storage is accessed
+          - reference-id: AIR-PRIN-004
+            remarks: Encryption at rest adds a protective layer beneath access controls
+          - reference-id: AIR-PRIN-005
+            remarks: Key management and verification activities are auditable
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-002-01
+          - reference-id: AIR-SEC-002-02
+          - reference-id: AIR-SEC-002-03
+          - reference-id: AIR-SEC-002-04
+          - reference-id: AIR-SEC-002-05
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+    state: Active
+
+  - id: AIR-DET-015
+    group: DET
+    title: Using Large Language Models for Automated Evaluation (LLM-as-a-Judge)
+    objective: >
+      "LLM-as-a-Judge" (also referred to as LLM-based evaluation) is an
+      emerging detective technique where one Large Language Model (the "judge"
+      or "evaluator LLM") is employed to automatically assess the quality,
+      safety, accuracy, adherence to guidelines, or other specific
+      characteristics of outputs generated by another (primary) AI system,
+      typically also an LLM.: Detect undesirable outputs: Identify responses
+      that may be inaccurate, irrelevant, biased, harmful, non-compliant with
+      policies, or indicative of data leakage (ri-1); Monitor performance and
+      quality: Continuously evaluate if the primary AI system is functioning
+      as intended and maintaining output quality over time; Flag issues for
+      human review: Highlight problematic outputs that require human attention
+      and intervention, making human oversight more targeted and efficient.
+      The primary purpose of this control is to automate or augment aspects of
+      the AI system verification, validation, and ongoing monitoring
+      processes. Given the volume and complexity of outputs from modern AI
+      systems (especially Generative AI), manual review by humans can be
+      expensive, time-consuming, and difficult to scale. LLM-as-a-Judge aims
+      to provide a scalable way to: This approach is particularly relevant for
+      assessing qualitative aspects of AI-generated content that are
+      challenging to measure with traditional quantitative metrics.
+    rationale:
+      importance: >
+        Conclusion: LLM-as-a-Judge is a promising detective tool to enhance AI
+        system evaluation and monitoring. However, it must be implemented with
+        a clear understanding of its capabilities and limitations, and always
+        as a complement to, rather than a replacement for, rigorous human
+        oversight and accountability.
+      goals:
+        - "Evaluation Scalability: Enables evaluation of much larger volumes of AI outputs than manual review"
+        - "Cost and Time Efficiency: Reduces time and expense of human evaluation for routine assessments"
+        - "Consistency: Once calibrated, can apply evaluation criteria more consistently than human evaluators"
+        - "Early Issue Detection: Facilitates detection of performance degradation and emerging safety concerns"
+        - "Continuous Improvement: Generates ongoing feedback for iterative refinement of AI systems"
+        - "Human Oversight Augmentation: Acts as first-pass filter to make human review more focused and efficient"
+        - "Benchmarking Support: Enables consistent comparison of different model versions and approaches"
+    see-also:
+      - AIR-DET-011
+      - AIR-PREV-005
+    statements:
+      - id: AIR-DET-015.1
+        title: Defining the Evaluation Task and Criteria
+        text: ""
+        recommendations:
+          - >
+            Specify Evaluation Goals: Clearly articulate what aspects of the
+            primary AI's output need to be evaluated (e.g., is it about
+            factual correctness in a RAG system, adherence to safety
+            guidelines, stylistic consistency, absence of PII?).
+          - >
+            Develop Detailed Rubrics/Guidelines: Create precise instructions,
+            rubrics, or "constitutions" for the "judge" LLM. For example, in a
+            RAG use case, an evaluator LLM might be presented with a source
+            document, a user's question, the primary RAG system's answer, and
+            then asked to assess if the answer is factually consistent with
+            the source document and to explain its reasoning.
+          - >
+            Define Output Format: Specify the desired output format from the
+            "judge" LLM (e.g., a numerical score, a categorical label like
+            "Compliant/Non-compliant," a binary "True/False," and/or a textual
+            explanation).
+      - id: AIR-DET-015.2
+        title: Selecting or Configuring the "Judge" LLM
+        text: ""
+        recommendations:
+          - >
+            Choice of Model: Options include:
+          - >
+            Prompt Engineering for the "Judge": Develop robust and unambiguous
+            prompts that clearly instruct the "judge" LLM on its task, the
+            criteria to use, and the format of its output.
+      - id: AIR-DET-015.3
+        title: Designing and Executing the Evaluation Process
+        text: ""
+        recommendations:
+          - >
+            Input Preparation: Structure the input to the "judge" LLM, which
+            typically includes:
+          - >
+            Batch vs. Real-time Evaluation: Decide whether evaluations will be
+            done in batches (e.g., for testing sets or periodic sampling of
+            production data) or in near real-time for ongoing monitoring
+            (though this has higher cost and latency implications).
+      - id: AIR-DET-015.4
+        title: Evaluating and Calibrating the "Judge" LLM's Performance
+        text: ""
+        recommendations:
+          - >
+            Benchmarking Against Human Evaluation: The crucial step is to
+            measure the "judge" LLM's performance against evaluations
+            conducted by human Subject Matter Experts (SMEs) on a
+            representative set of the primary AI's outputs.
+          - >
+            Metrics for Judge Performance:; Classification Metrics:;
+            Correlation Metrics:
+          - >
+            Iterative Refinement: Based on this calibration, refine the
+            "judge's" prompts, adjust its configuration, or even consider a
+            different "judge" model to improve its alignment with human
+            judgments.
+      - id: AIR-DET-015.5
+        title: Integrating "LLM-as-a-Judge" into AI System Lifecycles
+        text: ""
+        recommendations:
+          - >
+            Development and Testing: Use LLM-as-a-Judge to automate parts of
+            model testing, compare different model versions or prompts, and
+            identify regressions during development (supports ISO 42001
+            A.6.2.4).
+          - >
+            Continuous Monitoring in Production: Apply LLM-as-a-Judge to a
+            sample of live production outputs to monitor for degradation in
+            quality, emerging safety issues, or deviations from expected
+            behavior over time (supports ISO 42001 A.6.2.6).
+          - >
+            Feedback Loop for Primary Model Improvement: The evaluations from
+            the "judge" LLM can provide scalable feedback signals to help
+            identify areas where the primary AI model or its surrounding
+            application logic needs improvement.
+      - id: AIR-DET-015.6
+        title: Ensuring Human Review and Escalation Pathways
+        text: ""
+        recommendations:
+          - >
+            Human-in-the-Loop: Establish clear processes for human review of
+            the "judge" LLM's evaluations, especially for:
+          - >
+            Escalation Procedures: Define clear pathways for escalating
+            critical issues identified by the "judge" (and confirmed by human
+            review) to relevant teams (e.g., MLOps, security, legal,
+            compliance).
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Automated evaluation forms a scalable detective layer over AI outputs
+          - reference-id: AIR-PRIN-005
+            remarks: Evaluation results and calibration records support auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+          - reference-id: AIR-OP-004-01
+          - reference-id: AIR-OP-004-02
+          - reference-id: AIR-OP-004-03
+          - reference-id: AIR-OP-004-04
+          - reference-id: AIR-OP-005-01
+          - reference-id: AIR-OP-005-02
+          - reference-id: AIR-OP-005-03
+          - reference-id: AIR-OP-005-04
+          - reference-id: AIR-OP-006-01
+          - reference-id: AIR-OP-006-02
+          - reference-id: AIR-OP-006-03
+          - reference-id: AIR-OP-006-04
+          - reference-id: AIR-OP-014-01
+          - reference-id: AIR-OP-014-02
+          - reference-id: AIR-OP-014-03
+          - reference-id: AIR-OP-014-04
+          - reference-id: AIR-OP-014-05
+          - reference-id: AIR-OP-016-01
+          - reference-id: AIR-OP-016-02
+          - reference-id: AIR-OP-016-03
+          - reference-id: AIR-OP-016-04
+          - reference-id: AIR-OP-019-01
+          - reference-id: AIR-OP-019-02
+          - reference-id: AIR-OP-019-03
+    state: Active
+
+  - id: AIR-DET-016
+    group: DET
+    title: Preserving Source Data Access Controls in AI Systems
+    objective: >
+      This control addresses the critical requirement that when an Artificial
+      Intelligence (AI) system—particularly one employing Retrieval Augmented
+      Generation (RAG) or similar techniques—ingests data from various
+      internal or external sources, the original access control permissions,
+      restrictions, and entitlements associated with that source data must be
+      understood, preserved, and effectively enforced when the AI system
+      subsequently uses or presents information derived from that data. While
+      the implementation of mechanisms to preserve these controls is
+      preventative, this control also has a significant detective aspect. This
+      involves the ongoing verification, auditing, and monitoring to ensure
+      that these access controls are correctly mapped, consistently maintained
+      within the AI ecosystem, and are not being inadvertently or maliciously
+      bypassed. Detecting deviations or failures in preserving source access
+      controls is paramount to preventing unauthorized data exposure through
+      the AI system.
+    rationale:
+      importance: >
+        Despite the challenges, striving to preserve source data access
+        controls within AI systems is crucial.
+      goals:
+        - "Unauthorized Access Prevention: Prevents AI systems from becoming unintentional backdoors for accessing restricted data"
+        - "Data Confidentiality Maintenance: Upholds intended security posture and confidentiality requirements of source data"
+        - "Regulatory Compliance: Essential for adhering to data protection regulations and internal governance policies"
+        - "Insider Risk Reduction: Limits accessible data scope to only what user roles permit"
+        - "Trust Building: Assures stakeholders that AI systems respect and enforce established data access policies"
+        - "Audit and Detection Support: Enables identification and investigation of misconfigurations and policy violations"
+        - "Responsible AI Deployment: Ensures AI systems operate within established data governance frameworks"
+    see-also:
+      - AIR-PREV-012
+      - AIR-PREV-002
+    statements:
+      - id: AIR-DET-016.1
+        title: Understanding and Documenting Source Access Controls
+        text: ""
+        recommendations:
+          - >
+            Discovery and Analysis: Before or during data ingestion,
+            thoroughly identify, analyze, and document the existing access
+            control lists (ACLs), roles, permissions, and any other
+            entitlement mechanisms associated with all source data
+            repositories (e.g., file shares, databases, document management
+            systems like Confluence).
+          - >
+            Mapping Entitlements: Understand how these source permissions
+            translate to user identities or groups within the organization's
+            identity management system.
+      - id: AIR-DET-016.2
+        title: Strategies for Preserving and Enforcing Access Controls in AI Systems
+        text: ""
+        recommendations:
+          - >
+            A. Leveraging Native Access Controls in AI Data Stores (e.g.,
+            Vector Databases):; Assessment:; Configuration:
+          - >
+            B. Data Segregation and Siloing Based on Access Domains:;
+            Strategy:; Access Provisioning:; Consolidation of Granular
+            Permissions:
+          - >
+            C. Application-Layer Access Control Enforcement:; Mechanism: 1.
+            Authenticate the user and retrieve their identity and associated
+            entitlements from the corporate Identity Provider (IdP). 2.
+            Intercept the user's query to the AI. 3. Before passing the query
+            to the RAG system or LLM, modify it or constrain its scope to
+            ensure that any data retrieval or processing only targets data
+            segments the user is authorized to access (based on their
+            entitlements and the preserved source permissions metadata). 4.
+            Filter the AI's response to redact or remove any information
+            derived from data sources the user is not permitted to see.;
+            Complexity:
+          - >
+            D. Metadata-Driven Access Control at Query Time:; Ingestion
+            Enrichment:; Query-Time Filtering:
+      - id: AIR-DET-016.3
+        title: Avoiding Insecure "Shortcuts"
+        text: ""
+        recommendations:
+          - >
+            System Prompt-Based Access Control (Strongly Discouraged):
+            Attempting to enforce access controls by merely instructing an LLM
+            via its system prompt (e.g., "Only show data from 'Department X'
+            to users in 'Group Y'") is highly unreliable, inefficient, and
+            proven to be easily bypassable through adversarial prompting. This
+            method should not be considered a secure mechanism for preserving
+            access controls and must be avoided.
+      - id: AIR-DET-016.4
+        title: Verification, Auditing, and Monitoring (The Detective Aspect)
+        text: ""
+        recommendations:
+          - >
+            Regular Configuration Audits: Periodically audit the configuration
+            of access controls in source systems and, critically, how these
+            are mapped and implemented within the AI data stores, RAG
+            pipelines, and any application-layer enforcement points.
+          - >
+            Penetration Testing and Red Teaming: Conduct targeted security
+            testing, including penetration tests and red teaming exercises,
+            specifically designed to attempt to bypass the preserved access
+            controls and access unauthorized data through the AI system.
+          - >
+            Access Log Monitoring: Implement comprehensive logging of user
+            queries, data retrieval actions within the RAG system, and the
+            final responses generated by the AI. Monitor these logs for:
+          - >
+            Entitlement Reconciliation Reviews: Periodically reconcile the
+            list of users and their permissions for accessing the AI system
+            (or specific RAG interfaces) against the access controls defined
+            on the data ingested into those systems. The goal is to ensure
+            there are no exfiltration paths where users might gain access to
+            information they shouldn't, due to misconfiguration or aggregation
+            effects.
+          - >
+            Data Lineage and Provenance Tracking: To the extent possible,
+            maintain lineage information that tracks which source documents
+            (and their original permissions) contributed to specific
+            AI-generated outputs. This aids in investigations if a potential
+            access control violation is suspected.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-002
+            remarks: Source sensitivity and permissions are preserved into AI retrieval
+          - reference-id: AIR-PRIN-003
+            remarks: Users only retrieve data they are authorized to see
+          - reference-id: AIR-PRIN-005
+            remarks: Access verification and monitoring provide auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-002-01
+          - reference-id: AIR-SEC-002-02
+          - reference-id: AIR-SEC-002-03
+          - reference-id: AIR-SEC-002-04
+          - reference-id: AIR-SEC-002-05
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+    state: Active
+
+  - id: AIR-PREV-017
+    group: PREV
+    title: AI Firewall Implementation and Management
+    objective: >
+      An AI Firewall is conceptualized as a specialized security system
+      designed to protect Artificial Intelligence (AI) models and applications
+      by inspecting, filtering, and controlling the data and interactions
+      flowing to and from them. As AI, particularly Generative AI and agentic
+      systems, becomes more integrated into critical workflows, it introduces
+      novel risks that traditional security measures may not adequately
+      address.: Malicious Inputs: Such as Prompt Injection attacks intended to
+      manipulate model behavior or execute unauthorized actions; Data
+      Exfiltration and Leakage: Preventing sensitive information (e.g., PII,
+      confidential corporate data) from being inadvertently or maliciously
+      extracted through model inputs or outputs; Model Integrity and
+      Stability: Protecting against inputs designed to make the AI system
+      unstable, behave erratically, or exhaust its computational resources; AI
+      Agent Misuse: Monitoring and controlling interactions in AI agentic
+      workflows to prevent tool abuse (Risk 4) or compromise of AI agents;
+      Harmful Content Generation: Filtering outputs to prevent the generation
+      or dissemination of inappropriate, biased, or harmful content;
+      Unauthorized Access and Activity: Enhancing transparency and control
+      over who or what is interacting with AI models and for what purpose;
+      Data Poisoning (at Inference/Interaction): While primary data poisoning
+      targets training data, an AI Firewall might detect inputs during
+      inference designed to exploit existing vulnerabilities or attempt to
+      skew behavior in models that support forms of continuous learning or
+      fine-tuning based on interactions. The primary purpose of an AI Firewall
+      is to mitigate these emerging AI-specific threats, including but not
+      limited to: Such a system would typically intercept and analyze
+      communication between users and AI models/agents, between AI agents and
+      various tools or data sources, and potentially even inter-agent
+      communications. Its functions would ideally include threat detection,
+      real-time monitoring, alerting, automated blocking or sanitization,
+      comprehensive reporting, and the enforcement of predefined security and
+      ethical guardrails.
+    rationale:
+      importance: >
+        Despite being an emerging area, the concept of an AI Firewall
+        addresses a growing need for specialized AI security.
+      goals:
+        - "AI Threat Mitigation: Provides focused defense against attack vectors unique to AI/ML systems"
+        - "Data Protection: Prevents intentional exfiltration and accidental leakage of sensitive data"
+        - "Model Integrity: Protects AI models from manipulation and denial of service attacks"
+        - "Responsible AI Support: Enforces policies related to fairness, bias, and appropriate content generation"
+        - "Governance and Observability: Provides visibility into AI model usage for security monitoring and compliance"
+        - "Risk Reduction: Key component for managing risks in complex AI systems and agentic workflows"
+    see-also:
+      - AIR-PREV-003
+      - AIR-PREV-008
+    statements:
+      - id: AIR-PREV-017.1
+        title: Implementation Guidance
+        text: ""
+        recommendations:
+          - >
+            Policy Definition: Crucially, organizations must first define
+            clear policies regarding what constitutes acceptable and
+            unacceptable inputs/outputs, data sensitivity rules, and
+            permissible AI agent behaviors. These policies will drive the
+            firewall's configuration.
+          - >
+            Technological Approaches:; Specialized AI Security
+            Gateways/Proxies:; Enhanced Web Application Firewalls (WAFs):; API
+            Security Solutions:; "Guardian" AI Models:
+          - >
+            Architectural Placement: Determine the optimal points for
+            inspection (e.g., at the edge, at API gateways, between
+            application components and AI models, or within agentic
+            frameworks).
+          - >
+            Performance Impact: Deep inspection of AI payloads (which can be
+            large and complex) can introduce latency. The performance overhead
+            must be carefully balanced against security benefits.
+          - >
+            Adaptability and Continuous Learning: Given the rapidly evolving
+            nature of AI threats, an AI Firewall should ideally be adaptive,
+            capable of being updated frequently with new threat signatures,
+            patterns, and potentially using machine learning to detect novel
+            attacks.
+          - >
+            Integration with Security Ecosystem: Ensure the AI Firewall can
+            integrate with existing security infrastructure, such as Security
+            Information and Event Management (SIEM) systems for log
+            correlation and alerting, Security Orchestration, Automation and
+            Response (SOAR) platforms for automated incident response, and
+            threat intelligence platforms.
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-001
+            remarks: Input and output filtering sanitizes traffic at the AI boundary
+          - reference-id: AIR-PRIN-004
+            remarks: A dedicated AI firewall adds a layered boundary defense
+          - reference-id: AIR-PRIN-005
+            remarks: Inspection logging supports monitoring and audit
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-007-01
+          - reference-id: AIR-OP-007-02
+          - reference-id: AIR-OP-007-03
+          - reference-id: AIR-SEC-010-01
+          - reference-id: AIR-SEC-010-02
+          - reference-id: AIR-SEC-010-03
+          - reference-id: AIR-OP-018
+          - reference-id: AIR-OP-020
+    state: Active
+
+  - id: AIR-PREV-018
+    group: PREV
+    title: Agent Authority Least Privilege Framework
+    objective: >
+      The Agent Authority Least Privilege Framework implements granular access
+      controls ensuring agents can only access APIs, tools, and data strictly
+      necessary for their designated functions. This preventive control
+      establishes dynamic privilege management, contextual access
+      restrictions, and comprehensive authorization enforcement to prevent
+      agents from exceeding their intended operational scope and causing
+      unauthorized actions or regulatory violations. This framework extends
+      traditional least privilege principles to address the unique challenges
+      of agentic AI systems, where agents make autonomous decisions about tool
+      selection and API usage, requiring more sophisticated controls than
+      static role-based access systems.
+    rationale:
+      importance: >
+        Implementing comprehensive agent authority least privilege frameworks
+        provides critical security benefits.
+      goals:
+        - "Attack Surface Reduction: Limits the potential impact of agent compromise by restricting accessible resources and capabilities."
+        - "Regulatory Compliance: Ensures agents operate within regulatory boundaries and approval requirements."
+        - "Unauthorized Action Prevention: Prevents agents from executing transactions or operations outside their intended scope."
+        - "Audit Trail Enhancement: Provides detailed logging and audit capabilities for regulatory and security investigations."
+        - "Risk Mitigation: Reduces operational risk by enforcing business rules and approval workflows at the privilege level."
+        - "Incident Response Support: Enables rapid containment of security incidents by restricting compromised agent capabilities."
+    see-also:
+      - AIR-PREV-012
+    statements:
+      - id: AIR-PREV-018.1
+        title: Agent Role and Privilege Definition
+        text: ""
+        recommendations:
+          - >
+            Role-Based Agent Classification (examples):; Customer Service
+            Agents; Risk Assessment Agents; Compliance Agents; Trading Agents;
+            Document Processing Agents
+          - >
+            Privilege Matrices and Documentation:
+      - id: AIR-PREV-018.2
+        title: Dynamic Privilege Management
+        text: ""
+        recommendations:
+          - >
+            Context-Aware Access Controls:; Transaction Value Thresholds;
+            Customer Sensitivity Levels; Time-Based Restrictions; Geographic
+            Restrictions
+          - >
+            Privilege Escalation Controls:
+      - id: AIR-PREV-018.3
+        title: API and Tool Access Enforcement
+        text: ""
+        recommendations:
+          - >
+            Tool Manager Security Layer:
+          - >
+            API Gateway Integration:
+          - >
+            Parameter Validation and Sanitization:
+      - id: AIR-PREV-018.4
+        title: Business Logic and Approval Workflow Enforcement
+        text: ""
+        recommendations:
+          - >
+            Multi-Agent Approval Processes:
+          - >
+            Regulatory Compliance Integration:
+          - >
+            Business Rule Enforcement:
+      - id: AIR-PREV-018.5
+        title: Monitoring and Auditing
+        text: ""
+        recommendations:
+          - >
+            Comprehensive Access Logging:
+          - >
+            Anomaly Detection:
+          - >
+            Regular Privilege Reviews:
+      - id: AIR-PREV-018.6
+        title: Integration with Existing Security Systems
+        text: ""
+        recommendations:
+          - >
+            Identity and Access Management (IAM):
+          - >
+            Security Information and Event Management (SIEM):
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-003
+            remarks: Agents operate with the minimum authority required
+          - reference-id: AIR-PRIN-004
+            remarks: Privilege enforcement and approval workflows provide layered control
+          - reference-id: AIR-PRIN-005
+            remarks: Privilege decisions and agent actions are auditable
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-024-01
+          - reference-id: AIR-SEC-024-02
+          - reference-id: AIR-SEC-024-03
+          - reference-id: AIR-SEC-024-04
+          - reference-id: AIR-OP-018
+    state: Active
+
+  - id: AIR-PREV-019
+    group: PREV
+    title: Tool Chain Validation and Sanitization
+    objective: >
+      Tool Chain Validation and Sanitization implements comprehensive
+      validation mechanisms for agent tool selection decisions, API parameter
+      sanitization, and safe tool execution sequences. This preventive control
+      ensures that agents cannot be manipulated into selecting inappropriate
+      tools, injecting malicious parameters into API calls, or executing
+      dangerous tool combinations that could result in unauthorized actions or
+      system compromise. This mitigation addresses the unique attack surface
+      created by agentic systems' autonomous tool selection and execution
+      capabilities, extending beyond traditional input validation to cover the
+      complex decision-making processes that determine which tools agents use
+      and how they sequence multiple tool calls.
+    rationale:
+      importance: >
+        Implementing comprehensive tool chain validation provides essential
+        security protection.
+      goals:
+        - "Attack Prevention: Blocks tool chain manipulation attacks before they can cause harm to systems or data."
+        - "Parameter Security: Prevents injection attacks through API parameter manipulation."
+        - "Business Logic Protection: Ensures agents operate within intended business processes and approval workflows."
+        - "Audit Compliance: Provides detailed audit trails of tool usage for regulatory and security investigations."
+        - "Risk Reduction: Reduces operational risk by preventing unauthorized or dangerous tool combinations."
+        - "Incident Investigation: Enables detailed forensic analysis of agent behavior during security incidents."
+    see-also:
+      - AIR-PREV-003
+    statements:
+      - id: AIR-PREV-019.1
+        title: Tool Selection Validation Framework
+        text: ""
+        recommendations:
+          - >
+            Tool Appropriateness Validation:; Task-Tool Mapping; Context
+            Validation; Authorization Level Checks
+          - >
+            Tool Selection Reasoning Capture:; Decision Logging; Alternative
+            Analysis; Confidence Scoring; Continuous Telemetry
+          - >
+            Dynamic Tool Selection Validation:; Real-time Validation;
+            Behavioral Pattern Analysis; Context-Aware Validation
+      - id: AIR-PREV-019.2
+        title: API Parameter Validation and Sanitization
+        text: ""
+        recommendations:
+          - >
+            Parameter Schema Validation:; Data Type Validation; Business Rule
+            Validation; Parameter Relationship Validation
+          - >
+            Input Sanitization Techniques:; Parameter Whitelisting; Format
+            Validation; Range Validation
+          - >
+            Injection Attack Prevention:; SQL Injection Protection; Command
+            Injection Prevention; Code Injection Prevention
+      - id: AIR-PREV-019.3
+        title: Tool Sequence and Workflow Validation
+        text: ""
+        recommendations:
+          - >
+            Safe Tool Chain Patterns:; Workflow Templates; Sequence
+            Validation; State Machine Validation
+          - >
+            Dangerous Tool Combination Prevention:; Tool Incompatibility
+            Rules; Cross-Tool Parameter Validation; Tool Chain Break Points
+          - >
+            Approval and Authorization Workflow Enforcement:; Multi-Step
+            Validation; Human-in-the-Loop Requirements; Segregation of Duties
+      - id: AIR-PREV-019.4
+        title: Real-time Monitoring and Alerting
+        text: ""
+        recommendations:
+          - >
+            Tool Usage Anomaly Detection:; Baseline Behavior Modeling; Unusual
+            Tool Combinations; Parameter Anomaly Detection
+          - >
+            Security Event Generation:; Validation Failure Alerts; Repeated
+            Validation Failures; Tool Chain Manipulation Indicators
+          - >
+            Integration with Security Operations:; SIEM Integration; Incident
+            Response Integration
+      - id: AIR-PREV-019.5
+        title: Validation Rule Management and Updates
+        text: ""
+        recommendations:
+          - >
+            Rule Configuration Management:; Centralized Rule Management;
+            Version Control; Rule Testing
+          - >
+            Dynamic Rule Updates:; Threat Intelligence Integration; Business
+            Process Changes; Regulatory Updates
+          - >
+            Rule Effectiveness Monitoring:; False Positive Analysis; Coverage
+            Assessment; Performance Impact
+      - id: AIR-PREV-019.6
+        title: Integration with Agent Architecture
+        text: ""
+        recommendations:
+          - >
+            Tool Manager Integration:
+          - >
+            API Gateway Integration:; Gateway-level Validation; Rate Limiting
+            and Throttling; Cross-API Correlation
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-001
+            remarks: Tool inputs and parameters are sanitized before execution
+          - reference-id: AIR-PRIN-004
+            remarks: Validation forms a defensive layer around agent tool use
+          - reference-id: AIR-PRIN-005
+            remarks: Validation events are monitored and logged
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-025-01
+          - reference-id: AIR-SEC-025-02
+          - reference-id: AIR-SEC-025-03
+          - reference-id: AIR-SEC-025-04
+          - reference-id: AIR-SEC-025-05
+          - reference-id: AIR-SEC-010-01
+          - reference-id: AIR-SEC-010-02
+          - reference-id: AIR-SEC-010-03
+          - reference-id: AIR-SEC-024-01
+          - reference-id: AIR-SEC-024-02
+          - reference-id: AIR-SEC-024-03
+          - reference-id: AIR-SEC-024-04
+    state: Active
+
+  - id: AIR-PREV-020
+    group: PREV
+    title: MCP Server Security Governance
+    objective: >
+      MCP Server Security Governance establishes comprehensive security
+      controls for Model Context Protocol servers including supply chain
+      verification, secure communication channels, data integrity validation,
+      and continuous monitoring. This preventive control ensures that MCP
+      servers providing specialized capabilities to agentic AI systems
+      maintain appropriate security standards and cannot be used as vectors
+      for systematic compromise of agent decision-making. This mitigation
+      addresses the unique risks introduced by the distributed architecture of
+      MCP-based agentic systems, where agents rely on external servers for
+      critical data and capabilities, creating supply chain dependencies that
+      require specialized security governance.
+    rationale:
+      importance: >
+        Implementing comprehensive MCP server security governance provides
+        critical protection.
+      goals:
+        - "Supply Chain Risk Reduction: Reduces risks from compromised or malicious MCP server providers through comprehensive vetting and monitoring."
+        - "Data Integrity Assurance: Ensures data provided by MCP servers is authentic, complete, and hasn't been tampered with."
+        - "Communication Security: Protects sensitive data transmitted to and from MCP servers through robust encryption and authentication."
+        - "Incident Containment: Enables rapid detection and containment of MCP server compromise scenarios."
+        - "Regulatory Compliance: Helps meet regulatory requirements for third-party service provider management and data protection."
+        - "Business Continuity: Maintains agent functionality even when individual MCP servers are compromised or unavailable."
+    see-also:
+      - AIR-PREV-007
+    statements:
+      - id: AIR-PREV-020.1
+        title: MCP Server Vetting and Onboarding
+        text: ""
+        recommendations:
+          - >
+            Vendor Security Assessment:; Security Certifications; Penetration
+            Testing; Security Architecture Review
+          - >
+            Supply Chain Due Diligence:; Vendor Background Checks; Financial
+            Stability Assessment; Regulatory Compliance
+          - >
+            Service Level Agreement (SLA) Requirements:; Security SLAs; Data
+            Handling Requirements; Availability and Performance
+      - id: AIR-PREV-020.2
+        title: Secure MCP Communication Implementation
+        text: ""
+        recommendations:
+          - >
+            Protocol Security Configuration:; TLS Implementation; Mutual
+            Authentication; Certificate Management
+          - >
+            Authentication and Authorization:; API Key Management; OAuth/OIDC
+            Integration; Access Token Management
+          - >
+            Communication Monitoring and Logging:; Protocol Analysis; Traffic
+            Encryption Validation; Communication Audit Logs
+      - id: AIR-PREV-020.3
+        title: Data Integrity and Validation
+        text: ""
+        recommendations:
+          - >
+            Data Integrity Mechanisms:; Cryptographic Signatures; Checksums
+            and Hash Verification; Data Versioning
+          - >
+            Data Validation Procedures:; Schema Validation; Business Rule
+            Validation; Cross-Reference Validation
+          - >
+            Data Freshness and Currency:; Timestamp Validation; Data Staleness
+            Detection; Real-time Data Verification
+      - id: AIR-PREV-020.4
+        title: MCP Server Monitoring and Anomaly Detection
+        text: ""
+        recommendations:
+          - >
+            Behavioral Monitoring:; Response Pattern Analysis; Performance
+            Metrics; Data Quality Monitoring
+          - >
+            Security Event Detection:; Anomalous Data Detection; Communication
+            Anomalies; Service Availability Monitoring
+          - >
+            Threat Intelligence Integration:; Threat Feed Integration;
+            Security Advisory Monitoring; Industry Information Sharing
+      - id: AIR-PREV-020.5
+        title: MCP Server Isolation and Segmentation
+        text: ""
+        recommendations:
+          - >
+            Network Segmentation:; DMZ Implementation; Network Access
+            Controls; Traffic Filtering
+          - >
+            Service Isolation:; Container/Sandbox Isolation; Resource
+            Isolation; Data Segregation
+          - >
+            Failure Isolation:; Circuit Breaker Patterns; Fallback Mechanisms;
+            Graceful Degradation
+      - id: AIR-PREV-020.6
+        title: Incident Response and Recovery
+        text: ""
+        recommendations:
+          - >
+            MCP-Specific Incident Response:; Incident Classification; Response
+            Procedures; Isolation Procedures
+          - >
+            Forensic Analysis Capabilities:; Log Preservation; Data Forensics;
+            Communication Analysis
+          - >
+            Recovery and Restoration:; Service Restoration; Data Validation;
+            Lessons Learned Integration
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-002
+            remarks: MCP servers are vetted according to the sensitivity of data they handle
+          - reference-id: AIR-PRIN-004
+            remarks: Tiered controls, isolation, and validation provide defense in depth
+          - reference-id: AIR-PRIN-005
+            remarks: MCP monitoring and anomaly detection provide auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-026-01
+          - reference-id: AIR-SEC-026-02
+          - reference-id: AIR-SEC-026-03
+          - reference-id: AIR-SEC-026-04
+          - reference-id: AIR-SEC-026-05
+          - reference-id: AIR-SEC-008-01
+          - reference-id: AIR-SEC-008-02
+          - reference-id: AIR-SEC-008-03
+          - reference-id: AIR-SEC-008-04
+          - reference-id: AIR-SEC-008-05
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+          - reference-id: AIR-RC-001-05
+    state: Active
+
+  - id: AIR-DET-021
+    group: DET
+    title: Agent Decision Audit and Explainability
+    objective: >
+      Agent Decision Audit and Explainability implements comprehensive
+      logging, documentation, and explainability mechanisms for agent
+      decisions to support regulatory compliance, security incident
+      investigation, and decision accountability. This detective control
+      ensures that all agent actions, reasoning processes, and decision
+      factors are captured in sufficient detail to meet regulatory
+      requirements and enable effective forensic analysis when incidents
+      occur. This mitigation is critical for financial services where
+      regulatory bodies require detailed audit trails for automated
+      decision-making systems, and where the ability to explain and justify
+      agent decisions is essential for customer protection and compliance
+      verification.
+    rationale:
+      importance: >
+        Implementing comprehensive agent decision audit and explainability
+        provides essential capabilities.
+      goals:
+        - "Regulatory Compliance: Meets regulatory requirements for automated decision-making transparency and audit trails."
+        - "Incident Investigation: Enables thorough investigation of security incidents and operational failures."
+        - "Decision Accountability: Provides clear accountability for agent decisions and actions."
+        - "Risk Management: Supports risk management through comprehensive decision monitoring and analysis."
+        - "Customer Trust: Builds customer trust through transparency and ability to explain decisions."
+        - "Continuous Improvement: Enables systematic improvement of agent decision-making through comprehensive analysis."
+    see-also:
+      - AIR-DET-004
+    statements:
+      - id: AIR-DET-021.1
+        title: Comprehensive Decision Logging Framework
+        text: ""
+        recommendations:
+          - >
+            Decision Event Capture:; Decision Initiation; Input Data
+            Recording; Tool Selection Logic; API Parameter Decisions; Decision
+            Outcomes
+          - >
+            Contextual Information Capture:; Customer Context; Business
+            Context; Risk Context; Temporal Context
+          - >
+            Decision Chain Tracking:; Multi-Step Processes; Cross-Agent
+            Dependencies; Human Interaction Points
+      - id: AIR-DET-021.2
+        title: Explainability and Reasoning Capture
+        text: ""
+        recommendations:
+          - >
+            Decision Reasoning Documentation:; Logical Flow Capture;
+            Confidence Scoring; Alternative Analysis; Risk-Benefit Analysis
+          - >
+            Natural Language Explanations:; Human-Readable Summaries;
+            Technical Decision Details; Regulatory Reporting Format
+          - >
+            Visual Decision Mapping:; Decision Trees; Process Flow Diagrams;
+            Tool Chain Visualizations
+      - id: AIR-DET-021.3
+        title: Regulatory Compliance Integration
+        text: ""
+        recommendations:
+          - >
+            Financial Services Regulatory Requirements:; Fair Lending
+            Compliance; Consumer Protection; Anti-Money Laundering (AML);
+            Market Conduct
+          - >
+            Data Protection and Privacy Compliance:; GDPR Right to
+            Explanation; Data Processing Documentation; Privacy Impact
+            Documentation
+          - >
+            Audit Trail Standards:; Immutable Records; Retention Policies;
+            Access Controls
+      - id: AIR-DET-021.4
+        title: Real-time Monitoring and Alerting
+        text: ""
+        recommendations:
+          - >
+            Decision Pattern Analysis:; Anomaly Detection; Bias Detection;
+            Regulatory Violation Detection
+          - >
+            Decision Quality Monitoring:; Outcome Tracking; Error Rate
+            Analysis; Customer Impact Assessment
+          - >
+            Security Event Detection:; Unauthorized Decision Attempts;
+            Decision Manipulation Indicators; Audit Trail Tampering
+      - id: AIR-DET-021.5
+        title: Incident Investigation Support
+        text: ""
+        recommendations:
+          - >
+            Forensic Analysis Capabilities:; Decision Reconstruction; Timeline
+            Analysis; Root Cause Analysis
+          - >
+            Cross-System Correlation:; Multi-Agent Analysis; External System
+            Integration; User Behavior Analysis
+          - >
+            Evidence Management:; Chain of Custody; Evidence Export; Witness
+            Testimony Support
+      - id: AIR-DET-021.6
+        title: Reporting and Analytics
+        text: ""
+        recommendations:
+          - >
+            Regulatory Reporting:; Automated Report Generation; Compliance
+            Dashboards; Exception Reporting
+          - >
+            Business Intelligence Integration:; Decision Analytics;
+            Performance Metrics; Trend Analysis
+          - >
+            Stakeholder Communication:; Executive Reporting; Customer
+            Communication; Audit Committee Reporting
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-004
+            remarks: Audit trails form a detective layer over agent decisions
+          - reference-id: AIR-PRIN-005
+            remarks: Decision logging and reasoning capture provide auditability and transparency
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-024-01
+          - reference-id: AIR-SEC-024-02
+          - reference-id: AIR-SEC-024-03
+          - reference-id: AIR-SEC-024-04
+          - reference-id: AIR-SEC-025-01
+          - reference-id: AIR-SEC-025-02
+          - reference-id: AIR-SEC-025-03
+          - reference-id: AIR-SEC-025-04
+          - reference-id: AIR-SEC-025-05
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+    state: Active
+
+  - id: AIR-PREV-022
+    group: PREV
+    title: Multi-Agent Isolation and Segmentation
+    objective: >
+      Multi-Agent Isolation and Segmentation implements comprehensive security
+      boundaries between agents in multi-agent systems to prevent cross-agent
+      compromise, limit blast radius of security incidents, and maintain
+      appropriate trust boundaries. This preventive control ensures that
+      compromise or malfunction of one agent cannot systematically affect
+      other agents, protecting the integrity of complex multi-agent workflows
+      in financial services. This mitigation is essential for financial
+      institutions deploying multiple specialized agents that must work
+      together while maintaining appropriate security isolation to prevent
+      systemic failures and cascading security incidents.
+    rationale:
+      importance: >
+        Implementing comprehensive multi-agent isolation provides critical
+        security protection.
+      goals:
+        - "Compromise Containment: Limits the impact of agent compromise by preventing lateral movement between agents."
+        - "System Resilience: Maintains system operation even when individual agents are compromised or fail."
+        - "Risk Reduction: Reduces overall system risk by compartmentalizing security threats and operational failures."
+        - "Regulatory Compliance: Supports regulatory requirements for system security and data protection in financial services."
+        - "Incident Response: Enables more effective incident response by isolating affected agents without system-wide impacts."
+        - "Trust Assurance: Provides assurance that critical business processes maintain appropriate security boundaries."
+    see-also:
+      - AIR-PREV-018
+    statements:
+      - id: AIR-PREV-022.1
+        title: Agent Process and Runtime Isolation
+        text: ""
+        recommendations:
+          - >
+            Container-Based Isolation:; Container Deployment; Resource Limits;
+            Network Isolation
+          - >
+            Virtual Machine Isolation:; Dedicated VMs; VM Security Hardening;
+            VM Network Segmentation
+          - >
+            Process-Level Security:; Separate User Accounts; Process
+            Isolation; Sandboxing
+      - id: AIR-PREV-022.2
+        title: Agent State and Data Segregation
+        text: ""
+        recommendations:
+          - >
+            Isolated State Storage:; Separate Databases; Encrypted Storage;
+            Access Control Implementation
+          - >
+            Memory and Cache Isolation:; Separate Memory Spaces; Isolated
+            Caching; Memory Protection
+          - >
+            Temporary Data Isolation:; Separate Temporary Storage; Secure
+            Cleanup; File System Permissions
+      - id: AIR-PREV-022.3
+        title: Inter-Agent Communication Security
+        text: ""
+        recommendations:
+          - >
+            Authenticated Communications:; Mutual Authentication; Identity
+            Verification; Session Management
+          - >
+            Encrypted Communication Channels:; Transport Encryption; Message
+            Encryption; Key Management
+          - >
+            Communication Access Controls:; Allowed Communications Matrix;
+            Message Filtering; Communication Logging
+      - id: AIR-PREV-022.4
+        title: Shared Resource Access Control
+        text: ""
+        recommendations:
+          - >
+            API Access Segmentation:; Separate API Endpoints; API Gateway
+            Enforcement; Request Tagging
+          - >
+            Database Access Controls:; Role-Based Database Access; Query
+            Restrictions; Transaction Isolation
+          - >
+            External Service Integration:; Service Account Segregation;
+            Credential Management; Service Access Monitoring
+      - id: AIR-PREV-022.5
+        title: Trust Boundary Definition and Enforcement
+        text: ""
+        recommendations:
+          - >
+            Agent Classification Framework:; Security Classifications; Trust
+            Levels; Boundary Documentation
+          - >
+            Cross-Boundary Controls:; Data Classification Enforcement;
+            Privilege Escalation Prevention; Boundary Violation Detection
+          - >
+            Business Logic Enforcement:; Workflow Boundaries; Approval
+            Requirements; Segregation of Duties
+      - id: AIR-PREV-022.6
+        title: Failure Isolation and Recovery
+        text: ""
+        recommendations:
+          - >
+            Circuit Breaker Implementation:; Agent Circuit Breakers; Service
+            Degradation; Automatic Recovery
+          - >
+            Failure Detection and Response:; Health Monitoring; Anomaly
+            Detection; Incident Isolation
+          - >
+            Business Continuity:; Failover Mechanisms; Data Backup and
+            Recovery; Service Restoration
+      - id: AIR-PREV-022.7
+        title: Monitoring and Compliance
+        text: ""
+        recommendations:
+          - >
+            Cross-Agent Monitoring:; Interaction Monitoring; Behavioral
+            Analysis; Performance Impact Assessment; Scalable Monitoring
+            Architecture
+          - >
+            Compliance Verification:; Isolation Testing; Penetration Testing;
+            Compliance Reporting
+          - >
+            Audit Trail Maintenance:; Cross-Agent Audit Logs; Security Event
+            Correlation; Forensic Analysis Support
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-003
+            remarks: Isolation limits each agent's blast radius and data exposure
+          - reference-id: AIR-PRIN-004
+            remarks: Process, state, and communication isolation provide defense in depth
+          - reference-id: AIR-PRIN-005
+            remarks: Cross-agent monitoring provides auditability
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-028-01
+          - reference-id: AIR-OP-028-02
+          - reference-id: AIR-OP-028-03
+          - reference-id: AIR-OP-028-04
+          - reference-id: AIR-OP-028-05
+          - reference-id: AIR-SEC-024-01
+          - reference-id: AIR-SEC-024-02
+          - reference-id: AIR-SEC-024-03
+          - reference-id: AIR-SEC-024-04
+          - reference-id: AIR-SEC-027-01
+          - reference-id: AIR-SEC-027-02
+          - reference-id: AIR-SEC-027-03
+          - reference-id: AIR-SEC-027-04
+          - reference-id: AIR-SEC-027-05
+    state: Active
+
+  - id: AIR-PREV-023
+    group: PREV
+    title: Agentic System Credential Protection Framework
+    objective: >
+      The Agentic System Credential Protection Framework implements
+      comprehensive security controls to prevent agents from discovering,
+      accessing, or exfiltrating authentication credentials, API keys,
+      secrets, and other sensitive authentication materials. This preventive
+      control establishes credential isolation, secure credential injection
+      mechanisms, behavioral monitoring, and zero-trust authentication
+      architectures specifically designed to protect against agent-mediated
+      credential harvesting while maintaining operational functionality for
+      legitimate agent operations. This framework addresses the unique
+      challenges of protecting credentials in environments where agents have
+      broad system access and autonomous decision-making capabilities,
+      requiring specialized controls beyond traditional credential management
+      approaches.
+    rationale:
+      importance: >
+        Implementing comprehensive credential protection provides critical
+        security benefits.
+      goals:
+        - "Credential Harvesting Prevention: Prevents agents from being used as vectors for systematic credential discovery and theft."
+        - "Infrastructure Protection: Protects the broader technology infrastructure from compromise through harvested credentials."
+        - "Lateral Movement Prevention: Limits the ability of compromised agents to enable lateral movement across systems and networks."
+        - "Compliance Assurance: Supports regulatory requirements for credential protection and authentication security in financial services."
+        - "Incident Containment: Enables rapid detection and containment of credential-related security incidents."
+        - "Zero-Trust Architecture: Establishes foundation for zero-trust security architectures that assume potential agent compromise."
+    see-also:
+      - AIR-PREV-018
+      - AIR-PREV-014
+    statements:
+      - id: AIR-PREV-023.1
+        title: Credential Environment Isolation
+        text: ""
+        recommendations:
+          - >
+            Isolated Credential Storage Infrastructure:; Dedicated Credential
+            Vaults; Hardware Security Modules (HSMs); Air-Gapped Credential
+            Systems
+          - >
+            Agent Execution Environment Hardening:; Credential-Free Agent
+            Images; Environment Variable Restriction; File System Credential
+            Removal
+          - >
+            Memory and Process Protection:; Memory Isolation; Process
+            Credential Sanitization; Secure Temporary Storage
+      - id: AIR-PREV-023.2
+        title: Dynamic and Just-in-Time Credential Delivery
+        text: ""
+        recommendations:
+          - >
+            Secure Credential Injection Mechanisms:; Authenticated Credential
+            Brokers; Token-Based Authentication; API Gateway Integration
+          - >
+            Contextual Credential Provisioning:; Task-Specific Credential
+            Scoping; Dynamic Privilege Adjustment; Session-Based Credential
+            Management
+          - >
+            Credential Request Validation:; Request Authentication; Business
+            Logic Validation; Abuse Detection
+      - id: AIR-PREV-023.3
+        title: Zero-Trust Authentication Architecture
+        text: ""
+        recommendations:
+          - >
+            Continuous Agent Authentication:; Multi-Factor Agent
+            Authentication; Continuous Authentication Verification;
+            Attestation-Based Authentication
+          - >
+            Network-Level Authentication Controls:; Micro-Segmentation;
+            Software-Defined Perimeter (SDP); Certificate-Based Network
+            Authentication
+          - >
+            API Authentication Hardening:; API Key Rotation; Request Signing;
+            Contextual Authentication
+      - id: AIR-PREV-023.4
+        title: Behavioral Monitoring and Detection
+        text: ""
+        recommendations:
+          - >
+            Credential Access Pattern Analysis:; Baseline Behavior Modeling;
+            Credential Enumeration Detection; Unusual Access Pattern Alerts
+          - >
+            File and Database Access Monitoring:; Credential-Related File
+            Access; Database Query Analysis; System Administration Tool Usage
+          - >
+            Memory and Process Monitoring:; Memory Access Pattern Detection;
+            Process Interaction Monitoring; Core Dump and Swap File Access
+      - id: AIR-PREV-023.5
+        title: Agent Tool and Capability Restrictions
+        text: ""
+        recommendations:
+          - >
+            Credential-Adjacent Tool Restrictions:; System Administration Tool
+            Limitations; Database Administration Restrictions; File System
+            Access Controls
+          - >
+            API and Service Access Limitations:; Credential Management API
+            Restrictions; Cloud Management API Limitations; Infrastructure API
+            Controls
+          - >
+            Network and Communication Restrictions:; Credential Service
+            Network Isolation; DNS Resolution Restrictions; Protocol Filtering
+      - id: AIR-PREV-023.6
+        title: Incident Response and Recovery
+        text: ""
+        recommendations:
+          - >
+            Credential Compromise Detection:; Automated Credential Validation;
+            Credential Usage Anomaly Detection; Cross-System Correlation
+          - >
+            Rapid Credential Rotation and Revocation:; Emergency Credential
+            Rotation; Automated Credential Revocation; Cascade Rotation
+            Procedures
+          - >
+            Forensic Analysis and Investigation:; Credential Access Audit
+            Trails; Agent Behavior Analysis; Impact Assessment Tools
+      - id: AIR-PREV-023.7
+        title: Integration with Existing Security Infrastructure
+        text: ""
+        recommendations:
+          - >
+            Identity and Access Management (IAM) Integration:; Centralized IAM
+            Integration; Role-Based Access Control (RBAC); Privileged Access
+            Management (PAM)
+          - >
+            Security Information and Event Management (SIEM):; Credential
+            Event Integration; Threat Intelligence Integration; Automated
+            Response Integration
+    principles:
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-003
+            remarks: Credentials are isolated from agent execution and delivered just-in-time
+          - reference-id: AIR-PRIN-004
+            remarks: Zero-trust authentication and tool restrictions provide layered protection
+          - reference-id: AIR-PRIN-005
+            remarks: Behavioral monitoring detects and records credential misuse
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-029-01
+          - reference-id: AIR-SEC-029-02
+          - reference-id: AIR-SEC-029-03
+          - reference-id: AIR-SEC-029-04
+          - reference-id: AIR-SEC-029-05
+          - reference-id: AIR-SEC-024-01
+          - reference-id: AIR-SEC-024-02
+          - reference-id: AIR-SEC-024-03
+          - reference-id: AIR-SEC-024-04
+          - reference-id: AIR-SEC-026-01
+          - reference-id: AIR-SEC-026-02
+          - reference-id: AIR-SEC-026-03
+          - reference-id: AIR-SEC-026-04
+          - reference-id: AIR-SEC-026-05
+    state: Active

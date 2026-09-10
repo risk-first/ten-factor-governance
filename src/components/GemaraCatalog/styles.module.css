@@ -1,0 +1,230 @@
+.catalog {
+  display: grid;
+  gap: 1rem;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--ifm-color-emphasis-100);
+}
+
+.badgeMuted {
+  font-weight: 500;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.meta {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.frontMatter {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--ifm-color-primary);
+  background: var(--ifm-color-emphasis-100);
+  white-space: pre-line;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.search {
+  flex: 1 1 18rem;
+  min-width: 16rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 0.6rem;
+  background: var(--ifm-background-surface-color);
+}
+
+.count {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.95rem;
+}
+
+.group {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.groupTitle {
+  margin-bottom: 0;
+}
+
+.groupDesc {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.entryList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.entryId {
+  display: inline-block;
+  margin-right: 0.6rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.9em;
+  color: var(--ifm-color-primary);
+}
+
+.sectionLabel {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.description {
+  margin-bottom: 0.9rem;
+}
+
+.descriptionText {
+  margin: 0;
+}
+
+.mappingBlock + .mappingBlock {
+  margin-top: 0.85rem;
+}
+
+.mappingList {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.mappingItem + .mappingItem {
+  margin-top: 0.35rem;
+}
+
+.mappingRemarks {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.relationship {
+  color: var(--ifm-color-emphasis-700);
+  font-style: italic;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.externalMappings {
+  margin-top: 0.9rem;
+}
+
+.mappingTargets {
+  margin-bottom: 0.9rem;
+}
+
+.mappingEdge {
+  margin: 0 0 0.65rem;
+}
+
+.imports {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 0.6rem;
+  background: var(--ifm-background-surface-color);
+}
+
+.assessmentBlock {
+  margin-bottom: 0.9rem;
+}
+
+.assessmentList {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.assessmentItem {
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 0.55rem;
+  background: var(--ifm-background-surface-color);
+}
+
+.assessmentId {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  color: var(--ifm-color-primary);
+}
+
+.assessmentText {
+  margin: 0 0 0.45rem;
+}
+
+.applicability {
+  margin: 0 0 0.45rem;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.92rem;
+}
+
+.applicabilityTag {
+  display: inline-block;
+  margin-left: 0.35rem;
+}
+
+.recommendation {
+  margin: 0;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.recommendationLabel {
+  font-weight: 600;
+}
+
+.importedBadge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.55rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-color-emphasis-100);
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
+.importedNote {
+  margin: 0 0 0.85rem;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.92rem;
+}
+
+.empty {
+  color: var(--ifm-color-emphasis-700);
+}

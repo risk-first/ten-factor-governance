@@ -1,0 +1,9 @@
+{
+  "label": "FINOS AI Governance",
+  "position": 5,
+  "collapsed": true,
+  "link": {
+    "type": "doc",
+    "id": "artifacts/finos-ai-governance/index"
+  }
+}

@@ -1,0 +1,28 @@
+---
+sidebar_position: 2
+sidebar_label: Threats Catalog
+title: CCC Kubernetes Threats Catalog
+description: "FINOS Common Cloud Controls Managed Kubernetes threats rendered as a Gemara ThreatCatalog."
+---
+
+import k8sThreats from '@site/src/data/governance/finos/ccc-k8s/k8s/threats.yaml';
+import coreThreats from '@site/src/data/governance/finos/ccc-core/core/threats.yaml';
+import threatsCwe from '@site/src/data/governance/finos/ccc-k8s/k8s/mappings/threats-cwe.yaml';
+import threatsMitreAttack from '@site/src/data/governance/finos/ccc-k8s/k8s/mappings/threats-mitre-attack.yaml';
+
+# CCC Kubernetes Threats Catalog
+
+This page renders the FINOS Common Cloud Controls Managed Kubernetes threats as a
+[Gemara](/docs/artifacts/gemara) `ThreatCatalog`. It includes shared CCC Core
+threats this service imports, plus CWE and MITRE ATT&CK mappings shown on each
+matching threat.
+
+For the companion catalogs, see the
+[Capabilities Catalog](./capabilities-catalog) and
+[Controls Catalog](./controls-catalog).
+
+<GemaraCatalog
+  file={k8sThreats}
+  resolve={{'CCC.Core.Threats': coreThreats}}
+  mappings={[threatsCwe, threatsMitreAttack]}
+/>
