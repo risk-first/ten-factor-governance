@@ -1,4 +1,5 @@
 import React, {useMemo, useState} from 'react';
+import DownloadYamlButton from '@site/src/components/DownloadYamlButton';
 import RevealItem from '@site/src/components/RevealItem';
 import styles from './styles.module.css';
 
@@ -141,23 +142,26 @@ export default function GemaraGuidance({
 
   return (
     <div className={styles.catalog}>
-      <div className={styles.badges}>
-        <span className={styles.badge}>
-          {metadata.type ?? 'GuidanceCatalog'}
-        </span>
-        {catalog.type ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>
-            {catalog.type}
+      <div className={styles.header}>
+        <div className={styles.badges}>
+          <span className={styles.badge}>
+            {metadata.type ?? 'GuidanceCatalog'}
           </span>
-        ) : null}
-        {metadata.version ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>
-            v{metadata.version}
-          </span>
-        ) : null}
-        {metadata.draft ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>draft</span>
-        ) : null}
+          {catalog.type ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>
+              {catalog.type}
+            </span>
+          ) : null}
+          {metadata.version ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>
+              v{metadata.version}
+            </span>
+          ) : null}
+          {metadata.draft ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>draft</span>
+          ) : null}
+        </div>
+        <DownloadYamlButton file={file} />
       </div>
 
       {showFrontMatter && textOf(catalog['front-matter']) ? (

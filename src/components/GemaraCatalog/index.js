@@ -1,4 +1,5 @@
 import React, {useMemo, useState} from 'react';
+import DownloadYamlButton from '@site/src/components/DownloadYamlButton';
 import RevealItem from '@site/src/components/RevealItem';
 import styles from './styles.module.css';
 
@@ -712,31 +713,38 @@ export default function GemaraCatalog({file, resolve, mappings}) {
 
   return (
     <div className={styles.catalog}>
-      <div className={styles.badges}>
-        <span className={styles.badge}>{metadata.type ?? 'Catalog'}</span>
-        {catalog.type ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>
-            {catalog.type}
-          </span>
-        ) : null}
-        {metadata.version ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>
-            v{metadata.version}
-          </span>
-        ) : null}
-        {metadata.draft ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>draft</span>
-        ) : null}
-        {catalog.result ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>
-            {catalog.result}
-          </span>
-        ) : null}
-        {catalog.disposition ? (
-          <span className={`${styles.badge} ${styles.badgeMuted}`}>
-            {catalog.disposition}
-          </span>
-        ) : null}
+      <div className={styles.header}>
+        <div className={styles.badges}>
+          <span className={styles.badge}>{metadata.type ?? 'Catalog'}</span>
+          {catalog.type ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>
+              {catalog.type}
+            </span>
+          ) : null}
+          {metadata.version ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>
+              v{metadata.version}
+            </span>
+          ) : null}
+          {metadata.draft ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>draft</span>
+          ) : null}
+          {catalog.result ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>
+              {catalog.result}
+            </span>
+          ) : null}
+          {catalog.disposition ? (
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>
+              {catalog.disposition}
+            </span>
+          ) : null}
+        </div>
+        <DownloadYamlButton
+          file={file}
+          resolve={resolve}
+          mappings={mappings}
+        />
       </div>
 
       {textOf(metadata.description) ? (

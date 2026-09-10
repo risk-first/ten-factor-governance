@@ -19,12 +19,13 @@
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.2",
     "@docusaurus/types": "^3.10.2",
-    "yaml-loader": "^0.9.0"
+    "javascript-stringify": "^2.1.0"
   },
   "engines": {
     "node": ">=20.0"

@@ -23,16 +23,17 @@ const config = {
   plugins: [
     require.resolve('./src/plugins/category-listing'),
     // Lets MDX pages `import catalog from '@site/src/data/....yaml'`.
+    // Attaches original YAML text for the Download YAML Source button.
     function yamlLoaderPlugin() {
       return {
-        name: 'yaml-loader',
+        name: 'yaml-with-source-loader',
         configureWebpack() {
           return {
             module: {
               rules: [
                 {
                   test: /\.ya?ml$/,
-                  use: 'yaml-loader',
+                  use: require.resolve('./src/plugins/yaml-with-source-loader.js'),
                 },
               ],
             },
