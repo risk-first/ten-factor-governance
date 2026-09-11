@@ -5,64 +5,66 @@ sidebar_position: 1
 
 # AI Portfolio Assistant Demo
 
-1. **Select a portfolio**
-   - The Portfolio app broadcasts an `fdc3.portfolio` context.
-   - The AI Assistant receives the selected portfolio.
+Intent and context names below match the [FDC3 interop catalog](./fdc3-interop.mdx).
 
-2. **Analyse portfolio risk**
+1. **Select a portfolio** (`observe`)
+   - The Portfolio app broadcasts an `fdc3.portfolio` context.
+   - The AI Assistant receives the selected portfolio and aligns with the desktop.
+
+2. **Analyse portfolio risk** (`analyse`)
    - The user asks: *“What are the biggest risks in this portfolio?”*
-   - The AI Assistant raises `AnalyzePortfolioRisk`.
+   - The AI Assistant raises `demo.GetPortfolioRisk` with `fdc3.portfolio`.
    - The Desktop Agent intercepts the intent and checks it with the Governance Gateway.
    - Governance returns **ALLOW**.
-   - The Risk app performs the deterministic analysis and returns the result.
-   - The AI Assistant explains the result to the user.
+   - The Risk app performs the deterministic analysis and returns `demo.portfolioRisk` (with FDC3 Security provenance).
+   - Optionally, the user asks for a stress test; the Assistant raises `demo.RunStressScenario` with `demo.stressScenarioRequest` and receives `demo.stressScenarioResult` from the Risk app.
 
-3. **Investigate a specific risk**
-   - The AI Assistant raises `ViewAnalysis`, `ViewNews`, or a similar research intent for an affected `fdc3.instrument`.
+3. **Gather evidence and explain** (`explain`)
+   - The AI Assistant raises `demo.GetResearch` with `fdc3.instrument`, `fdc3.instrumentList`, or `fdc3.portfolio`.
    - Governance returns **ALLOW**.
-   - The Research app provides supporting information.
-   - The AI combines the risk and research results into an explanation.
+   - The Research app returns `demo.researchBundle` (signed for provenance).
+   - The Assistant combines `demo.portfolioRisk` and `demo.researchBundle` into an explanation for the user.
+   - Optionally, supporting `View*` intents (`ViewAnalysis`, `ViewNews`, `ViewInstrument`, and similar) open the underlying specialist UIs without changing the analysis itself.
 
-4. **Request an investment recommendation**
+4. **Request an investment recommendation** (`recommend`)
    - The user asks: *“What should I do about the energy concentration?”*
-   - The AI Assistant raises `CreatePortfolioRecommendation`.
    - Governance evaluates applicable controls, such as:
      - approved AI model;
      - current portfolio data;
-     - valid risk analysis;
+     - valid risk analysis and research evidence;
      - permitted recommendation capability.
    - Governance returns **ALLOW** or **CONDITIONAL ALLOW**.
-   - The AI produces a recommendation.
+   - The Assistant produces an on-screen portfolio recommendation — a recommended portfolio change with rationale and supporting evidence, not an executable order.
 
-5. **Create a rebalance proposal**
-   - The user says: *“Reduce energy exposure to 15%.”*
-   - The AI Assistant raises `CreateRebalanceProposal`.
+5. **Create an order proposal** (`propose`)
+   - The user says: *“Reduce my energy exposure to 15%.”*
+   - The AI Assistant raises `demo.CreateOrderProposal` with `demo.portfolioRecommendation`.
    - Governance verifies that the AI is permitted to construct, but not execute, a proposed trade.
-   - The portfolio/rebalancing app produces a proposed `fdc3.orderList`.
+   - The Order Entry app returns `demo.orderProposal` — a draft basket for human review (signed for provenance).
 
-6. **Send the proposal for human review**
-   - The AI Assistant raises `ReviewOrders` with the proposed order list.
-   - Governance returns **ALLOW — HUMAN APPROVAL REQUIRED**.
-   - The Desktop Agent forwards the request to the Order Entry app.
-   - The user can inspect the proposed trades.
+6. **Human review in Order Entry**
+   - The draft `demo.orderProposal` is presented in the Order Entry app.
+   - Governance treats this as **ALLOW — HUMAN APPROVAL REQUIRED**.
+   - The user inspects the proposed trades. A reviewed basket may be represented as an `fdc3.orderList` for any subsequent execution path.
 
-7. **Attempt autonomous execution**
-   - The AI attempts to raise `ExecuteOrders`.
-   - The Desktop Agent again checks with the Governance Gateway.
+7. **Attempt autonomous execution** (`execute` — denied)
+   - The user (or the Assistant under user pressure) attempts: *“Just execute those trades.”*
+   - The AI Assistant raises `demo.SubmitOrders` with `fdc3.orderList`.
+   - The Desktop Agent checks with the Governance Gateway.
    - Governance determines that the AI has no delegated trade-execution authority.
    - Governance returns **DENY**.
-   - The Desktop Agent does not forward the intent.
+   - The Desktop Agent does not forward the intent to Execution / Order Entry.
 
 8. **Inspect the governance decision**
    - The Governance app displays the decision and its traceability:
-     - governed activity;
+     - governed activity (including the named FDC3 intent);
      - actor;
      - applicable policy/control;
      - evaluation results;
      - evidence;
      - decision;
      - required human action.
-   - The denied execution demonstrates that governance changes system behaviour rather than merely recording it.
+   - The denied `demo.SubmitOrders` demonstrates that governance changes system behaviour rather than merely recording it.
 
 9. **Connect the runtime decision to ISO 42001**
    - Show how the controls and evidence relate back to the organisation's AI governance requirements.
@@ -80,9 +82,14 @@ sidebar_position: 1
 
       `observe → analyse → explain → recommend → propose → execute`
 
+    - Map the demo intents onto that chain:
+      - analyse: `demo.GetPortfolioRisk`, `demo.RunStressScenario`
+      - explain: `demo.GetResearch`
+      - propose: `demo.CreateOrderProposal`
+      - execute (blocked): `demo.SubmitOrders`
     - The key point: **Ten-Factor governance determines how far the AI may progress along that chain, based on explicit, machine-readable governance.**
 
 11. **Opportunities for further expansion**
-     - Here, we are just showing how we can use FDC3 to govern an AI application.
-     - We could apply the same governance gateway to MCP.
-     - Also, the governance runtime itself could be an AI agent running to observe and constrain the assistant.
+    - Here, we are just showing how we can use FDC3 to govern an AI application.
+    - We could apply the same governance gateway to MCP.
+    - Also, the governance runtime itself could be an AI agent running to observe and constrain the assistant.
