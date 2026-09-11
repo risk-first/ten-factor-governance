@@ -1,0 +1,128 @@
+# CommunicationPlan — ISO/IEC 42001 Clause 7.4 and Annex A.8.5
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: CommunicationPlan
+
+title: "Communication plan for the AI Portfolio Assistant AIMS"
+
+metadata:
+  id: apa-communication-plan
+  type: CommunicationPlan
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Planned communications for informing portfolio managers, compliance and the
+    regulator about policy, performance and AI incidents.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-stakeholder-requirements
+      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://stakeholder-requirements.yaml
+    - id: apa-policy
+      title: "AI Portfolio Assistant policy"
+      version: "0.1.0"
+      url: file://../policy.yaml
+    - id: apa-reporting-obligation
+      title: "External reporting obligations"
+      version: "0.1.0"
+      url: file://reporting-obligation.yaml
+
+clauses: ["7.4", "A.8.5"]
+
+requirements:
+  - id: comm-policy-to-pms
+    subject: "AI policy and authority-level guidance for portfolio managers"
+    content: |
+      Intended use, prohibited uses, authority ladder, approval duties and how
+      to escalate suspected control failures.
+    audience:
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+    direction: Outbound
+    trigger:
+      type: Scheduled
+      cadence: Annual
+    channel: "Desktop enablement pack and Investment Management intranet"
+    owner:
+      name: "AI Governance Office"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-human-oversight
+
+  - id: comm-incident-to-compliance
+    subject: "Internal notification of AI incidents and near-misses"
+    content: |
+      What happened, systems and parties affected, authority level involved,
+      containment status and whether regulatory notification may be owed.
+    audience:
+      - reference-id: apa-party-register
+        entry-id: compliance
+      - reference-id: apa-party-register
+        entry-id: cio-top-management
+    direction: Outbound
+    trigger:
+      type: Event
+      event: "AI incident confirmed at Medium severity or above, or any propose/execute control failure"
+      within: "4 hours of confirmation"
+    channel: "Incident management platform and Compliance escalation mailbox"
+    owner:
+      name: "AI Governance Office"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-regulatory-oversight
+
+  - id: comm-incident-to-regulator
+    subject: "Regulatory notification of serious AI incidents"
+    content: |
+      Nature of the incident, client impact, controls that failed or held, and
+      remediation underway — assembled per reporting obligation.
+    audience:
+      - reference-id: apa-party-register
+        entry-id: regulator-fca
+    direction: Outbound
+    trigger:
+      type: Event
+      event: "Serious AI incident affecting client outcomes or market integrity confirmed"
+      within: "72 hours of confirmation"
+    channel: "FCA regulatory notification portal"
+    owner:
+      name: "Compliance"
+      affiliation: "Compliance"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-regulatory-oversight
+
+  - id: comm-pm-incident-awareness
+    subject: "Desk notification when the assistant is suspended or restricted"
+    content: |
+      Reason for suspension/restriction, temporary operating instructions, and
+      expected restoration conditions.
+    audience:
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+    direction: Outbound
+    trigger:
+      type: Event
+      event: "Production suspension or authority-ceiling reduction for the assistant"
+      within: "1 hour of decision"
+    channel: "Desk broadcast and FDC3 notification"
+    owner:
+      name: "AI Portfolio Assistant Product Owner"
+      affiliation: "Investment Management"
+
+review:
+  cadence: Annual
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "Change to FCA notification expectations"
+    - "Material change to incident severity definitions"

@@ -1,0 +1,133 @@
+# IncidentLog — ISO/IEC 42001 Annex A.8.4
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: IncidentLog
+
+title: "AI incident log for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-incident
+  type: IncidentLog
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Operational AI incidents for the Portfolio Assistant, including the
+    propose-without-approval near miss.
+  mapping-references:
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-communication-plan
+      title: "Communication plan"
+      version: "0.1.0"
+      url: file://communication-plan.yaml
+    - id: apa-corrective-action
+      title: "Corrective action log"
+      version: "0.1.0"
+      url: file://corrective-action.yaml
+    - id: apa-reporting-obligation
+      title: "External reporting obligations"
+      version: "0.1.0"
+      url: file://reporting-obligation.yaml
+
+clauses: ["A.8.4"]
+
+entries:
+  - id: inc-propose-without-approval
+    title: "Near miss — assistant constructed order proposal without approval gate"
+    description: |
+      During a propose-level session the assistant constructed a structured order
+      proposal that was presented as ready for trading-desk handoff without the
+      human approval gate enforcing acknowledgement. The portfolio manager did
+      not approve; no order was submitted. Detected via session-logger alert when
+      proposal_ready was emitted without approval_recorded.
+    category: "Authority control near miss"
+    severity: High
+    status: Contained
+    detected: "2026-08-28T14:22:00Z"
+    occurred: "2026-08-28T14:18:00Z"
+    resolved: "2026-08-28T14:40:00Z"
+    owner:
+      name: "AI Governance Office"
+    affected-systems:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    affected-parties:
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+      - reference-id: apa-party-register
+        entry-id: clients
+        remarks: "Potential exposure only; no client trade effected"
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+        remarks: "Failed / bypassed"
+      - reference-id: apa-controls
+        entry-id: apa-ctl-006-execute-prohibit
+        remarks: "Held — no submission occurred"
+      - reference-id: apa-controls
+        entry-id: apa-ctl-013-session-logging
+        remarks: "Held — enabled detection"
+    communications:
+      - id: icomm-compliance
+        audience:
+          reference-id: apa-party-register
+          entry-id: compliance
+        requirement:
+          reference-id: apa-communication-plan
+          entry-id: comm-incident-to-compliance
+        due: "2026-08-28T18:22:00Z"
+        sent: "2026-08-28T15:05:00Z"
+        channel: "Incident management platform"
+        summary: |
+          Near miss: propose without approval gate; no execution; desk propose
+          authority suspended pending fix.
+        status: Acknowledged
+      - id: icomm-pms
+        audience:
+          reference-id: apa-party-register
+          entry-id: portfolio-managers
+        requirement:
+          reference-id: apa-communication-plan
+          entry-id: comm-pm-incident-awareness
+        sent: "2026-08-28T15:20:00Z"
+        channel: "Desk broadcast"
+        summary: "Propose authority temporarily disabled on affected desk."
+        status: Sent
+      - id: icomm-fca
+        audience:
+          reference-id: apa-party-register
+          entry-id: regulator-fca
+        requirement:
+          reference-id: apa-reporting-obligation
+          entry-id: fca-serious-ai-incident
+        status: "Not Required"
+        summary: |
+          Assessed as near miss with no client trade or market impact; recorded
+          for internal escalation and management review. Escalation to FCA not
+          triggered under current criteria.
+    nonconformities:
+      - reference-id: apa-corrective-action
+        entry-id: nc-propose-without-approval

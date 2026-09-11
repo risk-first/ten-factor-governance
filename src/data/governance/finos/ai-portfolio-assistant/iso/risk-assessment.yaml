@@ -1,0 +1,293 @@
+# RiskAssessment — ISO/IEC 42001 Clauses 6.1.2 and 8.2
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: RiskAssessment
+
+title: "AI Portfolio Assistant — AI risk assessment"
+
+metadata:
+  id: apa-risk-assessment
+  type: RiskAssessment
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Dated assessment of risks in the apa-risks catalog for the AI Portfolio
+    Assistant, informed by the system impact assessment and producing treatment
+    decisions recorded in the applicability profile.
+  mapping-references:
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+    - id: apa-threats
+      title: "AI Portfolio Assistant threat catalog"
+      version: "0.1.0"
+      url: file://../threat.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-impact-assessment
+      title: "AI Portfolio Assistant impact assessment"
+      version: "0.1.0"
+      url: file://impact-assessment.yaml
+    - id: apa-applicability-profile
+      title: "Statement of Applicability for apa-controls"
+      version: "0.1.0"
+      url: file://applicability-profile.yaml
+
+clauses: ["6.1.2", "8.2"]
+
+subject:
+  reference-id: apa-ai-system-register
+  entry-id: ai-portfolio-assistant
+
+context: |
+  Initial production assessment for release 1.0.0 on Investment Management
+  desks in the UK/EU, with authority ceiling at propose and execute prohibited.
+  Assessment uses the standing apa-risks catalog and impact-assessment results
+  dated 2026-09-05.
+
+criteria:
+  methodology: "ISO/IEC 27005-aligned qualitative assessment adapted for ISO/IEC 42001 AI risk"
+  likelihood-scale:
+    - level: Rare
+      description: "Not expected in the assessment period under current controls"
+    - level: Unlikely
+      description: "Could occur but not anticipated in normal operation"
+    - level: Possible
+      description: "May occur several times a year without additional treatment"
+    - level: Likely
+      description: "Expected to occur multiple times without effective controls"
+    - level: "Almost Certain"
+      description: "Expected to occur frequently absent treatment"
+  consequence-scale:
+    - level: Low
+      description: "Limited desk disruption; no client or regulatory impact"
+    - level: Medium
+      description: "Material client or operational impact recoverable within existing processes"
+    - level: High
+      description: "Significant client harm, unauthorized trading exposure, or regulatory breach"
+    - level: Critical
+      description: "Severe multi-client harm, market integrity impact, or enforcement action"
+  acceptance: |
+    Residual risk above Medium requires CIO acceptance. Unauthorized trading and
+    regulatory non-compliance cannot be Accepted without Mitigate treatment and
+    top-management residual sign-off.
+  appetite: Low
+
+assessor:
+  id: ai-governance-office
+  name: AI Governance Office
+  type: Human
+
+date: "2026-09-08T00:00:00Z"
+trigger: Initial
+
+entries:
+  - id: ra-client-confidentiality-breach
+    risk:
+      reference-id: apa-risks
+      entry-id: client-confidentiality-breach
+    likelihood: Possible
+    consequence: High
+    rating: High
+    analysis: |
+      Portfolio context and research in session create leakage paths across
+      portfolios or to suppliers if isolation and access controls fail.
+    treatment: Mitigate
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-007-portfolio-access-control
+      - reference-id: apa-controls
+        entry-id: apa-ctl-008-cross-portfolio-isolation
+      - reference-id: apa-controls
+        entry-id: apa-ctl-014-model-provider-controls
+    residual:
+      severity: Medium
+      accepted-by:
+        name: "Chief Information Officer"
+      date: "2026-09-08T00:00:00Z"
+      justification: "Isolation and contractual processing limits leave residual supplier-path exposure."
+    owner:
+      name: "Chief Data Officer"
+      affiliation: "Data"
+
+  - id: ra-unsuitable-investment-influence
+    risk:
+      reference-id: apa-risks
+      entry-id: unsuitable-investment-influence
+    likelihood: Possible
+    consequence: High
+    rating: High
+    analysis: |
+      Impact assessment identifies unsuitable client trades as a primary harm
+      pathway at recommend/propose levels under automation bias.
+    treatment: Mitigate
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-004-recommend-gating
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-012-explanation-grounding
+    residual:
+      severity: Medium
+      accepted-by:
+        name: "Chief Information Officer"
+      date: "2026-09-08T00:00:00Z"
+      justification: "Human approval and grounding leave residual conduct risk sampled by compliance."
+    owner:
+      name: "Compliance"
+      affiliation: "Compliance"
+
+  - id: ra-unauthorized-trading
+    risk:
+      reference-id: apa-risks
+      entry-id: unauthorized-trading
+    likelihood: Unlikely
+    consequence: Critical
+    rating: High
+    analysis: |
+      Near-miss propose-without-approval scenarios show the risk is realistic if
+      authority gates fail; impact of execute would be severe.
+    treatment: Mitigate
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-001-authority-ceiling
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-006-execute-prohibit
+      - reference-id: apa-controls
+        entry-id: apa-ctl-013-session-logging
+    residual:
+      severity: Medium
+      accepted-by:
+        name: "Chief Information Officer"
+      date: "2026-09-08T00:00:00Z"
+      justification: "Execute path disabled; residual is near-miss and control-failure exposure."
+    owner:
+      name: "AI Governance Office"
+
+  - id: ra-regulatory-non-compliance
+    risk:
+      reference-id: apa-risks
+      entry-id: regulatory-non-compliance
+    likelihood: Unlikely
+    consequence: High
+    rating: High
+    treatment: Mitigate
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-013-session-logging
+      - reference-id: apa-controls
+        entry-id: apa-ctl-015-incident-escalation
+    residual:
+      severity: Medium
+      accepted-by:
+        name: "Chief Information Officer"
+      date: "2026-09-08T00:00:00Z"
+    owner:
+      name: "Compliance"
+      affiliation: "Compliance"
+
+  - id: ra-market-conduct-breach
+    risk:
+      reference-id: apa-risks
+      entry-id: market-conduct-breach
+    likelihood: Unlikely
+    consequence: High
+    rating: Medium
+    treatment: Mitigate
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-004-recommend-gating
+      - reference-id: apa-controls
+        entry-id: apa-ctl-009-deterministic-calc-only
+    residual:
+      severity: Low
+      accepted-by:
+        name: "Compliance"
+      date: "2026-09-08T00:00:00Z"
+    owner:
+      name: "Compliance"
+      affiliation: "Compliance"
+
+  - id: ra-operational-overreliance
+    risk:
+      reference-id: apa-risks
+      entry-id: operational-overreliance
+    likelihood: Likely
+    consequence: Medium
+    rating: Medium
+    treatment: Mitigate
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-003-explain-disclosure
+      - reference-id: apa-controls
+        entry-id: apa-ctl-012-explanation-grounding
+    residual:
+      severity: Low
+      accepted-by:
+        name: "AI Portfolio Assistant Product Owner"
+      date: "2026-09-08T00:00:00Z"
+    owner:
+      name: "AI Portfolio Assistant Product Owner"
+      affiliation: "Investment Management"
+
+  - id: ra-model-supply-chain-exposure
+    risk:
+      reference-id: apa-risks
+      entry-id: model-supply-chain-exposure
+    likelihood: Possible
+    consequence: Medium
+    rating: Medium
+    treatment: Mitigate
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-014-model-provider-controls
+      - reference-id: apa-controls
+        entry-id: apa-ctl-011-prompt-injection-defenses
+    residual:
+      severity: Medium
+      accepted-by:
+        name: "Chief Information Officer"
+      date: "2026-09-08T00:00:00Z"
+      justification: "Supplier dependency remains; exit plan and version pinning reduce but do not remove it."
+    owner:
+      name: "Model Risk Management"
+      affiliation: "Risk"
+
+conclusion: |
+  All catalogued risks are treated by Mitigate through apa-controls. No risk is
+  Accepted untreated. Residual Medium exposures for confidentiality, unsuitable
+  influence, unauthorized trading and supply chain are accepted by the CIO
+  subject to the applicability profile and impact-assessment conditions.
+
+impact-assessments:
+  - reference-id: apa-impact-assessment
+    entry-id: apa-impact-assessment
+
+applicability-profile:
+  reference-id: apa-applicability-profile
+  entry-id: apa-applicability-profile
+
+review:
+  cadence: Annual
+  last-reviewed: "2026-09-08T00:00:00Z"
+  next-review: "2027-09-08T00:00:00Z"
+  triggers:
+    - "Serious AI incident"
+    - "Material change to intended use or tool allowlist"
+    - "Change of foundation model provider"

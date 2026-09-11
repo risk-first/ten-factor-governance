@@ -1,0 +1,177 @@
+# DatasetRegister — ISO/IEC 42001 Annex A.7, A.4.3
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: DatasetRegister
+
+title: "Data resources for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-dataset-register
+  type: DatasetRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Data resources used to operate and evaluate the AI Portfolio Assistant,
+    including portfolio holdings snapshots, investment research and synthetic
+    historical recommendations for evaluation.
+  mapping-references:
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+    - id: apa-supplier-assurance
+      title: "Supplier assurance register"
+      version: "0.1.0"
+      url: file://supplier-assurance.yaml
+
+clauses: ["A.7.2", "A.7.3", "A.7.4", "A.7.5", "A.7.6", "A.4.3"]
+
+datasets:
+  - id: portfolio-holdings-snapshots
+    name: "Portfolio holdings snapshots"
+    description: |
+      Point-in-time holdings and mandate metadata exposed to the assistant for
+      the authenticated portfolio manager's entitled portfolios via FDC3 context.
+    version: "2026.09"
+    owner:
+      responsible:
+        - name: "Portfolio data platform"
+          affiliation: "Investment Management Technology"
+      accountable:
+        - name: "Chief Data Officer"
+          affiliation: "Data"
+    stages: ["Inference Input", "Retrieval"]
+    purpose: |
+      Provide current portfolio context so the assistant can observe positions
+      and invoke deterministic analytics against the correct book.
+    permitted-uses:
+      - "Session-scoped observation and analysis for entitled managers"
+      - "Audit reconstruction of AI-assisted decisions"
+    prohibited-uses:
+      - "Training or fine-tuning foundation models"
+      - "Cross-portfolio access outside entitlement"
+      - "Disclosure to suppliers beyond approved processing"
+    sensitivity: "Confidential — client portfolio"
+    personal-data: true
+    acquisition:
+      method: Derived
+      source: "Internal portfolio accounting and entitlement systems"
+      lawful-basis: "Legitimate interests / contractual necessity for portfolio management"
+      rights: "Firm may process for investment management; redistribution restricted"
+    quality:
+      assessed: "2026-08-15T00:00:00Z"
+      known-limitations:
+        - "Intraday corporate actions may lag by one settlement cycle"
+      representativeness: "Covers Investment Management books in AIMS scope"
+    retention:
+      period: "7 years from session closure"
+      disposition: Archive
+      classification: Confidential
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    risks:
+      - reference-id: apa-risks
+        entry-id: client-confidentiality-breach
+
+  - id: investment-research-corpus
+    name: "Investment research corpus"
+    description: |
+      Internally authored and licensed external research indexed for retrieval
+      when explaining positions, risks or recommendations.
+    version: "2026.09"
+    owner:
+      responsible:
+        - name: "Research operations"
+          affiliation: "Investment Management"
+      accountable:
+        - name: "Head of Research"
+          affiliation: "Investment Management"
+    stages: ["Retrieval"]
+    purpose: |
+      Ground explanations and recommendations in retrieved research passages
+      rather than unaudited model recollection.
+    permitted-uses:
+      - "RAG retrieval during authorised assistant sessions"
+      - "Evaluation of grounding quality"
+    prohibited-uses:
+      - "Training third-party foundation models on licensed content beyond licence"
+      - "Treating research as authoritative trading instructions"
+    sensitivity: "Internal / licensed"
+    personal-data: false
+    acquisition:
+      method: Licensed
+      source: "Internal research vault and market-data/research vendor feeds"
+      supplier:
+        reference-id: apa-supplier-assurance
+        entry-id: market-data-assurance
+      licence: "Vendor research redistribution terms; internal research policy"
+      rights: "Retrieve and display under firm licence; no model training on restricted sets"
+    quality:
+      assessed: "2026-08-20T00:00:00Z"
+      known-limitations:
+        - "Corpus may contain outdated views; publication date must be surfaced"
+        - "External research may contain adversarial or promotional content"
+      representativeness: "Biased toward liquid large-cap equity and rates coverage"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    risks:
+      - reference-id: apa-risks
+        entry-id: unsuitable-investment-influence
+
+  - id: historical-recommendations-eval
+    name: "Historical recommendations for evaluation (synthetic/anonymized)"
+    description: |
+      Synthetic and anonymized historical recommendation and proposal scenarios
+      used to evaluate authority gating, grounding and approval workflows
+      without exposing live client portfolios.
+    version: "1.0.0"
+    owner:
+      responsible:
+        - name: "AI Portfolio Assistant Engineering"
+          affiliation: "Investment Management Technology"
+      accountable:
+        - name: "Model Risk Management"
+    stages: ["Evaluation", "Testing"]
+    purpose: |
+      Support pre-release behavioural evaluation of authority controls and
+      explanation quality.
+    permitted-uses:
+      - "Automated and human evaluation suites"
+      - "Model risk challenge testing"
+    prohibited-uses:
+      - "Production inference"
+      - "Client reporting"
+    sensitivity: "Internal"
+    personal-data: false
+    acquisition:
+      method: Synthetic
+      source: "Anonymized desk scenarios plus synthetic mandate templates"
+      date: "2026-07-01T00:00:00Z"
+      rights: "Internal evaluation use only"
+    quality:
+      assessed: "2026-08-01T00:00:00Z"
+      known-limitations:
+        - "Synthetic scenarios under-represent rare mandate constraints"
+      representativeness: "Designed to stress authority levels, not market regimes"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+
+review:
+  cadence: Biannual
+  next-review: "2027-03-01T00:00:00Z"
+  triggers:
+    - "New data source added to RAG or session context"
+    - "Change to personal-data lawful basis"

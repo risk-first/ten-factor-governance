@@ -1,0 +1,109 @@
+# CompetenceRegister — ISO/IEC 42001 Clauses 7.2 and 7.3
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: CompetenceRegister
+
+title: "Competence register for the AI Portfolio Assistant AIMS"
+
+metadata:
+  id: apa-competence
+  type: CompetenceRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Competences required of portfolio manager users, AI operations staff and
+    model risk reviewers for the AIMS to operate as designed.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-policy
+      title: "AI Portfolio Assistant policy"
+      version: "0.1.0"
+      url: file://../policy.yaml
+
+clauses: ["7.2", "7.3"]
+
+requirements:
+  - id: comp-pm-user
+    title: "Portfolio manager authority-aware use"
+    description: |
+      Operate the assistant within declared authority levels; challenge grounded
+      explanations; approve or reject propose-level outputs with accountability
+      for investment decisions retained.
+    role:
+      reference-id: apa-party-register
+      entry-id: portfolio-managers
+    applies-to:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    basis: [Training, Assessment]
+    revalidation: Annual
+
+  - id: comp-ai-ops
+    title: "AI operations and release gating"
+    description: |
+      Configure authority ceilings, tool allowlists and session logging; run
+      pre-release behavioural evaluation; respond to production control failures.
+    role:
+      reference-id: apa-party-register
+      entry-id: ai-governance-office
+    applies-to:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    basis: [Training, Experience, Assessment]
+    revalidation: Annual
+
+  - id: comp-model-risk-reviewer
+    title: "Model risk review of AI Portfolio Assistant"
+    description: |
+      Challenge evaluation evidence, inventory the system, and assess residual
+      model risk from hosted foundation models and RAG configurations.
+    role:
+      reference-id: apa-party-register
+      entry-id: model-risk
+    applies-to:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    basis: [Education, Experience, Certification]
+    revalidation: Biannual
+
+awareness:
+  - id: aware-policy
+    subject: "AI Portfolio Assistant policy and authority ceiling"
+    audience:
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+      - reference-id: apa-party-register
+        entry-id: ai-governance-office
+    method: "Mandatory e-learning and desk briefing on first enablement"
+    frequency: Annual
+    attestation: "Electronic acknowledgement before production access"
+
+  - id: aware-incident
+    subject: "Consequences of nonconformity and how to escalate AI incidents"
+    audience:
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+      - reference-id: apa-party-register
+        entry-id: compliance
+    method: "Incident playbook briefing"
+    frequency: Annual
+
+review:
+  cadence: Annual
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "Material change to authority levels"
+    - "Serious incident attributable to competence failure"

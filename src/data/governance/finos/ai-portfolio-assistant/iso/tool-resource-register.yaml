@@ -1,0 +1,188 @@
+# ToolResourceRegister — ISO/IEC 42001 Annex A.4.2–A.4.6
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: ToolResourceRegister
+
+title: "Tooling resources for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-tool-resource-register
+  type: ToolResourceRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Tooling and services the AI Portfolio Assistant depends on: FDC3 portfolio
+    and risk applications, stress engine, research retrieval, foundation model
+    API and session logging.
+  mapping-references:
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+    - id: apa-supplier-assurance
+      title: "Supplier assurance register"
+      version: "0.1.0"
+      url: file://supplier-assurance.yaml
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+
+clauses: ["A.4.2", "A.4.4", "A.4.5", "A.4.6"]
+
+resources:
+  - id: fdc3-portfolio-app
+    name: "FDC3 portfolio application"
+    kind: Tooling
+    description: |
+      Desktop portfolio application exposing holdings context and intents via
+      FDC3 for entitled portfolio managers.
+    functions: [Deployment, Monitoring]
+    external: false
+    owner:
+      responsible:
+        - name: "Desktop platforms"
+          affiliation: "Investment Management Technology"
+      accountable:
+        - name: "AI Portfolio Assistant Product Owner"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-007-portfolio-access-control
+      - reference-id: apa-controls
+        entry-id: apa-ctl-010-tool-allowlist
+
+  - id: risk-exposure-app
+    name: "Risk and exposure application"
+    kind: Tooling
+    description: |
+      Deterministic application that calculates exposures and risk metrics from
+      portfolio context; the assistant interprets results rather than inventing them.
+    functions: [Deployment]
+    external: false
+    owner:
+      responsible:
+        - name: "Risk systems"
+          affiliation: "Risk Technology"
+      accountable:
+        - name: "Head of Market Risk"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-009-deterministic-calc-only
+      - reference-id: apa-controls
+        entry-id: apa-ctl-010-tool-allowlist
+
+  - id: stress-engine
+    name: "Stress scenario engine"
+    kind: Tooling
+    description: |
+      Deterministic stress engine producing portfolio impact under adverse
+      scenarios for explanation to the portfolio manager.
+    functions: [Deployment, Evaluation]
+    external: false
+    owner:
+      responsible:
+        - name: "Risk systems"
+          affiliation: "Risk Technology"
+      accountable:
+        - name: "Head of Market Risk"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-009-deterministic-calc-only
+
+  - id: research-retrieval
+    name: "Investment research retrieval service"
+    kind: Service
+    description: |
+      Retrieval service over the investment research corpus used for RAG grounding.
+    functions: [Deployment, Evaluation]
+    external: false
+    owner:
+      responsible:
+        - name: "AI Portfolio Assistant Engineering"
+      accountable:
+        - name: "Head of Research"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-011-prompt-injection-defenses
+      - reference-id: apa-controls
+        entry-id: apa-ctl-012-explanation-grounding
+
+  - id: foundation-model-api
+    name: "Foundation model API"
+    kind: Model
+    description: |
+      Hosted foundation model used for generation and interpretation within
+      authority-bounded sessions.
+    functions: [Deployment, Evaluation]
+    version: "pinned-per-release"
+    external: true
+    supplier:
+      reference-id: apa-supplier-assurance
+      entry-id: foundation-model-assurance
+    owner:
+      accountable:
+        - name: "AI Governance Office"
+      consulted:
+        - name: "Model Risk Management"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-014-model-provider-controls
+    risks:
+      - reference-id: apa-risks
+        entry-id: model-supply-chain-exposure
+
+  - id: session-logger
+    name: "Session logger"
+    kind: Tooling
+    description: |
+      Records authority level, tool calls, retrievals, model version and human
+      approval decisions for audit and incident investigation.
+    functions: [Monitoring, Governance]
+    external: false
+    owner:
+      responsible:
+        - name: "AI Portfolio Assistant Engineering"
+      accountable:
+        - name: "AI Governance Office"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-013-session-logging
+
+review:
+  cadence: Quarterly
+  next-review: "2026-12-01T00:00:00Z"
+  triggers:
+    - "Addition of a new FDC3 intent or specialist application"
+    - "Change of foundation model provider or major version"

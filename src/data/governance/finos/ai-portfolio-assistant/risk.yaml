@@ -1,0 +1,300 @@
+title: AI Portfolio Assistant Risk Catalog
+
+metadata:
+  id: apa-risks
+  type: RiskCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Risk catalog for the AI Portfolio Assistant operating across FDC3 desktop
+    applications, intended to support authority-bounded governance policy for
+    observe through propose activity while prohibiting autonomous execution.
+  mapping-references:
+    - id: apa-threats
+      title: AI Portfolio Assistant Threat Catalog
+      version: "0.1.0"
+      url: file://threat.yaml
+      description: >
+        Layer 2 threats associated with AI Portfolio Assistant capabilities
+        and attack vectors.
+
+groups:
+  - id: confidentiality
+    title: Confidentiality
+    description: >
+      Risks involving unauthorized disclosure of client, portfolio, or other
+      non-public investment information through assistant sessions or tools.
+    appetite: Low
+    max-severity: High
+
+  - id: investment-conduct
+    title: Investment Conduct
+    description: >
+      Risks involving unsuitable investment influence, misleading explanations,
+      or conduct inconsistent with client suitability obligations.
+    appetite: Low
+    max-severity: High
+
+  - id: trading-authority
+    title: Trading Authority
+    description: >
+      Risks involving unauthorized order proposals, approval bypass, or any
+      autonomous trade execution by the assistant.
+    appetite: Low
+    max-severity: High
+
+  - id: regulatory
+    title: Regulatory
+    description: >
+      Risks involving regulatory, advice-authorization, market-conduct, or
+      recordkeeping non-compliance arising from assistant behaviour.
+    appetite: Low
+    max-severity: High
+
+  - id: operational-reliance
+    title: Operational Reliance
+    description: >
+      Risks involving overreliance on assistant outputs, loss of human
+      oversight, or degraded decision quality in portfolio management workflows.
+    appetite: Moderate
+    max-severity: Medium
+
+  - id: supply-chain
+    title: Supply Chain
+    description: >
+      Risks involving foundation-model providers, market-data vendors, or other
+      third-party dependencies used by the assistant.
+    appetite: Low
+    max-severity: High
+
+risks:
+  - id: client-confidentiality-breach
+    title: Client or Portfolio Confidentiality Breach
+    group: confidentiality
+    severity: High
+    description: >
+      The assistant may disclose client identities, holdings, orders, research
+      context, or other non-public portfolio information to unauthorized users,
+      sessions, tools, or third-party model providers.
+    impact: >
+      Could result in client harm, regulatory breach, contractual breach,
+      competitive disadvantage, and loss of trust in the investment franchise.
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unauthorized-portfolio-disclosure
+          - reference-id: cross-client-data-contamination
+          - reference-id: third-party-model-leakage
+    owner:
+      responsible:
+        - name: Portfolio Manager
+        - name: AI Portfolio Assistant Platform Team
+      accountable:
+        - name: AI Governance Office
+          affiliation: Company
+      consulted:
+        - name: Information Security
+          affiliation: Company
+        - name: Data Protection Officer
+          affiliation: Company
+        - name: Compliance
+          affiliation: Company
+      informed:
+        - name: Chief Investment Officer
+
+  - id: unsuitable-investment-influence
+    title: Unsuitable Investment Influence
+    group: investment-conduct
+    severity: High
+    description: >
+      The assistant may generate recommendations, explanations, or framed
+      options that steer a portfolio manager toward unsuitable, poorly grounded,
+      or client-inappropriate investment decisions.
+    impact: >
+      Could result in client detriment, suitability failures, mis-selling
+      exposure, and conduct findings against the firm or individuals.
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unsuitable-recommendation
+          - reference-id: misleading-risk-explanation
+    owner:
+      responsible:
+        - name: Portfolio Manager
+      accountable:
+        - name: Compliance
+          affiliation: Company
+      consulted:
+        - name: AI Governance Office
+          affiliation: Company
+        - name: Model Risk
+          affiliation: Company
+      informed:
+        - name: Chief Investment Officer
+
+  - id: unauthorized-trading
+    title: Unauthorized Trading or Order Submission
+    group: trading-authority
+    severity: High
+    description: >
+      The assistant may construct order proposals without required human
+      approval, escalate beyond its granted authority level, or attempt
+      autonomous trade execution.
+    impact: >
+      Could result in unauthorized market activity, client losses, trading-book
+      incidents, regulatory breach, and material operational disruption.
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unauthorized-order-proposal
+          - reference-id: unauthorized-trade-execution
+          - reference-id: loss-of-human-oversight
+    owner:
+      responsible:
+        - name: Portfolio Manager
+        - name: AI Portfolio Assistant Platform Team
+      accountable:
+        - name: Chief Investment Officer
+          affiliation: Company
+      consulted:
+        - name: Trading Controls
+          affiliation: Company
+        - name: Compliance
+          affiliation: Company
+        - name: AI Governance Office
+          affiliation: Company
+      informed:
+        - name: Model Risk
+
+  - id: regulatory-non-compliance
+    title: Regulatory or Advice-Authorization Non-Compliance
+    group: regulatory
+    severity: High
+    description: >
+      Assistant behaviour may constitute unauthorized investment advice, fail
+      required oversight or evidence obligations, or otherwise breach applicable
+      conduct, MiFID, or market-abuse related requirements.
+    impact: >
+      Could result in regulatory censure, remediation programmes, fines, and
+      constraints on continued use of AI-assisted portfolio workflows.
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: regulatory-advice-without-authorisation
+          - reference-id: loss-of-human-oversight
+    owner:
+      responsible:
+        - name: Compliance
+        - name: AI Governance Office
+      accountable:
+        - name: Compliance
+          affiliation: Company
+      consulted:
+        - name: Legal
+          affiliation: Company
+        - name: Model Risk
+          affiliation: Company
+      informed:
+        - name: Chief Investment Officer
+
+  - id: market-conduct-breach
+    title: Market Conduct Breach
+    group: regulatory
+    severity: High
+    description: >
+      The assistant may contribute to misleading communications, manipulative
+      order construction, or other market-conduct failures through research
+      interpretation, recommendations, or proposed orders.
+    impact: >
+      Could result in market-abuse exposure, trading surveillance findings,
+      reputational damage, and enforcement action.
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unsuitable-recommendation
+          - reference-id: unauthorized-order-proposal
+          - reference-id: regulatory-advice-without-authorisation
+          - reference-id: tool-misuse-manipulation
+    owner:
+      responsible:
+        - name: Portfolio Manager
+      accountable:
+        - name: Compliance
+          affiliation: Company
+      consulted:
+        - name: Trading Controls
+          affiliation: Company
+        - name: AI Governance Office
+          affiliation: Company
+      informed:
+        - name: Chief Investment Officer
+
+  - id: operational-overreliance
+    title: Operational Overreliance on Assistant Outputs
+    group: operational-reliance
+    severity: Medium
+    description: >
+      Portfolio managers may treat assistant explanations or recommendations as
+      authoritative without adequate challenge, grounding checks, or independent
+      verification against deterministic application outputs.
+    impact: >
+      Could degrade decision quality, obscure accountability, amplify model
+      error, and weaken human oversight expected under the authority ladder.
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: loss-of-human-oversight
+          - reference-id: misleading-risk-explanation
+          - reference-id: unsuitable-recommendation
+    owner:
+      responsible:
+        - name: Portfolio Manager
+      accountable:
+        - name: Line Manager
+          affiliation: Investment Management
+      consulted:
+        - name: AI Governance Office
+          affiliation: Company
+        - name: Model Risk
+          affiliation: Company
+      informed:
+        - name: Compliance
+
+  - id: model-supply-chain-exposure
+    title: Model and Tool Supply-Chain Exposure
+    group: supply-chain
+    severity: High
+    description: >
+      Foundation-model providers, retrieval corpora, market-data feeds, or tool
+      integrations used by the assistant may leak data, degrade integrity, or
+      introduce ungoverned behaviour into portfolio workflows.
+    impact: >
+      Could result in confidentiality loss, decision-integrity failures,
+      concentration risk on third parties, and inability to evidence control
+      effectiveness to regulators.
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: third-party-model-leakage
+          - reference-id: tool-misuse-manipulation
+    owner:
+      responsible:
+        - name: AI Portfolio Assistant Platform Team
+      accountable:
+        - name: AI Governance Office
+          affiliation: Company
+      consulted:
+        - name: Model Risk
+          affiliation: Company
+        - name: Information Security
+          affiliation: Company
+        - name: Third-Party Risk
+          affiliation: Company
+      informed:
+        - name: Compliance

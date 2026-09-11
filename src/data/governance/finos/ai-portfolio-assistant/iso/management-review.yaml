@@ -1,0 +1,186 @@
+# ManagementReview — ISO/IEC 42001 Clause 9.3
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: ManagementReview
+
+title: "Management review — AI Portfolio Assistant AIMS Q3 2026"
+
+metadata:
+  id: apa-management-review-2026-q3
+  type: ManagementReview
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Q3 2026 top-management review of the AI Portfolio Assistant AIMS:
+    suitability, adequacy and effectiveness.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-organisation-context
+      title: "Organisational context"
+      version: "0.1.0"
+      url: file://organisation-context.yaml
+    - id: apa-aims-scope
+      title: "AIMS scope — AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://aims-scope.yaml
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-management-objectives
+      title: "AI management objectives"
+      version: "0.1.0"
+      url: file://management-objectives.yaml
+    - id: apa-audit-programme
+      title: "Internal audit programme"
+      version: "0.1.0"
+      url: file://audit-programme.yaml
+    - id: apa-corrective-action
+      title: "Corrective action log"
+      version: "0.1.0"
+      url: file://corrective-action.yaml
+    - id: apa-incident
+      title: "AI incident log"
+      version: "0.1.0"
+      url: file://incident.yaml
+    - id: apa-risk-assessment
+      title: "AI risk assessment"
+      version: "0.1.0"
+      url: file://risk-assessment.yaml
+    - id: apa-impact-assessment
+      title: "AI impact assessment"
+      version: "0.1.0"
+      url: file://impact-assessment.yaml
+    - id: apa-applicability-profile
+      title: "Statement of Applicability"
+      version: "0.1.0"
+      url: file://applicability-profile.yaml
+
+clauses: ["9.3"]
+
+period:
+  start: "2026-07-01T00:00:00Z"
+  end: "2026-09-30T23:59:59Z"
+
+date: "2026-09-22T00:00:00Z"
+
+chair:
+  name: "Chief Information Officer"
+  affiliation: "Technology"
+
+attendees:
+  - reference-id: apa-party-register
+    entry-id: cio-top-management
+  - reference-id: apa-party-register
+    entry-id: ai-governance-office
+  - reference-id: apa-party-register
+    entry-id: compliance
+  - reference-id: apa-party-register
+    entry-id: model-risk
+
+inputs:
+  context-changes:
+    - reference-id: apa-organisation-context
+      entry-id: competitive-pressure
+  party-feedback:
+    - "Portfolio managers support clear authority indicators; request faster research citation UI"
+    - "Compliance requests continued quarterly authority sampling after the near miss"
+  objectives:
+    - reference-id: apa-management-objectives
+      entry-id: authority-boundary-compliance
+    - reference-id: apa-management-objectives
+      entry-id: human-approval-coverage
+    - reference-id: apa-management-objectives
+      entry-id: impact-assessment-currency
+    - reference-id: apa-management-objectives
+      entry-id: incident-response-time
+    - reference-id: apa-management-objectives
+      entry-id: evaluation-pass-rate
+  audit-results:
+    - reference-id: apa-audit-programme
+      entry-id: audit-authority-q3-2026
+  nonconformities:
+    - reference-id: apa-corrective-action
+      entry-id: nc-propose-without-approval
+  incidents:
+    - reference-id: apa-incident
+      entry-id: inc-propose-without-approval
+  risk-status:
+    - reference-id: apa-risk-assessment
+  impact-status:
+    - reference-id: apa-impact-assessment
+  improvement-opportunities:
+    - "Complete partial implementation of prompt-injection defenses and model-provider continuous evaluation"
+    - "Expand synthetic evaluation scenarios for rare mandate constraints"
+  resource-adequacy: |
+    Resourcing is adequate for current scope; additional AI ops capacity needed
+    if a second desk cluster is onboarded in 2027.
+
+findings:
+  - id: finding-suitable
+    subject: "Suitability of the AIMS to the organisation's purpose"
+    assessment: Suitable
+    narrative: |
+      Scope, policy commitments and authority ceiling remain aligned with the
+      Investment Management purpose and prohibited autonomous execution.
+  - id: finding-adequate
+    subject: "Adequacy of documented information and controls"
+    assessment: Adequate
+    narrative: |
+      Documented information covers required AIMS artifacts. Two controls remain
+      partially implemented (prompt-injection defenses, model-provider continuous eval).
+  - id: finding-effective
+    subject: "Effectiveness of the AIMS"
+    assessment: Deficient
+    narrative: |
+      The propose-without-approval near miss shows a control effectiveness gap
+      that was contained before client impact; corrective action is in progress
+      and must be verified before effectiveness can be rated Adequate/Effective.
+
+decisions:
+  - id: dec-retain-ceiling
+    decision: "Retain authority ceiling at propose; do not introduce execute capability"
+    type: Scope
+    rationale: "Impact assessment conditions and competitive pressure require explicit retention of the prohibition."
+    affects:
+      - reference-id: apa-aims-scope
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    decided-by:
+      name: "Chief Information Officer"
+  - id: dec-complete-partial-controls
+    decision: "Fund completion of apa-ctl-011 and apa-ctl-014 to Implemented by year-end"
+    type: Resource
+    affects:
+      - reference-id: apa-applicability-profile
+  - id: dec-accept-residual
+    decision: "Reaffirm acceptance of Medium residual risks recorded in the Q3 risk assessment"
+    type: "Risk Acceptance"
+    affects:
+      - reference-id: apa-risk-assessment
+
+actions:
+  - id: mra-verify-corrective
+    description: "Verify effectiveness of corrective action for propose-without-approval before Q4 sampling closes"
+    owner:
+      name: "AI Governance Office"
+    due: "2026-11-15T00:00:00Z"
+    status: "In Progress"
+  - id: mra-partial-controls
+    description: "Drive apa-ctl-011 and apa-ctl-014 to Implemented and update the Statement of Applicability"
+    owner:
+      name: "AI Portfolio Assistant Engineering"
+      affiliation: "Investment Management Technology"
+    due: "2026-12-15T00:00:00Z"
+    status: Open
+
+next-review: "2026-12-15T00:00:00Z"

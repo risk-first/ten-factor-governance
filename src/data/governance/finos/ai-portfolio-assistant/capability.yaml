@@ -1,0 +1,133 @@
+title: AI Portfolio Assistant Capability Catalog
+
+metadata:
+  id: apa-capabilities
+  type: CapabilityCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    System capabilities that create the attack surface and authority surface
+    for the Financial AI Portfolio Assistant operating across FDC3 applications.
+
+groups:
+  - id: data-access
+    title: Data Access
+    description: >
+      Capabilities that read portfolio holdings, client context, or investment
+      research content used by the assistant.
+
+  - id: calculation-integration
+    title: Calculation Integration
+    description: >
+      Capabilities that invoke deterministic FDC3 applications and consume
+      their calculated outputs rather than computing financial figures in the
+      model.
+
+  - id: interpretation
+    title: Interpretation
+    description: >
+      Capabilities through which the assistant interprets calculated results
+      and research to produce explanations and recommendations.
+
+  - id: authority-actions
+    title: Authority Actions
+    description: >
+      Capabilities that construct or submit consequential investment actions
+      along the propose and execute authority levels.
+
+  - id: session-and-context
+    title: Session and Context
+    description: >
+      Capabilities that retain session state, broadcast desktop context, or
+      invoke tools across the multi-application workspace.
+
+capabilities:
+  - id: portfolio-read
+    title: Portfolio Read
+    description: >
+      Ability to read portfolio holdings, positions, cash, and related client
+      portfolio attributes available to the authenticated portfolio manager.
+    group: data-access
+
+  - id: research-retrieval
+    title: Investment Research Retrieval
+    description: >
+      Ability to retrieve investment research, market commentary, and related
+      documents for use as interpretive context by the assistant.
+    group: data-access
+
+  - id: fdc3-app-invocation
+    title: FDC3 Application Invocation
+    description: >
+      Ability to launch or invoke specialist FDC3 desktop applications that
+      perform portfolio, risk, or market functions on behalf of the user.
+    group: calculation-integration
+
+  - id: exposure-calculation-consume
+    title: Exposure Calculation Consumption
+    description: >
+      Ability to consume exposure, concentration, and related risk figures
+      produced by deterministic calculation applications.
+    group: calculation-integration
+
+  - id: stress-scenario-consume
+    title: Stress Scenario Consumption
+    description: >
+      Ability to consume stress-test and scenario results produced by
+      deterministic risk applications.
+    group: calculation-integration
+
+  - id: explanation-generation
+    title: Explanation Generation
+    description: >
+      Ability to generate natural-language explanations of portfolio positions,
+      exposures, stress results, and related risk information.
+    group: interpretation
+
+  - id: recommendation-generation
+    title: Recommendation Generation
+    description: >
+      Ability to generate investment recommendations such as suggested position
+      changes, hedges, or rebalancing actions for the portfolio manager.
+    group: interpretation
+
+  - id: order-proposal-construction
+    title: Order Proposal Construction
+    description: >
+      Ability to construct a proposed set of orders or trade tickets for human
+      review without submitting them to the market.
+    group: authority-actions
+
+  - id: trade-execution
+    title: Trade Execution
+    description: >
+      Ability to submit orders or otherwise execute trades that change the
+      portfolio, representing the highest authority level on the ladder.
+    group: authority-actions
+
+  - id: session-context-retention
+    title: Session Context Retention
+    description: >
+      Ability to retain conversation history, selected instruments, and other
+      session context across turns within an assistant session.
+    group: session-and-context
+
+  - id: multi-app-context-broadcast
+    title: Multi-Application Context Broadcast
+    description: >
+      Ability to broadcast or receive FDC3 context so that multiple desktop
+      applications share the same instrument, portfolio, or intent state.
+    group: session-and-context
+
+  - id: tool-calling
+    title: Tool Calling
+    description: >
+      Ability to call registered tools and APIs, including FDC3 intents and
+      model-invoked functions, to gather data or initiate downstream actions.
+    group: session-and-context

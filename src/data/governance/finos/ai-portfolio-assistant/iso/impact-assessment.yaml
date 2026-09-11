@@ -1,0 +1,230 @@
+# ImpactAssessment — ISO/IEC 42001 Clauses 6.1.4 and 8.4, Annex A.5
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: ImpactAssessment
+
+title: "AI Portfolio Assistant — AI system impact assessment"
+
+metadata:
+  id: apa-impact-assessment
+  type: ImpactAssessment
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Consequences of the AI Portfolio Assistant for clients, portfolio managers
+    and the firm, rated from affected parties' point of view and fed into risk
+    treatment.
+  mapping-references:
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+  approval:
+    approved-by:
+      name: "Chief Information Officer"
+      affiliation: "Technology"
+    date: "2026-09-08T00:00:00Z"
+    effective-date: "2026-09-10T00:00:00Z"
+
+clauses: ["6.1.4", "8.4", "A.5.2", "A.5.3", "A.5.4", "A.5.5"]
+
+system:
+  reference-id: apa-ai-system-register
+  entry-id: ai-portfolio-assistant
+system-version: "1.0.0"
+
+purpose-assessed: |
+  Assisting portfolio managers with observation, analysis, explanation and
+  authority-bounded recommendation or order proposal across FDC3 applications.
+  Conclusions do not hold for autonomous execution or unsupervised order
+  submission, both of which are prohibited uses.
+
+deployment-context: |
+  UK/EU Investment Management desks using the firm desktop. Portfolio managers
+  open FDC3-enabled applications; the assistant sees entitled portfolio context,
+  invokes deterministic risk/stress tools, retrieves research, and may recommend
+  or propose actions subject to human approval at propose level.
+
+assessor:
+  id: ai-governance-office
+  name: AI Governance Office
+  type: Human
+
+date: "2026-09-05T00:00:00Z"
+trigger: Initial
+methodology: "ISO/IEC 42005 impact assessment process, adapted"
+
+consultation:
+  - party:
+      reference-id: apa-party-register
+      entry-id: portfolio-managers
+    method: "Desk workshops with representative portfolio managers"
+    date: "2026-08-12T00:00:00Z"
+    summary: |
+      Managers asked for clear authority indicators and refused any path that
+      could submit orders without an explicit approval step.
+    influence: |
+      Propose-level human approval retained as a hard gate; execute remains prohibited.
+  - party:
+      reference-id: apa-party-register
+      entry-id: compliance
+    method: "Structured written consultation"
+    date: "2026-08-18T00:00:00Z"
+    summary: |
+      Compliance emphasised suitability sampling for AI-influenced recommendations
+      and client confidentiality across portfolios.
+    influence: |
+      Added recommend gating and cross-portfolio isolation as load-bearing mitigations.
+
+impacts:
+  - id: unsuitable-client-trades
+    title: "Unsuitable trades influenced by AI recommendations or proposals"
+    description: |
+      A recommendation or order proposal that conflicts with mandate, risk limits
+      or client preferences is accepted by a portfolio manager under time pressure,
+      harming the client's economic position or suitability outcome.
+    category: Economic
+    affected:
+      - reference-id: apa-party-register
+        entry-id: clients
+    severity: High
+    likelihood: Possible
+    reversibility: Partially Reversible
+    scale: Group
+    duration: Temporary
+    source: |
+      Weak grounding, incomplete mandate context, or automation bias at recommend/propose levels.
+    mitigations:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-004-recommend-gating
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-012-explanation-grounding
+    residual:
+      severity: Medium
+      justification: |
+        Human approval and grounding reduce but do not eliminate automation bias;
+        residual exposure is accepted with sampling by compliance.
+      accepted-by:
+        name: "Chief Information Officer"
+        affiliation: "Technology"
+      redress: |
+        Client complaints and remediation processes; trade reversal where market
+        and mandate rules allow.
+
+  - id: pm-overreliance
+    title: "Portfolio manager overreliance on assistant outputs"
+    description: |
+      Sustained reliance on explanations and recommendations erodes independent
+      challenge, so the human-in-the-loop control becomes formal rather than
+      substantive.
+    category: Autonomy
+    affected:
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+    severity: Medium
+    likelihood: Likely
+    reversibility: Reversible
+    scale: Group
+    duration: Persistent
+    source: "Automation bias under desk workload pressure."
+    mitigations:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-003-explain-disclosure
+      - reference-id: apa-controls
+        entry-id: apa-ctl-013-session-logging
+    residual:
+      severity: Low
+      justification: |
+        Disclosure of sources and periodic sampling detect declining challenge quality.
+      accepted-by:
+        name: "AI Portfolio Assistant Product Owner"
+        affiliation: "Investment Management"
+
+  - id: firm-regulatory-impact
+    title: "Regulatory and conduct consequences for the firm"
+    description: |
+      Failures of authority control, confidentiality or suitability create
+      supervisory, enforcement or reputational consequences for the firm beyond
+      the immediate client loss.
+    category: Reputational
+    affected:
+      - reference-id: apa-party-register
+        entry-id: cio-top-management
+      - reference-id: apa-party-register
+        entry-id: clients
+    severity: High
+    likelihood: Unlikely
+    reversibility: Partially Reversible
+    scale: Population
+    duration: Persistent
+    source: "Breach of authority ceiling or serious incident without timely notification."
+    mitigations:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-001-authority-ceiling
+      - reference-id: apa-controls
+        entry-id: apa-ctl-006-execute-prohibit
+      - reference-id: apa-controls
+        entry-id: apa-ctl-015-incident-escalation
+    residual:
+      severity: Medium
+      justification: |
+        Controls make unsupervised execution unavailable; residual relates to
+        near-misses and conduct interpretation risk accepted by top management.
+      accepted-by:
+        name: "Chief Information Officer"
+        affiliation: "Technology"
+
+conclusion:
+  outcome: "Proceed With Conditions"
+  narrative: |
+    Impacts on clients and the firm are acceptable while propose requires human
+    approval, execute remains prohibited, and confidentiality/isolation controls
+    hold. These conditions are load-bearing: without them the assessment does
+    not support continued operation.
+  conditions:
+    - "apa-ctl-005 propose human approval remains enforced in production"
+    - "apa-ctl-006 execute prohibition remains absolute for the assistant"
+    - "Cross-portfolio isolation and session logging remain enabled"
+    - "Impact assessment is refreshed before raising the authority ceiling"
+  approved-by:
+    name: "Chief Information Officer"
+    affiliation: "Technology"
+
+risks:
+  - reference-id: apa-risks
+    entry-id: unsuitable-investment-influence
+  - reference-id: apa-risks
+    entry-id: unauthorized-trading
+  - reference-id: apa-risks
+    entry-id: operational-overreliance
+  - reference-id: apa-risks
+    entry-id: regulatory-non-compliance
+
+review:
+  cadence: Biannual
+  last-reviewed: "2026-09-05T00:00:00Z"
+  next-review: "2027-03-05T00:00:00Z"
+  triggers:
+    - "Change to intended use or prohibited-use list"
+    - "Change of foundation model or major tool integration"
+    - "Any incident involving propose without approval or attempted execute"

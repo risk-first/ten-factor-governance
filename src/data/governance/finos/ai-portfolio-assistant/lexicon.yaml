@@ -1,0 +1,158 @@
+title: AI Portfolio Assistant Lexicon
+
+metadata:
+  id: apa-lexicon
+  type: Lexicon
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Controlled vocabulary for the AI Portfolio Assistant Gemara example,
+    covering FDC3 integration, authority levels, and related governance terms.
+
+terms:
+  - id: fdc3
+    title: Financial Desktop Connectivity and Collaboration Consortium
+    synonyms:
+      - FDC3
+    definition: >
+      An open standard for interoperability between financial desktop
+      applications, enabling context sharing and intents so applications can
+      work together without custom point-to-point integrations.
+    references:
+      - citation: FDC3 Standard
+        url: https://fdc3.finos.org
+
+  - id: portfolio-assistant
+    title: AI Portfolio Assistant
+    synonyms:
+      - Portfolio Assistant
+      - APA
+    definition: >
+      An AI system that assists portfolio managers across FDC3-enabled
+      applications by observing portfolio context, invoking deterministic
+      tools, interpreting results, and optionally recommending or proposing
+      actions within an authorized authority level.
+
+  - id: authority-level
+    title: Authority Level
+    synonyms:
+      - Authority
+      - Delegated Authority
+    definition: >
+      A discrete point on the authority ladder describing how much action the
+      AI Portfolio Assistant is permitted to take without additional human
+      approval. Higher levels imply greater consequence and stricter controls.
+
+  - id: observe
+    title: Observe
+    definition: >
+      The lowest authority level. The assistant may read portfolio context,
+      market data, and application state exposed through FDC3 or approved
+      tools, but must not analyse, explain, recommend, propose, or execute.
+
+  - id: analyse
+    title: Analyse
+    definition: >
+      An authority level allowing the assistant to invoke deterministic
+      applications and tools to compute exposures, stress scenarios, and
+      related analytics, without producing natural-language explanations or
+      recommendations for the portfolio manager.
+
+  - id: explain
+    title: Explain
+    definition: >
+      An authority level allowing the assistant to interpret and explain
+      results from deterministic applications and retrieved research to help
+      the portfolio manager understand positions and risks.
+
+  - id: recommend
+    title: Recommend
+    definition: >
+      An authority level allowing the assistant to suggest courses of action
+      to the portfolio manager, such as reducing a position or reviewing a
+      risk concentration, without constructing or submitting orders.
+
+  - id: propose
+    title: Propose
+    definition: >
+      An authority level allowing the assistant to construct a proposed set of
+      orders or portfolio changes for human review. Human approval is required
+      before any proposal may proceed toward execution.
+
+  - id: execute
+    title: Execute
+    definition: >
+      The highest authority level on the ladder. Submitting or otherwise
+      effecting orders or portfolio changes. Autonomous AI execution is
+      prohibited in this example; only a human may authorize execution.
+
+  - id: human-in-the-loop
+    title: Human in the Loop
+    synonyms:
+      - HITL
+      - Human Oversight
+    definition: >
+      A governance pattern requiring a qualified human, typically a portfolio
+      manager, to review and approve consequential AI outputs before they
+      take effect, especially at the propose level and for any path toward
+      execution.
+
+  - id: deterministic-application
+    title: Deterministic Application
+    synonyms:
+      - Deterministic Tool
+      - Specialist Application
+    definition: >
+      An FDC3 or internal application that performs portfolio, risk, or market
+      calculations using fixed algorithms and verified data sources. The AI
+      interprets outputs from these applications rather than inventing
+      numerical results itself.
+
+  - id: investment-research
+    title: Investment Research
+    synonyms:
+      - Research Content
+    definition: >
+      Internally or externally authored research material retrieved for
+      context when explaining positions or risks. Research may contain
+      adversarial or misleading content and must be treated as untrusted
+      input to the assistant.
+
+  - id: stress-scenario
+    title: Stress Scenario
+    definition: >
+      A deterministic calculation of portfolio impact under adverse market
+      or credit conditions, produced by specialist risk applications and
+      optionally explained by the assistant.
+
+  - id: order-proposal
+    title: Order Proposal
+    synonyms:
+      - Proposed Orders
+    definition: >
+      A structured set of candidate orders or portfolio changes constructed
+      by the assistant at the propose authority level for human review. An
+      order proposal is not an executed trade.
+
+  - id: portfolio-manager
+    title: Portfolio Manager
+    synonyms:
+      - PM
+    definition: >
+      The human user of the AI Portfolio Assistant who retains accountability
+      for investment decisions, approval of proposals, and any execution of
+      orders.
+
+  - id: intended-use
+    title: Intended Use
+    definition: >
+      The declared purpose and operating envelope of the AI Portfolio
+      Assistant: assisting portfolio managers with observation, analysis,
+      explanation, and controlled recommendation or proposal across FDC3
+      applications, without autonomous trade execution.

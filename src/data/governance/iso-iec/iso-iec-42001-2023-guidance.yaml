@@ -1,0 +1,1247 @@
+# Gemara GuidanceCatalog — ISO/IEC 42001:2023 (paraphrased structure)
+# NOT ISO normative text. Licensed ISO/IEC 42001:2023 required for conformity.
+# gemara-type: GuidanceCatalog
+
+title: ISO/IEC 42001:2023 Information technology — Artificial intelligence — Management system
+metadata:
+  id: iso-iec-42001-2023-guidance
+  type: GuidanceCatalog
+  version: 0.1.0
+  gemara-version: 1.2.0
+  draft: true
+  date: '2026-09-11T00:00:00Z'
+  author:
+    id: local-adaptation
+    name: Local Gemara adaptation (paraphrase)
+    type: Human
+  description: Machine-readable Gemara GuidanceCatalog structurally aligned to ISO/IEC 42001:2023 (first edition).
+    Guideline IDs follow management-system clause and Annex A control numbering. Statement text is a non-authoritative
+    paraphrase for interoperability; it is not a substitute for a licensed copy of ISO/IEC 42001:2023 and does not
+    reproduce ISO normative wording.
+type: Standard
+front-matter: |-
+  This catalog re-expresses the operable structure of ISO/IEC 42001:2023 as Gemara guidelines so that Governance Twins, controls, policies, sensitive activities and evaluations can cite stable identifiers (for example iso42001-6.1.2 or iso42001-A.9.4).
+
+  COPYRIGHT NOTICE: ISO/IEC 42001 is a copyrighted ISO/IEC publication. This file intentionally uses paraphrased objectives and statements rather than copying normative ISO text. For conformity assessment and audit, always consult a licensed copy of ISO/IEC 42001:2023 and any applicable amendments. Annex A control titles follow the publicly documented control set; control purposes here are concise paraphrases suitable for machine-readable mapping, not ISO control wording.
+
+  Scope of this catalog: Clauses 4–10 management-system requirements and the 38 Annex A reference controls across A.2–A.10. Clauses 1–3 (scope, normative references, terms and definitions) and informative Annexes B–D are omitted because they do not define the core operable requirements/reference-control set represented here. Annex A controls are reference controls considered during AI risk treatment; they are not automatically applicable to every AI system. Applicability should be determined through the organisation’s risk-treatment process and recorded in its Statement of Applicability.
+groups:
+- id: context
+  title: Context of the organization
+  description: Clause 4 — organisational context, interested parties, AIMS scope and the AI management system itself.
+- id: leadership
+  title: Leadership
+  description: Clause 5 — leadership commitment, AI policy, and roles/responsibilities/authorities.
+- id: planning
+  title: Planning
+  description: Clause 6 — risks and opportunities, AI risk assessment and treatment, AI system impact assessment,
+    objectives and planned changes.
+- id: support
+  title: Support
+  description: Clause 7 — resources, competence, awareness, communication and documented information.
+- id: operation
+  title: Operation
+  description: Clause 8 — operational planning and control, operational AI risk assessment/treatment, and AI system
+    impact assessment.
+- id: performance-evaluation
+  title: Performance evaluation
+  description: Clause 9 — monitoring/measurement, internal audit and management review.
+- id: improvement
+  title: Improvement
+  description: Clause 10 — continual improvement and nonconformity/corrective action.
+- id: annex-a2
+  title: Annex A — Policies related to AI
+  description: A.2 — management direction and support for AI systems through policy.
+- id: annex-a3
+  title: Annex A — Internal organization
+  description: A.3 — accountability, AI roles and reporting of concerns.
+- id: annex-a4
+  title: Annex A — Resources for AI systems
+  description: A.4 — identification and documentation of data, tooling, compute and human resources.
+- id: annex-a5
+  title: Annex A — Assessing impacts of AI systems
+  description: A.5 — processes and records for assessing impacts on people and society.
+- id: annex-a6
+  title: Annex A — AI system life cycle
+  description: A.6 — responsible design, development, verification, deployment, operation, documentation and logging.
+- id: annex-a7
+  title: Annex A — Data for AI systems
+  description: A.7 — development data, acquisition, quality, provenance and preparation.
+- id: annex-a8
+  title: Annex A — Information for interested parties
+  description: A.8 — user information, external reporting, incident communication and stakeholder information.
+- id: annex-a9
+  title: Annex A — Use of AI systems
+  description: A.9 — responsible-use processes/objectives and adherence to intended use.
+- id: annex-a10
+  title: Annex A — Third-party and customer relationships
+  description: A.10 — allocation of responsibilities and governance of suppliers and customers.
+exemptions:
+- description: Clauses 1–3 (Scope, Normative references, Terms and definitions)
+  reason: These clauses define document scope, references and vocabulary rather than operable AIMS guidelines; terms
+    should live in a shared lexicon if needed.
+- description: Annex B — Implementation guidance for AI controls
+  reason: Annex B provides implementation guidance for Annex A controls rather than additional reference controls.
+    Represent it as companion guidance if implementation-level detail is needed.
+  redirect: ISO/IEC 42001:2023 Annex B
+- description: Annex C — Potential AI-related organizational objectives and risk sources
+  reason: Annex C provides informative examples of objectives and risk sources. These are better represented as
+    companion risk/threat catalogs rather than requirements in this GuidanceCatalog.
+  redirect: ISO/IEC 42001:2023 Annex C
+- description: Annex D — Use of the AI management system across domains or sectors
+  reason: Annex D provides informative guidance on applying the AIMS with other management systems and sector/domain
+    requirements.
+  redirect: ISO/IEC 42001:2023 Annex D
+guidelines:
+- id: iso42001-4.1
+  title: Understanding the organization and its context
+  group: context
+  state: Active
+  objective: Determine internal and external issues relevant to the organisation’s purpose and its ability to achieve
+    the intended outcomes of the AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-4.1.1
+    text: Identify and maintain awareness of internal and external issues relevant to the AIMS and its intended
+      outcomes.
+  - id: iso42001-4.1.2
+    text: Consider whether climate change is a relevant issue when applying the current harmonized management-system
+      requirement.
+- id: iso42001-4.2
+  title: Understanding the needs and expectations of interested parties
+  group: context
+  state: Active
+  objective: Identify interested parties relevant to the AIMS and determine their relevant requirements.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-4.2.1
+    text: Identify interested parties relevant to the AIMS.
+  - id: iso42001-4.2.2
+    text: Determine the requirements of those interested parties that are relevant to the AIMS, including applicable
+      legal, regulatory and contractual requirements.
+  - id: iso42001-4.2.3
+    text: Consider that relevant interested parties may have requirements related to climate change.
+- id: iso42001-4.3
+  title: Determining the scope of the AI management system
+  group: context
+  state: Active
+  objective: Define and document the boundaries and applicability of the AIMS, taking account of context, interested-party
+    requirements and the organisation’s role in relation to AI systems.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-4.3.1
+    text: Determine the boundaries and applicability of the AIMS using the organisation’s context and relevant interested-party
+      requirements.
+  - id: iso42001-4.3.2
+    text: Consider the organisation’s activities, products and services, and its role as developer, provider or
+      user of AI systems, as applicable.
+  - id: iso42001-4.3.3
+    text: Maintain the AIMS scope as documented information.
+- id: iso42001-4.4
+  title: AI management system
+  group: context
+  state: Active
+  objective: Establish, implement, maintain and continually improve an AIMS, including the processes needed and
+    their interactions.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-4.4.1
+    text: Establish, implement, maintain and continually improve the AIMS in accordance with the requirements of
+      ISO/IEC 42001.
+  - id: iso42001-4.4.2
+    text: Determine the processes needed for the AIMS and how those processes interact.
+- id: iso42001-5.1
+  title: Leadership and commitment
+  group: leadership
+  state: Active
+  objective: Ensure top management demonstrates leadership and commitment for the AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-5.1.1
+    text: Ensure the AI policy and AI objectives are established and compatible with the organisation’s strategic
+      direction.
+  - id: iso42001-5.1.2
+    text: Integrate AIMS requirements into organisational processes.
+  - id: iso42001-5.1.3
+    text: Ensure resources needed for the AIMS are available.
+  - id: iso42001-5.1.4
+    text: Communicate the importance of effective AI management and conformity with AIMS requirements.
+  - id: iso42001-5.1.5
+    text: Ensure the AIMS achieves its intended outcomes.
+  - id: iso42001-5.1.6
+    text: Direct and support persons contributing to AIMS effectiveness.
+  - id: iso42001-5.1.7
+    text: Promote continual improvement and support relevant management roles.
+- id: iso42001-5.2
+  title: AI policy
+  group: leadership
+  state: Active
+  objective: Establish, maintain and communicate an AI policy appropriate to the organisation and its AI-related
+    purpose.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-5.2.1
+    text: Establish an AI policy appropriate to the organisation’s purpose and providing a framework for AI objectives.
+  - id: iso42001-5.2.2
+    text: Include commitments to satisfy applicable requirements and continually improve the AIMS.
+  - id: iso42001-5.2.3
+    text: Maintain the AI policy as documented information, communicate it within the organisation, and make it
+      available to relevant interested parties as appropriate.
+- id: iso42001-5.3
+  title: Organizational roles, responsibilities and authorities
+  group: leadership
+  state: Active
+  objective: Assign and communicate responsibilities and authorities for roles relevant to the AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-5.3.1
+    text: Assign responsibility and authority for ensuring the AIMS conforms to ISO/IEC 42001 requirements.
+  - id: iso42001-5.3.2
+    text: Assign responsibility and authority for reporting AIMS performance to top management.
+  - id: iso42001-5.3.3
+    text: Ensure relevant AI responsibilities and authorities are assigned and communicated within the organisation.
+- id: iso42001-6.1.1
+  title: Actions to address risks and opportunities — General
+  group: planning
+  state: Active
+  objective: Plan actions addressing risks and opportunities so the AIMS can achieve intended outcomes, prevent
+    or reduce undesired effects and improve.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-6.1.1.1
+    text: Consider organisational context and interested-party requirements when determining AIMS risks and opportunities.
+  - id: iso42001-6.1.1.2
+    text: Determine actions to address identified risks and opportunities, integrate those actions into AIMS processes,
+      and evaluate their effectiveness.
+- id: iso42001-6.1.2
+  title: AI risk assessment
+  group: planning
+  state: Active
+  objective: Define and apply an AI risk assessment process that produces consistent, valid and comparable results.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-6.1.2.1
+    text: Establish and maintain AI risk criteria, including criteria for risk acceptance and for performing AI
+      risk assessments.
+  - id: iso42001-6.1.2.2
+    text: Identify AI risks associated with development, provision or use of AI systems within the AIMS scope.
+  - id: iso42001-6.1.2.3
+    text: Analyse identified AI risks by considering potential consequences and likelihood, and determine risk levels.
+  - id: iso42001-6.1.2.4
+    text: Evaluate analysed risks against established criteria and prioritize them for treatment.
+  - id: iso42001-6.1.2.5
+    text: Retain documented information about the AI risk assessment process and results.
+- id: iso42001-6.1.3
+  title: AI risk treatment
+  group: planning
+  state: Active
+  objective: Define and apply a process for selecting and implementing treatments for AI risks.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-6.1.3.1
+    text: Select appropriate AI risk treatment options based on risk assessment results.
+  - id: iso42001-6.1.3.2
+    text: Determine controls necessary to implement the selected treatment options and compare them with Annex A
+      to verify that necessary controls have not been omitted.
+  - id: iso42001-6.1.3.3
+    text: Produce a Statement of Applicability identifying necessary controls, their implementation status, and
+      justification for inclusion or exclusion of Annex A controls.
+  - id: iso42001-6.1.3.4
+    text: Formulate an AI risk treatment plan and obtain designated management approval for the plan and acceptance
+      of residual AI risk.
+  - id: iso42001-6.1.3.5
+    text: Retain documented information about AI risk treatment.
+- id: iso42001-6.1.4
+  title: AI system impact assessment
+  group: planning
+  state: Active
+  objective: Define a process for assessing potential consequences of AI systems for individuals, groups and societies.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-6.1.4.1
+    text: Assess potential consequences arising from deployment, intended use and foreseeable misuse of AI systems.
+  - id: iso42001-6.1.4.2
+    text: Consider the technical and societal context of deployment and applicable jurisdictions.
+  - id: iso42001-6.1.4.3
+    text: Document impact-assessment results and make them available to relevant interested parties where appropriate.
+  - id: iso42001-6.1.4.4
+    text: Use impact-assessment results as an input to AI risk assessment.
+- id: iso42001-6.2
+  title: AI objectives and planning to achieve them
+  group: planning
+  state: Active
+  objective: Establish measurable AI objectives at relevant functions and levels and plan how they will be achieved.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-6.2.1
+    text: Ensure AI objectives are consistent with the AI policy, take account of applicable requirements, and are
+      measurable where practicable.
+  - id: iso42001-6.2.2
+    text: Monitor, communicate, update and document AI objectives.
+  - id: iso42001-6.2.3
+    text: Determine actions, required resources, responsible persons, timing and evaluation methods for achieving
+      AI objectives.
+- id: iso42001-6.3
+  title: Planning of changes
+  group: planning
+  state: Active
+  objective: Carry out necessary changes to the AIMS in a planned manner.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-6.3.1
+    text: Plan changes to the AIMS before implementation and manage them in a controlled manner.
+- id: iso42001-7.1
+  title: Resources
+  group: support
+  state: Active
+  objective: Determine and provide resources needed to establish, implement, maintain and continually improve the
+    AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-7.1.1
+    text: Determine and provide the resources required for effective operation and continual improvement of the
+      AIMS.
+- id: iso42001-7.2
+  title: Competence
+  group: support
+  state: Active
+  objective: Ensure persons whose work affects AI performance have the necessary competence.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-7.2.1
+    text: Determine necessary competence for persons doing work under organisational control that affects AI performance.
+  - id: iso42001-7.2.2
+    text: Ensure competence through appropriate education, training or experience.
+  - id: iso42001-7.2.3
+    text: Take action to acquire necessary competence where needed and evaluate effectiveness of those actions.
+  - id: iso42001-7.2.4
+    text: Retain documented evidence of competence.
+- id: iso42001-7.3
+  title: Awareness
+  group: support
+  state: Active
+  objective: Ensure relevant persons understand the AI policy, their contribution to AIMS effectiveness and consequences
+    of nonconformity.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-7.3.1
+    text: Ensure persons are aware of the AI policy and relevant AI objectives.
+  - id: iso42001-7.3.2
+    text: Ensure persons understand their contribution to AIMS effectiveness and the benefits of improved AI performance.
+  - id: iso42001-7.3.3
+    text: Ensure persons understand the implications of not conforming to AIMS requirements.
+- id: iso42001-7.4
+  title: Communication
+  group: support
+  state: Active
+  objective: Determine internal and external communications relevant to the AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-7.4.1
+    text: Determine what to communicate, when, with whom, how and by whom for communications relevant to the AIMS.
+- id: iso42001-7.5.1
+  title: Documented information — General
+  group: support
+  state: Active
+  objective: Maintain documented information required by ISO/IEC 42001 and additional information necessary for
+    AIMS effectiveness.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-7.5.1.1
+    text: Include documented information required by ISO/IEC 42001.
+  - id: iso42001-7.5.1.2
+    text: Include additional documented information determined by the organisation to be necessary for AIMS effectiveness.
+- id: iso42001-7.5.2
+  title: Creating and updating documented information
+  group: support
+  state: Active
+  objective: Ensure documented information is appropriately identified, formatted, reviewed and approved.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-7.5.2.1
+    text: Apply appropriate identification and description to documented information.
+  - id: iso42001-7.5.2.2
+    text: Use appropriate formats and media.
+  - id: iso42001-7.5.2.3
+    text: Review and approve documented information for suitability and adequacy.
+- id: iso42001-7.5.3
+  title: Control of documented information
+  group: support
+  state: Active
+  objective: Control AIMS documented information so it is available, suitable and protected.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-7.5.3.1
+    text: Ensure documented information is available and suitable for use where and when needed.
+  - id: iso42001-7.5.3.2
+    text: Protect documented information against inappropriate use, loss of integrity or other compromise.
+  - id: iso42001-7.5.3.3
+    text: Control distribution, access, retrieval, use, storage, preservation, changes, retention and disposition
+      as applicable.
+  - id: iso42001-7.5.3.4
+    text: Identify and control external documented information needed for AIMS planning and operation.
+- id: iso42001-8.1
+  title: Operational planning and control
+  group: operation
+  state: Active
+  objective: Plan, implement and control processes needed to meet AIMS requirements and implement planned risk and
+    opportunity actions.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-8.1.1
+    text: Establish operating criteria for relevant processes and control those processes in accordance with the
+      criteria.
+  - id: iso42001-8.1.2
+    text: Retain sufficient documented information to have confidence that processes were carried out as planned.
+  - id: iso42001-8.1.3
+    text: Control planned changes and review unintended changes, taking action to mitigate adverse effects where
+      necessary.
+  - id: iso42001-8.1.4
+    text: Ensure externally provided processes, products or services relevant to the AIMS are appropriately controlled.
+- id: iso42001-8.2
+  title: AI risk assessment
+  group: operation
+  state: Active
+  objective: Perform AI risk assessments at planned intervals and when significant changes are proposed or occur.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-8.2.1
+    text: Perform AI risk assessments using the process and criteria established under Clause 6.1.2.
+  - id: iso42001-8.2.2
+    text: Reassess AI risk when significant changes could affect previously assessed risks.
+  - id: iso42001-8.2.3
+    text: Retain documented information on AI risk assessment results.
+- id: iso42001-8.3
+  title: AI risk treatment
+  group: operation
+  state: Active
+  objective: Implement the AI risk treatment plan and retain evidence of the results.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-8.3.1
+    text: Implement planned AI risk treatments.
+  - id: iso42001-8.3.2
+    text: Retain documented information about the results of AI risk treatment.
+- id: iso42001-8.4
+  title: AI system impact assessment
+  group: operation
+  state: Active
+  objective: Perform AI system impact assessments according to the defined process and retain the results.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-8.4.1
+    text: Perform impact assessments for AI systems within scope where required by the organisation’s impact-assessment
+      process.
+  - id: iso42001-8.4.2
+    text: Update impact assessments when relevant changes affect potential impacts.
+  - id: iso42001-8.4.3
+    text: Retain documented results of AI system impact assessments.
+- id: iso42001-9.1
+  title: Monitoring, measurement, analysis and evaluation
+  group: performance-evaluation
+  state: Active
+  objective: Determine and perform monitoring, measurement, analysis and evaluation needed to assess AI performance
+    and AIMS effectiveness.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-9.1.1
+    text: Determine what needs to be monitored and measured and the methods needed to ensure valid results.
+  - id: iso42001-9.1.2
+    text: Determine when monitoring and measurement occur and when results are analysed and evaluated.
+  - id: iso42001-9.1.3
+    text: Determine who performs analysis and evaluation.
+  - id: iso42001-9.1.4
+    text: Evaluate AI performance and effectiveness of the AIMS.
+  - id: iso42001-9.1.5
+    text: Retain documented evidence of monitoring and measurement results.
+- id: iso42001-9.2.1
+  title: Internal audit — General
+  group: performance-evaluation
+  state: Active
+  objective: Conduct internal audits at planned intervals to determine conformity and effective implementation of
+    the AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-9.2.1.1
+    text: Determine whether the AIMS conforms to the organisation’s own requirements and to ISO/IEC 42001 requirements.
+  - id: iso42001-9.2.1.2
+    text: Determine whether the AIMS is effectively implemented and maintained.
+- id: iso42001-9.2.2
+  title: Internal audit programme
+  group: performance-evaluation
+  state: Active
+  objective: Plan, establish, implement and maintain an internal audit programme.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-9.2.2.1
+    text: Define audit frequency, methods, responsibilities, planning requirements and reporting.
+  - id: iso42001-9.2.2.2
+    text: Consider process importance, relevant changes and previous audit results when planning audits.
+  - id: iso42001-9.2.2.3
+    text: Define audit criteria and scope for each audit.
+  - id: iso42001-9.2.2.4
+    text: Select auditors and conduct audits to ensure objectivity and impartiality.
+  - id: iso42001-9.2.2.5
+    text: Report audit results to relevant management, take appropriate correction/corrective action, and retain
+      evidence of the audit programme and results.
+- id: iso42001-9.3.1
+  title: Management review — General
+  group: performance-evaluation
+  state: Active
+  objective: Top management reviews the AIMS at planned intervals to ensure continuing suitability, adequacy and
+    effectiveness.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-9.3.1.1
+    text: Conduct management reviews of the AIMS at planned intervals.
+- id: iso42001-9.3.2
+  title: Management review inputs
+  group: performance-evaluation
+  state: Active
+  objective: Management review considers relevant information about the state, performance and changing context
+    of the AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-9.3.2.1
+    text: Consider status of actions from previous management reviews.
+  - id: iso42001-9.3.2.2
+    text: Consider changes in internal and external issues and interested-party requirements relevant to the AIMS.
+  - id: iso42001-9.3.2.3
+    text: Consider AIMS performance trends, including nonconformities, corrective actions, monitoring results and
+      audit results.
+  - id: iso42001-9.3.2.4
+    text: Consider opportunities for continual improvement and other information needed to judge AIMS effectiveness.
+- id: iso42001-9.3.3
+  title: Management review results
+  group: performance-evaluation
+  state: Active
+  objective: Record decisions and actions arising from management review.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-9.3.3.1
+    text: Determine decisions related to continual improvement opportunities and any need for AIMS changes.
+  - id: iso42001-9.3.3.2
+    text: Retain documented information as evidence of management review results.
+- id: iso42001-10.1
+  title: Continual improvement
+  group: improvement
+  state: Active
+  objective: Continually improve the suitability, adequacy and effectiveness of the AIMS.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-10.1.1
+    text: Use evaluation, review and operational learning to continually improve the AIMS.
+- id: iso42001-10.2
+  title: Nonconformity and corrective action
+  group: improvement
+  state: Active
+  objective: Respond to nonconformities, address causes and prevent recurrence.
+  applicability:
+  - aims
+  statements:
+  - id: iso42001-10.2.1
+    text: React to nonconformity, control and correct it, and address resulting consequences.
+  - id: iso42001-10.2.2
+    text: Evaluate the need for action to eliminate causes so the nonconformity does not recur or occur elsewhere.
+  - id: iso42001-10.2.3
+    text: Implement needed action and review its effectiveness.
+  - id: iso42001-10.2.4
+    text: Update risks/opportunities or the AIMS when necessary.
+  - id: iso42001-10.2.5
+    text: Retain documented evidence of the nonconformity, actions taken and corrective-action results.
+- id: iso42001-A.2.2
+  title: A.2.2 AI policy
+  group: annex-a2
+  state: Active
+  objective: Document and maintain policy governing the organisation’s development or use of AI systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.2.2.1
+    text: Document and maintain policy governing the organisation’s development or use of AI systems.
+- id: iso42001-A.2.3
+  title: A.2.3 Alignment with other organizational policies
+  group: annex-a2
+  state: Active
+  objective: Identify where existing organisational policies apply to or are affected by AI objectives and align
+    them appropriately.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.2.3.1
+    text: Identify where existing organisational policies apply to or are affected by AI objectives and align them
+      appropriately.
+- id: iso42001-A.2.4
+  title: A.2.4 Review of the AI policy
+  group: annex-a2
+  state: Active
+  objective: Review the AI policy periodically and when needed to ensure it remains suitable, adequate and effective.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.2.4.1
+    text: Review the AI policy periodically and when needed to ensure it remains suitable, adequate and effective.
+- id: iso42001-A.3.2
+  title: A.3.2 AI roles and responsibilities
+  group: annex-a3
+  state: Active
+  objective: Define and allocate roles and responsibilities needed for responsible implementation, operation and
+    management of AI systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.3.2.1
+    text: Define and allocate roles and responsibilities needed for responsible implementation, operation and management
+      of AI systems.
+- id: iso42001-A.3.3
+  title: A.3.3 Reporting of concerns
+  group: annex-a3
+  state: Active
+  objective: Provide a process for reporting concerns about the organisation’s role and responsibilities regarding
+    AI systems throughout their life cycle.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.3.3.1
+    text: Provide a process for reporting concerns about the organisation’s role and responsibilities regarding
+      AI systems throughout their life cycle.
+- id: iso42001-A.4.2
+  title: A.4.2 Resource documentation
+  group: annex-a4
+  state: Active
+  objective: Identify and document resources needed for relevant AI system life-cycle stages and other AI-related
+    activities.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.4.2.1
+    text: Identify and document resources needed for relevant AI system life-cycle stages and other AI-related activities.
+- id: iso42001-A.4.3
+  title: A.4.3 Data resources
+  group: annex-a4
+  state: Active
+  objective: Document relevant information about data resources used by AI systems so associated risks and impacts
+    can be understood and managed.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.4.3.1
+    text: Document relevant information about data resources used by AI systems so associated risks and impacts
+      can be understood and managed.
+- id: iso42001-A.4.4
+  title: A.4.4 Tooling resources
+  group: annex-a4
+  state: Active
+  objective: Document relevant information about AI tooling resources, including models, algorithms, software and
+    development or evaluation tools.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.4.4.1
+    text: Document relevant information about AI tooling resources, including models, algorithms, software and development
+      or evaluation tools.
+- id: iso42001-A.4.5
+  title: A.4.5 System and computing resources
+  group: annex-a4
+  state: Active
+  objective: Document relevant system and computing resources needed to develop, operate, monitor or support AI
+    systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.4.5.1
+    text: Document relevant system and computing resources needed to develop, operate, monitor or support AI systems.
+- id: iso42001-A.4.6
+  title: A.4.6 Human resources
+  group: annex-a4
+  state: Active
+  objective: Identify and provide human resources and expertise needed for responsible AI activities throughout
+    relevant life-cycle stages.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.4.6.1
+    text: Identify and provide human resources and expertise needed for responsible AI activities throughout relevant
+      life-cycle stages.
+- id: iso42001-A.5.2
+  title: A.5.2 AI system impact assessment process
+  group: annex-a5
+  state: Active
+  objective: Establish a process to assess potential consequences of AI systems for individuals, groups and society
+    throughout relevant life-cycle stages.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.5.2.1
+    text: Establish a process to assess potential consequences of AI systems for individuals, groups and society
+      throughout relevant life-cycle stages.
+- id: iso42001-A.5.3
+  title: A.5.3 Documentation of AI system impact assessments
+  group: annex-a5
+  state: Active
+  objective: Document AI system impact-assessment results and retain them for an appropriate defined period.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.5.3.1
+    text: Document AI system impact-assessment results and retain them for an appropriate defined period.
+- id: iso42001-A.5.4
+  title: A.5.4 Assessing AI system impact on individuals or groups of individuals
+  group: annex-a5
+  state: Active
+  objective: Assess and document potential effects of AI systems on individuals or groups throughout the AI system
+    life cycle.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.5.4.1
+    text: Assess and document potential effects of AI systems on individuals or groups throughout the AI system
+      life cycle.
+- id: iso42001-A.5.5
+  title: A.5.5 Assessing societal impacts of AI systems
+  group: annex-a5
+  state: Active
+  objective: Assess and document potential societal impacts of AI systems throughout the AI system life cycle.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.5.5.1
+    text: Assess and document potential societal impacts of AI systems throughout the AI system life cycle.
+- id: iso42001-A.6.1.2
+  title: A.6.1.2 Objectives for responsible development of AI system
+  group: annex-a6
+  state: Active
+  objective: Identify and document objectives that guide responsible development of AI systems and take those objectives
+    into account during development.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.1.2.1
+    text: Identify and document objectives that guide responsible development of AI systems and take those objectives
+      into account during development.
+- id: iso42001-A.6.1.3
+  title: A.6.1.3 Processes for responsible AI system design and development
+  group: annex-a6
+  state: Active
+  objective: Define and document processes for responsible design and development of AI systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.1.3.1
+    text: Define and document processes for responsible design and development of AI systems.
+- id: iso42001-A.6.2.2
+  title: A.6.2.2 AI system requirements and specification
+  group: annex-a6
+  state: Active
+  objective: Specify and document requirements for AI systems, including relevant functional, performance, risk,
+    impact and responsible-AI requirements.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.2.2.1
+    text: Specify and document requirements for AI systems, including relevant functional, performance, risk, impact
+      and responsible-AI requirements.
+- id: iso42001-A.6.2.3
+  title: A.6.2.3 Documentation of AI system design and development
+  group: annex-a6
+  state: Active
+  objective: Document AI system design and development sufficiently to support responsible implementation, review
+    and life-cycle management.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.2.3.1
+    text: Document AI system design and development sufficiently to support responsible implementation, review and
+      life-cycle management.
+- id: iso42001-A.6.2.4
+  title: A.6.2.4 AI system verification and validation
+  group: annex-a6
+  state: Active
+  objective: Define and perform verification and validation appropriate to AI system requirements, risks and intended
+    use before and during deployment as needed.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.2.4.1
+    text: Define and perform verification and validation appropriate to AI system requirements, risks and intended
+      use before and during deployment as needed.
+- id: iso42001-A.6.2.5
+  title: A.6.2.5 AI system deployment
+  group: annex-a6
+  state: Active
+  objective: Plan and control deployment of AI systems, including relevant readiness criteria, approvals and changes.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.2.5.1
+    text: Plan and control deployment of AI systems, including relevant readiness criteria, approvals and changes.
+- id: iso42001-A.6.2.6
+  title: A.6.2.6 AI system operation and monitoring
+  group: annex-a6
+  state: Active
+  objective: Define and document the processes and elements needed for responsible operation and monitoring of AI
+    systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.2.6.1
+    text: Define and document the processes and elements needed for responsible operation and monitoring of AI systems.
+- id: iso42001-A.6.2.7
+  title: A.6.2.7 AI system technical documentation
+  group: annex-a6
+  state: Active
+  objective: Maintain technical documentation needed to understand, operate, assess and manage AI systems throughout
+    their life cycle.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.2.7.1
+    text: Maintain technical documentation needed to understand, operate, assess and manage AI systems throughout
+      their life cycle.
+- id: iso42001-A.6.2.8
+  title: A.6.2.8 AI system recording of event logs
+  group: annex-a6
+  state: Active
+  objective: Determine and implement event logging needed to support traceability, monitoring, incident investigation
+    and accountability.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.6.2.8.1
+    text: Determine and implement event logging needed to support traceability, monitoring, incident investigation
+      and accountability.
+- id: iso42001-A.7.2
+  title: A.7.2 Data for development and enhancement of AI system
+  group: annex-a7
+  state: Active
+  objective: Define and document processes for managing data used to develop or enhance AI systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.7.2.1
+    text: Define and document processes for managing data used to develop or enhance AI systems.
+- id: iso42001-A.7.3
+  title: A.7.3 Acquisition of data
+  group: annex-a7
+  state: Active
+  objective: Define and document how data used by AI systems is acquired, including relevant source, rights, constraints
+    and selection information.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.7.3.1
+    text: Define and document how data used by AI systems is acquired, including relevant source, rights, constraints
+      and selection information.
+- id: iso42001-A.7.4
+  title: A.7.4 Quality of data for AI systems
+  group: annex-a7
+  state: Active
+  objective: Define data-quality requirements relevant to AI systems and establish means to assess whether data
+    meets those requirements.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.7.4.1
+    text: Define data-quality requirements relevant to AI systems and establish means to assess whether data meets
+      those requirements.
+- id: iso42001-A.7.5
+  title: A.7.5 Data provenance
+  group: annex-a7
+  state: Active
+  objective: Establish and document processes for recording the origin, history, transformations and movement of
+    data used by AI systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.7.5.1
+    text: Establish and document processes for recording the origin, history, transformations and movement of data
+      used by AI systems.
+- id: iso42001-A.7.6
+  title: A.7.6 Data preparation
+  group: annex-a7
+  state: Active
+  objective: Define and document criteria and methods used to prepare data for AI-system development, evaluation
+    or operation.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.7.6.1
+    text: Define and document criteria and methods used to prepare data for AI-system development, evaluation or
+      operation.
+- id: iso42001-A.8.2
+  title: A.8.2 System documentation and information for users
+  group: annex-a8
+  state: Active
+  objective: Provide users with information and documentation needed to understand and use AI systems appropriately,
+    including relevant capabilities and limitations.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.8.2.1
+    text: Provide users with information and documentation needed to understand and use AI systems appropriately,
+      including relevant capabilities and limitations.
+- id: iso42001-A.8.3
+  title: A.8.3 External reporting
+  group: annex-a8
+  state: Active
+  objective: Provide mechanisms for relevant external parties to report adverse impacts, concerns or other issues
+    associated with AI systems.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.8.3.1
+    text: Provide mechanisms for relevant external parties to report adverse impacts, concerns or other issues associated
+      with AI systems.
+- id: iso42001-A.8.4
+  title: A.8.4 Communication of incidents
+  group: annex-a8
+  state: Active
+  objective: Define processes for communicating AI-related incidents to relevant interested parties in a timely
+    and appropriate manner.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.8.4.1
+    text: Define processes for communicating AI-related incidents to relevant interested parties in a timely and
+      appropriate manner.
+- id: iso42001-A.8.5
+  title: A.8.5 Information for interested parties
+  group: annex-a8
+  state: Active
+  objective: Determine and provide information about AI systems needed by relevant interested parties, taking account
+    of their roles and requirements.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.8.5.1
+    text: Determine and provide information about AI systems needed by relevant interested parties, taking account
+      of their roles and requirements.
+- id: iso42001-A.9.2
+  title: A.9.2 Processes for responsible use of AI systems
+  group: annex-a9
+  state: Active
+  objective: Define and document processes governing responsible use of AI systems within the organisation.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.9.2.1
+    text: Define and document processes governing responsible use of AI systems within the organisation.
+- id: iso42001-A.9.3
+  title: A.9.3 Objectives for responsible use of AI system
+  group: annex-a9
+  state: Active
+  objective: Identify and document objectives for responsible use of AI systems and incorporate them into operational
+    use.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.9.3.1
+    text: Identify and document objectives for responsible use of AI systems and incorporate them into operational
+      use.
+- id: iso42001-A.9.4
+  title: A.9.4 Intended use of the AI system
+  group: annex-a9
+  state: Active
+  objective: Ensure AI systems are used consistently with their defined intended use and accompanying documentation,
+    and address foreseeable misuse as appropriate.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.9.4.1
+    text: Ensure AI systems are used consistently with their defined intended use and accompanying documentation,
+      and address foreseeable misuse as appropriate.
+- id: iso42001-A.10.2
+  title: A.10.2 Allocating responsibilities
+  group: annex-a10
+  state: Active
+  objective: Allocate and document responsibilities across the AI system life cycle between the organisation and
+    relevant partners, suppliers, customers and other third parties.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.10.2.1
+    text: Allocate and document responsibilities across the AI system life cycle between the organisation and relevant
+      partners, suppliers, customers and other third parties.
+- id: iso42001-A.10.3
+  title: A.10.3 Suppliers
+  group: annex-a10
+  state: Active
+  objective: Establish processes ensuring supplier-provided AI-related products, services and materials align with
+    the organisation’s responsible-AI approach and requirements.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.10.3.1
+    text: Establish processes ensuring supplier-provided AI-related products, services and materials align with
+      the organisation’s responsible-AI approach and requirements.
+- id: iso42001-A.10.4
+  title: A.10.4 Customers
+  group: annex-a10
+  state: Active
+  objective: Establish processes addressing customer responsibilities and expectations where the organisation provides
+    AI systems, products or services to customers.
+  applicability:
+  - annex-a
+  - soa
+  recommendations:
+  - Select or exclude this reference control through AI risk treatment and record the decision and justification
+    in the Statement of Applicability.
+  - Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline where the control
+    is selected.
+  statements:
+  - id: iso42001-A.10.4.1
+    text: Establish processes addressing customer responsibilities and expectations where the organisation provides
+      AI systems, products or services to customers.

@@ -1,0 +1,70 @@
+# AIMS profile — ISO/IEC 42001
+# Names the documents that together constitute the Artificial Intelligence
+# Management System for the AI Portfolio Assistant (see iso42001.#AIMS).
+# This is a profile of references, not an ArtifactType Document.
+# iso-type: AIMS
+
+title: "AI Portfolio Assistant AIMS"
+
+scope:
+  reference-id: apa-aims-scope
+
+context:
+  reference-id: apa-organisation-context
+
+parties:
+  reference-id: apa-party-register
+
+requirements:
+  reference-id: apa-stakeholder-requirements
+
+policy:
+  reference-id: apa-policy
+
+objectives:
+  reference-id: apa-management-objectives
+
+risk-assessments:
+  - reference-id: apa-risk-assessment
+
+impact-assessments:
+  - reference-id: apa-impact-assessment
+
+applicability:
+  reference-id: apa-applicability-profile
+
+systems:
+  reference-id: apa-ai-system-register
+
+datasets:
+  reference-id: apa-dataset-register
+
+tools:
+  reference-id: apa-tool-resource-register
+
+competence:
+  reference-id: apa-competence
+
+communication:
+  reference-id: apa-communication-plan
+
+suppliers:
+  reference-id: apa-supplier-assurance
+
+contracts:
+  reference-id: apa-governance-contract
+
+reporting:
+  reference-id: apa-reporting-obligation
+
+audit-programme:
+  reference-id: apa-audit-programme
+
+reviews:
+  - reference-id: apa-management-review-2026-q3
+
+corrective-actions:
+  reference-id: apa-corrective-action
+
+incidents:
+  reference-id: apa-incident

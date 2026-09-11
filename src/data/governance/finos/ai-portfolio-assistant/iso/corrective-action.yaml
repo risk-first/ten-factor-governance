@@ -1,0 +1,117 @@
+# CorrectiveActionLog — ISO/IEC 42001 Clause 10.2
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: CorrectiveActionLog
+
+title: "Corrective action log for the AI Portfolio Assistant AIMS"
+
+metadata:
+  id: apa-corrective-action
+  type: CorrectiveActionLog
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Nonconformities and corrective actions for the AIMS, including the
+    propose-without-approval near miss.
+  mapping-references:
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-incident
+      title: "AI incident log"
+      version: "0.1.0"
+      url: file://incident.yaml
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-applicability-profile
+      title: "Statement of Applicability"
+      version: "0.1.0"
+      url: file://applicability-profile.yaml
+
+clauses: ["10.2", "10.1"]
+
+entries:
+  - id: nc-propose-without-approval
+    title: "Propose-level order construction without approval gate"
+    description: |
+      The assistant constructed an order proposal in a session where the active
+      authority level and UI approval gate did not enforce human approval before
+      the proposal was presented as ready for trading-desk handoff. No order was
+      submitted. This is a nonconformity against apa-ctl-005-propose-human-approval
+      and the organisational prohibition on unsupervised paths toward execution.
+    requirement:
+      reference-id: apa-controls
+      entry-id: apa-ctl-005-propose-human-approval
+    source: Incident
+    origin:
+      reference-id: apa-incident
+      entry-id: inc-propose-without-approval
+    severity: High
+    detected: "2026-08-28T14:22:00Z"
+    owner:
+      name: "AI Governance Office"
+    containment:
+      description: |
+        Disabled propose authority for the affected desk pending control fix;
+        invalidated the unapproved proposal; notified Compliance and desk head.
+      taken: "2026-08-28T14:40:00Z"
+      by:
+        name: "AI Portfolio Assistant Engineering"
+        affiliation: "Investment Management Technology"
+    root-cause:
+      method: "Five whys with session-log and configuration review"
+      statement: |
+        A configuration drift allowed propose outputs to bypass the approval
+        component after a hotfix to the FDC3 proposal viewer; regression tests
+        did not cover the approval-gate integration path.
+      category: Technical
+      systemic: true
+      elsewhere:
+        - reference-id: apa-ai-system-register
+          entry-id: ai-portfolio-assistant
+      determined: "2026-09-02T00:00:00Z"
+    actions:
+      - id: ca-restore-gate
+        description: "Restore and hard-fail propose flow when approval gate is unavailable"
+        owner:
+          name: "AI Portfolio Assistant Engineering"
+          affiliation: "Investment Management Technology"
+        due: "2026-09-12T00:00:00Z"
+        status: Complete
+        completed: "2026-09-10T00:00:00Z"
+      - id: ca-regression-suite
+        description: "Add behavioural regression covering propose-without-approval-gate failure mode"
+        owner:
+          name: "AI Portfolio Assistant Engineering"
+          affiliation: "Investment Management Technology"
+        due: "2026-09-30T00:00:00Z"
+        status: "In Progress"
+      - id: ca-reenable-propose
+        description: "Re-enable propose authority for the desk after effectiveness verification"
+        owner:
+          name: "AI Governance Office"
+        due: "2026-10-15T00:00:00Z"
+        status: Open
+    changes:
+      - reference-id: apa-applicability-profile
+        entry-id: soa-apa-ctl-005
+        remarks: "Implementation notes updated; residual Medium retained pending Q4 sampling"
+    effectiveness:
+      method: |
+        Controlled staging replay of the failing session path plus production
+        sampling of propose sessions for seven days after fix.
+      date: "2026-09-18T00:00:00Z"
+      result: "Partially Effective"
+      narrative: |
+        Hard-fail path verified in staging; production re-enablement and full
+        sampling verification remain open.
+    status: "Verifying Effectiveness"

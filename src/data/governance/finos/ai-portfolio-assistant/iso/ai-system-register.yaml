@@ -1,0 +1,174 @@
+# AISystemRegister — ISO/IEC 42001 Annex A.6, A.8.2, A.9.4
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: AISystemRegister
+
+title: "AI systems in the scope of the AIMS"
+
+metadata:
+  id: apa-ai-system-register
+  type: AISystemRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    The AI systems the management system governs, what each is for and what it
+    is not for. Technical documentation is referenced rather than restated.
+  mapping-references:
+    - id: apa-dataset-register
+      title: "Data resources register"
+      version: "0.1.0"
+      url: file://dataset-register.yaml
+    - id: apa-tool-resource-register
+      title: "Tooling resources register"
+      version: "0.1.0"
+      url: file://tool-resource-register.yaml
+    - id: apa-impact-assessment
+      title: "AI Portfolio Assistant impact assessment"
+      version: "0.1.0"
+      url: file://impact-assessment.yaml
+    - id: apa-risk-assessment
+      title: "AI Portfolio Assistant risk assessment"
+      version: "0.1.0"
+      url: file://risk-assessment.yaml
+    - id: apa-supplier-assurance
+      title: "Supplier assurance register"
+      version: "0.1.0"
+      url: file://supplier-assurance.yaml
+
+clauses: ["A.6.2.2", "A.6.2.7", "A.6.2.8", "A.8.2", "A.9.4"]
+
+systems:
+  - id: ai-portfolio-assistant
+    name: "AI Portfolio Assistant"
+    description: |
+      Retrieval-augmented assistant that operates across FDC3 applications to
+      observe portfolio context, invoke deterministic risk and exposure tools,
+      retrieve investment research, explain results, and optionally recommend
+      or propose actions within an authorised authority level.
+    version: "1.0.0"
+    role: [Deployer, Developer]
+    stage: Operation
+    owner:
+      responsible:
+        - name: "AI Portfolio Assistant Engineering"
+          affiliation: "Investment Management Technology"
+      accountable:
+        - name: "AI Portfolio Assistant Product Owner"
+          affiliation: "Investment Management"
+      consulted:
+        - name: "AI Governance Office"
+        - name: "Model Risk Management"
+      informed:
+        - name: "Chief Information Officer"
+
+    intended-use:
+      purpose: |
+        Assist portfolio managers in understanding positions and risks by
+        combining deterministic application outputs with grounded explanation,
+        and by forming recommendations or order proposals only within declared
+        authority levels.
+      domain: "Institutional investment management"
+      users: ["Portfolio managers"]
+      subjects: ["Investment clients whose portfolios are observed or influenced"]
+      prohibited:
+        - "Autonomous trade execution or unsupervised order submission"
+        - "Submitting orders without recorded human approval of the proposal"
+        - "Inventing numerical exposures, stress results or prices instead of using deterministic tools"
+        - "Cross-portfolio access outside the manager's entitlement"
+      foreseeable-misuse:
+        - "Managers accepting recommendations without checking grounding when under time pressure"
+        - "Using propose-level construction as a de-facto instruction to traders without approval"
+        - "Prompt injection via research content to escalate authority"
+      limitations:
+        - "Validated for English-language research and UK/EU listed equity and rates desks in scope"
+        - "Does not replace mandate checking or pre-trade compliance engines"
+      out-of-scope-populations:
+        - "Retail banking customers"
+        - "Discretionary clients whose mandates exclude AI-assisted recommendations"
+
+    autonomy:
+      level: "Human In The Loop"
+      description: |
+        Observe/analyse/explain may run with human-on-the-loop monitoring.
+        Recommend is gated; propose requires human-in-the-loop approval before
+        any path toward execution. Autonomous execute is prohibited.
+      intervention: |
+        Portfolio managers may discard, edit or refuse recommendations and
+        proposals; compliance may suspend the assistant for a desk.
+      override: |
+        Humans retain exclusive authority to approve proposals and to execute
+        orders through approved trading channels.
+
+    techniques:
+      - "Retrieval-augmented generation over investment research"
+      - "Hosted foundation model accessed as a service"
+      - "FDC3 intents and context sharing with deterministic specialist applications"
+
+    datasets:
+      - reference-id: apa-dataset-register
+        entry-id: portfolio-holdings-snapshots
+      - reference-id: apa-dataset-register
+        entry-id: investment-research-corpus
+      - reference-id: apa-dataset-register
+        entry-id: historical-recommendations-eval
+
+    tools:
+      - reference-id: apa-tool-resource-register
+        entry-id: fdc3-portfolio-app
+      - reference-id: apa-tool-resource-register
+        entry-id: risk-exposure-app
+      - reference-id: apa-tool-resource-register
+        entry-id: stress-engine
+      - reference-id: apa-tool-resource-register
+        entry-id: research-retrieval
+      - reference-id: apa-tool-resource-register
+        entry-id: foundation-model-api
+      - reference-id: apa-tool-resource-register
+        entry-id: session-logger
+
+    dependencies:
+      - reference-id: apa-supplier-assurance
+        entry-id: foundation-model-assurance
+        remarks: "Model consumed as a hosted service; version pinned per release."
+      - reference-id: apa-supplier-assurance
+        entry-id: market-data-assurance
+
+    impact-assessments:
+      - reference-id: apa-impact-assessment
+        entry-id: apa-impact-assessment
+
+    risk-assessments:
+      - reference-id: apa-risk-assessment
+        entry-id: apa-risk-assessment
+
+    documentation:
+      - type: System Card
+        title: "AI Portfolio Assistant system card"
+        audience: Internal
+        version: "1.0.0"
+      - type: User Information
+        title: "Portfolio manager guidance: authority levels and approval"
+        audience: User
+      - type: Evaluation Report
+        title: "Pre-release evaluation, release 1.0.0"
+        audience: Internal
+
+    event-logging:
+      description: |
+        Every session records authority level, tool invocations, retrieved
+        sources, model version, recommendations/proposals and human approval
+        decisions.
+      retention: "7 years"
+
+review:
+  cadence: Quarterly
+  next-review: "2026-12-01T00:00:00Z"
+  triggers:
+    - "A new AI system enters development under this AIMS"
+    - "A system's intended use or authority ceiling changes"

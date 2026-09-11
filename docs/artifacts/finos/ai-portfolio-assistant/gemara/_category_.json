@@ -1,9 +1,5 @@
 {
   "label": "Gemara Model",
   "position": 2,
-  "collapsed": true,
-  "link": {
-    "type": "doc",
-    "id": "artifacts/finos/ai-portfolio-assistant/gemara/index"
-  }
+  "collapsed": true
 }

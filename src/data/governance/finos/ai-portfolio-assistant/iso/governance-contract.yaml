@@ -1,0 +1,116 @@
+# GovernanceContractRegister — ISO/IEC 42001 Annex A.10.2, A.10.4
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: GovernanceContractRegister
+
+title: "Governance contracts for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-governance-contract
+  type: GovernanceContractRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Allocation of governance responsibility between the firm and the foundation
+    model provider for the AI Portfolio Assistant deployment.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-stakeholder-requirements
+      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://stakeholder-requirements.yaml
+
+clauses: ["A.10.2", "A.10.4"]
+
+contracts:
+  - id: model-provider-governance
+    title: "Foundation model provider — responsibility allocation"
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: foundation-model-provider
+    relationship: Customer
+    subject:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    instrument: "Master services agreement and data processing agreement (2026)"
+    allocations:
+      - id: alloc-model-dev
+        responsibility: |
+          Develop, evaluate and secure the foundation model service, including
+          model cards and material change notices for pinned versions.
+        holder: Counterparty
+        lifecycle-stage: Development
+        escalation: "Material undisclosed model change is grounds for suspension of use."
+
+      - id: alloc-intended-use
+        responsibility: |
+          Define intended use, authority ceiling, human oversight and prohibited
+          uses for the AI Portfolio Assistant on the firm's desks.
+        holder: Organisation
+        lifecycle-stage: Operation
+        controls:
+          - reference-id: apa-controls
+            entry-id: apa-ctl-001-authority-ceiling
+          - reference-id: apa-controls
+            entry-id: apa-ctl-006-execute-prohibit
+        obligations:
+          - reference-id: apa-stakeholder-requirements
+            entry-id: req-no-autonomous-trading
+
+      - id: alloc-prompt-data
+        responsibility: |
+          Configure processing so portfolio context and prompts are not used to
+          train shared models; retain only as contractually permitted.
+        holder: Shared
+        controls:
+          - reference-id: apa-controls
+            entry-id: apa-ctl-014-model-provider-controls
+        escalation: "Breach of training prohibition triggers immediate legal and AI governance review."
+
+      - id: alloc-incident
+        responsibility: |
+          Notify and cooperate on security or model-integrity incidents affecting
+          the hosted service; the firm retains client and FCA notification duties.
+        holder: Shared
+        controls:
+          - reference-id: apa-controls
+            entry-id: apa-ctl-015-incident-escalation
+        verified: "2026-08-01T00:00:00Z"
+
+    shared-responsibilities:
+      - id: alloc-shared-eval
+        responsibility: |
+          Maintain evidence that the pinned model version remains suitable for
+          the firm's intended use; provider supplies evaluation artefacts, firm
+          performs deployment-specific behavioural tests.
+        holder: Shared
+        lifecycle-stage: "Verification and Validation"
+
+    period:
+      start: "2026-01-01T00:00:00Z"
+      end: "2027-12-31T23:59:59Z"
+    status: Active
+    review:
+      cadence: Annual
+      next-review: "2027-01-15T00:00:00Z"
+
+review:
+  cadence: Annual
+  next-review: "2027-09-01T00:00:00Z"

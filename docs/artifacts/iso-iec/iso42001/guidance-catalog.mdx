@@ -1,0 +1,25 @@
+---
+sidebar_position: 2
+sidebar_label: Guidance Catalog
+title: ISO/IEC 42001 Guidance Catalog
+description: "The structure of ISO/IEC 42001:2023 re-expressed as a paraphrased Gemara GuidanceCatalog with stable guideline identifiers."
+---
+
+import iso42001 from '@site/src/data/governance/iso-iec/iso-iec-42001-2023-guidance.yaml';
+
+# ISO/IEC 42001 Guidance Catalog
+
+This page renders a [Gemara](/docs/artifacts/gemara) `GuidanceCatalog` that re-expresses the
+*structure* of ISO/IEC 42001:2023 — its AIMS management-system clauses and Annex A
+reference controls — as guidelines with stable identifiers such as `iso42001-6.1.2`
+and `iso42001-A.9.4`. Controls, policies and evaluations elsewhere in this site can
+cite those identifiers instead of restating requirements.
+
+:::caution Paraphrase, not normative text
+Statement text is a non-authoritative paraphrase written for interoperability. It does
+not reproduce ISO normative wording and is not a substitute for a licensed copy of
+ISO/IEC 42001:2023. For the requirement-by-requirement comparison against Ten Factor
+Governance, see the [ISO/IEC 42001 Analysis](/docs/artifacts/iso-iec/iso42001/gap-analysis).
+:::
+
+<GemaraGuidance file={iso42001} />

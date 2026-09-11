@@ -1,0 +1,139 @@
+# SupplierAssuranceRegister — ISO/IEC 42001 Annex A.10.3
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: SupplierAssuranceRegister
+
+title: "Supplier assurance for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-supplier-assurance
+  type: SupplierAssuranceRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Assurance for the foundation model provider and market data vendor that the
+    AI Portfolio Assistant depends on.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-governance-contract
+      title: "Governance contracts for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://governance-contract.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+    - id: apa-tool-resource-register
+      title: "Tooling resources register"
+      version: "0.1.0"
+      url: file://tool-resource-register.yaml
+
+clauses: ["A.10.2", "A.10.3"]
+
+suppliers:
+  - id: foundation-model-assurance
+    party:
+      reference-id: apa-party-register
+      entry-id: foundation-model-provider
+    provides:
+      - type: Model
+        description: "Hosted foundation model API for generation and interpretation"
+        resources:
+          - reference-id: apa-tool-resource-register
+            entry-id: foundation-model-api
+      - type: "AI Service"
+        description: "Content filtering and model version channels"
+    criticality: High
+    obligations:
+      - id: fm-no-train-on-prompts
+        statement: "Customer prompts and portfolio context are not used to train shared models."
+        source: "Data processing agreement § training prohibition"
+        controls:
+          - reference-id: apa-controls
+            entry-id: apa-ctl-014-model-provider-controls
+        verification: "Annual DPA attestation and technical configuration review"
+        status: Met
+      - id: fm-security-incident-notify
+        statement: "Notify the firm of security or model-integrity incidents affecting the service."
+        source: "Master services agreement incident clause"
+        verification: "Contractual SLA; tested annually via tabletop"
+        status: Unverified
+    contract:
+      reference-id: apa-governance-contract
+      entry-id: model-provider-governance
+    attestations:
+      - id: fm-soc2
+        type: "Audit Report"
+        title: "SOC 2 Type II report"
+        issuer: "Independent auditor (supplier-provided)"
+        scope: "Hosted model API control environment"
+        issued: "2026-03-01T00:00:00Z"
+        expires: "2027-03-01T00:00:00Z"
+      - id: fm-model-card
+        type: "Model Card"
+        title: "Foundation model card for pinned version"
+        issuer: "Foundation model provider"
+        scope: "Pinned model version used by release 1.0.0"
+    risks:
+      - reference-id: apa-risks
+        entry-id: model-supply-chain-exposure
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-014-model-provider-controls
+    exit: |
+      Maintain alternate approved model channel; freeze promotions on provider
+      failure; degrade to deterministic-tool explain-only mode if generation unavailable.
+    review:
+      cadence: Annual
+      next-review: "2027-03-01T00:00:00Z"
+    status: "Approved With Conditions"
+
+  - id: market-data-assurance
+    party:
+      reference-id: apa-party-register
+      entry-id: market-data-vendor
+    provides:
+      - type: Data
+        description: "Licensed market data and research feeds consumed by specialist apps and RAG"
+    criticality: Medium
+    obligations:
+      - id: md-licence-scope
+        statement: "Data and research used only within licensed desktop and internal retrieval scopes."
+        source: "Market data licence agreement"
+        verification: "Licence compliance monitoring by market data team"
+        status: Met
+      - id: md-quality-notice
+        statement: "Material feed outages and known quality incidents are notified promptly."
+        source: "Service level schedule"
+        verification: "Outage notices reviewed quarterly"
+        status: Met
+    risks:
+      - reference-id: apa-risks
+        entry-id: unsuitable-investment-influence
+    exit: |
+      Fail over to secondary licensed vendor where contracted; suspend research
+      retrieval if licence terms cannot be met.
+    review:
+      cadence: Annual
+      next-review: "2027-06-01T00:00:00Z"
+    status: Approved
+
+review:
+  cadence: Annual
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "Change of foundation model provider"
+    - "Material amendment to DPA or market data licence"

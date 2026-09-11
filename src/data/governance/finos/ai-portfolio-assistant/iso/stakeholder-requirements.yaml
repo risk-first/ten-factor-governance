@@ -1,0 +1,205 @@
+# StakeholderRequirementCatalog — ISO/IEC 42001 Clause 4.2
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: StakeholderRequirementCatalog
+
+title: "Stakeholder requirements for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-stakeholder-requirements
+  type: StakeholderRequirementCatalog
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Requirements placed on the AIMS by the regulator, clients, portfolio
+    managers and compliance concerning oversight, confidentiality, trading
+    authority and suitability.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+    - id: apa-policy
+      title: "AI Portfolio Assistant policy"
+      version: "0.1.0"
+      url: file://../policy.yaml
+    - id: apa-management-objectives
+      title: "AI management objectives"
+      version: "0.1.0"
+      url: file://management-objectives.yaml
+
+clauses: ["4.2"]
+
+requirements:
+  - id: req-regulatory-oversight
+    title: "Regulatory oversight of AI-assisted investment activity"
+    statement: |
+      The firm must retain effective oversight of AI systems that influence
+      investment decisions, including the ability to evidence human control,
+      investigate incidents and notify the FCA of serious failures.
+    source: Regulatory
+    level: Mandatory
+    party:
+      reference-id: apa-party-register
+      entry-id: regulator-fca
+    authority: "FCA Principles for Businesses; Senior Managers and Certification Regime"
+    jurisdiction: "United Kingdom"
+    in-scope: true
+    rationale: "Core to the Investment Management deployment of the assistant."
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-013-session-logging
+      - reference-id: apa-controls
+        entry-id: apa-ctl-015-incident-escalation
+    risks:
+      - reference-id: apa-risks
+        entry-id: regulatory-non-compliance
+    policies:
+      - reference-id: apa-policy
+    objectives:
+      - reference-id: apa-management-objectives
+        entry-id: incident-response-time
+    identified: "2026-06-01T00:00:00Z"
+
+  - id: req-client-confidentiality
+    title: "Confidentiality of client portfolio information"
+    statement: |
+      Client holdings, orders and research context exposed to the assistant must
+      not leak across portfolios, sessions or suppliers beyond licensed use.
+    source: Contractual
+    level: Mandatory
+    party:
+      reference-id: apa-party-register
+      entry-id: clients
+    authority: "Client investment management agreements; UK GDPR / UK GDPR principles"
+    jurisdiction: "United Kingdom"
+    in-scope: true
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-007-portfolio-access-control
+      - reference-id: apa-controls
+        entry-id: apa-ctl-008-cross-portfolio-isolation
+    risks:
+      - reference-id: apa-risks
+        entry-id: client-confidentiality-breach
+    identified: "2026-06-01T00:00:00Z"
+
+  - id: req-no-autonomous-trading
+    title: "No autonomous trading or unsupervised order submission"
+    statement: |
+      The assistant must not submit orders or otherwise effect portfolio changes
+      without an authorised human approving execution. Propose-level outputs
+      require human approval before any path toward execution.
+    source: Organisational
+    level: Mandatory
+    party:
+      reference-id: apa-party-register
+      entry-id: portfolio-managers
+    authority: "Firm AI policy; Investment Management trading authority policy"
+    in-scope: true
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-006-execute-prohibit
+      - reference-id: apa-controls
+        entry-id: apa-ctl-001-authority-ceiling
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+    policies:
+      - reference-id: apa-policy
+    objectives:
+      - reference-id: apa-management-objectives
+        entry-id: authority-boundary-compliance
+      - reference-id: apa-management-objectives
+        entry-id: human-approval-coverage
+    identified: "2026-06-01T00:00:00Z"
+
+  - id: req-human-oversight
+    title: "Meaningful human oversight of consequential AI outputs"
+    statement: |
+      Portfolio managers must be able to understand, contest and override
+      recommendations and proposals, with session evidence retained for review.
+    source: Organisational
+    level: Mandatory
+    party:
+      reference-id: apa-party-register
+      entry-id: portfolio-managers
+    in-scope: true
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-003-explain-disclosure
+      - reference-id: apa-controls
+        entry-id: apa-ctl-004-recommend-gating
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+    objectives:
+      - reference-id: apa-management-objectives
+        entry-id: human-approval-coverage
+    identified: "2026-06-15T00:00:00Z"
+
+  - id: req-suitability
+    title: "Suitability and fair treatment when AI influences investment decisions"
+    statement: |
+      AI recommendations and proposals must not cause unsuitable trades relative
+      to client mandates, risk limits or disclosed preferences; compliance must
+      be able to sample and challenge AI-influenced decisions.
+    source: Regulatory
+    level: Mandatory
+    party:
+      reference-id: apa-party-register
+      entry-id: compliance
+    authority: "MiFID II / UK MiFIR conduct rules on suitability and client best interest"
+    jurisdiction: "United Kingdom"
+    in-scope: true
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-004-recommend-gating
+      - reference-id: apa-controls
+        entry-id: apa-ctl-012-explanation-grounding
+    risks:
+      - reference-id: apa-risks
+        entry-id: unsuitable-investment-influence
+      - reference-id: apa-risks
+        entry-id: market-conduct-breach
+    identified: "2026-06-15T00:00:00Z"
+
+  - id: req-impact-assessment-currency
+    title: "Current AI system impact assessment before material change"
+    statement: |
+      Impact assessment for the assistant must be current before deployment and
+      before material changes to intended use, model or tool integrations.
+    source: Standard
+    level: Expected
+    party:
+      reference-id: apa-party-register
+      entry-id: ai-governance-office
+    authority: "ISO/IEC 42001:2023 Clauses 6.1.4 and 8.4"
+    in-scope: true
+    objectives:
+      - reference-id: apa-management-objectives
+        entry-id: impact-assessment-currency
+    identified: "2026-07-01T00:00:00Z"
+
+review:
+  cadence: Annual
+  last-reviewed: "2026-09-01T00:00:00Z"
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "New FCA guidance on AI in investment management"
+    - "Change to the authority ceiling"

@@ -1,0 +1,100 @@
+# ReportingObligationRegister — ISO/IEC 42001 Annex A.8.3
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: ReportingObligationRegister
+
+title: "External reporting obligations for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-reporting-obligation
+  type: ReportingObligationRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    External reports owed about the AI Portfolio Assistant, including FCA
+    notification triggers for serious AI incidents.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-stakeholder-requirements
+      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://stakeholder-requirements.yaml
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-incident
+      title: "AI incident log"
+      version: "0.1.0"
+      url: file://incident.yaml
+
+clauses: ["A.8.3"]
+
+obligations:
+  - id: fca-serious-ai-incident
+    title: "FCA notification of serious AI incidents"
+    recipient:
+      reference-id: apa-party-register
+      entry-id: regulator-fca
+    requirement:
+      reference-id: apa-stakeholder-requirements
+      entry-id: req-regulatory-oversight
+    authority: "FCA Principles for Businesses; firm supervisory notification expectations for material operational/conduct incidents"
+    jurisdiction: "United Kingdom"
+    subject:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    content: |
+      Description of the serious AI incident, client or market impact, whether
+      unauthorized trading or unsuitable influence occurred or was narrowly
+      avoided, controls that failed or held, containment and remediation, and
+      contact for supervisory follow-up.
+    trigger:
+      type: Event
+      event: |
+        Confirmation of a High/Critical AI incident affecting client outcomes,
+        market integrity, or evidencing unsupervised execution / propose-without-
+        approval that could have effected trades
+    deadline: "Within 72 hours of confirmation, or sooner if supervisory relationships require"
+    format: "Supervisory notification via FCA portal / relationship manager as directed"
+    owner:
+      name: "Compliance"
+      affiliation: "Compliance"
+    preparation:
+      - reference-id: apa-incident
+    status: Active
+
+  - id: fca-on-request-aims-evidence
+    title: "Provide AIMS evidence on supervisory request"
+    recipient:
+      reference-id: apa-party-register
+      entry-id: regulator-fca
+    authority: "FCA supervisory information requests"
+    jurisdiction: "United Kingdom"
+    subject:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    content: |
+      Scope, policy, impact/risk assessments, applicability profile, session
+      evidence samples and incident/corrective-action records as requested.
+    trigger:
+      type: "On Request"
+    deadline: "As stated in the information request"
+    owner:
+      name: "AI Governance Office"
+    status: Active
+
+review:
+  cadence: Annual
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "Change in FCA notification expectations for AI incidents"

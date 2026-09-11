@@ -1,0 +1,133 @@
+title: AI Portfolio Assistant Principles
+
+metadata:
+  id: apa-principles
+  type: PrincipleCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Foundational principles governing delegated authority, oversight,
+    evidence, and safety for the AI Portfolio Assistant across FDC3
+    applications.
+  lexicon:
+    reference-id: apa-lexicon
+  mapping-references:
+    - id: apa-lexicon
+      title: AI Portfolio Assistant Lexicon
+      version: "0.1.0"
+      url: file://lexicon.yaml
+
+groups:
+  - id: authority
+    title: Authority
+    description: >
+      Principles constraining how much action the assistant may take and
+      how authority escalates along the observe-to-execute ladder.
+
+  - id: oversight
+    title: Oversight
+    description: >
+      Principles requiring meaningful human control over consequential
+      AI outputs and investment decisions.
+
+  - id: evidence
+    title: Evidence
+    description: >
+      Principles requiring auditable records of authority use, tool
+      invocations, and human approvals.
+
+  - id: safety
+    title: Safety and Conduct
+    description: >
+      Principles protecting clients, markets, and the integrity of
+      investment decision-making from unsafe AI behaviour.
+
+principles:
+  - id: proportional-authority
+    title: Proportional Authority
+    group: authority
+    description: >
+      The AI Portfolio Assistant may only operate at the authority level
+      explicitly granted for the session, user, and intended use. Authority
+      must increase only when corresponding controls and human oversight are
+      in place.
+    rationale: >
+      Consequences rise from observe through execute. Delegating authority
+      without proportional controls creates unmanaged operational and
+      conduct risk.
+
+  - id: human-oversight-of-consequence
+    title: Human Oversight of Consequence
+    group: oversight
+    description: >
+      Outputs that can materially change a portfolio position or client
+      outcome require human-in-the-loop review by a portfolio manager or
+      other accountable person before they take effect.
+    rationale: >
+      Accountability for investment decisions remains with humans. AI
+      assistance must not displace required oversight of consequential
+      actions.
+
+  - id: deterministic-calculations
+    title: Deterministic Calculations
+    group: safety
+    description: >
+      Numerical portfolio, risk, and market calculations must be performed
+      by deterministic applications. The assistant may interpret and explain
+      those results but must not invent or substitute its own calculations
+      as authoritative figures.
+    rationale: >
+      Large language models are unreliable calculators. Separating
+      computation from interpretation preserves accuracy and auditability.
+
+  - id: evidence-of-authority-use
+    title: Evidence of Authority Use
+    group: evidence
+    description: >
+      Every material use of delegated authority—tool calls, explanations,
+      recommendations, proposals, and human approvals—must produce
+      retrievable evidence suitable for assurance and incident review.
+    rationale: >
+      Machine-readable governance is only enforceable and improvable when
+      behaviour and approvals are recorded.
+
+  - id: prohibited-autonomous-execution
+    title: Prohibited Autonomous Execution
+    group: authority
+    description: >
+      The assistant must never autonomously execute orders or otherwise
+      effect portfolio changes. Execution authority remains exclusively with
+      humans through approved trading workflows.
+    rationale: >
+      Direct AI control over the portfolio creates unacceptable market,
+      client, and operational risk for this intended use.
+
+  - id: client-confidentiality
+    title: Client Confidentiality
+    group: safety
+    description: >
+      Portfolio holdings, client identity, and related confidential
+      information must not be disclosed across portfolios, broadcast beyond
+      authorized FDC3 contexts, or sent to model providers outside approved
+      controls.
+    rationale: >
+      Cross-context bleed and provider exfiltration can breach client
+      confidentiality and regulatory obligations.
+
+  - id: suitability-and-conduct
+    title: Suitability and Conduct
+    group: safety
+    description: >
+      Recommendations and proposals must remain consistent with the client's
+      mandate, risk profile, and applicable conduct rules. The assistant must
+      not present speculative or unsuitable actions as established fact.
+    rationale: >
+      Investment advice and order construction are regulated activities.
+      Overconfident or unsuitable AI outputs create conduct and client-harm
+      risk.

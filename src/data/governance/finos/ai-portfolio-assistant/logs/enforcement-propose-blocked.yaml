@@ -1,0 +1,118 @@
+metadata:
+  id: apa-enforcement-propose-blocked
+  type: EnforcementLog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-10T11:02:04Z"
+  description: >
+    Enforcement actions taken after failed propose-without-approval evaluation
+    for session apa-session-pm-propose-20260910-1102
+  author:
+    id: apa-governance-runtime
+    name: AI Portfolio Assistant Governance Runtime
+    type: Software
+    version: "0.1.0"
+    uri: https://example.com/ai-governance/apa-runtime
+  mapping-references:
+    - id: apa-policy
+      title: AI Portfolio Assistant Policy
+      version: "0.1.0"
+      url: file://../policy.yaml
+    - id: apa-controls
+      title: AI Portfolio Assistant Control Catalog
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-eval-propose-blocked
+      title: Propose-without-approval Evaluation Log
+      version: "0.1.0"
+      url: file://evaluation-propose-blocked.yaml
+
+disposition: Enforced
+
+target:
+  id: apa-session-pm-propose-20260910-1102
+  name: Portfolio Manager Propose Session
+  type: Software
+  uri: fdc3://desktop/ai-portfolio-assistant/sessions/pm-propose-20260910-1102
+  environment: propose
+  owner:
+    name: Portfolio Manager
+    affiliation: Investment Management
+    email: portfolio.manager@example.com
+
+actions:
+  - disposition: Enforced
+    method:
+      reference-id: apa-policy
+      entry-id: em-apa-block-authority-escalation
+    message: >
+      Blocked release of order proposal PROP-2026-09-10-1102-01: propose action
+      attempted without satisfying human-approval gate.
+    start: "2026-09-10T11:02:04Z"
+    end: "2026-09-10T11:02:05Z"
+    steps:
+      - apa/enforcement/fdc3.blockOrderProposalIntent
+      - apa/enforcement/runtime.recordAuthorityGateFailure
+    justification:
+      assessments:
+        - result: Failed
+          requirement:
+            reference-id: apa-controls
+            entry-id: apa-ctl-005-propose-human-approval.ar01
+          plan:
+            reference-id: apa-policy
+            entry-id: ap-apa-005-propose-human-approval
+          log:
+            reference-id: apa-eval-propose-blocked
+            entry-id: apa-ctl-005-propose-human-approval
+
+  - disposition: Enforced
+    method:
+      reference-id: apa-policy
+      entry-id: em-apa-require-human-approval
+    message: >
+      Held proposal PROP-2026-09-10-1102-01 pending recorded approval from the
+      accountable portfolio manager before any order-entry handoff.
+    start: "2026-09-10T11:02:05Z"
+    end: "2026-09-10T11:02:06Z"
+    steps:
+      - apa/enforcement/approval.createPendingApprovalRequest
+      - apa/enforcement/ui.promptPortfolioManagerApproval
+    justification:
+      assessments:
+        - result: Failed
+          requirement:
+            reference-id: apa-controls
+            entry-id: apa-ctl-005-propose-human-approval.ar01
+          plan:
+            reference-id: apa-policy
+            entry-id: ap-apa-005-propose-human-approval
+          log:
+            reference-id: apa-eval-propose-blocked
+            entry-id: apa-ctl-005-propose-human-approval
+
+  - disposition: Enforced
+    method:
+      reference-id: apa-policy
+      entry-id: em-apa-notify-compliance
+    message: >
+      Notified Compliance and AI Governance Office of propose-without-approval
+      attempt on session apa-session-pm-propose-20260910-1102.
+    start: "2026-09-10T11:02:06Z"
+    end: "2026-09-10T11:02:07Z"
+    steps:
+      - apa/enforcement/notify.emailCompliance
+      - apa/enforcement/notify.postAiGovernanceAlert
+    justification:
+      assessments:
+        - result: Failed
+          requirement:
+            reference-id: apa-controls
+            entry-id: apa-ctl-005-propose-human-approval.ar01
+          plan:
+            reference-id: apa-policy
+            entry-id: ap-apa-005-propose-human-approval
+          log:
+            reference-id: apa-eval-propose-blocked
+            entry-id: apa-ctl-005-propose-human-approval

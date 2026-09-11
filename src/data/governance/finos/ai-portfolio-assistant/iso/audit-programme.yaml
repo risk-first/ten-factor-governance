@@ -1,0 +1,165 @@
+# AuditProgramme — ISO/IEC 42001 Clause 9.2
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: AuditProgramme
+
+title: "Internal audit programme for the AI Portfolio Assistant AIMS"
+
+metadata:
+  id: apa-audit-programme
+  type: AuditProgramme
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Internal audit cycle covering an annual AIMS conformity audit and quarterly
+    sampling of authority controls.
+  mapping-references:
+    - id: apa-aims-scope
+      title: "AIMS scope — AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://aims-scope.yaml
+    - id: apa-applicability-profile
+      title: "Statement of Applicability for apa-controls"
+      version: "0.1.0"
+      url: file://applicability-profile.yaml
+    - id: apa-controls
+      title: "AI Portfolio Assistant control catalog"
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-competence
+      title: "Competence register"
+      version: "0.1.0"
+      url: file://competence.yaml
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-corrective-action
+      title: "Corrective action log"
+      version: "0.1.0"
+      url: file://corrective-action.yaml
+
+clauses: ["9.2"]
+
+cycle:
+  start: "2026-01-01T00:00:00Z"
+  end: "2026-12-31T23:59:59Z"
+
+objectives:
+  - "Verify conformity of the AIMS with ISO/IEC 42001:2023 requirements taken on by the firm"
+  - "Test whether authority-boundary and human-approval controls operate as claimed"
+  - "Identify nonconformities and improvement opportunities for management review"
+
+criteria:
+  - description: "ISO/IEC 42001:2023 clauses applicable to the AIMS scope"
+  - description: "Firm AI Portfolio Assistant policy and apa-controls Statement of Applicability"
+    reference:
+      reference-id: apa-applicability-profile
+  - description: "Declared intended use and prohibited uses for ai-portfolio-assistant"
+
+coverage:
+  - reference-id: apa-aims-scope
+  - reference-id: apa-applicability-profile
+  - reference-id: apa-controls
+    entry-id: apa-ctl-001-authority-ceiling
+  - reference-id: apa-controls
+    entry-id: apa-ctl-005-propose-human-approval
+  - reference-id: apa-controls
+    entry-id: apa-ctl-006-execute-prohibit
+
+independence:
+  requirement: |
+    Auditors must not audit work they performed or own; AIMS document authors
+    and product engineering for the assistant are excluded from leading audits
+    of their own deliverables.
+  verification: "Independence checklist signed before each audit kickoff"
+
+competence:
+  - reference-id: apa-competence
+    entry-id: comp-ai-ops
+
+audits:
+  - id: audit-aims-annual-2026
+    title: "Annual AIMS conformity audit 2026"
+    scope: |
+      Full AIMS document set, policy adherence, risk/impact assessment currency,
+      supplier assurance and management review follow-up.
+    subject:
+      - reference-id: apa-aims-scope
+      - reference-id: apa-applicability-profile
+    method: "Document review, interview and sample of session evidence"
+    period:
+      start: "2026-11-01T00:00:00Z"
+      end: "2026-11-30T23:59:59Z"
+    auditor:
+      id: internal-audit-ai
+      name: "Internal Audit — Technology & AI"
+      type: Human
+    independence-confirmed: true
+    status: Planned
+    follow-up: "Findings raised in corrective-action log and tracked to closure"
+    reported-to:
+      - reference-id: apa-party-register
+        entry-id: cio-top-management
+      - reference-id: apa-party-register
+        entry-id: ai-governance-office
+
+  - id: audit-authority-q3-2026
+    title: "Q3 2026 authority-control sampling"
+    scope: |
+      Sample production sessions for authority ceiling enforcement, propose
+      human-approval coverage and absence of execute paths.
+    subject:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-001-authority-ceiling
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-006-execute-prohibit
+    method: "Session-log sampling and control configuration review"
+    period:
+      start: "2026-07-01T00:00:00Z"
+      end: "2026-09-30T23:59:59Z"
+    auditor:
+      id: internal-audit-ai
+      name: "Internal Audit — Technology & AI"
+      type: Human
+    independence-confirmed: true
+    status: Reported
+    results:
+      reference-id: apa-corrective-action
+      entry-id: nc-propose-without-approval
+      remarks: "Sampling identified the propose-without-approval near miss already in the corrective-action log."
+    findings:
+      - reference-id: apa-corrective-action
+        entry-id: nc-propose-without-approval
+    follow-up: "Verify effectiveness of corrective action in Q4 sampling"
+    reported-to:
+      - reference-id: apa-party-register
+        entry-id: ai-governance-office
+      - reference-id: apa-party-register
+        entry-id: compliance
+
+  - id: audit-authority-q4-2026
+    title: "Q4 2026 authority-control sampling"
+    scope: "Quarterly resampling of authority and approval controls"
+    method: "Session-log sampling"
+    period:
+      start: "2026-10-01T00:00:00Z"
+      end: "2026-12-31T23:59:59Z"
+    status: Planned
+    follow-up: "Raise new findings to corrective-action log"
+
+owner:
+  name: "Internal Audit"
+  affiliation: "Internal Audit"
+
+review:
+  cadence: Annual
+  next-review: "2027-01-15T00:00:00Z"

@@ -11,22 +11,34 @@ function namesIn(frontMatter, catalog) {
   return names.filter((name) => typeof name === 'string' && name.trim());
 }
 
-/** What to call an artifact here: its catalog names, or its own title. */
+/**
+ * What to call an artifact here: its catalog names when `filter` is set, else
+ * the short sidebar label (or title) so example twins stay readable.
+ */
 function labelsFor(doc, catalog) {
-  if (!catalog) {
-    return doc.title ? [doc.title] : [];
+  if (catalog) {
+    return namesIn(doc.frontMatter, catalog);
   }
-  return namesIn(doc.frontMatter, catalog);
+  const short =
+    doc.frontMatter?.sidebar_label ||
+    doc.frontMatter?.title ||
+    doc.title;
+  return short ? [short] : [];
 }
 
 /**
- * Map of the artifacts in one catalog, stacked in governance lifecycle order.
+ * Map of governance documents stacked in lifecycle order.
+ *
+ * Document sets are selected by tag. Definition pages use `Artifact`; an
+ * example twin (Gemara + AIMS mixed) uses its own set tag such as
+ * `AI Portfolio Assistant`.
  *
  * @param {object} props
- * @param {string} [props.filter] - `aka` key to select and label artifacts by,
- *   e.g. `gemara`, `iso27001` or `iso42001`. Artifacts without a name in that
- *   catalog are left out. Omit it for the whole catalogue under its own titles.
- * @param {string} [props.tag='Artifact']
+ * @param {string} [props.tag='Artifact'] - Document-set tag. Only pages carrying
+ *   this tag are shown.
+ * @param {string} [props.filter] - Optional `aka` key (`gemara`, `iso27001`,
+ *   `iso42001`) to label chips by catalog name. Omit to use each page's
+ *   sidebar label / title — typical for a mixed example twin.
  */
 export default function ArtifactLayerMap({filter, tag = 'Artifact'}) {
   const listing = usePluginData('category-listing') ?? {};
@@ -39,7 +51,8 @@ export default function ArtifactLayerMap({filter, tag = 'Artifact'}) {
         name,
         permalink: doc.permalink,
       })),
-    );
+    )
+    .filter((chip) => chip.band);
 
   const bands = BANDS.map((band) => ({
     ...band,
@@ -51,7 +64,11 @@ export default function ArtifactLayerMap({filter, tag = 'Artifact'}) {
   }
 
   return (
-    <div className={styles.map} role="img" aria-label="Governance artifact bands">
+    <div
+      className={styles.map}
+      role="navigation"
+      aria-label={`${tag} artifacts by layer`}
+    >
       {bands.map((band) => (
         <div className={styles.band} key={band.key} data-band={band.key}>
           <p className={styles.bandLabel}>

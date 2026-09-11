@@ -1,0 +1,143 @@
+# OrganisationContext — ISO/IEC 42001 Clause 4.1
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: OrganisationContext
+
+title: "Organisational context for the AI Portfolio Assistant AIMS"
+
+metadata:
+  id: apa-organisation-context
+  type: OrganisationContext
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Internal and external issues that determine how the firm can achieve the
+    intended outcomes of the AI Portfolio Assistant management system.
+  mapping-references:
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-risks
+      title: "AI Portfolio Assistant risk catalog"
+      version: "0.1.0"
+      url: file://../risk.yaml
+
+clauses: ["4.1"]
+
+purpose: |
+  The financial institution provides portfolio managers in Investment Management
+  with an AI Portfolio Assistant that observes FDC3 desktop context, invokes
+  deterministic specialist applications for portfolio, risk and stress analysis,
+  retrieves investment research, and helps managers understand positions and
+  risks. The assistant may recommend or propose actions only within declared
+  authority levels; autonomous trade execution is outside the organisation's
+  purpose for this system.
+
+issues:
+  - id: mifid-conduct
+    title: "MiFID II and UK conduct obligations on investment advice and suitability"
+    origin: External
+    category: Regulatory
+    description: |
+      Recommendations and order proposals that influence portfolio decisions can
+      engage suitability, best-interest and conduct rules. The AIMS must keep
+      human accountability and prevent AI outputs from being treated as unsupervised
+      investment advice or execution.
+    effect: Threat
+    parties:
+      - reference-id: apa-party-register
+        entry-id: regulator-fca
+      - reference-id: apa-party-register
+        entry-id: compliance
+    risks:
+      - reference-id: apa-risks
+        entry-id: unsuitable-investment-influence
+      - reference-id: apa-risks
+        entry-id: regulatory-non-compliance
+    identified: "2026-06-01T00:00:00Z"
+
+  - id: model-risk
+    title: "Model risk from foundation-model interpretation of portfolio analytics"
+    origin: Internal
+    category: Organisational
+    description: |
+      The assistant interprets deterministic tool outputs and research rather than
+      computing exposures itself. Hallucinated figures, weak grounding or drift in
+      the hosted model can still mislead portfolio managers and create model-risk
+      inventory obligations.
+    effect: Threat
+    parties:
+      - reference-id: apa-party-register
+        entry-id: model-risk
+      - reference-id: apa-party-register
+        entry-id: foundation-model-provider
+    risks:
+      - reference-id: apa-risks
+        entry-id: operational-overreliance
+      - reference-id: apa-risks
+        entry-id: model-supply-chain-exposure
+    identified: "2026-06-01T00:00:00Z"
+
+  - id: fdc3-desktop-tech
+    title: "Dependence on FDC3 desktop interoperability and specialist apps"
+    origin: Internal
+    category: Technological
+    description: |
+      The assistant's value depends on FDC3 context sharing and approved intents
+      into portfolio, risk, stress and research applications. Tool allowlisting,
+      session isolation and desktop security therefore bound the AIMS as much as
+      model controls do.
+    effect: Both
+    parties:
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+    identified: "2026-06-15T00:00:00Z"
+
+  - id: competitive-pressure
+    title: "Competitive pressure to increase AI autonomy in front-office workflows"
+    origin: External
+    category: Competitive
+    description: |
+      Peer firms advertise higher autonomy and faster proposal-to-trade loops.
+      Commercial pressure can erode authority ceilings unless top management
+      explicitly retains the prohibition on unsupervised execution.
+    effect: Threat
+    parties:
+      - reference-id: apa-party-register
+        entry-id: cio-top-management
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+    identified: "2026-07-01T00:00:00Z"
+
+jurisdictions:
+  - "United Kingdom"
+  - "European Union"
+
+boundaries:
+  - id: investment-management
+    name: "Investment Management division"
+    type: "Business Unit"
+    description: |
+      Institutional and discretionary portfolio management desks that use the
+      AI Portfolio Assistant on the firm desktop. Retail banking AI products and
+      firm-wide model training platforms are outside this boundary.
+    owner:
+      name: "Chief Investment Officer"
+      affiliation: "Investment Management"
+
+review:
+  cadence: Annual
+  last-reviewed: "2026-09-01T00:00:00Z"
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "Material change to MiFID/conduct interpretation affecting AI recommendations"
+    - "Introduction of a new FDC3 specialist application into the tool allowlist"
+    - "Proposal to raise the authority ceiling above propose"

@@ -29,6 +29,8 @@ import Tool, {HelpsWith} from '@site/src/components/Tool';
 import ToolList from '@site/src/components/ToolList';
 import GemaraGuidance from '@site/src/components/GemaraGuidance';
 import GemaraCatalog from '@site/src/components/GemaraCatalog';
+import IsoDocument from '@site/src/components/IsoDocument';
+import DownloadYamlButton from '@site/src/components/DownloadYamlButton';
 import Comparison, {
   Requirement,
   AddressedBy,
@@ -68,6 +70,8 @@ export default {
   ToolList,
   GemaraGuidance,
   GemaraCatalog,
+  IsoDocument,
+  DownloadYamlButton,
   Comparison,
   Requirement,
   AddressedBy,

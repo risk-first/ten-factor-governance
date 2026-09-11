@@ -1,0 +1,146 @@
+# GovernanceScope — ISO/IEC 42001 Clause 4.3
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: GovernanceScope
+
+title: "AIMS scope — AI Portfolio Assistant"
+
+metadata:
+  id: apa-aims-scope
+  type: GovernanceScope
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Boundary of the Artificial Intelligence Management System for the AI
+    Portfolio Assistant used in Investment Management.
+  mapping-references:
+    - id: apa-organisation-context
+      title: "Organisational context for the AI Portfolio Assistant AIMS"
+      version: "0.1.0"
+      url: file://organisation-context.yaml
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-stakeholder-requirements
+      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://stakeholder-requirements.yaml
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-governance-contract
+      title: "Governance contracts for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://governance-contract.yaml
+
+clauses: ["4.3"]
+
+statement: |
+  This AIMS covers the development, deployment, operation and continual
+  improvement of the AI Portfolio Assistant used by portfolio managers in the
+  Investment Management division of the firm. It includes the assistant's
+  FDC3-mediated access to specialist applications, retrieval of investment
+  research, and authority-bounded recommendation and order-proposal behaviour.
+  Autonomous order submission, firm-wide foundation-model training, and retail
+  banking AI products are out of scope.
+
+inclusions:
+  - id: apa-system
+    name: "AI Portfolio Assistant"
+    type: System
+    description: |
+      The production assistant operating on the investment desktop across
+      observe, analyse, explain, recommend and propose authority levels.
+    owner:
+      name: "AI Portfolio Assistant Product Owner"
+      affiliation: "Investment Management"
+    target:
+      reference-id: apa-ai-system-register
+      entry-id: ai-portfolio-assistant
+
+  - id: portfolio-assist-activity
+    name: "Portfolio assistance activity"
+    type: Activity
+    description: |
+      Human-supervised sessions in which a portfolio manager uses the assistant
+      to observe portfolio context, run deterministic analytics, explain results,
+      recommend actions and construct order proposals for approval.
+
+exclusions:
+  - id: autonomous-execution
+    name: "Autonomous trade execution"
+    type: Activity
+    justification: |
+      Submitting or otherwise effecting orders without a human authorising
+      execution is prohibited intended use. Excluding it keeps the AIMS aligned
+      with the declared authority ceiling rather than governing a capability
+      the organisation refuses to provide.
+    governed-elsewhere: "Trading desk execution controls outside this AIMS"
+
+  - id: model-training
+    name: "Foundation model training and fine-tuning"
+    type: Process
+    justification: |
+      The firm consumes a hosted foundation model; training and fine-tuning of
+      that model are performed by the supplier and are assured through supplier
+      governance rather than this AIMS's development lifecycle.
+    governed-elsewhere: "Model supplier AIMS / contractual assurance"
+
+  - id: retail-banking-ai
+    name: "Retail banking AI products"
+    type: System
+    justification: |
+      Retail customer-facing AI is owned by a different business unit with a
+      separate management system and different regulatory obligations.
+    governed-elsewhere: "Retail Banking AI management system"
+
+interfaces:
+  - id: model-supplier-interface
+    description: |
+      Hosted foundation-model API used for generation and interpretation;
+      version pinning, content filters and incident notification cross the
+      organisational boundary.
+    direction: Inbound
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: foundation-model-provider
+    responsibilities:
+      reference-id: apa-governance-contract
+      entry-id: model-provider-governance
+
+  - id: market-data-interface
+    description: |
+      Licensed market data consumed by deterministic specialist applications
+      whose outputs the assistant explains; data quality and redistribution
+      terms cross the AIMS boundary.
+    direction: Inbound
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: market-data-vendor
+
+context:
+  reference-id: apa-organisation-context
+
+requirements:
+  - reference-id: apa-stakeholder-requirements
+    entry-id: req-no-autonomous-trading
+  - reference-id: apa-stakeholder-requirements
+    entry-id: req-human-oversight
+  - reference-id: apa-stakeholder-requirements
+    entry-id: req-client-confidentiality
+
+review:
+  cadence: Annual
+  last-reviewed: "2026-09-01T00:00:00Z"
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "Request to bring execute authority into production"
+    - "Extension of the assistant to another business unit"

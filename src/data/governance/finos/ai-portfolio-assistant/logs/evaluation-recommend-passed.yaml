@@ -1,0 +1,109 @@
+metadata:
+  id: apa-eval-recommend-passed
+  type: EvaluationLog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-10T10:14:00Z"
+  description: >
+    Successful recommend-level session evaluation for a portfolio manager using
+    the AI Portfolio Assistant at recommend authority
+  author:
+    id: apa-governance-runtime
+    name: AI Portfolio Assistant Governance Runtime
+    type: Software
+    version: "0.1.0"
+    uri: https://example.com/ai-governance/apa-runtime
+  mapping-references:
+    - id: apa-controls
+      title: AI Portfolio Assistant Control Catalog
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: apa-policy
+      title: AI Portfolio Assistant Policy
+      version: "0.1.0"
+      url: file://../policy.yaml
+
+result: Passed
+
+target:
+  id: apa-session-pm-recommend-20260910-1014
+  name: Portfolio Manager Recommend Session
+  type: Software
+  uri: fdc3://desktop/ai-portfolio-assistant/sessions/pm-recommend-20260910-1014
+  environment: recommend
+  owner:
+    name: Portfolio Manager
+    affiliation: Investment Management
+    email: portfolio.manager@example.com
+
+evaluations:
+  - name: apa-ctl-004-recommend-gating
+    result: Passed
+    message: >
+      Session authority includes recommend and required grounding and
+      disclosure checks passed before recommendation emission.
+    control:
+      reference-id: apa-controls
+      entry-id: apa-ctl-004-recommend-gating
+    assessment-logs:
+      - requirement:
+          reference-id: apa-controls
+          entry-id: apa-ctl-004-recommend-gating.ar01
+        plan:
+          reference-id: apa-policy
+          entry-id: ap-apa-004-recommend-gating
+        description: >
+          Verify recommend-level outputs are emitted only when session
+          authority includes recommend and required gates have passed.
+        result: Passed
+        message: >
+          Session grant REC-AUTH-2026-0910-014 records recommend ceiling;
+          grounding and disclosure gates returned Pass before recommendation
+          REC-OUT-2026-0910-088 was presented.
+        applicability:
+          - recommend
+        steps:
+          - apa/runtime/authority.verifySessionCeiling
+          - apa/runtime/recommend.verifyGatesPassed
+          - apa/runtime/recommend.verifyEmissionAuthorized
+        steps-executed: 3
+        start: "2026-09-10T10:14:01Z"
+        end: "2026-09-10T10:14:02Z"
+        confidence-level: High
+
+  - name: apa-ctl-012-explanation-grounding
+    result: Passed
+    message: >
+      Recommendation explanation cited deterministic exposure and stress
+      application outputs with approved research sources; no ungrounded
+      financial claims detected.
+    control:
+      reference-id: apa-controls
+      entry-id: apa-ctl-012-explanation-grounding
+    assessment-logs:
+      - requirement:
+          reference-id: apa-controls
+          entry-id: apa-ctl-012-explanation-grounding.ar01
+        plan:
+          reference-id: apa-policy
+          entry-id: ap-apa-012-explanation-grounding
+        description: >
+          Verify explanations and recommendations cite deterministic application
+          outputs or approved research sources.
+        result: Passed
+        message: >
+          Grounding check cited risk-app exposure result EXP-88421 and stress
+          engine scenario STS-2219; research citations RES-44102 and RES-44118
+          resolved to approved corpus entries with no hallucinated figures.
+        applicability:
+          - recommend
+          - explain
+        steps:
+          - apa/runtime/grounding.verifyDeterministicCitations
+          - apa/runtime/grounding.verifyResearchSources
+          - apa/runtime/grounding.scanUngroundedClaims
+        steps-executed: 3
+        start: "2026-09-10T10:14:02Z"
+        end: "2026-09-10T10:14:04Z"
+        confidence-level: High

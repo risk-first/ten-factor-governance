@@ -1,0 +1,207 @@
+# ManagementObjectiveCatalog — ISO/IEC 42001 Clauses 6.2 and 9.1
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: ManagementObjectiveCatalog
+
+title: "AI management objectives for the AI Portfolio Assistant"
+
+metadata:
+  id: apa-management-objectives
+  type: ManagementObjectiveCatalog
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Measurable objectives for the AIMS: authority-boundary compliance, human
+    approval coverage, impact-assessment currency, incident response time and
+    evaluation pass rate.
+  mapping-references:
+    - id: apa-policy
+      title: "AI Portfolio Assistant policy"
+      version: "0.1.0"
+      url: file://../policy.yaml
+    - id: apa-stakeholder-requirements
+      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://stakeholder-requirements.yaml
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+
+clauses: ["6.2", "9.1", "A.6.1.2", "A.9.3"]
+
+objectives:
+  - id: authority-boundary-compliance
+    title: "Authority-boundary compliance"
+    description: |
+      Sessions remain within the declared authority ceiling; execute attempts
+      and unauthorised propose escalations are blocked and logged.
+    owner:
+      responsible:
+        - name: "AI Portfolio Assistant Engineering"
+          affiliation: "Investment Management Technology"
+      accountable:
+        - name: "AI Governance Office"
+      consulted:
+        - name: "Compliance"
+      informed:
+        - name: "Chief Information Officer"
+    policy:
+      reference-id: apa-policy
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-no-autonomous-trading
+    metrics:
+      - id: authority-violation-rate
+        name: "Authority-boundary violation rate"
+        method: |
+          Count blocked or escalated session events that attempt actions above
+          the active authority level, divided by total sessions in the period.
+        unit: "percent"
+        frequency: Monthly
+        target:
+          description: "Zero unsupervised execute attempts; violations investigated"
+          value: 0
+          comparator: "="
+          threshold: 0.1
+    status: Active
+    period:
+      start: "2026-01-01T00:00:00Z"
+      end: "2026-12-31T23:59:59Z"
+
+  - id: human-approval-coverage
+    title: "Human-approval coverage for propose-level outputs"
+    description: |
+      Every order proposal that proceeds toward execution has an identifiable
+      human approval recorded in the session log.
+    owner:
+      responsible:
+        - name: "Portfolio managers"
+          affiliation: "Investment Management"
+      accountable:
+        - name: "AI Governance Office"
+    policy:
+      reference-id: apa-policy
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-human-oversight
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-no-autonomous-trading
+    metrics:
+      - id: propose-approval-coverage
+        name: "Propose human-approval coverage"
+        method: |
+          Percentage of propose-level outputs that either were discarded or have
+          a recorded human approval before any execution path.
+        unit: "percent"
+        frequency: Monthly
+        target:
+          value: 100
+          comparator: "="
+    status: Active
+    period:
+      start: "2026-01-01T00:00:00Z"
+      end: "2026-12-31T23:59:59Z"
+
+  - id: impact-assessment-currency
+    title: "Impact-assessment currency"
+    description: |
+      The AI system impact assessment remains within its review window and is
+      refreshed before material changes to intended use, model or tools.
+    owner:
+      responsible:
+        - name: "AI Governance Office"
+      accountable:
+        - name: "Chief Information Officer"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-impact-assessment-currency
+    metrics:
+      - id: impact-assessment-overdue
+        name: "Overdue impact assessments"
+        method: "Count of in-scope systems whose impact assessment next-review date has passed."
+        unit: "count"
+        frequency: Quarterly
+        target:
+          value: 0
+          comparator: "="
+    status: Active
+    period:
+      start: "2026-01-01T00:00:00Z"
+      end: "2026-12-31T23:59:59Z"
+
+  - id: incident-response-time
+    title: "AI incident response time"
+    description: |
+      Serious AI incidents affecting client outcomes or trading authority are
+      triaged and notified within agreed internal and regulatory timelines.
+    owner:
+      responsible:
+        - name: "AI Governance Office"
+      accountable:
+        - name: "Chief Information Officer"
+      consulted:
+        - name: "Compliance"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-regulatory-oversight
+    metrics:
+      - id: serious-incident-notify-hours
+        name: "Hours from confirmation to required notification"
+        method: |
+          Elapsed hours from incident confirmation to completion of owed
+          internal and regulatory communications for High/Critical incidents.
+        unit: "hours"
+        frequency: Event-driven
+        target:
+          description: "Internal escalation within 4 hours; FCA where required within 72 hours"
+          value: 72
+          comparator: "<="
+    status: Active
+    period:
+      start: "2026-01-01T00:00:00Z"
+      end: "2026-12-31T23:59:59Z"
+
+  - id: evaluation-pass-rate
+    title: "Pre-release evaluation pass rate"
+    description: |
+      Releases promoted to production meet the behavioural evaluation criteria
+      for authority controls, grounding and tool allowlisting.
+    owner:
+      responsible:
+        - name: "AI Portfolio Assistant Engineering"
+          affiliation: "Investment Management Technology"
+      accountable:
+        - name: "Model Risk Management"
+      consulted:
+        - name: "AI Governance Office"
+    metrics:
+      - id: release-eval-pass-rate
+        name: "Evaluation pass rate for promoted releases"
+        method: |
+          Percentage of production promotions in the period that passed required
+          behavioural evaluation suites without waived High findings.
+        unit: "percent"
+        frequency: Quarterly
+        target:
+          value: 100
+          comparator: "="
+          threshold: 95
+    status: Active
+    period:
+      start: "2026-01-01T00:00:00Z"
+      end: "2026-12-31T23:59:59Z"
+
+review:
+  cadence: Annual
+  last-reviewed: "2026-09-01T00:00:00Z"
+  next-review: "2027-09-01T00:00:00Z"
+  triggers:
+    - "Missed metric target for two consecutive periods"
+    - "Change to AI policy commitments"
