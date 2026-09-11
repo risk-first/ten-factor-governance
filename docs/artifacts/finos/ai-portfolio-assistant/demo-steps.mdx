@@ -1,0 +1,83 @@
+---
+sidebar_label: Demo Steps
+sidebar_position: 1
+---
+
+# AI Portfolio Assistant Demo
+
+1. **Select a portfolio**
+   - The Portfolio app broadcasts an `fdc3.portfolio` context.
+   - The AI Assistant receives the selected portfolio.
+
+2. **Analyse portfolio risk**
+   - The user asks: *“What are the biggest risks in this portfolio?”*
+   - The AI Assistant raises `AnalyzePortfolioRisk`.
+   - The Desktop Agent intercepts the intent and checks it with the Governance Gateway.
+   - Governance returns **ALLOW**.
+   - The Risk app performs the deterministic analysis and returns the result.
+   - The AI Assistant explains the result to the user.
+
+3. **Investigate a specific risk**
+   - The AI Assistant raises `ViewAnalysis`, `ViewNews`, or a similar research intent for an affected `fdc3.instrument`.
+   - Governance returns **ALLOW**.
+   - The Research app provides supporting information.
+   - The AI combines the risk and research results into an explanation.
+
+4. **Request an investment recommendation**
+   - The user asks: *“What should I do about the energy concentration?”*
+   - The AI Assistant raises `CreatePortfolioRecommendation`.
+   - Governance evaluates applicable controls, such as:
+     - approved AI model;
+     - current portfolio data;
+     - valid risk analysis;
+     - permitted recommendation capability.
+   - Governance returns **ALLOW** or **CONDITIONAL ALLOW**.
+   - The AI produces a recommendation.
+
+5. **Create a rebalance proposal**
+   - The user says: *“Reduce energy exposure to 15%.”*
+   - The AI Assistant raises `CreateRebalanceProposal`.
+   - Governance verifies that the AI is permitted to construct, but not execute, a proposed trade.
+   - The portfolio/rebalancing app produces a proposed `fdc3.orderList`.
+
+6. **Send the proposal for human review**
+   - The AI Assistant raises `ReviewOrders` with the proposed order list.
+   - Governance returns **ALLOW — HUMAN APPROVAL REQUIRED**.
+   - The Desktop Agent forwards the request to the Order Entry app.
+   - The user can inspect the proposed trades.
+
+7. **Attempt autonomous execution**
+   - The AI attempts to raise `ExecuteOrders`.
+   - The Desktop Agent again checks with the Governance Gateway.
+   - Governance determines that the AI has no delegated trade-execution authority.
+   - Governance returns **DENY**.
+   - The Desktop Agent does not forward the intent.
+
+8. **Inspect the governance decision**
+   - The Governance app displays the decision and its traceability:
+     - governed activity;
+     - actor;
+     - applicable policy/control;
+     - evaluation results;
+     - evidence;
+     - decision;
+     - required human action.
+   - The denied execution demonstrates that governance changes system behaviour rather than merely recording it.
+
+9. **Connect the runtime decision to ISO 42001**
+   - Show how the controls and evidence relate back to the organisation's AI governance requirements.
+   - Demonstrate the chain from:
+     - ISO 42001 guidance;
+     - risk;
+     - control/policy;
+     - sensitive activity;
+     - evaluation;
+     - evidence;
+     - runtime decision.
+
+10. **Show the authority progression**
+    - Summarise the increasing level of delegated authority:
+
+      `observe → analyse → explain → recommend → propose → execute`
+
+    - The key point: **Ten-Factor governance determines how far the AI may progress along that chain, based on explicit, machine-readable governance.**
