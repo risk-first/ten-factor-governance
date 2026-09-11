@@ -43,7 +43,8 @@ import "github.com/gemaraproj/gemara@v1:gemara"
 	"SupplierAssuranceRegister" |
 	"GovernanceContractRegister" |
 	"AuditProgramme" |
-	"ReportingObligationRegister"
+	"ReportingObligationRegister" |
+	"AIMS"
 
 // Metadata carries the same fields as gemara.#Metadata for artifact types
 // Gemara does not define, plus the records-management fields Clause 7.5 asks

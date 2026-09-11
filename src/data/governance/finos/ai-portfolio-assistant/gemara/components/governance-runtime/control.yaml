@@ -1,0 +1,106 @@
+title: APA Governance Runtime Controls
+
+metadata:
+  id: apa-governance-runtime-controls
+  type: ControlCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Controls for the Governance Runtime evaluation API and evidence
+    record/report/aggregate behaviours against the Evidence Record.
+  mapping-references:
+    - id: apa-governance-runtime-threats
+      title: APA Governance Runtime Threats
+      version: "0.1.0"
+      url: file://threat.yaml
+    - id: apa-governance-runtime-capabilities
+      title: APA Governance Runtime Capabilities
+      version: "0.1.0"
+      url: file://capability.yaml
+
+groups:
+  - id: api
+    title: Evaluation API
+    description: Controls on Desktop Agent evaluation requests.
+  - id: evidence
+    title: Evidence Behaviours
+    description: Controls on recording, reporting, and aggregating evidence.
+
+controls:
+  - id: apa-runtime-ctl-001-caller-authn
+    title: Authenticate Evaluation Callers
+    objective: >
+      Accept evaluation requests only from authenticated, authorised Desktop
+      Agent (or equivalent enforcement-point) callers.
+    assessment-requirements:
+      - id: apa-runtime-ctl-001-ar01
+        text: >
+          When an evaluation request is received, the runtime MUST authenticate
+          the caller and MUST reject unauthenticated requests.
+        applicability:
+          - all
+        recommendation: ""
+    threats:
+      - reference-id: apa-governance-runtime-threats
+        entries:
+          - reference-id: apa-runtime-bypass-evaluation
+
+  - id: apa-runtime-ctl-002-model-binding
+    title: Bind Evaluations to Loaded Governance Model
+    objective: >
+      Ensure every evaluation cites the Governance Model version or artifact set
+      used to produce the decision.
+    assessment-requirements:
+      - id: apa-runtime-ctl-002-ar01
+        text: >
+          Evaluation responses and recorded evidence MUST identify the Governance
+          Model artifacts (or release identifier) that informed the decision.
+        applicability:
+          - all
+        recommendation: ""
+    threats:
+      - reference-id: apa-governance-runtime-threats
+        entries:
+          - reference-id: apa-runtime-stale-or-wrong-model
+
+  - id: apa-runtime-ctl-003-record-decisions
+    title: Record Evaluation and Enforcement Outcomes
+    objective: >
+      Persist ALLOW, DENY, and REQUIRE APPROVAL outcomes (and supporting
+      evidence) to the Decisions and Evidence Record.
+    assessment-requirements:
+      - id: apa-runtime-ctl-003-ar01
+        text: >
+          After each completed evaluation or enforcement action, the runtime
+          MUST write an evidence object to the Evidence Record bucket.
+        applicability:
+          - all
+        recommendation: ""
+    threats:
+      - reference-id: apa-governance-runtime-threats
+        entries:
+          - reference-id: apa-runtime-evidence-gap
+
+  - id: apa-runtime-ctl-004-report-and-aggregate
+    title: Report and Aggregate Evidence for Assurance
+    objective: >
+      Support retrieval and aggregation of recorded evidence for audit and AIMS
+      management review.
+    assessment-requirements:
+      - id: apa-runtime-ctl-004-ar01
+        text: >
+          The runtime MUST provide report and aggregate interfaces over Evidence
+          Record objects sufficient for sample audit and management-review use.
+        applicability:
+          - all
+        recommendation: ""
+    threats:
+      - reference-id: apa-governance-runtime-threats
+        entries:
+          - reference-id: apa-runtime-evidence-gap

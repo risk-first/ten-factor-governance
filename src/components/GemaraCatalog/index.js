@@ -226,10 +226,24 @@ function matchesQuery(entry, query) {
 
 /** Doc pages for known Gemara catalog reference-ids (imports). */
 const CATALOG_HREF = {
-  'CCC.K8S.Capabilities': '/docs/artifacts/finos/ccc-k8s/capabilities-catalog',
-  'CCC.K8S.Threats': '/docs/artifacts/finos/ccc-k8s/threats-catalog',
-  'CCC.K8S.Controls': '/docs/artifacts/finos/ccc-k8s/controls-catalog',
-  'CCC.K8S.TH': '/docs/artifacts/finos/ccc-k8s/threats-catalog',
+  'CCC.K8S.Capabilities':
+    'https://ccc.finos.org/catalogs/orchestration/k8s/capabilities',
+  'CCC.K8S.Threats': 'https://ccc.finos.org/catalogs/orchestration/k8s/threats',
+  'CCC.K8S.Controls':
+    'https://ccc.finos.org/catalogs/orchestration/k8s/controls',
+  'CCC.K8S.TH': 'https://ccc.finos.org/catalogs/orchestration/k8s/threats',
+  'CCC.K8S.CP':
+    'https://ccc.finos.org/catalogs/orchestration/k8s/capabilities',
+  'CCC.K8S.CN': 'https://ccc.finos.org/catalogs/orchestration/k8s/controls',
+  'CCC.ObjStor.CP': '/docs/artifacts/finos/ccc-obj-stor/capabilities-catalog',
+  'CCC.ObjStor.TH': '/docs/artifacts/finos/ccc-obj-stor/threats-catalog',
+  'CCC.ObjStor.CN': '/docs/artifacts/finos/ccc-obj-stor/controls-catalog',
+  'CCC.MARefArc.CP':
+    'https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch/capabilities',
+  'CCC.MARefArc.TH':
+    'https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch/threats',
+  'CCC.MARefArc.CN':
+    'https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch/controls',
   'AIR-PRIN': '/docs/artifacts/finos/ai-governance/principles-catalog',
   'AIR-VEC': '/docs/artifacts/finos/ai-governance/vectors-catalog',
   'FINOS-AIR': '/docs/artifacts/finos/ai-governance/guidance-catalog',

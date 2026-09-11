@@ -31,7 +31,7 @@ metadata:
     - id: apa-controls
       title: "AI Portfolio Assistant control catalog"
       version: "0.1.0"
-      url: file://../control.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-competence
       title: "Competence register"
       version: "0.1.0"

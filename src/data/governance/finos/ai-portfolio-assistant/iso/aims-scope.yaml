@@ -43,7 +43,7 @@ metadata:
     - id: CCC.K8S.CN
       title: "CCC Managed Kubernetes Controls"
       version: "v2026.07-rc"
-      url: file://../../ccc-k8s/k8s/controls.yaml
+      url: file://../../ccc-k8s/controls.yaml
     - id: FINOS-AIR
       title: "FINOS AI Governance Framework"
       version: "0.2.0"

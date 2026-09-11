@@ -112,7 +112,46 @@
 
 .refList {
   margin: 0;
-  padding-left: 1.25rem;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.refItem {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) 1fr;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+}
+
+.refSlot {
+  font-size: 0.92rem;
+  text-transform: none;
+}
+
+.refTargets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  align-items: baseline;
+}
+
+.refLink {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  align-items: baseline;
+  text-decoration: none;
+}
+
+.refLink:hover {
+  text-decoration: underline;
+}
+
+.refTitle {
+  color: var(--ifm-font-color-base);
+  font-size: 0.92rem;
 }
 
 .empty {

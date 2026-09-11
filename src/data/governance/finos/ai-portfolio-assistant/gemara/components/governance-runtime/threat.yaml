@@ -1,0 +1,69 @@
+title: APA Governance Runtime Threats
+
+metadata:
+  id: apa-governance-runtime-threats
+  type: ThreatCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Threats against the Governance Runtime evaluation API and evidence
+    record/report/aggregate behaviours.
+  mapping-references:
+    - id: apa-governance-runtime-capabilities
+      title: APA Governance Runtime Capabilities
+      version: "0.1.0"
+      url: file://capability.yaml
+
+groups:
+  - id: evaluation
+    title: Evaluation
+    description: Threats to correct evaluation of sensitive activities.
+  - id: evidence
+    title: Evidence
+    description: Threats to evidence integrity and availability.
+
+threats:
+  - id: apa-runtime-bypass-evaluation
+    title: Evaluation Bypass or Spoofed Decision
+    description: >
+      An attacker or misconfigured Desktop Agent may bypass the evaluation API,
+      spoof ALLOW outcomes, or call the runtime without authenticating, enabling
+      consequential intents to proceed without policy checks.
+    group: evaluation
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-evaluate
+          - reference-id: apa-runtime-authenticate-caller
+
+  - id: apa-runtime-stale-or-wrong-model
+    title: Stale or Wrong Governance Model Applied
+    description: >
+      The runtime may evaluate against outdated, incomplete, or unintended
+      Governance Model artifacts, producing incorrect ALLOW / DENY /
+      REQUIRE APPROVAL decisions.
+    group: evaluation
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-informed-by-model
+          - reference-id: apa-runtime-evaluate
+
+  - id: apa-runtime-evidence-gap
+    title: Evidence Not Recorded or Incomplete
+    description: >
+      Evaluation or enforcement outcomes may fail to be recorded, reported, or
+      aggregated, leaving gaps in audit trails for authority decisions.
+    group: evidence
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-record-evidence
+          - reference-id: apa-runtime-report-evidence
+          - reference-id: apa-runtime-aggregate-evidence

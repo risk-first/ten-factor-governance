@@ -23,7 +23,7 @@ metadata:
     - id: apa-controls
       title: "AI Portfolio Assistant control catalog"
       version: "0.1.0"
-      url: file://../control.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-incident
       title: "AI incident log"
       version: "0.1.0"

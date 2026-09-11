@@ -1,0 +1,410 @@
+title: AI Portfolio Assistant Threat Catalog
+
+metadata:
+  id: apa-threats
+  type: ThreatCatalog
+  version: "0.2.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Threat catalog describing opportunities for negative impact arising from
+    the Financial AI Portfolio Assistant across FDC3 applications and the
+    observe-to-execute authority ladder. Composes relevant CCC Multi-Agent
+    Reference Architecture threats for the agent/LLM/knowledge layers the
+    assistant depends on.
+  mapping-references:
+    - id: apa-capabilities
+      title: AI Portfolio Assistant Capability Catalog
+      version: "0.3.0"
+      url: file://capability.yaml
+      description: >
+        Scope-specific capabilities for AI Portfolio Assistant threat
+        assessment.
+    - id: apa-vectors
+      title: AI Portfolio Assistant Vector Catalog
+      version: "0.1.0"
+      url: file://../../vector.yaml
+      description: >
+        Attack and failure vectors through which AI Portfolio Assistant
+        threats may be realized.
+    - id: CCC.MARefArc.TH
+      title: CCC Multi-Agent Reference Architecture Threats
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-ma-refarch/threats.yaml
+      description: >
+        Architecture threats from
+        https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch imported for
+        shared agent/LLM/knowledge failure modes.
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-ma-refarch/capabilities.yaml
+
+extends:
+  - reference-id: CCC.MARefArc.TH
+    remarks: >
+      App-specific APA threats sit on top of Multi-Agent Reference Architecture
+      threats that apply to the assistant's imported agent, LLM, knowledge,
+      and runtime capabilities.
+
+imports:
+  - reference-id: CCC.MARefArc.TH
+    entries:
+      - reference-id: CCC.MARefArc.TH01
+        remarks: Model memorization leaks sensitive data across sessions
+      - reference-id: CCC.MARefArc.TH02
+        remarks: Hosted-provider data-handling exposure
+      - reference-id: CCC.MARefArc.TH03
+        remarks: Embedding inversion and membership inference on the vector store
+      - reference-id: CCC.MARefArc.TH04
+        remarks: Embedding-store poisoning degrades retrieved context
+      - reference-id: CCC.MARefArc.TH05
+        remarks: Vector-store access-control, encryption, and audit gaps
+      - reference-id: CCC.MARefArc.TH08
+        remarks: Denial of Wallet via token-expensive or unthrottled agentic calls
+      - reference-id: CCC.MARefArc.TH11
+        remarks: Direct prompt injection overrides guardrails
+      - reference-id: CCC.MARefArc.TH12
+        remarks: Indirect prompt injection via retrieved or processed content
+      - reference-id: CCC.MARefArc.TH13
+        remarks: Model profiling and system-prompt extraction
+      - reference-id: CCC.MARefArc.TH14
+        remarks: Model overreach and scope creep beyond validated use
+      - reference-id: CCC.MARefArc.TH15
+        remarks: Reputational harm from offensive or misleading outputs
+      - reference-id: CCC.MARefArc.TH16
+        remarks: Confident hallucination and fabricated facts
+      - reference-id: CCC.MARefArc.TH17
+        remarks: Non-deterministic and non-reproducible outputs
+      - reference-id: CCC.MARefArc.TH18
+        remarks: RAG grounding failures
+      - reference-id: CCC.MARefArc.TH19
+        remarks: Silent model version, prompt, and deployment drift
+      - reference-id: CCC.MARefArc.TH20
+        remarks: Model supply-chain tampering
+      - reference-id: CCC.MARefArc.TH22
+        remarks: Poor-quality, drifting, and bias-amplifying data
+      - reference-id: CCC.MARefArc.TH24
+        remarks: Lack of explainability and traceable rationale
+      - reference-id: CCC.MARefArc.TH25
+        remarks: Non-compliant outputs and model-risk-management gaps
+      - reference-id: CCC.MARefArc.TH26
+        remarks: Intellectual-property leakage and licensing violations
+      - reference-id: CCC.MARefArc.TH27
+        remarks: Authorization bypass and tool-chain privilege escalation
+      - reference-id: CCC.MARefArc.TH28
+        remarks: Tool selection, parameter, and sequencing manipulation
+      - reference-id: CCC.MARefArc.TH30
+        remarks: Agent memory and state poisoning
+      - reference-id: CCC.MARefArc.TH32
+        remarks: Credential harvesting via agent tools and storage
+
+groups:
+  - id: confidentiality
+    title: Confidentiality
+    description: >
+      Threats involving unauthorized disclosure or mixing of client portfolio
+      or session information.
+
+  - id: decision-integrity
+    title: Decision Integrity
+    description: >
+      Threats involving misleading explanations, unsuitable recommendations,
+      or other corruption of investment decision support.
+
+  - id: unauthorized-action
+    title: Unauthorized Action
+    description: >
+      Threats involving construction or submission of investment actions
+      beyond the assistant's permitted authority.
+
+  - id: oversight-failure
+    title: Oversight Failure
+    description: >
+      Threats involving loss of effective human oversight over consequential
+      AI behaviour.
+
+  - id: supply-chain
+    title: Supply Chain
+    description: >
+      Threats involving third-party models, tools, or content that undermine
+      confidentiality or integrity of the assistant.
+
+threats:
+  - id: unauthorized-portfolio-disclosure
+    title: Unauthorized Portfolio Disclosure
+    description: >
+      The assistant may disclose portfolio holdings, client attributes, or
+      related non-public information to unauthorized parties, channels, or
+      model providers.
+    group: confidentiality
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: portfolio-read
+          - reference-id: session-context-retention
+          - reference-id: multi-app-context-broadcast
+          - reference-id: research-retrieval
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: cross-portfolio-context-bleed
+          - reference-id: unintended-fdc3-broadcast
+          - reference-id: model-provider-data-exfiltration
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+        description: >
+          The assistant agent that reads and may redisclose portfolio context.
+      - id: model-provider
+        name: Foundation Model Provider
+        type: Organisation
+        description: >
+          A third-party provider that may receive prompts containing portfolio
+          data.
+
+  - id: misleading-risk-explanation
+    title: Misleading Risk Explanation
+    description: >
+      The assistant may produce an explanation of exposures, stress results,
+      or risk that is inaccurate, incomplete, overconfident, or not grounded
+      in deterministic application outputs.
+    group: decision-integrity
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: explanation-generation
+          - reference-id: exposure-calculation-consume
+          - reference-id: stress-scenario-consume
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: hallucinated-financial-claim
+          - reference-id: overconfident-explanation
+          - reference-id: stale-or-incorrect-market-data
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
+  - id: unsuitable-recommendation
+    title: Unsuitable Investment Recommendation
+    description: >
+      The assistant may recommend position changes or other investment actions
+      that are unsuitable for the client mandate, risk profile, or prevailing
+      market and portfolio facts.
+    group: decision-integrity
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: recommendation-generation
+          - reference-id: research-retrieval
+          - reference-id: portfolio-read
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: unsupervised-recommendation-acceptance
+          - reference-id: hallucinated-financial-claim
+          - reference-id: prompt-injection-via-research
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+      - id: portfolio-manager
+        name: Portfolio Manager
+        type: Human
+        description: >
+          The user who may accept an unsuitable recommendation without
+          sufficient challenge.
+      - id: malicious-content-author
+        name: Malicious Content Author
+        type: Human
+        description: >
+          An author who plants manipulative content in research or other
+          retrieved material.
+
+  - id: unauthorized-order-proposal
+    title: Unauthorized Order Proposal
+    description: >
+      The assistant may construct proposed orders or trade tickets without
+      required human approval, without entitlement to propose authority, or
+      through manipulated tool arguments.
+    group: unauthorized-action
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: order-proposal-construction
+          - reference-id: tool-calling
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: order-proposal-without-approval
+          - reference-id: authority-escalation
+          - reference-id: tool-argument-injection
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
+  - id: unauthorized-trade-execution
+    title: Unauthorized Trade Execution
+    description: >
+      The assistant may submit orders or otherwise execute trades
+      autonomously, bypassing the prohibition on execute authority for the
+      AI system.
+    group: unauthorized-action
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: trade-execution
+          - reference-id: tool-calling
+          - reference-id: fdc3-app-invocation
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: execution-bypass
+          - reference-id: authority-escalation
+          - reference-id: tool-argument-injection
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
+  - id: cross-client-data-contamination
+    title: Cross-Client Data Contamination
+    description: >
+      Session memory or FDC3 context may mix holdings, preferences, or
+      research context from one client or portfolio into another user's
+      session.
+    group: confidentiality
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: session-context-retention
+          - reference-id: portfolio-read
+          - reference-id: multi-app-context-broadcast
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: cross-portfolio-context-bleed
+          - reference-id: unintended-fdc3-broadcast
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
+  - id: regulatory-advice-without-authorisation
+    title: Regulatory Advice Without Authorisation
+    description: >
+      The assistant may present outputs as regulated advice or otherwise
+      influence investment decisions in a manner that exceeds authorised
+      advice permissions or firm conduct boundaries.
+    group: decision-integrity
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: recommendation-generation
+          - reference-id: explanation-generation
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: unsupervised-recommendation-acceptance
+          - reference-id: overconfident-explanation
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+      - id: portfolio-manager
+        name: Portfolio Manager
+        type: Human
+
+  - id: tool-misuse-manipulation
+    title: Tool Misuse Through Manipulation
+    description: >
+      Adversarial or untrusted content may induce the assistant to call tools
+      with unsafe arguments, invoke unintended FDC3 apps, or escalate beyond
+      permitted tool allowlists.
+    group: supply-chain
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: tool-calling
+          - reference-id: fdc3-app-invocation
+          - reference-id: research-retrieval
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: prompt-injection-via-research
+          - reference-id: tool-argument-injection
+    actors:
+      - id: malicious-content-author
+        name: Malicious Content Author
+        type: Human
+        description: >
+          An author who embeds instructions or payloads in research or other
+          retrieved content.
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
+  - id: loss-of-human-oversight
+    title: Loss of Human Oversight
+    description: >
+      Consequential recommendations, order proposals, or executions may
+      proceed without meaningful human review, approval, or the ability to
+      intervene.
+    group: oversight-failure
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: recommendation-generation
+          - reference-id: order-proposal-construction
+          - reference-id: trade-execution
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: unsupervised-recommendation-acceptance
+          - reference-id: order-proposal-without-approval
+          - reference-id: execution-bypass
+          - reference-id: authority-escalation
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+      - id: portfolio-manager
+        name: Portfolio Manager
+        type: Human
+        description: >
+          The human who must retain effective oversight of consequential
+          assistant actions.
+
+  - id: third-party-model-leakage
+    title: Third-Party Model Data Leakage
+    description: >
+      Portfolio, client, or session data sent to a foundation-model provider
+      may be retained, reused, or otherwise exposed outside the firm's
+      control boundary.
+    group: supply-chain
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: portfolio-read
+          - reference-id: session-context-retention
+          - reference-id: tool-calling
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: model-provider-data-exfiltration
+    actors:
+      - id: model-provider
+        name: Foundation Model Provider
+        type: Organisation
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI

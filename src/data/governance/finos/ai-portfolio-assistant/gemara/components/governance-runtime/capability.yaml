@@ -1,0 +1,83 @@
+title: APA Governance Runtime Capabilities
+
+metadata:
+  id: apa-governance-runtime-capabilities
+  type: CapabilityCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Capabilities of the Portfolio Assistant Governance Runtime: evaluation API
+    for the FDC3 Desktop Agent, and record / report / aggregate behaviours
+    against the Decisions and Evidence Record.
+  mapping-references:
+    - id: CCC.ObjStor.CP
+      title: CCC Object Storage Capabilities
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-object-storage/capabilities.yaml
+    - id: CCC.K8S.CP
+      title: CCC Managed Kubernetes Capabilities
+      version: "v2026.07-rc"
+      url: file://../../../../ccc-k8s/capabilities.yaml
+
+groups:
+  - id: evaluation-api
+    title: Evaluation API
+    description: >
+      Desktop Agent calls the runtime to evaluate sensitive activities before
+      forwarding consequential intents.
+  - id: evidence-behaviours
+    title: Evidence Behaviours
+    description: >
+      Runtime-owned write, report, and aggregate paths against the Evidence Record.
+  - id: model-binding
+    title: Model Binding
+    description: Runtime is informed by Governance Model artifacts.
+
+capabilities:
+  - id: apa-runtime-evaluate
+    title: Evaluate Sensitive Activity
+    description: >
+      Ability to evaluate a proposed sensitive activity against the loaded
+      Governance Model and return ALLOW, DENY, or REQUIRE APPROVAL.
+    group: evaluation-api
+
+  - id: apa-runtime-authenticate-caller
+    title: Authenticate Desktop Agent Caller
+    description: >
+      Ability to authenticate and authorise the FDC3 Desktop Agent (or equivalent
+      enforcement-point caller) before accepting evaluation requests.
+    group: evaluation-api
+
+  - id: apa-runtime-record-evidence
+    title: Record Decision Evidence
+    description: >
+      Ability to write evaluation and enforcement evidence objects to the
+      Decisions and Evidence Record object store.
+    group: evidence-behaviours
+
+  - id: apa-runtime-report-evidence
+    title: Report Evidence
+    description: >
+      Ability to retrieve and present previously recorded decision evidence for
+      operators, auditors, and AIMS review.
+    group: evidence-behaviours
+
+  - id: apa-runtime-aggregate-evidence
+    title: Aggregate Evidence
+    description: >
+      Ability to aggregate recorded evaluations and enforcement outcomes for
+      assurance, trend, and management-review use.
+    group: evidence-behaviours
+
+  - id: apa-runtime-informed-by-model
+    title: Informed by Governance Model
+    description: >
+      Ability to load and apply Governance Model catalogs (policy, controls,
+      guidance) from the Artifact Repository when making evaluation decisions.
+    group: model-binding

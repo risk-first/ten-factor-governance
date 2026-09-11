@@ -1,0 +1,25 @@
+---
+sidebar_position: 2
+sidebar_label: Threats Catalog
+title: AI Portfolio Assistant Threats Catalog
+description: "Threats against the AI Portfolio Assistant authority ladder and tools."
+tags:
+  - AI Portfolio Assistant
+  - APA Assistant
+  - Layer 2
+---
+
+import threats from '@site/src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/threat.yaml';
+import maRefArchThreats from '@site/src/data/governance/finos/ccc-ma-refarch/threats.yaml';
+
+# AI Portfolio Assistant Threats Catalog
+
+Threats mapped to assistant capabilities, with CCC Multi-Agent Reference
+Architecture imports resolved inline.
+
+<GemaraCatalog
+  file={threats}
+  resolve={{
+    'CCC.MARefArc.TH': maRefArchThreats,
+  }}
+/>

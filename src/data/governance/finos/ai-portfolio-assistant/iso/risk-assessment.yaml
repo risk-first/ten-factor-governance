@@ -28,15 +28,15 @@ metadata:
     - id: apa-risks
       title: "AI Portfolio Assistant risk catalog"
       version: "0.1.0"
-      url: file://../risk.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-threats
       title: "AI Portfolio Assistant threat catalog"
       version: "0.1.0"
-      url: file://../threat.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/threat.yaml
     - id: apa-controls
       title: "AI Portfolio Assistant control catalog"
       version: "0.1.0"
-      url: file://../control.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-impact-assessment
       title: "AI Portfolio Assistant impact assessment"
       version: "0.1.0"

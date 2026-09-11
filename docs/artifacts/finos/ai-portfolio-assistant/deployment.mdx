@@ -42,8 +42,7 @@ C4Context
   BiRel(AIPA, FDC3, "Raises intents / receives and broadcasts context")
   Rel(FDC3, GR, "Makes requests to")
   Rel(GR, GM, "Is Informed By")
-  Rel(FDC3, DE, "Records to")
-  Rel(AIPA, GR, "Records to")
+  Rel(GR, DE, "Records / reports / aggregates")
   Rel(AIPA, Chat, "Prompts / completions")
 
   UpdateElementStyle(portfolioManager, $bgColor="#e1efed", $fontColor="#0d7c6f", $borderColor="#0d7c6f")
@@ -59,20 +58,20 @@ C4Context
   UpdateRelStyle(FDC3, GR, $textColor="#4a5a52", $lineColor="#4a5a52")
   UpdateRelStyle(GR, GM, $textColor="#4a5a52", $lineColor="#4a5a52")
   UpdateRelStyle(GR, DE, $textColor="#4a5a52", $lineColor="#4a5a52")
-  UpdateRelStyle(Chat, DE, $textColor="#4a5a52", $lineColor="#4a5a52")
   UpdateRelStyle(AIPA, Chat, $textColor="#4a5a52", $lineColor="#4a5a52")
 ```
 
 ## Key
 
-| Component | Purpose |
-| --- | --- |
-| **Portfolio Manager** | Human user of the desktop. Retains authority for recommendations that require approval and for any path toward order proposal or execution. |
-| **Managed Kubernetes** | Hosts the AI Portfolio Assistant service inside the banking firewall. |
-| **AI Portfolio Assistant** | Governed AI service that combines deterministic app results with model interpretation. Does not perform financial calculations itself. |
-| **FDC3 Desktop Agent** | Interoperability layer for context and intents. Includes the governance enforcement point that checks sensitive requests before they are forwarded. |
-| **Governance Runtime** | Evaluates proposed sensitive activities and returns decisions such as ALLOW, DENY or REQUIRE APPROVAL. |
-| **Governance Model** | Machine-readable Gemara artifacts and the ISO/IEC 42001 AIMS that inform those decisions. |
-| **Decisions and Evidence Recorder** | Records evaluations, decisions and supporting evidence for traceability, audit and review. |
-| **Agentic Model** | External foundation-model capability used for language and reasoning. Subject to model-provider and data-handling controls in the AIMS. |
-| **Inside Banking Firewall** | Trust boundary for portfolio data, desktop applications and the assistant runtime. Model access may still cross this boundary under supplier controls. |
+| Component | Purpose | Governance twin |
+| --- | --- | --- |
+| **Portfolio Manager** | Human user of the desktop. Retains authority for recommendations that require approval and for any path toward order proposal or execution. | — |
+| **Portfolio Assistant Deployment (Managed Kubernetes)** | Hosts the AI Portfolio Assistant workload inside the banking firewall. | [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) (shared host) |
+| **AI Portfolio Assistant** | Governed AI service that combines deterministic app results with model interpretation. Does not perform financial calculations itself. | [AI Portfolio Assistant](./gemara/components/ai-portfolio-assistant/) |
+| **Governance Runtime Deployment (Managed Kubernetes)** | Hosts the Portfolio Assistant Governance Runtime as a separate Kubernetes deployment. | [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) (shared host) |
+| **Governance Runtime** | Evaluates proposed sensitive activities (ALLOW / DENY / REQUIRE APPROVAL) and records / reports / aggregates evidence against the Evidence Record. | [Governance Runtime](./gemara/components/governance-runtime/) |
+| **Artifact Repository (Governance Model)** | Object store / registry that hosts and serves versioned Governance Model releases (lexicon → policy) and the AIMS envelope for all Gemara components. | [Artifact Repository](./gemara/components/artifact-repository/) |
+| **Records Deployment (Decisions and Evidence Record)** | Object-storage bucket that holds evaluation and enforcement evidence; store posture from CCC Object Storage (writers are the Governance Runtime). | [CCC Object Storage](../ccc-obj-stor/) |
+| **FDC3 Desktop Agent** | Interoperability layer for context and intents; calls the Governance Runtime before forwarding sensitive requests. | Out of scope for twins |
+| **Agentic Model** | External foundation-model capability used for language and reasoning. Subject to model-provider and data-handling controls in the AIMS. | Out of scope for twins |
+| **Inside Banking Firewall** | Trust boundary for portfolio data, desktop applications and the assistant runtime. Model access may still cross this boundary under supplier controls. | — |

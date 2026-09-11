@@ -1,0 +1,45 @@
+---
+sidebar_position: 0
+title: Gemara
+description: "Shared Governance Model catalogs and per-component Gemara twins for the AI Portfolio Assistant."
+tags:
+  - AI Portfolio Assistant
+---
+
+# Gemara
+
+## Shared Governance Model
+
+Lexicon through policy apply across all component twins. In deployment they are
+hosted by the [Artifact Repository](./components/artifact-repository/); in the
+docs tree the catalogs sit here so they are not mistaken for twin-local content.
+
+| Catalog | Page |
+| --- | --- |
+| Lexicon | [lexicon](./lexicon) |
+| Principles | [principles-catalog](./principles-catalog) |
+| Vectors | [vectors-catalog](./vectors-catalog) |
+| Guidance | [guidance-catalog](./guidance-catalog) |
+| Policy | [policy](./policy) |
+
+AIMS documents remain under [iso/](../iso/aims).
+
+## Component twins
+
+Layer-2+ catalogs match the [deployment](../deployment) C4 view. Docs paths
+mirror `src/data/.../gemara/components/`.
+
+| Component | Twin |
+| --- | --- |
+| AI Portfolio Assistant | [ai-portfolio-assistant](./components/ai-portfolio-assistant/) |
+| Governance Runtime | [governance-runtime](./components/governance-runtime/) |
+| Artifact Repository | [artifact-repository](./components/artifact-repository/) |
+
+Host and store posture come from shared CCC catalogs rather than local twins:
+
+- [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s)
+- [CCC Object Storage](../../ccc-obj-stor/) (Decisions and Evidence Record bucket)
+
+## Artifacts by layer
+
+<ArtifactLayerMap tag="AI Portfolio Assistant" />

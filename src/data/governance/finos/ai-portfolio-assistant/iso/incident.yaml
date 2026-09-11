@@ -31,11 +31,11 @@ metadata:
     - id: apa-risks
       title: "AI Portfolio Assistant risk catalog"
       version: "0.1.0"
-      url: file://../risk.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-controls
       title: "AI Portfolio Assistant control catalog"
       version: "0.1.0"
-      url: file://../control.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-communication-plan
       title: "Communication plan"
       version: "0.1.0"

@@ -36,6 +36,12 @@ import "github.com/finos/ten-factor-governance/schemas/iso/common:iso"
 	// title names the management system
 	title: string
 
+	// metadata identifies this profile and declares the documents it references
+	// (same document conventions as other ISO / Gemara artifacts)
+	metadata: iso.#Metadata & {
+		type: "AIMS"
+	}
+
 	// scope is the AIMS scope statement (Clause 4.3)
 	scope: iso.#Reference
 

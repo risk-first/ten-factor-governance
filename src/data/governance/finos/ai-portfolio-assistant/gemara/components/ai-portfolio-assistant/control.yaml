@@ -1,0 +1,736 @@
+title: AI Portfolio Assistant Control Catalog
+
+metadata:
+  id: apa-controls
+  type: ControlCatalog
+  version: "0.3.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Threat-informed controls for governing the Financial AI Portfolio
+    Assistant across the observe-to-execute authority ladder. Composes
+    FINOS AIGF mitigations, CCC Multi-Agent Reference Architecture controls,
+    and CCC Managed Kubernetes host controls via Gemara imports rather than
+    twinning those catalogs.
+  mapping-references:
+    - id: apa-threats
+      title: AI Portfolio Assistant Threat Catalog
+      version: "0.1.0"
+      url: file://threat.yaml
+      description: >
+        Layer 2 threats mitigated by these controls.
+    - id: apa-guidance
+      title: AI Portfolio Assistant Guidelines
+      version: "0.2.0"
+      url: file://../../guidance.yaml
+      description: >
+        Layer 1 guidance implemented by these controls.
+    - id: FINOS-AIR
+      title: FINOS AI Governance Framework
+      version: "0.2.0"
+      url: file://../../../../aigf/guidance.yaml
+      description: >
+        FINOS AIGF mitigations composed into the assistant governance model.
+    - id: CCC.K8S.CN
+      title: CCC Managed Kubernetes Controls
+      version: "v2026.07-rc"
+      url: file://../../../../ccc-k8s/controls.yaml
+      description: >
+        Host-layer Managed Kubernetes controls assumed for the assistant
+        workload; not re-authored here.
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-ma-refarch/capabilities.yaml
+    - id: CCC.MARefArc.CN
+      title: CCC Multi-Agent Reference Architecture Controls
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-ma-refarch/controls.yaml
+      description: >
+        Architecture-layer CCC multi-agent controls composed alongside AIGF
+        mitigations for the assistant twin.
+  applicability-groups:
+    - id: all-authority-levels
+      title: All Authority Levels
+      description: >
+        Applies to every AI Portfolio Assistant session regardless of
+        permitted authority level.
+    - id: observe
+      title: Observe Authority
+      description: >
+        Applies when the assistant may read portfolio and related context.
+    - id: analyse
+      title: Analyse Authority
+      description: >
+        Applies when the assistant may invoke deterministic apps and consume
+        calculated results.
+    - id: explain
+      title: Explain Authority
+      description: >
+        Applies when the assistant may generate explanations of positions and
+        risks.
+    - id: recommend
+      title: Recommend Authority
+      description: >
+        Applies when the assistant may generate investment recommendations.
+    - id: propose
+      title: Propose Authority
+      description: >
+        Applies when the assistant may construct proposed orders for human
+        review.
+    - id: execute
+      title: Execute Authority
+      description: >
+        Applies to trade-execution capability; autonomous AI use is
+        prohibited.
+    - id: human-approval-required
+      title: Human Approval Required
+      description: >
+        Applies when consequential propose-level actions require recorded
+        human approval before proceeding.
+
+groups:
+  - id: authority-bound
+    title: Authority Boundaries
+    description: >
+      Controls that bind assistant behaviour to the observe-to-execute
+      authority ladder.
+
+  - id: oversight
+    title: Human Oversight
+    description: >
+      Controls that retain meaningful human review and approval for
+      consequential actions.
+
+  - id: data-protection
+    title: Data Protection
+    description: >
+      Controls that protect portfolio confidentiality and prevent
+      cross-client contamination.
+
+  - id: tool-governance
+    title: Tool Governance
+    description: >
+      Controls that constrain tool calling, FDC3 invocation, and injected
+      content misuse.
+
+  - id: assurance
+    title: Assurance and Evidence
+    description: >
+      Controls that ground explanations, retain session evidence, and
+      escalate incidents.
+
+  - id: model-supply
+    title: Model Supply Chain
+    description: >
+      Controls governing third-party model provider handling of firm and
+      client data.
+
+imports:
+  - reference-id: FINOS-AIR
+    entries:
+      - reference-id: AIR-PREV-018
+        remarks: Agent Authority Least Privilege Framework
+      - reference-id: AIR-PREV-019
+        remarks: Tool Chain Validation and Sanitization
+      - reference-id: AIR-DET-021
+        remarks: Agent Decision Audit and Explainability
+      - reference-id: AIR-DET-013
+        remarks: Citations and Source Traceability
+      - reference-id: AIR-DET-011
+        remarks: Human Feedback Loop for AI Systems
+      - reference-id: AIR-PREV-012
+        remarks: Role-Based Access Control for AI Data
+      - reference-id: AIR-DET-001
+        remarks: AI Data Leakage Prevention and Detection
+      - reference-id: AIR-PREV-002
+        remarks: Data Filtering From External Knowledge Bases
+      - reference-id: AIR-PREV-010
+        remarks: AI Model Version Pinning
+      - reference-id: AIR-PREV-007
+        remarks: Legal and Contractual Frameworks for AI Systems
+  - reference-id: CCC.K8S.CN
+    entries:
+      - reference-id: CCC.K8S.CN02
+        remarks: Enforce Least-Privilege Cluster Authorization (host assumption)
+      - reference-id: CCC.K8S.CN03
+        remarks: Use Federated Identities for Workloads (host assumption)
+      - reference-id: CCC.K8S.CN04
+        remarks: Admit Only Trusted Container Images (host assumption)
+      - reference-id: CCC.K8S.CN05
+        remarks: Enforce Restricted Workload Security (host assumption)
+      - reference-id: CCC.K8S.CN06
+        remarks: Enforce Default-Deny Workload Network Policies (host assumption)
+      - reference-id: CCC.K8S.CN07
+        remarks: Protect Workload Secrets (host assumption)
+      - reference-id: CCC.K8S.CN14
+        remarks: Preserve Kubernetes Audit and Monitoring Records (host assumption)
+      - reference-id: CCC.K8S.CN16
+        remarks: Enforce Managed Cluster Authentication (host assumption)
+  - reference-id: CCC.MARefArc.CN
+    entries:
+      - reference-id: CCC.MARefArc.CN11
+        remarks: Agent Authority Least Privilege Framework
+      - reference-id: CCC.MARefArc.CN12
+        remarks: Tool Chain Validation and Sanitization
+      - reference-id: CCC.MARefArc.CN19
+        remarks: Human Feedback Loop for AI Systems
+      - reference-id: CCC.MARefArc.CN20
+        remarks: Citations and Source Traceability
+      - reference-id: CCC.MARefArc.CN23
+        remarks: Agent Decision Audit and Explainability
+      - reference-id: CCC.MARefArc.CN01
+        remarks: Data Filtering From External Knowledge Bases
+      - reference-id: CCC.MARefArc.CN08
+        remarks: Role-Based Access Control for AI Data
+      - reference-id: CCC.MARefArc.CN10
+        remarks: AI Firewall Implementation and Management
+      - reference-id: CCC.MARefArc.CN16
+        remarks: AI Data Leakage Prevention and Detection
+      - reference-id: CCC.MARefArc.CN07
+        remarks: AI Model Version Pinning
+
+controls:
+  - id: apa-ctl-001-authority-ceiling
+    title: Authority Ceiling Enforcement
+    objective: >
+      Ensure each assistant session operates under an explicit maximum
+      authority level and cannot escalate beyond that ceiling without a new
+      governed entitlement.
+    group: authority-bound
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-001-authority-ceiling.ar01
+        text: >
+          Every active AI Portfolio Assistant session MUST have a recorded
+          maximum authority level on the observe-analyse-explain-recommend-
+          propose-execute ladder, and observed actions MUST NOT exceed that
+          ceiling.
+        applicability:
+          - all-authority-levels
+        recommendation: >
+          Compare session entitlement records to observed tool calls,
+          recommendation outputs, order proposals, and execution attempts.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-authority-ladder
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-PREV-018
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unauthorized-order-proposal
+          - reference-id: unauthorized-trade-execution
+          - reference-id: loss-of-human-oversight
+          - reference-id: regulatory-advice-without-authorisation
+
+  - id: apa-ctl-002-observe-analyse-allow
+    title: Observe and Analyse Allowance
+    objective: >
+      Permit autonomous observe and analyse behaviour only where portfolio
+      read and deterministic calculation consumption are within the session
+      entitlement.
+    group: authority-bound
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-002-observe-analyse-allow.ar01
+        text: >
+          Observe and analyse actions MUST NOT occur unless the session
+          entitlement explicitly authorises those authority levels and the
+          invoked calculation sources are recorded deterministic applications.
+        applicability:
+          - observe
+          - analyse
+        recommendation: >
+          Verify session entitlements and correlate analyse activity with
+          demo.GetPortfolioRisk and demo.RunStressScenario invocations rather
+          than model-computed figures.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-observe-only
+          - reference-id: apa-guidance-deterministic-calcs
+          - reference-id: apa-guidance-demo-intents
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: loss-of-human-oversight
+          - reference-id: misleading-risk-explanation
+
+  - id: apa-ctl-003-explain-disclosure
+    title: Explain-Level Disclosure Controls
+    objective: >
+      Bound explain-level outputs so explanations disclose only authorised
+      portfolio and calculation context and remain distinguishable from advice.
+    group: authority-bound
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-003-explain-disclosure.ar01
+        text: >
+          Explain-authority sessions MUST NOT present investment advice
+          labelled as recommendations, and explanation outputs MUST NOT
+          disclose portfolio attributes outside the authenticated user's
+          authorised scope.
+        applicability:
+          - explain
+        recommendation: >
+          Sample explanation transcripts for advice framing and unauthorised
+          portfolio attributes; correlate with access-control logs.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-authority-ladder
+          - reference-id: apa-guidance-fdc3-boundaries
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: misleading-risk-explanation
+          - reference-id: unauthorized-portfolio-disclosure
+          - reference-id: regulatory-advice-without-authorisation
+
+  - id: apa-ctl-004-recommend-gating
+    title: Recommendation Gating
+    objective: >
+      Gate recommendation generation behind entitlement, suitability checks,
+      and disclosure that recommendations require human judgement.
+    group: authority-bound
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-004-recommend-gating.ar01
+        text: >
+          Recommendation outputs MUST NOT be generated unless the session
+          entitlement includes recommend authority and recorded gating checks
+          for suitability and disclosure have passed.
+        applicability:
+          - recommend
+        recommendation: >
+          Inspect recommendation events for entitlement flags, suitability
+          check results, and required human-judgement disclosure text.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-recommend-controls
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unsuitable-recommendation
+          - reference-id: regulatory-advice-without-authorisation
+          - reference-id: loss-of-human-oversight
+
+  - id: apa-ctl-005-propose-human-approval
+    title: Human Approval for Order Proposals
+    objective: >
+      Require recorded human approval before any constructed order proposal
+      is accepted, transmitted, or otherwise acted upon.
+    group: oversight
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-005-propose-human-approval.ar01
+        text: >
+          Order proposals produced via demo.CreateOrderProposal MUST NOT leave
+          draft state or be handed to execution workflows without a recorded
+          human approval identifying the approver and approval time.
+        applicability:
+          - propose
+          - human-approval-required
+        recommendation: >
+          Correlate demo.CreateOrderProposal events with approval workflow
+          records; treat missing or self-approved AI identities as failures.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-propose-approval
+          - reference-id: apa-guidance-human-oversight
+          - reference-id: apa-guidance-demo-intents
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-011
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unauthorized-order-proposal
+          - reference-id: loss-of-human-oversight
+
+  - id: apa-ctl-006-execute-prohibit
+    title: Autonomous Execution Prohibition
+    objective: >
+      Prohibit autonomous trade execution by the AI Portfolio Assistant under
+      all operating conditions.
+    group: authority-bound
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-006-execute-prohibit.ar01
+        text: >
+          demo.SubmitOrders and any equivalent trade-execution tool calls or
+          order submissions MUST NOT be initiated by the AI Portfolio
+          Assistant identity under any session entitlement.
+        applicability:
+          - execute
+          - all-authority-levels
+        recommendation: >
+          Monitor FDC3 for assistant-originated demo.SubmitOrders intents;
+          any occurrence is a control failure.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-execute-prohibited
+          - reference-id: apa-guidance-demo-intents
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-PREV-018
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unauthorized-trade-execution
+          - reference-id: loss-of-human-oversight
+
+  - id: apa-ctl-007-portfolio-access-control
+    title: Portfolio Access Control
+    objective: >
+      Restrict portfolio read access to the authenticated portfolio manager's
+      authorised portfolios and attributes.
+    group: data-protection
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-007-portfolio-access-control.ar01
+        text: >
+          Portfolio-read operations performed for the assistant MUST NOT
+          return holdings or client attributes outside the authenticated
+          user's authorised portfolio set.
+        applicability:
+          - observe
+          - all-authority-levels
+        recommendation: >
+          Compare portfolio API responses in assistant sessions against IAM
+          entitlements for the signed-in portfolio manager.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-fdc3-boundaries
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: unauthorized-portfolio-disclosure
+          - reference-id: cross-client-data-contamination
+
+  - id: apa-ctl-008-cross-portfolio-isolation
+    title: Cross-Portfolio Session Isolation
+    objective: >
+      Prevent session memory and FDC3 context from mixing data across clients
+      or unrelated portfolios.
+    group: data-protection
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-008-cross-portfolio-isolation.ar01
+        text: >
+          Session context and FDC3 broadcasts used by the assistant MUST NOT
+          contain portfolio identifiers, holdings, or preferences from a
+          client or portfolio outside the active authorised session scope.
+        applicability:
+          - all-authority-levels
+        recommendation: >
+          Test multi-session and context-switch scenarios; verify memory and
+          broadcast payloads are scoped to the active portfolio.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-fdc3-boundaries
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: cross-client-data-contamination
+          - reference-id: unauthorized-portfolio-disclosure
+
+  - id: apa-ctl-009-deterministic-calc-only
+    title: Deterministic Calculations Only
+    objective: >
+      Require financial figures used in analysis and explanation to originate
+      from deterministic applications rather than model-invented calculations.
+    group: assurance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-009-deterministic-calc-only.ar01
+        text: >
+          Exposure, stress, and related numeric risk figures presented by the
+          assistant MUST be traceable to recorded deterministic application
+          outputs and MUST NOT be solely model-generated.
+        applicability:
+          - analyse
+          - explain
+          - recommend
+        recommendation: >
+          Trace cited figures in assistant outputs to calculation-app result
+          identifiers and reject unexplained numeric claims.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-deterministic-calcs
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: misleading-risk-explanation
+          - reference-id: unsuitable-recommendation
+
+  - id: apa-ctl-010-tool-allowlist
+    title: Tool and Intent Allowlist
+    objective: >
+      Restrict tool calling and FDC3 application invocation to an approved
+      allowlist consistent with the session authority ceiling.
+    group: tool-governance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-010-tool-allowlist.ar01
+        text: >
+          Observed tool calls and FDC3 intents by the assistant MUST be
+          members of the approved allowlist for the session's maximum
+          authority level. The core demo allowlist is demo.GetPortfolioRisk,
+          demo.GetResearch, demo.RunStressScenario, and
+          demo.CreateOrderProposal (authority-scoped). demo.SubmitOrders and
+          other execution-capable intents MUST NOT appear on any assistant
+          allowlist.
+        applicability:
+          - all-authority-levels
+        recommendation: >
+          Diff runtime intent logs against the authority-scoped allowlist;
+          flag unknown or execute-capable intents immediately.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-fdc3-boundaries
+          - reference-id: apa-guidance-execute-prohibited
+          - reference-id: apa-guidance-demo-intents
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-PREV-019
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: tool-misuse-manipulation
+          - reference-id: unauthorized-trade-execution
+          - reference-id: unauthorized-order-proposal
+
+  - id: apa-ctl-011-prompt-injection-defenses
+    title: Prompt Injection Defenses
+    objective: >
+      Detect and contain prompt-injection and tool-argument manipulation
+      originating from research content or other untrusted inputs.
+    group: tool-governance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-011-prompt-injection-defenses.ar01
+        text: >
+          Retrieved research and other untrusted content MUST be treated as
+          untrusted input, and assistant tool calls MUST NOT execute
+          instructions embedded in that content without policy-compliant
+          sanitisation or human confirmation where required.
+        applicability:
+          - all-authority-levels
+        recommendation: >
+          Run injection test cases through research retrieval paths and verify
+          blocked or quarantined tool-call attempts in telemetry.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-research-hygiene
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: tool-misuse-manipulation
+          - reference-id: unsuitable-recommendation
+
+  - id: apa-ctl-012-explanation-grounding
+    title: Explanation Grounding
+    objective: >
+      Ground explanations and interpretive claims in cited deterministic
+      outputs and retrieved sources so that unsupported claims are prevented
+      or clearly flagged.
+    group: assurance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-012-explanation-grounding.ar01
+        text: >
+          Explain and recommend outputs that assert portfolio or risk facts
+          MUST cite grounding sources such as deterministic calculation
+          results or approved research identifiers, and ungrounded material
+          claims MUST be blocked or explicitly flagged.
+        applicability:
+          - explain
+          - recommend
+        recommendation: >
+          Evaluate sample transcripts for citation coverage and flag rate on
+          unsupported financial claims; verify FDC3 Security signatures on
+          demo.portfolioRisk, demo.researchBundle, and related contexts.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-deterministic-calcs
+          - reference-id: apa-guidance-recommend-controls
+          - reference-id: apa-guidance-fdc3-security
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-013
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: misleading-risk-explanation
+          - reference-id: unsuitable-recommendation
+
+  - id: apa-ctl-013-session-logging
+    title: Session Authority Logging
+    objective: >
+      Retain auditable logs of authority level, tool calls, recommendations,
+      proposals, approvals, and blocked escalation attempts for each session.
+    group: assurance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-013-session-logging.ar01
+        text: >
+          Each assistant session MUST produce immutable logs that record
+          maximum authority, observed actions by authority level, tool calls,
+          recommendation and proposal events, human approvals, and blocked
+          escalation or execution attempts.
+        applicability:
+          - all-authority-levels
+        recommendation: >
+          Sample recent sessions and verify required fields are present,
+          complete, and retained for the mandated retention period.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-logging
+          - reference-id: apa-guidance-human-oversight
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-021
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: loss-of-human-oversight
+          - reference-id: unauthorized-order-proposal
+          - reference-id: unauthorized-trade-execution
+
+  - id: apa-ctl-014-model-provider-controls
+    title: Model Provider Data Controls
+    objective: >
+      Ensure third-party model providers process assistant prompts under
+      contractual and technical controls that prevent retention or misuse of
+      client portfolio data.
+    group: model-supply
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-014-model-provider-controls.ar01
+        text: >
+          Prompts containing portfolio or client data MUST NOT be sent to a
+          model provider that lacks recorded contractual non-retention,
+          approved data-handling controls, and technical configuration
+          consistent with those obligations.
+        applicability:
+          - all-authority-levels
+        recommendation: >
+          Verify provider inventory, contract clauses, and runtime endpoint
+          configuration before evaluating production traffic samples.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-model-providers
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: third-party-model-leakage
+          - reference-id: unauthorized-portfolio-disclosure
+
+  - id: apa-ctl-015-incident-escalation
+    title: Authority and Safety Incident Escalation
+    objective: >
+      Escalate authority breaches, suspected injection, data leakage, and
+      unsupervised consequential actions to defined owners within required
+      timeframes.
+    group: assurance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-015-incident-escalation.ar01
+        text: >
+          Detected authority breaches, execution attempts, cross-portfolio
+          contamination, model-provider leakage indicators, and loss-of-
+          oversight events MUST create an incident record and notify the
+          designated escalation contacts within the required response window.
+        applicability:
+          - all-authority-levels
+        recommendation: >
+          Review incident tickets against detection telemetry for completeness
+          and response-time compliance.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-incident-escalation
+          - reference-id: apa-guidance-human-oversight
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: loss-of-human-oversight
+          - reference-id: unauthorized-trade-execution
+          - reference-id: third-party-model-leakage
+          - reference-id: cross-client-data-contamination
+
+  - id: apa-ctl-016-fdc3-security-provenance
+    title: FDC3 Security Provenance for Demo Contexts
+    objective: >
+      Require FDC3 Security signatures on demo suite contexts that convey
+      risk results, research, recommendations, and order proposals so the
+      assistant and downstream apps can verify provenance.
+    group: assurance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-016-fdc3-security-provenance.ar01
+        text: >
+          Broadcasts and returns of demo.portfolioRisk, demo.researchBundle,
+          demo.stressScenarioResult, demo.portfolioRecommendation, and
+          demo.orderProposal MUST include verifiable FDC3 Security signatures;
+          the assistant MUST NOT treat unsigned instances of those contexts as
+          authoritative grounding for explain, recommend, or propose actions.
+        applicability:
+          - analyse
+          - explain
+          - recommend
+          - propose
+        recommendation: >
+          Inspect FDC3 context payloads for signature presence and validity on
+          the five demo contexts; reject or flag unsigned material used as
+          evidence.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-fdc3-security
+          - reference-id: apa-guidance-deterministic-calcs
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-013
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: misleading-risk-explanation
+          - reference-id: tool-misuse-manipulation
+          - reference-id: unsuitable-recommendation

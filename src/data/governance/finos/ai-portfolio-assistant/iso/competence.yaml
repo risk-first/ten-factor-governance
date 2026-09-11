@@ -31,7 +31,7 @@ metadata:
     - id: apa-policy
       title: "AI Portfolio Assistant policy"
       version: "0.1.0"
-      url: file://../policy.yaml
+      url: file://../gemara/policy.yaml
 
 clauses: ["7.2", "7.3"]
 

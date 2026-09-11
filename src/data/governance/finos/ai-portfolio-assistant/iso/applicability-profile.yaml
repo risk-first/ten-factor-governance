@@ -18,17 +18,18 @@ metadata:
     type: Human
   description: |
     Applicability decisions for each control in apa-controls, including
-    implementation state and the risks treated, plus inherited CCC Managed
-    Kubernetes host assumptions for the assistant workload.
+    implementation state and the risks treated, plus Assumed controls from
+    CCC Managed Kubernetes (shared host), CCC Object Storage (evidence bucket),
+    and the Governance Runtime twin.
   mapping-references:
     - id: apa-controls
       title: "AI Portfolio Assistant control catalog"
       version: "0.2.0"
-      url: file://../control.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-risks
       title: "AI Portfolio Assistant risk catalog"
       version: "0.1.0"
-      url: file://../risk.yaml
+      url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-risk-assessment
       title: "AI Portfolio Assistant risk assessment"
       version: "0.1.0"
@@ -36,7 +37,7 @@ metadata:
     - id: apa-policy
       title: "AI Portfolio Assistant policy"
       version: "0.2.0"
-      url: file://../policy.yaml
+      url: file://../gemara/policy.yaml
     - id: apa-stakeholder-requirements
       title: "Stakeholder requirements for the AI Portfolio Assistant"
       version: "0.1.0"
@@ -44,7 +45,15 @@ metadata:
     - id: CCC.K8S.CN
       title: "CCC Managed Kubernetes Controls"
       version: "v2026.07-rc"
-      url: file://../../ccc-k8s/k8s/controls.yaml
+      url: file://../../ccc-k8s/controls.yaml
+    - id: CCC.ObjStor.CN
+      title: "CCC Object Storage Controls"
+      version: "v2026.07-rc"
+      url: file://../../ccc-object-storage/controls.yaml
+    - id: apa-governance-runtime-controls
+      title: "APA Governance Runtime Controls"
+      version: "0.1.0"
+      url: file://../gemara/components/governance-runtime/control.yaml
     - id: FINOS-AIR
       title: "FINOS AI Governance Framework"
       version: "0.2.0"
@@ -306,8 +315,8 @@ decisions:
       entry-id: CCC.K8S.CN02
     applicable: true
     justification: >
-      Host assumption: assistant workload on Managed Kubernetes inherits
-      least-privilege cluster authorization from the CCC K8s twin.
+      Host assumption via CCC Managed Kubernetes host controls (shared by Portfolio Assistant
+      and Governance Runtime deployments): least-privilege cluster authorization.
     state: Assumed
     owner:
       name: "Platform Engineering"
@@ -317,7 +326,9 @@ decisions:
       reference-id: CCC.K8S.CN
       entry-id: CCC.K8S.CN03
     applicable: true
-    justification: "Host assumption: federated workload identity for the assistant service."
+    justification: >
+      Host assumption via CCC Managed Kubernetes host controls: federated workload identity
+      for assistant and runtime services.
     state: Assumed
     owner:
       name: "Platform Engineering"
@@ -327,7 +338,9 @@ decisions:
       reference-id: CCC.K8S.CN
       entry-id: CCC.K8S.CN05
     applicable: true
-    justification: "Host assumption: restricted workload security for the assistant pods."
+    justification: >
+      Host assumption via CCC Managed Kubernetes host controls: restricted workload security
+      for assistant and runtime pods.
     state: Assumed
     owner:
       name: "Platform Engineering"
@@ -338,8 +351,8 @@ decisions:
       entry-id: CCC.K8S.CN06
     applicable: true
     justification: >
-      Host assumption: default-deny network policies constrain assistant egress
-      to approved model and desktop-integration endpoints.
+      Host assumption via CCC Managed Kubernetes host controls: default-deny network policies
+      constrain egress to approved model and desktop-integration endpoints.
     state: Assumed
     owner:
       name: "Platform Engineering"
@@ -349,7 +362,9 @@ decisions:
       reference-id: CCC.K8S.CN
       entry-id: CCC.K8S.CN07
     applicable: true
-    justification: "Host assumption: Kubernetes secrets for the assistant are protected per CCC."
+    justification: >
+      Host assumption via CCC Managed Kubernetes host controls: Kubernetes secrets protected
+      per CCC for assistant and runtime workloads.
     state: Assumed
     owner:
       name: "Platform Engineering"
@@ -360,11 +375,48 @@ decisions:
       entry-id: CCC.K8S.CN14
     applicable: true
     justification: >
-      Host assumption: cluster audit/monitoring retention complements app-layer
-      session evidence (apa-ctl-013).
+      Host assumption via CCC Managed Kubernetes host controls: cluster audit/monitoring
+      retention complements app-layer session evidence (apa-ctl-013) and
+      Governance Runtime evidence recording.
     state: Assumed
     owner:
       name: "Platform Engineering"
+
+  - id: soa-store-ccc-objstor-cn09
+    control:
+      reference-id: CCC.ObjStor.CN
+      entry-id: CCC.ObjStor.CN09
+    applicable: true
+    justification: >
+      Store assumption via CCC Object Storage: Decisions and Evidence Record
+      bucket blocks public access by default.
+    state: Assumed
+    owner:
+      name: "Platform Engineering"
+
+  - id: soa-store-ccc-objstor-cn04
+    control:
+      reference-id: CCC.ObjStor.CN
+      entry-id: CCC.ObjStor.CN04
+    applicable: true
+    justification: >
+      Store assumption via CCC Object Storage: default retention policy on
+      evidence objects.
+    state: Assumed
+    owner:
+      name: "Platform Engineering"
+
+  - id: soa-runtime-ctl-003
+    control:
+      reference-id: apa-governance-runtime-controls
+      entry-id: apa-runtime-ctl-003-record-decisions
+    applicable: true
+    justification: >
+      Governance Runtime records evaluation and enforcement outcomes to the
+      Evidence Record; CCC Object Storage covers store posture only.
+    state: "Partially Implemented"
+    owner:
+      name: "AI Governance Engineering"
 
 review:
   cadence: Annual
@@ -374,3 +426,5 @@ review:
     - "New control added to apa-controls"
     - "Risk assessment refresh"
     - "Change to Managed Kubernetes host control assumptions"
+    - "Change to Evidence Record / CCC Object Storage assumptions"
+    - "Change to Governance Runtime evidence controls"

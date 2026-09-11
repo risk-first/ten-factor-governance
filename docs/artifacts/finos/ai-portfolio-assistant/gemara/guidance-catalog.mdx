@@ -1,18 +1,23 @@
 ---
 sidebar_position: 4
 sidebar_label: Guidance Catalog
-title: AI Portfolio Assistant Guidance
-description: "Machine-readable guidance for AI Portfolio Assistant authority and oversight."
+title: AI Portfolio Assistant Guidance Catalog
+description: "Guidelines implementing principles for the assistant."
 tags:
   - AI Portfolio Assistant
   - Layer 1
 ---
 
-import guidance from '@site/src/data/governance/finos/ai-portfolio-assistant/guidance.yaml';
+import aigfGuidance from '@site/src/data/governance/finos/aigf/guidance.yaml';
+import catalog from '@site/src/data/governance/finos/ai-portfolio-assistant/gemara/guidance.yaml';
 
-# AI Portfolio Assistant Guidance
+# AI Portfolio Assistant Guidance Catalog
 
-Guidelines establishing how authority may be delegated to the assistant and
-what oversight is required at each step.
+Guidelines implementing principles across APA Gemara components.
 
-<GemaraGuidance file={guidance} />
+<GemaraCatalog
+  file={catalog}
+  resolve={{
+    'FINOS-AIR': aigfGuidance,
+  }}
+/>

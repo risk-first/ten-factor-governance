@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from '@docusaurus/Link';
 import DownloadYamlButton from '@site/src/components/DownloadYamlButton';
 import RevealItem from '@site/src/components/RevealItem';
 import styles from './styles.module.css';
@@ -18,6 +19,84 @@ function textOf(value) {
     return '';
   }
   return String(value).trim();
+}
+
+const GEMARA_MODEL_DOCS = {
+  policy: 'policy',
+  lexicon: 'lexicon',
+  principle: 'principles-catalog',
+  vector: 'vectors-catalog',
+  guidance: 'guidance-catalog',
+};
+
+/**
+ * Map a mapping-reference `file://` URL (relative to the YAML) onto a docs
+ * route relative to the page rendering this document.
+ *
+ * Sibling ISO YAML (`file://aims-scope.yaml`) → sibling MDX (`./aims-scope`).
+ * Shared model YAML under gemara/ (`file://../gemara/policy.yaml`) → gemara root pages.
+ */
+function docHrefFromFileUrl(url) {
+  if (typeof url !== 'string' || !url.startsWith('file://')) {
+    return null;
+  }
+  const path = url.slice('file://'.length).replace(/^\.\//, '');
+
+  const modelMatch = path.match(
+    /^(?:\.\.\/)+(?:gemara\/)?(policy|lexicon|principle|vector|guidance)\.ya?ml$/i,
+  );
+  if (modelMatch) {
+    const gemaraDoc = GEMARA_MODEL_DOCS[modelMatch[1]];
+    return gemaraDoc ? `../gemara/${gemaraDoc}` : null;
+  }
+
+  const componentMatch = path.match(
+    /^(?:\.\.\/)+gemara\/components\/(ai-portfolio-assistant|governance-runtime|artifact-repository)\/(capability|control|threat|risk)\.ya?ml$/i,
+  );
+  if (componentMatch) {
+    const [, component, kind] = componentMatch;
+    const page = {
+      capability: 'capabilities-catalog',
+      control: 'controls-catalog',
+      threat: 'threats-catalog',
+      risk: 'risks-catalog',
+    }[kind];
+    return page ? `../gemara/components/${component}/${page}` : null;
+  }
+
+  if (!path.includes('/') || !path.includes('..')) {
+    const stem = path.split('/').pop().replace(/\.ya?ml$/i, '');
+    return stem ? `./${stem}` : null;
+  }
+
+  return null;
+}
+
+function indexMappingReferences(metadata) {
+  const byId = new Map();
+  for (const ref of metadata?.['mapping-references'] ?? []) {
+    if (ref?.id) {
+      byId.set(ref.id, ref);
+    }
+  }
+  return byId;
+}
+
+function MappingRefLink({id, mappingById}) {
+  const mapping = mappingById.get(id);
+  const href = mapping ? docHrefFromFileUrl(mapping.url) : null;
+  const title = textOf(mapping?.title);
+
+  if (!href) {
+    return <code>{id}</code>;
+  }
+
+  return (
+    <Link to={href} className={styles.refLink} title={title || undefined}>
+      <code>{id}</code>
+      {title ? <span className={styles.refTitle}>{title}</span> : null}
+    </Link>
+  );
 }
 
 const COLLECTION_KEYS = [
@@ -127,7 +206,10 @@ export default function IsoDocument({file}) {
     items: Array.isArray(file[key]) ? file[key] : null,
   })).filter((entry) => entry.items && entry.items.length > 0);
 
-  const isAimsProfile = !metadata.type && file.scope && file.policy;
+  const isAimsProfile =
+    metadata.type === 'AIMS' || (!metadata.type && file.scope && file.policy);
+
+  const mappingById = indexMappingReferences(metadata);
 
   return (
     <div className={styles.doc}>
@@ -174,7 +256,7 @@ export default function IsoDocument({file}) {
           <h2 className={styles.groupTitle}>AIMS document references</h2>
           <ul className={styles.refList}>
             {Object.entries(file)
-              .filter(([key]) => key !== 'title')
+              .filter(([key]) => key !== 'title' && key !== 'metadata')
               .map(([key, value]) => {
                 const refs = Array.isArray(value)
                   ? value
@@ -185,9 +267,22 @@ export default function IsoDocument({file}) {
                   return null;
                 }
                 return (
-                  <li key={key}>
-                    <strong>{key}</strong>:{' '}
-                    {refs.map((ref) => ref['reference-id']).filter(Boolean).join(', ')}
+                  <li key={key} className={styles.refItem}>
+                    <strong className={styles.refSlot}>{key}</strong>
+                    <span className={styles.refTargets}>
+                      {refs.map((ref, index) => {
+                        const id = ref['reference-id'];
+                        if (!id) {
+                          return null;
+                        }
+                        return (
+                          <React.Fragment key={`${key}-${id}`}>
+                            {index > 0 ? ', ' : null}
+                            <MappingRefLink id={id} mappingById={mappingById} />
+                          </React.Fragment>
+                        );
+                      })}
+                    </span>
                   </li>
                 );
               })}

@@ -1,10 +1,112 @@
 # AIMS profile — ISO/IEC 42001
 # Names the documents that together constitute the Artificial Intelligence
 # Management System for the AI Portfolio Assistant (see iso42001.#AIMS).
-# This is a profile of references, not an ArtifactType Document.
+# This is a profile of references, not a container that embeds those documents.
 # iso-type: AIMS
 
 title: "AI Portfolio Assistant AIMS"
+
+metadata:
+  id: apa-aims
+  type: AIMS
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    Completeness profile for the Artificial Intelligence Management System that
+    governs the AI Portfolio Assistant. Each field references a stand-alone
+    document by metadata.id; those documents live and version on their own.
+  mapping-references:
+    - id: apa-aims-scope
+      title: "AIMS scope — AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://aims-scope.yaml
+    - id: apa-organisation-context
+      title: "Organisational context for the AI Portfolio Assistant AIMS"
+      version: "0.1.0"
+      url: file://organisation-context.yaml
+    - id: apa-party-register
+      title: "Parties to the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://party-register.yaml
+    - id: apa-stakeholder-requirements
+      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://stakeholder-requirements.yaml
+    - id: apa-policy
+      title: "AI Portfolio Assistant Policy"
+      version: "0.2.0"
+      url: file://../gemara/policy.yaml
+    - id: apa-management-objectives
+      title: "AI management objectives for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://management-objectives.yaml
+    - id: apa-risk-assessment
+      title: "AI Portfolio Assistant — AI risk assessment"
+      version: "0.1.0"
+      url: file://risk-assessment.yaml
+    - id: apa-impact-assessment
+      title: "AI Portfolio Assistant — AI system impact assessment"
+      version: "0.1.0"
+      url: file://impact-assessment.yaml
+    - id: apa-applicability-profile
+      title: "Statement of Applicability — AI Portfolio Assistant controls"
+      version: "0.2.0"
+      url: file://applicability-profile.yaml
+    - id: apa-ai-system-register
+      title: "AI systems in the scope of the AIMS"
+      version: "0.1.0"
+      url: file://ai-system-register.yaml
+    - id: apa-dataset-register
+      title: "Data resources for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://dataset-register.yaml
+    - id: apa-tool-resource-register
+      title: "Tooling resources for the AI Portfolio Assistant"
+      version: "0.2.0"
+      url: file://tool-resource-register.yaml
+    - id: apa-competence
+      title: "Competence register for the AI Portfolio Assistant AIMS"
+      version: "0.1.0"
+      url: file://competence.yaml
+    - id: apa-communication-plan
+      title: "Communication plan for the AI Portfolio Assistant AIMS"
+      version: "0.1.0"
+      url: file://communication-plan.yaml
+    - id: apa-supplier-assurance
+      title: "Supplier assurance for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://supplier-assurance.yaml
+    - id: apa-governance-contract
+      title: "Governance contracts for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://governance-contract.yaml
+    - id: apa-reporting-obligation
+      title: "External reporting obligations for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://reporting-obligation.yaml
+    - id: apa-audit-programme
+      title: "Internal audit programme for the AI Portfolio Assistant AIMS"
+      version: "0.1.0"
+      url: file://audit-programme.yaml
+    - id: apa-management-review-2026-q3
+      title: "Management review — AI Portfolio Assistant AIMS Q3 2026"
+      version: "0.1.0"
+      url: file://management-review.yaml
+    - id: apa-corrective-action
+      title: "Corrective action log for the AI Portfolio Assistant AIMS"
+      version: "0.1.0"
+      url: file://corrective-action.yaml
+    - id: apa-incident
+      title: "AI incident log for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://incident.yaml
 
 scope:
   reference-id: apa-aims-scope

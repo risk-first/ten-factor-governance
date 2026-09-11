@@ -1,0 +1,539 @@
+metadata:
+  id: apa-policy
+  type: Policy
+  version: "0.2.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Policy governing use of the AI Portfolio Assistant across FDC3 desktop
+    applications, including authority-ladder boundaries, human oversight for
+    propose activity, and prohibition of autonomous trade execution. Composes
+    FINOS AIGF guidance and CCC Managed Kubernetes host controls. Suitable
+    for dual use as an ISO/IEC 42001-aligned AI policy statement.
+  mapping-references:
+    - id: apa-risks
+      title: AI Portfolio Assistant Risk Catalog
+      version: "0.1.0"
+      url: file://components/ai-portfolio-assistant/risk.yaml
+    - id: apa-threats
+      title: AI Portfolio Assistant Threat Catalog
+      version: "0.1.0"
+      url: file://components/ai-portfolio-assistant/threat.yaml
+    - id: apa-guidance
+      title: AI Portfolio Assistant Guidance
+      version: "0.2.0"
+      url: file://guidance.yaml
+    - id: apa-lexicon
+      title: AI Portfolio Assistant Lexicon
+      version: "0.2.0"
+      url: file://lexicon.yaml
+    - id: apa-principles
+      title: AI Portfolio Assistant Principles
+      version: "0.1.0"
+      url: file://principle.yaml
+    - id: apa-vectors
+      title: AI Portfolio Assistant Vector Catalog
+      version: "0.1.0"
+      url: file://vector.yaml
+    - id: apa-controls
+      title: AI Portfolio Assistant Control Catalog
+      version: "0.2.0"
+      url: file://components/ai-portfolio-assistant/control.yaml
+    - id: FINOS-AIR
+      title: FINOS AI Governance Framework
+      version: "0.2.0"
+      url: file://../../aigf/guidance.yaml
+    - id: CCC.K8S.CN
+      title: CCC Managed Kubernetes Controls
+      version: "v2026.07-rc"
+      url: file://../../ccc-k8s/controls.yaml
+    - id: CCC.MARefArc.CN
+      title: CCC Multi-Agent Reference Architecture Controls
+      version: "1.0.0-dev"
+      url: file://../../ccc-ma-refarch/controls.yaml
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../../ccc-ma-refarch/capabilities.yaml
+    - id: apa-applicability-profile
+      title: Statement of Applicability — AI Portfolio Assistant
+      version: "0.2.0"
+      url: file://../iso/applicability-profile.yaml
+    - id: company-code-of-conduct
+      title: Company Code of Conduct
+      version: "1.0.0"
+      url: https://example.com/policies/code-of-conduct
+    - id: company-information-classification-policy
+      title: Company Information Classification Policy
+      version: "1.0.0"
+      url: https://example.com/policies/information-classification
+    - id: company-market-conduct-policy
+      title: Company Market Conduct Policy
+      version: "1.0.0"
+      url: https://example.com/policies/market-conduct
+    - id: company-model-risk-policy
+      title: Company Model Risk Policy
+      version: "1.0.0"
+      url: https://example.com/policies/model-risk
+    - id: company-third-party-management-policy
+      title: Company Third-Party Management Policy
+      version: "1.0.0"
+      url: https://example.com/policies/third-party-management
+    - id: objectives
+      title: AI Portfolio Assistant Management Objectives
+      version: "0.1.0"
+      url: file://../iso/management-objectives.yaml
+    - id: comms
+      title: AI Portfolio Assistant Communication Plan
+      version: "0.1.0"
+      url: file://../iso/communication-plan.yaml
+
+title: AI Portfolio Assistant Policy
+
+contacts:
+  responsible:
+    - name: AI Governance Office
+  accountable:
+    - name: Chief Investment Officer
+  consulted:
+    - name: Compliance
+    - name: Model Risk
+    - name: Information Security
+    - name: Legal
+    - name: Portfolio Manager Line Management
+  informed:
+    - name: Portfolio Managers
+    - name: AI Portfolio Assistant Platform Team
+
+scope:
+  in:
+    users:
+      - portfolio-managers
+      - investment-analysts-authorized-to-use-assistant
+    technologies:
+      - ai-portfolio-assistant
+      - fdc3-desktop
+      - portfolio-applications
+      - risk-and-exposure-applications
+      - investment-research-applications
+    groups:
+      - investment-management-division
+  out:
+    technologies:
+      - autonomous-trade-execution
+      - retail-customer-facing-chatbots
+      - model-training-pipelines
+    groups:
+      - retail-banking-ai-systems
+      - non-investment-management-divisions
+
+imports:
+  policies:
+    - reference-id: company-code-of-conduct
+    - reference-id: company-information-classification-policy
+    - reference-id: company-market-conduct-policy
+    - reference-id: company-model-risk-policy
+    - reference-id: company-third-party-management-policy
+  catalogs:
+    - reference-id: apa-controls
+    - reference-id: CCC.K8S.CN
+    - reference-id: CCC.MARefArc.CN
+  guidance:
+    - reference-id: apa-guidance
+    - reference-id: FINOS-AIR
+
+risks:
+  mitigated:
+    - id: risk-client-confidentiality-breach
+      risk:
+        reference-id: apa-risks
+        entry-id: client-confidentiality-breach
+    - id: risk-unsuitable-investment-influence
+      risk:
+        reference-id: apa-risks
+        entry-id: unsuitable-investment-influence
+    - id: risk-unauthorized-trading
+      risk:
+        reference-id: apa-risks
+        entry-id: unauthorized-trading
+    - id: risk-regulatory-non-compliance
+      risk:
+        reference-id: apa-risks
+        entry-id: regulatory-non-compliance
+    - id: risk-market-conduct-breach
+      risk:
+        reference-id: apa-risks
+        entry-id: market-conduct-breach
+    - id: risk-operational-overreliance
+      risk:
+        reference-id: apa-risks
+        entry-id: operational-overreliance
+    - id: risk-model-supply-chain-exposure
+      risk:
+        reference-id: apa-risks
+        entry-id: model-supply-chain-exposure
+
+implementation-plan:
+  evaluation-timeline:
+    start: "2026-09-10T00:00:00Z"
+    notes: >
+      Begin with session-level evaluation of authority ceiling, recommend
+      gating, propose approval, explanation grounding, and logging controls.
+      Automate checks progressively through the FDC3 desktop runtime, session
+      logger, and compliance notification integrations.
+  enforcement-timeline:
+    start: "2026-10-01T00:00:00Z"
+    notes: >
+      Treat authority-escalation and propose-without-approval failures as
+      blocking from pilot start. Expand automated session termination and
+      execution blocking once runtime evidence sources are fully integrated.
+  notification-process: >
+    Non-compliance findings are reported to the portfolio manager, AI
+    Governance Office, Compliance, and Model Risk where model behaviour or
+    third-party dependencies are implicated.
+
+adherence:
+  non-compliance: >
+    Assistant activity that exceeds the granted authority level, constructs an
+    order proposal without recorded human approval, attempts autonomous
+    execution, or lacks required session evidence must not proceed until
+    remediated or formally risk-accepted by the AI Governance Office with
+    Compliance concurrence.
+
+  assessment-plans:
+
+    - id: ap-apa-001-authority-ceiling
+      requirement-id: apa-ctl-001-authority-ceiling.ar01
+      frequency: per-session-action
+      evaluation-methods:
+        - id: automated-authority-ceiling-check
+          type: Behavioral
+          mode: Automated
+          description: automated authority ceiling check
+      evidence-requirements: >
+        Session evidence that every assistant action remains at or below the
+        portfolio manager's granted authority level for the session.
+
+    - id: ap-apa-002-observe-analyse-allow
+      requirement-id: apa-ctl-002-observe-analyse-allow.ar01
+      frequency: per-session-action
+      evaluation-methods:
+        - id: automated-authority-allowlist-check
+          type: Behavioral
+          mode: Automated
+          description: automated authority allowlist check
+      evidence-requirements: >
+        Evidence that observe and analyse actions are permitted only when the
+        session authority ceiling includes those levels and target portfolio
+        access is authorized.
+
+    - id: ap-apa-003-explain-disclosure
+      requirement-id: apa-ctl-003-explain-disclosure.ar01
+      frequency: per-explanation
+      evaluation-methods:
+        - id: automated-explanation-disclosure-check
+          type: Behavioral
+          mode: Automated
+          description: automated explanation disclosure check
+      evidence-requirements: >
+        Evidence that explanations disclose underlying deterministic sources,
+        uncertainty, and authority context before presentation to the user.
+
+    - id: ap-apa-004-recommend-gating
+      requirement-id: apa-ctl-004-recommend-gating.ar01
+      frequency: per-recommendation
+      evaluation-methods:
+        - id: automated-recommend-gate-check
+          type: Behavioral
+          mode: Automated
+          description: automated recommend gate check
+        - id: automated-grounding-check
+          type: Behavioral
+          mode: Automated
+          description: automated grounding check
+      evidence-requirements: >
+        Evidence that recommend-level outputs are emitted only when session
+        authority includes recommend and required grounding and disclosure
+        checks have passed.
+
+    - id: ap-apa-005-propose-human-approval
+      requirement-id: apa-ctl-005-propose-human-approval.ar01
+      frequency: per-order-proposal
+      evaluation-methods:
+        - id: automated-human-approval-check
+          type: Behavioral
+          mode: Automated
+          description: automated human approval check
+        - id: workflow-approval-check
+          type: Behavioral
+          mode: Automated
+          description: workflow approval check
+      evidence-requirements: >
+        Evidence that no order proposal is released to trading or order-entry
+        applications without a recorded human approval from the accountable
+        portfolio manager.
+
+    - id: ap-apa-006-execute-prohibit
+      requirement-id: apa-ctl-006-execute-prohibit.ar01
+      frequency: per-session-action
+      evaluation-methods:
+        - id: automated-execution-block-check
+          type: Behavioral
+          mode: Automated
+          description: automated execution block check
+      evidence-requirements: >
+        Evidence that the assistant never invokes trade-execution tools or
+        submits orders autonomously under any authority level.
+
+    - id: ap-apa-007-portfolio-access-control
+      requirement-id: apa-ctl-007-portfolio-access-control.ar01
+      frequency: per-portfolio-access
+      evaluation-methods:
+        - id: automated-portfolio-entitlement-check
+          type: Behavioral
+          mode: Automated
+          description: automated portfolio entitlement check
+      evidence-requirements: >
+        Evidence that portfolio reads are limited to entitlements of the
+        authenticated portfolio manager for the active session.
+
+    - id: ap-apa-008-cross-portfolio-isolation
+      requirement-id: apa-ctl-008-cross-portfolio-isolation.ar01
+      frequency: per-session-action
+      evaluation-methods:
+        - id: automated-context-isolation-check
+          type: Behavioral
+          mode: Automated
+          description: automated context isolation check
+      evidence-requirements: >
+        Evidence that session context, retrieved research, and tool outputs do
+        not mix data across unrelated client or portfolio boundaries.
+
+    - id: ap-apa-009-deterministic-calc-only
+      requirement-id: apa-ctl-009-deterministic-calc-only.ar01
+      frequency: per-calculation-request
+      evaluation-methods:
+        - id: automated-calc-delegation-check
+          type: Behavioral
+          mode: Automated
+          description: automated calc delegation check
+      evidence-requirements: >
+        Evidence that exposures, stresses, and other quantitative results are
+        obtained from approved deterministic applications rather than generated
+        as model-invented figures.
+
+    - id: ap-apa-010-tool-allowlist
+      requirement-id: apa-ctl-010-tool-allowlist.ar01
+      frequency: per-tool-invocation
+      evaluation-methods:
+        - id: automated-tool-allowlist-check
+          type: Behavioral
+          mode: Automated
+          description: automated tool allowlist check
+      evidence-requirements: >
+        Evidence that tool calls are restricted to the approved FDC3 and
+        runtime allowlist for the granted authority level.
+
+    - id: ap-apa-011-prompt-injection-defenses
+      requirement-id: apa-ctl-011-prompt-injection-defenses.ar01
+      frequency: per-retrieval-and-tool-call
+      evaluation-methods:
+        - id: automated-injection-defense-check
+          type: Behavioral
+          mode: Automated
+          description: automated injection defense check
+      evidence-requirements: >
+        Evidence that research retrieval and tool arguments are screened for
+        injection and that untrusted content cannot raise authority or bypass
+        approval gates.
+
+    - id: ap-apa-012-explanation-grounding
+      requirement-id: apa-ctl-012-explanation-grounding.ar01
+      frequency: per-explanation-or-recommendation
+      evaluation-methods:
+        - id: automated-grounding-check
+          type: Behavioral
+          mode: Automated
+          description: automated grounding check
+        - id: automated-source-citation-check
+          type: Behavioral
+          mode: Automated
+          description: automated source citation check
+      evidence-requirements: >
+        Evidence that explanations and recommendations cite deterministic
+        application outputs or approved research sources and do not present
+        ungrounded financial claims as fact.
+
+    - id: ap-apa-013-session-logging
+      requirement-id: apa-ctl-013-session-logging.ar01
+      frequency: per-session
+      evaluation-methods:
+        - id: automated-session-log-check
+          type: Behavioral
+          mode: Automated
+          description: automated session log check
+      evidence-requirements: >
+        Evidence that authority level, tool calls, recommendations, proposals,
+        approvals, and enforcement actions are retained in the session log for
+        the required retention period.
+
+    - id: ap-apa-014-model-provider-controls
+      requirement-id: apa-ctl-014-model-provider-controls.ar01
+      frequency: per-model-invocation-and-on-change
+      evaluation-methods:
+        - id: automated-provider-control-check
+          type: Behavioral
+          mode: Automated
+          description: automated provider control check
+        - id: manual-supplier-assurance-review
+          type: Intent
+          mode: Manual
+          description: manual supplier assurance review
+      evidence-requirements: >
+        Evidence that model-provider invocations use approved endpoints,
+        redaction or retention settings, and current supplier-assurance
+        disposition.
+
+    - id: ap-apa-015-incident-escalation
+      requirement-id: apa-ctl-015-incident-escalation.ar01
+      frequency: when-triggered
+      evaluation-methods:
+        - id: automated-incident-signal-check
+          type: Behavioral
+          mode: Automated
+          description: automated incident signal check
+        - id: manual-compliance-review
+          type: Intent
+          mode: Manual
+          description: manual compliance review
+      evidence-requirements: >
+        Evidence that authority, confidentiality, or conduct incidents are
+        escalated to Compliance and AI Governance Office with recorded
+        disposition.
+
+  enforcement-methods:
+    - id: em-apa-block-authority-escalation
+      type: Gate
+      mode: Automated
+      required: true
+      description: >
+        Block assistant actions that would exceed the granted session authority
+        level, including unauthorized escalation to recommend, propose, or
+        execute.
+    - id: em-apa-require-human-approval
+      type: Gate
+      mode: Automated
+      required: true
+      description: >
+        Hold order proposals until a recorded human approval is obtained from
+        the accountable portfolio manager.
+    - id: em-apa-block-execution
+      type: Gate
+      mode: Automated
+      required: true
+      description: >
+        Block any attempt by the assistant to invoke trade-execution tools or
+        submit orders autonomously.
+    - id: em-apa-notify-compliance
+      type: Remediation
+      mode: Automated
+      required: true
+      description: >
+        Notify Compliance and AI Governance Office of failed authority,
+        approval, confidentiality, or conduct evaluations.
+    - id: em-apa-session-terminate
+      type: Remediation
+      mode: Automated
+      required: true
+      description: >
+        Terminate the assistant session when critical authority, isolation, or
+        execution-control failures are detected.
+
+purpose: |
+  The organisation provides portfolio managers with an AI Portfolio Assistant
+  to interpret deterministic portfolio, risk, and research outputs across the
+  FDC3 desktop. This policy exists so that authority delegated to the assistant
+  remains proportional, checkable, and subject to human oversight—especially
+  where recommendations, order proposals, or execution-adjacent actions could
+  affect clients or market conduct.
+
+commitments:
+  - id: meet-requirements
+    statement: |
+      Meet the legal, regulatory, and contractual requirements applicable to
+      AI-assisted portfolio management, including conduct, confidentiality, and
+      market-abuse obligations.
+    type: Requirements
+    objectives:
+      - reference-id: objectives
+        entry-id: obligation-coverage
+  - id: human-oversight
+    statement: |
+      Keep a portfolio manager accountable for consequential decisions the
+      assistant informs, and require recorded human approval before any order
+      proposal is released.
+    type: Responsible Use
+  - id: assess-impact
+    statement: |
+      Assess the consequences of the AI Portfolio Assistant for clients,
+      portfolio managers, and the firm before deployment and whenever authority,
+      tools, or model dependencies materially change.
+    type: Responsible Use
+    objectives:
+      - reference-id: objectives
+        entry-id: impact-assessment-currency
+  - id: proportional-authority
+    statement: |
+      Grant the assistant only the authority level needed for the task—
+      observe, analyse, explain, recommend, or propose—and prohibit autonomous
+      execute under all circumstances.
+    type: Responsible Use
+    objectives:
+      - reference-id: objectives
+        entry-id: authority-boundary-compliance
+  - id: continual-improvement
+    statement: |
+      Continually improve governance of the assistant using evidence from
+      session evaluation, enforcement, incidents, and assurance reviews.
+    type: Continual Improvement
+
+objectives:
+  reference-id: objectives
+  entry-id: ai-portfolio-assistant-objectives-2026
+
+aligned-with:
+  - reference-id: company-model-risk-policy
+    entry-id: model-risk-policy
+    remarks: >
+      The assistant remains in scope of the company model-risk framework.
+  - reference-id: company-market-conduct-policy
+    entry-id: market-conduct-policy
+    remarks: >
+      Recommendations and proposed orders remain subject to market-conduct
+      obligations.
+
+approval:
+  approved-by:
+    name: Chief Investment Officer
+  date: "2026-09-10T00:00:00Z"
+  effective-date: "2026-10-01T00:00:00Z"
+  supersedes: "0.0.0"
+
+review:
+  cadence: Annual
+  last-reviewed: "2026-09-10T00:00:00Z"
+  next-review: "2027-09-10T00:00:00Z"
+  triggers:
+    - Material change to applicable AI or investment-conduct regulation
+    - A serious assistant incident involving authority, confidentiality, or trading
+    - Change to foundation-model provider or FDC3 tool allowlist
+    - Expansion of granted authority levels beyond recommend
+
+communication:
+  - reference-id: comms
+    entry-id: policy-publication

@@ -34,11 +34,14 @@ how those governance mechanisms can form part of an ISO/IEC 42001-aligned AI
 management system.
 
 Controls are intended to stack by layer:
- - [CCC Kubernetes](../ccc-k8s/) controls at the managed Kubernetes runtime
- - [CCC Multi-Agent Reference Architecture](../ccc-ma-refarch/) capabilities and controls for the agent/LLM/knowledge layers the assistant depends on
- - [FINOS AI Governance Framework](../ai-governance/) controls in the governance-model layer
- - App-specific controls in the [Gemara](./gemara) catalogs
- - The [ISO/IEC 42001 AIMS](./iso/aims) documents wrap that combined set in a management-system envelope.
+ - [CCC Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) on the shared Managed Kubernetes host (both K8s deployments)
+ - [CCC Multi-Agent Reference Architecture](https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch) capabilities and controls composed into the [AI Portfolio Assistant](./gemara/components/ai-portfolio-assistant/) twin
+ - [CCC Object Storage](../ccc-obj-stor/) for the Decisions and Evidence Record bucket
+ - [FINOS AI Governance Framework](../ai-governance/) controls in the shared [Governance Model](./gemara/) (lexicon → policy), hosted by the [Artifact Repository](./gemara/components/artifact-repository/) twin
+ - Runtime evaluation and evidence behaviours in the [Governance Runtime](./gemara/components/governance-runtime/) twin
+ - The [ISO/IEC 42001 AIMS](./iso/aims) documents wrap that combined set in a management-system envelope
+
+See [deployment](./deployment) for the C4 view and twin links, and [Gemara component twins](./gemara/) for the catalog tree.
 
 ## Artifacts by layer
 
