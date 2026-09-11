@@ -1,10 +1,10 @@
 metadata:
   id: apa-policy
   type: Policy
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-11T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
@@ -12,7 +12,8 @@ metadata:
   description: >
     Policy governing use of the AI Portfolio Assistant across FDC3 desktop
     applications, including authority-ladder boundaries, human oversight for
-    propose activity, and prohibition of autonomous trade execution. Suitable
+    propose activity, and prohibition of autonomous trade execution. Composes
+    FINOS AIGF guidance and CCC Managed Kubernetes host controls. Suitable
     for dual use as an ISO/IEC 42001-aligned AI policy statement.
   mapping-references:
     - id: apa-risks
@@ -25,11 +26,11 @@ metadata:
       url: file://threat.yaml
     - id: apa-guidance
       title: AI Portfolio Assistant Guidance
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://guidance.yaml
     - id: apa-lexicon
       title: AI Portfolio Assistant Lexicon
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://lexicon.yaml
     - id: apa-principles
       title: AI Portfolio Assistant Principles
@@ -41,8 +42,28 @@ metadata:
       url: file://vector.yaml
     - id: apa-controls
       title: AI Portfolio Assistant Control Catalog
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://control.yaml
+    - id: FINOS-AIR
+      title: FINOS AI Governance Framework
+      version: "0.2.0"
+      url: file://../aigf/guidance.yaml
+    - id: CCC.K8S.CN
+      title: CCC Managed Kubernetes Controls
+      version: "v2026.07-rc"
+      url: file://../ccc-k8s/k8s/controls.yaml
+    - id: CCC.MARefArc.CN
+      title: CCC Multi-Agent Reference Architecture Controls
+      version: "1.0.0-dev"
+      url: file://../ccc-ma-refarch/controls.yaml
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../ccc-ma-refarch/capabilities.yaml
+    - id: apa-applicability-profile
+      title: Statement of Applicability — AI Portfolio Assistant
+      version: "0.2.0"
+      url: file://iso/applicability-profile.yaml
     - id: company-code-of-conduct
       title: Company Code of Conduct
       version: "1.0.0"
@@ -120,8 +141,11 @@ imports:
     - reference-id: company-third-party-management-policy
   catalogs:
     - reference-id: apa-controls
+    - reference-id: CCC.K8S.CN
+    - reference-id: CCC.MARefArc.CN
   guidance:
     - reference-id: apa-guidance
+    - reference-id: FINOS-AIR
 
 risks:
   mitigated:

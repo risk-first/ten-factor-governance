@@ -9,10 +9,18 @@ tags:
 ---
 
 import capabilities from '@site/src/data/governance/finos/ai-portfolio-assistant/capability.yaml';
+import maRefArchCapabilities from '@site/src/data/governance/finos/ccc-ma-refarch/capabilities.yaml';
 
 # AI Portfolio Assistant Capabilities Catalog
 
 Capabilities across data access, FDC3 tool use, interpretation, and authority
-actions.
+actions. A subset of
+[CCC Multi-Agent Reference Architecture](../../ccc-ma-refarch/) capabilities is
+resolved inline rather than listed only as imports.
 
-<GemaraCatalog file={capabilities} />
+<GemaraCatalog
+  file={capabilities}
+  resolve={{
+    'CCC.MARefArc.CP': maRefArchCapabilities,
+  }}
+/>

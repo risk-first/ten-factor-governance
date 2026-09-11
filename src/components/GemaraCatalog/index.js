@@ -26,6 +26,9 @@ function getCatalogEntries(catalog) {
   if (Array.isArray(catalog?.controls)) {
     return {entries: catalog.controls, entryLabel: 'control'};
   }
+  if (Array.isArray(catalog?.guidelines)) {
+    return {entries: catalog.guidelines, entryLabel: 'guideline'};
+  }
   if (Array.isArray(catalog?.risks)) {
     return {entries: catalog.risks, entryLabel: 'risk'};
   }
@@ -509,6 +512,26 @@ function EntryBody({entry}) {
         <div className={styles.description}>
           <span className={styles.sectionLabel}>Objective</span>
           <p className={styles.descriptionText}>{textOf(entry.objective)}</p>
+        </div>
+      ) : null}
+      {(entry.statements ?? []).length > 0 ? (
+        <div className={styles.mappingBlock}>
+          <span className={styles.sectionLabel}>Statements</span>
+          <ul className={styles.mappingList}>
+            {entry.statements.map((statement) => (
+              <li
+                key={statement.id || textOf(statement.text)}
+                className={styles.mappingItem}
+              >
+                {statement.id ? <code>{statement.id}</code> : null}
+                <span className={styles.mappingRemarks}>
+                  {textOf(statement.title)
+                    ? `${textOf(statement.title)} — ${textOf(statement.text)}`
+                    : textOf(statement.text)}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
       {textOf(entry.description) ? (

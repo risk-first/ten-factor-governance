@@ -58,10 +58,10 @@ evaluations:
           approval from the accountable portfolio manager.
         result: Failed
         message: >
-          Proposal PROP-2026-09-10-1102-01 targeted order-entry intent
-          fdc3.order with three equity rebalance legs. Human-approval workflow
-          returned no Approved disposition; approval record missing for session
-          apa-session-pm-propose-20260910-1102.
+          Proposal PROP-2026-09-10-1102-01 targeted Order Entry intent
+          demo.CreateOrderProposal with three equity rebalance legs. Human-approval
+          workflow returned no Approved disposition; approval record missing for
+          session apa-session-pm-propose-20260910-1102.
         applicability:
           - propose
           - human-approval-required

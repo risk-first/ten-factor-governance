@@ -1,0 +1,542 @@
+# Sourced from FINOS CCC Multi-Agent Reference Architecture
+# https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch
+# Upstream: common-cloud-controls/catalogs/ai-ml/multi-agent-refarch
+title: CCC Multi-Agent Reference Architecture Threats
+metadata:
+  id: CCC.MARefArc.TH
+  type: ThreatCatalog
+  gemara-version: 1.2.0
+  version: 1.0.0-dev
+  draft: true
+  date: 2026-05-31T00:00:00Z
+  author:
+    id: FINOS-CCC
+    name: FINOS Common Cloud Controls
+    type: Human
+  description: Architecture threats for the FINOS CCC Multi-Agent Reference Architecture. Sourced from CCC multi-agent-refarch.
+  mapping-references:
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: 1.0.0-dev
+      url: file://capabilities.yaml
+    - id: AIR-VEC
+      title: AI Governance Framework Risk Vectors
+      version: 0.2.0
+      url: file://../aigf/vectors.yaml
+groups:
+  - id: information-leakage
+    title: Information Leakage
+    description: Unauthorized disclosure of sensitive data through models, retrieval, or sessions.
+  - id: data-poisoning
+    title: Data Poisoning
+    description: Corruption or manipulation of training, retrieval, or learning data.
+  - id: model-availability
+    title: Model Availability
+    description: Denial of wallet, outage, and resource exhaustion affecting model service.
+  - id: prompt-injection
+    title: Prompt Injection
+    description: Direct and indirect injection that overrides policy or extracts secrets.
+  - id: operational
+    title: Operational
+    description: Overreach, reputational, and operational misuse risks.
+  - id: output-integrity
+    title: Output Integrity
+    description: Hallucination, non-determinism, and grounding failures.
+  - id: model-integrity
+    title: Model Integrity
+    description: Supply-chain, drift, backdoors, and model tampering.
+  - id: data-quality
+    title: Data Quality
+    description: Poor, drifting, or bias-amplifying data.
+  - id: fairness
+    title: Fairness
+    description: Discriminatory or biased outputs.
+  - id: governance-compliance
+    title: Governance and Compliance
+    description: Explainability, MRM, IP, and compliance gaps.
+  - id: agentic-security
+    title: Agentic Security
+    description: Tool privilege, MCP compromise, memory poisoning, and credential theft.
+threats:
+  - id: CCC.MARefArc.TH01
+    title: Model memorization leaks sensitive data across sessions
+    description: The hosted models accessed through the LLM layer may memorize sensitive inputs or training data and later disclose customer PII, proprietary algorithms, or trading strategies, including cross-user leakage into unrelated sessions.
+    group: information-leakage
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP16
+          - reference-id: CCC.MARefArc.CP14
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-01
+          - reference-id: AIR-RC-001-02
+          - reference-id: AIR-RC-001-05
+  - id: CCC.MARefArc.TH02
+    title: Hosted-provider data-handling exposure
+    description: Sensitive data submitted through the LLM gateway to third-party hosted models is exposed when the provider lacks transparent encryption, retention limits, or secure-deletion guarantees, leaving the institution without control over data it no longer holds.
+    group: information-leakage
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP14
+          - reference-id: CCC.MARefArc.CP16
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-001-03
+          - reference-id: AIR-RC-001-04
+  - id: CCC.MARefArc.TH03
+    title: Embedding inversion and membership inference on the vector store
+    description: Vectors stored for semantic retrieval can be inverted to reconstruct original source text, or probed to infer whether specific confidential information is present, exposing PII or proprietary content held in the knowledge layer.
+    group: information-leakage
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP13
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-002-01
+          - reference-id: AIR-SEC-002-02
+  - id: CCC.MARefArc.TH04
+    title: Embedding-store poisoning degrades retrieved context
+    description: An actor with write access injects malicious or misleading embeddings into the vector store, degrading the accuracy of retrieved grounding context; the dense numerical representation makes the tampering hard to detect.
+    group: information-leakage
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP13
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-002-03
+  - id: CCC.MARefArc.TH05
+    title: Vector-store access-control, encryption, and audit gaps
+    description: Missing role-based access control, encryption at rest, or audit logging on the vector store allows unauthorized retrieval, modification, or undetected exfiltration of embeddings derived from sensitive internal data.
+    group: information-leakage
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP13
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-002-04
+          - reference-id: AIR-SEC-002-05
+  - id: CCC.MARefArc.TH06
+    title: Foundation-model training and fine-tuning data poisoning
+    description: Adversaries tamper with training, fine-tuning, or third-party data feeds behind the approved models, mislabeling data or embedding backdoor triggers and biases that corrupt downstream decisions without visible symptoms until a major failure.
+    group: data-poisoning
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP14
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-009-01
+          - reference-id: AIR-SEC-009-03
+          - reference-id: AIR-SEC-009-04
+  - id: CCC.MARefArc.TH07
+    title: Adaptive-learning and continuous-learning exploitation
+    description: The adaptive-learning capability that refines prompts and configurations from execution outcomes can be steered by an adversary who systematically feeds misleading signals, gradually skewing agent behaviour when validation of learning inputs is inadequate.
+    group: data-poisoning
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP11
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-009-02
+  - id: CCC.MARefArc.TH08
+    title: Denial of Wallet via token-expensive or unthrottled agentic calls
+    description: Token-expensive prompts, large-document chunking, or poorly throttled agentic loops drive excessive model and tool invocations, exhausting token budgets, triggering throttling, or inflating cost beyond capacity planning.
+    group: model-availability
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP16
+          - reference-id: CCC.MARefArc.CP06
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-007-01
+  - id: CCC.MARefArc.TH09
+    title: Technology service provider outage or degradation
+    description: Tight coupling to a specific external model provider with limited failover leaves the system exposed to provider outages or performance degradation under load, violating business-continuity expectations.
+    group: model-availability
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP15
+          - reference-id: CCC.MARefArc.CP14
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-007-02
+  - id: CCC.MARefArc.TH10
+    title: VRAM exhaustion on model-serving infrastructure
+    description: Configuration changes, aggressive caching, or memory leaks in model-serving libraries behind the LLM gateway exhaust GPU VRAM, degrading responsiveness or crashing model serving.
+    group: model-availability
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP15
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-007-03
+  - id: CCC.MARefArc.TH11
+    title: Direct prompt injection overrides guardrails
+    description: An actor interacting through the application crafts inputs that override system prompts, bypass safety guardrails, or coerce disclosure, requiring no special privileges and exploiting any gap in ingress and model-interaction guardrails.
+    group: prompt-injection
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP05
+          - reference-id: CCC.MARefArc.CP16
+          - reference-id: CCC.MARefArc.CP01
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-010-01
+  - id: CCC.MARefArc.TH12
+    title: Indirect prompt injection via retrieved or processed content
+    description: Malicious instructions hidden in retrieved documents, web-search results, tool outputs, or persisted memory are processed by an agent and hijack its decision-making, escalate privileges, trigger unauthorized actions, or exfiltrate data, which is especially dangerous in automated multi-agent workflows.
+    group: prompt-injection
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP12
+          - reference-id: CCC.MARefArc.CP13
+          - reference-id: CCC.MARefArc.CP08
+          - reference-id: CCC.MARefArc.CP09
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-010-02
+  - id: CCC.MARefArc.TH13
+    title: Model profiling and system-prompt extraction
+    description: Crafted prompt sequences probe model internals to extract proprietary system prompts, configurations, or fine-tuning and RAG corpus content, enabling intellectual-property theft, model cloning, or follow-on attacks.
+    group: prompt-injection
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP16
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-010-03
+  - id: CCC.MARefArc.TH14
+    title: Model overreach and scope creep beyond validated use
+    description: Agents are used beyond their validated scope as users discover new applications or systems are repurposed without re-evaluation, producing unreliable outputs in untested contexts; weak registry scoping and orchestration boundaries accelerate the drift.
+    group: operational
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP06
+          - reference-id: CCC.MARefArc.CP03
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-018
+  - id: CCC.MARefArc.TH15
+    title: Reputational harm from offensive or misleading outputs
+    description: The system generates offensive, misleading, or inappropriate outputs, or is manipulated into doing so, that are attributed to the organization, with reputational and regulatory impact when output filtering and human review are insufficient.
+    group: operational
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP16
+          - reference-id: CCC.MARefArc.CP22
+          - reference-id: CCC.MARefArc.CP02
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-020
+  - id: CCC.MARefArc.TH16
+    title: Confident hallucination and fabricated facts
+    description: Lacking ground truth and faced with ambiguous prompts or helpfulness-biased tuning, the model fabricates plausible but false facts, figures, or citations, presented with high fluency that makes errors hard to catch and likely to be acted upon.
+    group: output-integrity
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP16
+          - reference-id: CCC.MARefArc.CP22
+          - reference-id: CCC.MARefArc.CP02
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-004-01
+          - reference-id: AIR-OP-004-02
+          - reference-id: AIR-OP-004-03
+          - reference-id: AIR-OP-004-04
+  - id: CCC.MARefArc.TH17
+    title: Non-deterministic and non-reproducible outputs
+    description: Probabilistic sampling, internal-state variation, context sensitivity, and decoding parameters cause identical inputs to yield different outputs across runs, undermining testing, reproducibility, and reliable evaluation.
+    group: output-integrity
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP14
+          - reference-id: CCC.MARefArc.CP15
+          - reference-id: CCC.MARefArc.CP20
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-006-01
+          - reference-id: AIR-OP-006-02
+          - reference-id: AIR-OP-006-03
+          - reference-id: AIR-OP-006-04
+  - id: CCC.MARefArc.TH18
+    title: RAG grounding failures
+    description: Even with retrieval, responses may contradict retrieved documents, drop caveats truncated by the context window, fill gaps with incorrect general knowledge, exceed authorized advisory scope, or adopt an inappropriate tone or certainty for the domain.
+    group: output-integrity
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP12
+          - reference-id: CCC.MARefArc.CP13
+          - reference-id: CCC.MARefArc.CP16
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-014-01
+          - reference-id: AIR-OP-014-02
+          - reference-id: AIR-OP-014-03
+          - reference-id: AIR-OP-014-04
+          - reference-id: AIR-OP-014-05
+  - id: CCC.MARefArc.TH19
+    title: Silent model version, prompt, and deployment drift
+    description: Providers silently retrain, re-prompt, or re-architect models, or change deployment and API defaults, shifting behaviour even when inputs are unchanged; without version pinning in the model registry this breaks reproducibility and validated behaviour.
+    group: model-integrity
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP14
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-005-01
+          - reference-id: AIR-OP-005-02
+          - reference-id: AIR-OP-005-03
+          - reference-id: AIR-OP-005-04
+  - id: CCC.MARefArc.TH20
+    title: Model supply-chain tampering
+    description: Adversaries tamper with training data, weights, GPU firmware and operating systems, cloud orchestration, or ML libraries in the provider pipeline, embedding manipulations that are difficult to detect downstream of the LLM gateway.
+    group: model-integrity
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP14
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-008-01
+          - reference-id: AIR-SEC-008-02
+          - reference-id: AIR-SEC-008-03
+  - id: CCC.MARefArc.TH21
+    title: Backdoor triggers and safety-mechanism disablement
+    description: Where weights are accessible, adversarial fine-tuning, engineered trigger phrases, or tampering disables alignment and content-moderation safeguards, causing targeted unsafe behaviour under specific conditions.
+    group: model-integrity
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP16
+          - reference-id: CCC.MARefArc.CP14
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-008-04
+          - reference-id: AIR-SEC-008-05
+  - id: CCC.MARefArc.TH22
+    title: Poor-quality, drifting, and bias-amplifying data
+    description: Inaccurate, incomplete, outdated, or biased grounding and training data lead to unreliable outputs, while data and concept drift erodes predictive power over time and amplifies historical errors at scale.
+    group: data-quality
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP12
+          - reference-id: CCC.MARefArc.CP13
+          - reference-id: CCC.MARefArc.CP14
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-019-01
+          - reference-id: AIR-OP-019-02
+          - reference-id: AIR-OP-019-03
+  - id: CCC.MARefArc.TH23
+    title: Discriminatory outputs from bias
+    description: Biased training data, architectural and feature choices, proxy variables such as postal codes, and uncorrected feedback loops cause systematically discriminatory outcomes against protected groups, with legal and reputational exposure.
+    group: fairness
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP14
+          - reference-id: CCC.MARefArc.CP12
+          - reference-id: CCC.MARefArc.CP20
+          - reference-id: CCC.MARefArc.CP21
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-016-01
+          - reference-id: AIR-OP-016-02
+          - reference-id: AIR-OP-016-03
+          - reference-id: AIR-OP-016-04
+  - id: CCC.MARefArc.TH24
+    title: Lack of explainability and traceable rationale
+    description: Black-box foundation models produce outputs without traceable rationale, leaving the firm unable to justify AI-driven decisions to regulators, stakeholders, or customers and allowing latent errors or biases to go undetected; observability and human oversight are the principal mitigating surfaces.
+    group: governance-compliance
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP23
+          - reference-id: CCC.MARefArc.CP25
+          - reference-id: CCC.MARefArc.CP21
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-017
+  - id: CCC.MARefArc.TH25
+    title: Non-compliant outputs and model-risk-management gaps
+    description: AI-generated advice, marketing, or communications that fail KYC, suitability, disclosure, record-keeping, or model-risk-management expectations create regulatory exposure; weak supervision and accountability lines turn this into direct non-compliance.
+    group: governance-compliance
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP21
+          - reference-id: CCC.MARefArc.CP05
+          - reference-id: CCC.MARefArc.CP02
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-022-01
+          - reference-id: AIR-RC-022-02
+          - reference-id: AIR-RC-022-03
+          - reference-id: AIR-RC-022-04
+  - id: CCC.MARefArc.TH26
+    title: Intellectual-property leakage and licensing violations
+    description: Outputs may replicate copyrighted training material, employees may leak trade secrets into AI tools, and improper platform licensing or terms-of-service violations create contractual and legal liability.
+    group: governance-compliance
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP01
+          - reference-id: CCC.MARefArc.CP05
+          - reference-id: CCC.MARefArc.CP16
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-RC-023-01
+          - reference-id: AIR-RC-023-02
+          - reference-id: AIR-RC-023-03
+  - id: CCC.MARefArc.TH27
+    title: Authorization bypass and tool-chain privilege escalation
+    description: Agents discover and invoke API endpoints outside their use case, chain individually authorized calls into unauthorized outcomes, circumvent segregation-of-duties workflows, or experience permission creep during operation, defeating intended authorization boundaries.
+    group: agentic-security
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP19
+          - reference-id: CCC.MARefArc.CP07
+          - reference-id: CCC.MARefArc.CP08
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-024-01
+          - reference-id: AIR-SEC-024-02
+          - reference-id: AIR-SEC-024-03
+          - reference-id: AIR-SEC-024-04
+  - id: CCC.MARefArc.TH28
+    title: Tool selection, parameter, and sequencing manipulation
+    description: Crafted inputs cause agents to select inappropriate tools, inject malicious parameters into legitimate calls, reorder tool execution into dangerous combinations, corrupt tool-state understanding, or pass one tool's output as malicious input to the next.
+    group: agentic-security
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP08
+          - reference-id: CCC.MARefArc.CP07
+          - reference-id: CCC.MARefArc.CP19
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-025-01
+          - reference-id: AIR-SEC-025-02
+          - reference-id: AIR-SEC-025-03
+          - reference-id: AIR-SEC-025-04
+          - reference-id: AIR-SEC-025-05
+  - id: CCC.MARefArc.TH29
+    title: MCP supply-chain compromise
+    description: External MCP servers are compromised, receive poisoned updates, are sabotaged by insiders, or have their protocol and transport manipulated through man-in-the-middle or downgrade attacks, or have connections redirected via DNS and infrastructure attacks, injecting malicious data or logic into services agents consume.
+    group: agentic-security
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP17
+          - reference-id: CCC.MARefArc.CP19
+          - reference-id: CCC.MARefArc.CP08
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-026-01
+          - reference-id: AIR-SEC-026-02
+          - reference-id: AIR-SEC-026-03
+          - reference-id: AIR-SEC-026-04
+          - reference-id: AIR-SEC-026-05
+  - id: CCC.MARefArc.TH30
+    title: Agent memory and state poisoning
+    description: Injected instructions or corrupted reasoning patterns are written into agent short- or long-term memory, learned behaviours are corrupted over repeated exposure, state storage is attacked directly, and malicious instructions persist across sessions and users.
+    group: agentic-security
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP09
+          - reference-id: CCC.MARefArc.CP07
+          - reference-id: CCC.MARefArc.CP11
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-027-01
+          - reference-id: AIR-SEC-027-02
+          - reference-id: AIR-SEC-027-03
+          - reference-id: AIR-SEC-027-04
+          - reference-id: AIR-SEC-027-05
+  - id: CCC.MARefArc.TH31
+    title: Multi-agent collaboration compromise
+    description: Malicious or compromised agents inject harmful data into agent-to-agent channels, contaminate shared resources, impersonate higher-privilege agents, inherit privileges through interaction, or propagate cascade failures across dependent agents.
+    group: agentic-security
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP06
+          - reference-id: CCC.MARefArc.CP03
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-OP-028-01
+          - reference-id: AIR-OP-028-02
+          - reference-id: AIR-OP-028-03
+          - reference-id: AIR-OP-028-04
+          - reference-id: AIR-OP-028-05
+  - id: CCC.MARefArc.TH32
+    title: Credential harvesting via agent tools and storage
+    description: Agents are manipulated into using file, database, API, and cloud-management tools to enumerate and extract credentials from configuration files, environment variables, process memory, databases, key vaults, and instance metadata, and to correlate fragments into full credentials.
+    group: agentic-security
+    capabilities:
+      - reference-id: CCC.MARefArc.CP
+        entries:
+          - reference-id: CCC.MARefArc.CP08
+          - reference-id: CCC.MARefArc.CP10
+          - reference-id: CCC.MARefArc.CP07
+          - reference-id: CCC.MARefArc.CP12
+    vectors:
+      - reference-id: AIR-VEC
+        entries:
+          - reference-id: AIR-SEC-029-01
+          - reference-id: AIR-SEC-029-02
+          - reference-id: AIR-SEC-029-03
+          - reference-id: AIR-SEC-029-04
+          - reference-id: AIR-SEC-029-05

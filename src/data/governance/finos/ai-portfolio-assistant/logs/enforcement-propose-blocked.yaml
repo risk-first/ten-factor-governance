@@ -52,7 +52,7 @@ actions:
     start: "2026-09-10T11:02:04Z"
     end: "2026-09-10T11:02:05Z"
     steps:
-      - apa/enforcement/fdc3.blockOrderProposalIntent
+      - apa/enforcement/fdc3.blockCreateOrderProposalIntent
       - apa/enforcement/runtime.recordAuthorityGateFailure
     justification:
       assessments:

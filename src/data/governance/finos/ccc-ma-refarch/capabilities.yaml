@@ -1,0 +1,159 @@
+# Sourced from FINOS CCC Multi-Agent Reference Architecture
+# https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch
+# Upstream: common-cloud-controls/catalogs/ai-ml/multi-agent-refarch
+title: CCC Multi-Agent Reference Architecture Capabilities
+metadata:
+  id: CCC.MARefArc.CP
+  type: CapabilityCatalog
+  gemara-version: 1.2.0
+  version: 1.0.0-dev
+  draft: true
+  date: 2026-05-31T00:00:00Z
+  author:
+    id: FINOS-CCC
+    name: FINOS Common Cloud Controls
+    type: Human
+  description: Subsystem-level capabilities of the FINOS CCC Multi-Agent Reference Architecture. Sourced from https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch and common-cloud-controls catalogs/ai-ml/multi-agent-refarch.
+  mapping-references:
+    - id: FINOS-AIR
+      title: FINOS AI Governance Framework
+      version: 0.2.0
+      url: file://../aigf/guidance.yaml
+    - id: AIR-VEC
+      title: AI Governance Framework Risk Vectors
+      version: 0.2.0
+      url: file://../aigf/vectors.yaml
+    - id: CCC.MARefArc.TH
+      title: CCC Multi-Agent Reference Architecture Threats
+      version: 1.0.0-dev
+      url: file://threats.yaml
+    - id: CCC.MARefArc.CN
+      title: CCC Multi-Agent Reference Architecture Controls
+      version: 1.0.0-dev
+      url: file://controls.yaml
+groups:
+  - id: user-interaction
+    title: User Interaction
+    description: Surfaces that capture user intent and return agent outputs, including human review.
+  - id: agent-gateway
+    title: Agent Gateway
+    description: Ingress routing, registry, and zero-trust guardrails before agent execution.
+  - id: agent
+    title: Agent Runtime
+    description: Sandboxed agent execution, tools, memory, and collaboration patterns.
+  - id: knowledge
+    title: Knowledge
+    description: Authoritative sources and retrieval used to ground agent reasoning.
+  - id: llm
+    title: LLM
+    description: Approved models, inference routing, and model-interaction guardrails.
+  - id: mcp
+    title: MCP
+    description: Approved MCP servers, connection routing, and tool-call guardrails.
+  - id: evaluation
+    title: Evaluation
+    description: Human oversight, runtime protection, and feedback loops.
+  - id: observability
+    title: Observability
+    description: Telemetry, anomaly detection, and cross-layer signal correlation.
+capabilities:
+  - id: CCC.MARefArc.CP01
+    title: User-facing application surface
+    description: Presentation and orchestration surface (web, mobile, chatbot, workflow tool, or integrated enterprise system) that captures user intent, forwards requests to the agent layer, and returns agent outputs.
+    group: user-interaction
+  - id: CCC.MARefArc.CP02
+    title: Human-in-the-loop output review
+    description: Application-embedded controls that allow users to review, approve, or modify agent outputs before they are executed or shared.
+    group: user-interaction
+  - id: CCC.MARefArc.CP03
+    title: Agent registry and lifecycle management
+    description: Catalog of available agents with their capabilities, metadata, and configuration, supporting versioning, lifecycle management, and controlled onboarding of new agents.
+    group: agent-gateway
+  - id: CCC.MARefArc.CP04
+    title: Agent request routing
+    description: Validates incoming application requests and routes each to the correct agent or agent group, abstracting agent-layer complexity behind a consistent interface.
+    group: agent-gateway
+  - id: CCC.MARefArc.CP05
+    title: Agent-ingress zero-trust guardrails
+    description: Treats all inputs as untrusted and enforces authentication, authorization, input validation, content filtering, access control, rate limits, and dynamic policy before any request reaches an agent.
+    group: agent-gateway
+  - id: CCC.MARefArc.CP06
+    title: Agent collaboration and orchestration patterns
+    description: Supports supervisor/worker decomposition, skills-based routing, and agent-as-a-tool handoff for decomposing and executing complex tasks across multiple agents.
+    group: agent
+  - id: CCC.MARefArc.CP07
+    title: Unified sandboxed agent runtime
+    description: Secure, sandboxed environment where all agentic reasoning and execution occurs, providing task state management for pause/resume/handoff and intercepting and validating tool calls with credentials handled securely within the sandbox.
+    group: agent
+  - id: CCC.MARefArc.CP08
+    title: Built-in trusted tools
+    description: "A collection of bundled, trusted tools providing fundamental capabilities: the MCP client bridge to the external MCP layer, a sandboxed shell, workspace I/O, and web search."
+    group: agent
+  - id: CCC.MARefArc.CP09
+    title: Agent memory
+    description: Short-term in-session context management (trimming and summarization to control length, cost, and latency) and durable long-term memory across sessions, including session summaries and user/task personalization.
+    group: agent
+  - id: CCC.MARefArc.CP10
+    title: Sandboxed workspace file system
+    description: A sandboxed, persistent file system that agents use to read and write files, enabling work with large artifacts.
+    group: agent
+  - id: CCC.MARefArc.CP11
+    title: Adaptive learning
+    description: Generates learning signals based on execution outcomes to refine prompts, adjust agent configurations, or improve tool-selection strategies.
+    group: agent
+  - id: CCC.MARefArc.CP12
+    title: Authoritative knowledge source bases
+    description: Internal and external repositories of structured data, unstructured documents, and graph-based representations that provide authoritative information for grounding.
+    group: knowledge
+  - id: CCC.MARefArc.CP13
+    title: Vector-based semantic retrieval
+    description: Vector databases providing semantic search and grounding so agents can find relevant information from large text corpora.
+    group: knowledge
+  - id: CCC.MARefArc.CP14
+    title: Approved-model registry and lifecycle
+    description: Catalog of approved models with metadata, version information, configuration parameters, and usage constraints, ensuring agents access only models meeting organizational, regulatory, and security standards.
+    group: llm
+  - id: CCC.MARefArc.CP15
+    title: LLM inference gateway routing
+    description: Validates inference requests and routes each to the correct model instance, abstracting model hosting behind a consistent interface.
+    group: llm
+  - id: CCC.MARefArc.CP16
+    title: Model-interaction zero-trust guardrails
+    description: Enforces authentication and authorization for every inference request and applies input validation against prompt injection, output filtering and redaction, access control, rate limits, and cost management before and after model execution.
+    group: llm
+  - id: CCC.MARefArc.CP17
+    title: Approved MCP server registry and lifecycle
+    description: Catalog of approved MCP servers with metadata, capabilities, configuration, and usage constraints, ensuring agents connect only to servers meeting organizational, security, and compliance requirements.
+    group: mcp
+  - id: CCC.MARefArc.CP18
+    title: MCP connection gateway routing
+    description: Validates MCP connection requests and routes each to the correct server instance, abstracting MCP connectivity behind a consistent interface.
+    group: mcp
+  - id: CCC.MARefArc.CP19
+    title: MCP-interaction zero-trust guardrails
+    description: Enforces authentication and authorization for every MCP request and governs which agents may use which tools, applying rate limits and validating tool-call parameters.
+    group: mcp
+  - id: CCC.MARefArc.CP20
+    title: Feedback engine
+    description: Collects and aggregates structured and unstructured feedback from users, evaluators, and automated systems, including correctness assessments, preference signals, and quality ratings, to inform system improvement.
+    group: evaluation
+  - id: CCC.MARefArc.CP21
+    title: Human supervision and oversight
+    description: Mechanisms for human reviewers to inspect, approve, correct, or override agent outputs, supporting human-in-the-loop and human-over-the-loop workflows for sensitive or high-impact tasks.
+    group: evaluation
+  - id: CCC.MARefArc.CP22
+    title: Runtime protection
+    description: Monitors agent actions and model outputs during execution to detect unsafe, non-compliant, or anomalous behavior, enforcing constraints, blocking disallowed actions, or triggering escalation.
+    group: evaluation
+  - id: CCC.MARefArc.CP23
+    title: Cross-layer telemetry collection
+    description: Captures logs, traces, metrics, and events emitted by every layer to support debugging, auditability, distributed tracing, and operational monitoring across the request lifecycle.
+    group: observability
+  - id: CCC.MARefArc.CP24
+    title: Anomaly detection
+    description: Identifies unusual or unexpected patterns across telemetry to surface failures, regressions, misuse, or emerging risks before they impact performance or compliance.
+    group: observability
+  - id: CCC.MARefArc.CP25
+    title: Signal correlation
+    description: Correlates signals across logs, traces, metrics, and events into a unified view, connecting symptoms to root causes across cross-layer dependencies.
+    group: observability

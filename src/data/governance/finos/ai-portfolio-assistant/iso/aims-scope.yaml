@@ -40,6 +40,14 @@ metadata:
       title: "Governance contracts for the AI Portfolio Assistant"
       version: "0.1.0"
       url: file://governance-contract.yaml
+    - id: CCC.K8S.CN
+      title: "CCC Managed Kubernetes Controls"
+      version: "v2026.07-rc"
+      url: file://../../ccc-k8s/k8s/controls.yaml
+    - id: FINOS-AIR
+      title: "FINOS AI Governance Framework"
+      version: "0.2.0"
+      url: file://../../aigf/guidance.yaml
 
 clauses: ["4.3"]
 
@@ -125,6 +133,18 @@ interfaces:
     counterparty:
       reference-id: apa-party-register
       entry-id: market-data-vendor
+
+  - id: managed-kubernetes-host
+    description: |
+      Managed Kubernetes platform hosting the assistant service. Host security
+      controls are composed from CCC Managed Kubernetes (CCC.K8S.CN) as
+      assumptions in the Statement of Applicability rather than re-authored
+      in this AIMS. App-layer AI controls remain in apa-controls; FINOS AIGF
+      mitigations are composed into the governance model via Gemara imports.
+    direction: Both
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: ai-governance-office
 
 context:
   reference-id: apa-organisation-context

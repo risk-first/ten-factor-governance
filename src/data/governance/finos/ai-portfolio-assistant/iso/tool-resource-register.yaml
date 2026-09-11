@@ -7,18 +7,18 @@ title: "Tooling resources for the AI Portfolio Assistant"
 metadata:
   id: apa-tool-resource-register
   type: ToolResourceRegister
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.5.0"
   standard: "ISO/IEC 42001:2023"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-11T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: |
-    Tooling and services the AI Portfolio Assistant depends on: FDC3 portfolio
-    and risk applications, stress engine, research retrieval, foundation model
+    Tooling and services the AI Portfolio Assistant depends on: FDC3 portfolio,
+    risk, research and order-entry applications, stress engine, foundation model
     API and session logging.
   mapping-references:
     - id: apa-ai-system-register
@@ -72,8 +72,8 @@ resources:
     name: "Risk and exposure application"
     kind: Tooling
     description: |
-      Deterministic application that calculates exposures and risk metrics from
-      portfolio context; the assistant interprets results rather than inventing them.
+      Deterministic Risk app responding to demo.GetPortfolioRisk with
+      demo.portfolioRisk; the assistant interprets results rather than inventing them.
     functions: [Deployment]
     external: false
     owner:
@@ -90,13 +90,15 @@ resources:
         entry-id: apa-ctl-009-deterministic-calc-only
       - reference-id: apa-controls
         entry-id: apa-ctl-010-tool-allowlist
+      - reference-id: apa-controls
+        entry-id: apa-ctl-016-fdc3-security-provenance
 
   - id: stress-engine
     name: "Stress scenario engine"
     kind: Tooling
     description: |
-      Deterministic stress engine producing portfolio impact under adverse
-      scenarios for explanation to the portfolio manager.
+      Deterministic stress capability (via Risk app) responding to
+      demo.RunStressScenario with demo.stressScenarioResult.
     functions: [Deployment, Evaluation]
     external: false
     owner:
@@ -111,12 +113,15 @@ resources:
     controls:
       - reference-id: apa-controls
         entry-id: apa-ctl-009-deterministic-calc-only
+      - reference-id: apa-controls
+        entry-id: apa-ctl-016-fdc3-security-provenance
 
   - id: research-retrieval
     name: "Investment research retrieval service"
     kind: Service
     description: |
-      Retrieval service over the investment research corpus used for RAG grounding.
+      Research app / retrieval service responding to demo.GetResearch with
+      demo.researchBundle used for RAG grounding and explanation evidence.
     functions: [Deployment, Evaluation]
     external: false
     owner:
@@ -132,6 +137,61 @@ resources:
         entry-id: apa-ctl-011-prompt-injection-defenses
       - reference-id: apa-controls
         entry-id: apa-ctl-012-explanation-grounding
+      - reference-id: apa-controls
+        entry-id: apa-ctl-016-fdc3-security-provenance
+
+  - id: order-entry-app
+    name: "Order Entry application"
+    kind: Tooling
+    description: |
+      Desktop Order Entry app that responds to demo.CreateOrderProposal with
+      demo.orderProposal for human review, and that would receive
+      demo.SubmitOrders if execution were permitted (it is not for the
+      assistant).
+    functions: [Deployment]
+    external: false
+    owner:
+      responsible:
+        - name: "Order management systems"
+          affiliation: "Trading Technology"
+      accountable:
+        - name: "Head of Trading"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-006-execute-prohibit
+      - reference-id: apa-controls
+        entry-id: apa-ctl-010-tool-allowlist
+      - reference-id: apa-controls
+        entry-id: apa-ctl-016-fdc3-security-provenance
+
+  - id: execution-app
+    name: "Execution / blotter application"
+    kind: Tooling
+    description: |
+      Execution path that would process fdc3.orderList via demo.SubmitOrders.
+      The assistant must not successfully invoke this path; human-authorised
+      execution remains outside autonomous AI use.
+    functions: [Deployment]
+    external: false
+    owner:
+      responsible:
+        - name: "Order management systems"
+          affiliation: "Trading Technology"
+      accountable:
+        - name: "Head of Trading"
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-006-execute-prohibit
+      - reference-id: apa-controls
+        entry-id: apa-ctl-010-tool-allowlist
 
   - id: foundation-model-api
     name: "Foundation model API"

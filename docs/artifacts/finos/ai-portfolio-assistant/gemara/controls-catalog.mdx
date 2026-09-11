@@ -9,10 +9,23 @@ tags:
 ---
 
 import controls from '@site/src/data/governance/finos/ai-portfolio-assistant/control.yaml';
+import aigfGuidance from '@site/src/data/governance/finos/aigf/guidance.yaml';
+import k8sControls from '@site/src/data/governance/finos/ccc-k8s/k8s/controls.yaml';
+import maRefArchControls from '@site/src/data/governance/finos/ccc-ma-refarch/controls.yaml';
 
 # AI Portfolio Assistant Controls Catalog
 
-Threat-informed controls for authority ceilings, human approval, data isolation,
-tool allowlists, and assurance.
+Threat-informed controls for authority ceilings, human approval, named FDC3
+demo intents, FDC3 Security provenance, data isolation, and assurance. Composed
+imports from FINOS AIGF, CCC Managed Kubernetes, and the
+[CCC Multi-Agent Reference Architecture](../../ccc-ma-refarch/) are resolved
+inline (same pattern as the CCC Kubernetes catalogs).
 
-<GemaraCatalog file={controls} />
+<GemaraCatalog
+  file={controls}
+  resolve={{
+    'FINOS-AIR': aigfGuidance,
+    'CCC.K8S.CN': k8sControls,
+    'CCC.MARefArc.CN': maRefArchControls,
+  }}
+/>

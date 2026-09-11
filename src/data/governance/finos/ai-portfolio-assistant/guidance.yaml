@@ -3,10 +3,10 @@ title: AI Portfolio Assistant Guidelines
 metadata:
   id: apa-guidance
   type: GuidanceCatalog
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-11T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
@@ -14,13 +14,14 @@ metadata:
   description: >
     Machine-readable guidance for governing the AI Portfolio Assistant
     across FDC3 applications, enforcing the authority ladder from observe
-    through execute.
+    through execute, naming demo intents/contexts, and composing FINOS AIGF
+    mitigations.
   lexicon:
     reference-id: apa-lexicon
   mapping-references:
     - id: apa-lexicon
       title: AI Portfolio Assistant Lexicon
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://lexicon.yaml
     - id: apa-principles
       title: AI Portfolio Assistant Principles
@@ -30,6 +31,38 @@ metadata:
       title: AI Portfolio Assistant Vector Catalog
       version: "0.1.0"
       url: file://vector.yaml
+    - id: FINOS-AIR
+      title: FINOS AI Governance Framework
+      version: "0.2.0"
+      url: file://../aigf/guidance.yaml
+    - id: AIR-PRIN
+      title: FINOS AIGF Principles
+      version: "0.2.0"
+      url: file://../aigf/principles.yaml
+    - id: AIR-VEC
+      title: FINOS AIGF Risk Vectors
+      version: "0.2.0"
+      url: file://../aigf/vectors.yaml
+
+imports:
+  - reference-id: FINOS-AIR
+    entries:
+      - reference-id: AIR-PREV-018
+        remarks: Agent Authority Least Privilege Framework
+      - reference-id: AIR-PREV-019
+        remarks: Tool Chain Validation and Sanitization
+      - reference-id: AIR-DET-021
+        remarks: Agent Decision Audit and Explainability
+      - reference-id: AIR-DET-013
+        remarks: Citations and Source Traceability
+      - reference-id: AIR-DET-011
+        remarks: Human Feedback Loop for AI Systems
+      - reference-id: AIR-PREV-012
+        remarks: Role-Based Access Control for AI Data
+      - reference-id: AIR-DET-001
+        remarks: AI Data Leakage Prevention and Detection
+      - reference-id: AIR-PREV-002
+        remarks: Data Filtering From External Knowledge Bases
 
 type: Framework
 
@@ -74,8 +107,8 @@ groups:
   - id: tool-use
     title: Tool Use
     description: >
-      Requirements for deterministic applications, research retrieval, and
-      safe tool invocation.
+      Requirements for deterministic applications, research retrieval, demo
+      FDC3 intents, provenance, and safe tool invocation.
 
   - id: assurance
     title: Assurance
@@ -537,3 +570,90 @@ guidelines:
           - reference-id: cross-portfolio-context-bleed
           - reference-id: prompt-injection-via-research
           - reference-id: model-provider-data-exfiltration
+
+  - id: apa-guidance-demo-intents
+    title: Demo FDC3 Intent Allowlist
+    group: tool-use
+    state: Active
+    objective: >
+      Bind the assistant's FDC3 surface to the named demo intents and map
+      each intent to an authority level on the ladder.
+    statements:
+      - id: apa-guidance-demo-intents.1
+        title: Core allowlist
+        text: >
+          The assistant may raise demo.GetPortfolioRisk and
+          demo.RunStressScenario at analyse, demo.GetResearch at explain,
+          and demo.CreateOrderProposal at propose when the session
+          entitlement and related controls are satisfied.
+      - id: apa-guidance-demo-intents.2
+        title: Execute ban
+        text: >
+          The assistant must not successfully raise demo.SubmitOrders.
+          Governance must return DENY and the Desktop Agent must not
+          forward the intent.
+      - id: apa-guidance-demo-intents.3
+        title: Responders
+        text: >
+          Risk App responds to GetPortfolioRisk and RunStressScenario;
+          Research App to GetResearch; Order Entry to CreateOrderProposal;
+          Execution / Order Entry would respond to SubmitOrders if it were
+          permitted.
+      - id: apa-guidance-demo-intents.4
+        title: Optional View intents
+        text: >
+          Supporting View* intents (ViewInstrument, ViewChart, ViewNews,
+          ViewResearch, ViewAnalysis, ViewHoldings, ViewOrders) may be
+          allowlisted as low-authority UI helpers and must not grant propose
+          or execute authority.
+    principles:
+      - reference-id: apa-principles
+        entries:
+          - reference-id: proportional-authority
+          - reference-id: prohibited-autonomous-execution
+      - reference-id: AIR-PRIN
+        entries:
+          - reference-id: AIR-PRIN-005
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: authority-escalation
+          - reference-id: execution-bypass
+          - reference-id: tool-argument-injection
+
+  - id: apa-guidance-fdc3-security
+    title: FDC3 Security for Demo Contexts
+    group: tool-use
+    state: Active
+    objective: >
+      Require cryptographic provenance on demo suite contexts used as
+      evidence for analysis, explanation, recommendation, and proposal.
+    statements:
+      - id: apa-guidance-fdc3-security.1
+        title: Signed contexts
+        text: >
+          demo.portfolioRisk, demo.researchBundle, demo.stressScenarioResult,
+          demo.portfolioRecommendation, and demo.orderProposal must be
+          broadcast with FDC3 Security signatures.
+      - id: apa-guidance-fdc3-security.2
+        title: Unsigned handling
+        text: >
+          The assistant must not treat unsigned instances of those contexts
+          as authoritative grounding for explain, recommend, or propose
+          outputs.
+      - id: apa-guidance-fdc3-security.3
+        title: Evidence chain
+        text: >
+          Session logs should retain signature verification outcomes alongside
+          the intent that produced or consumed the context.
+    principles:
+      - reference-id: apa-principles
+        entries:
+          - reference-id: deterministic-calculations
+          - reference-id: evidence-of-authority-use
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: hallucinated-financial-claim
+          - reference-id: overconfident-explanation
+          - reference-id: tool-argument-injection

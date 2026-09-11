@@ -3,10 +3,10 @@ title: AI Portfolio Assistant Threat Catalog
 metadata:
   id: apa-threats
   type: ThreatCatalog
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-11T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
@@ -14,11 +14,13 @@ metadata:
   description: >
     Threat catalog describing opportunities for negative impact arising from
     the Financial AI Portfolio Assistant across FDC3 applications and the
-    observe-to-execute authority ladder.
+    observe-to-execute authority ladder. Composes relevant CCC Multi-Agent
+    Reference Architecture threats for the agent/LLM/knowledge layers the
+    assistant depends on.
   mapping-references:
     - id: apa-capabilities
       title: AI Portfolio Assistant Capability Catalog
-      version: "0.1.0"
+      version: "0.3.0"
       url: file://capability.yaml
       description: >
         Scope-specific capabilities for AI Portfolio Assistant threat
@@ -30,6 +32,77 @@ metadata:
       description: >
         Attack and failure vectors through which AI Portfolio Assistant
         threats may be realized.
+    - id: CCC.MARefArc.TH
+      title: CCC Multi-Agent Reference Architecture Threats
+      version: "1.0.0-dev"
+      url: file://../ccc-ma-refarch/threats.yaml
+      description: >
+        Architecture threats from
+        https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch imported for
+        shared agent/LLM/knowledge failure modes.
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../ccc-ma-refarch/capabilities.yaml
+
+extends:
+  - reference-id: CCC.MARefArc.TH
+    remarks: >
+      App-specific APA threats sit on top of Multi-Agent Reference Architecture
+      threats that apply to the assistant's imported agent, LLM, knowledge,
+      and runtime capabilities.
+
+imports:
+  - reference-id: CCC.MARefArc.TH
+    entries:
+      - reference-id: CCC.MARefArc.TH01
+        remarks: Model memorization leaks sensitive data across sessions
+      - reference-id: CCC.MARefArc.TH02
+        remarks: Hosted-provider data-handling exposure
+      - reference-id: CCC.MARefArc.TH03
+        remarks: Embedding inversion and membership inference on the vector store
+      - reference-id: CCC.MARefArc.TH04
+        remarks: Embedding-store poisoning degrades retrieved context
+      - reference-id: CCC.MARefArc.TH05
+        remarks: Vector-store access-control, encryption, and audit gaps
+      - reference-id: CCC.MARefArc.TH08
+        remarks: Denial of Wallet via token-expensive or unthrottled agentic calls
+      - reference-id: CCC.MARefArc.TH11
+        remarks: Direct prompt injection overrides guardrails
+      - reference-id: CCC.MARefArc.TH12
+        remarks: Indirect prompt injection via retrieved or processed content
+      - reference-id: CCC.MARefArc.TH13
+        remarks: Model profiling and system-prompt extraction
+      - reference-id: CCC.MARefArc.TH14
+        remarks: Model overreach and scope creep beyond validated use
+      - reference-id: CCC.MARefArc.TH15
+        remarks: Reputational harm from offensive or misleading outputs
+      - reference-id: CCC.MARefArc.TH16
+        remarks: Confident hallucination and fabricated facts
+      - reference-id: CCC.MARefArc.TH17
+        remarks: Non-deterministic and non-reproducible outputs
+      - reference-id: CCC.MARefArc.TH18
+        remarks: RAG grounding failures
+      - reference-id: CCC.MARefArc.TH19
+        remarks: Silent model version, prompt, and deployment drift
+      - reference-id: CCC.MARefArc.TH20
+        remarks: Model supply-chain tampering
+      - reference-id: CCC.MARefArc.TH22
+        remarks: Poor-quality, drifting, and bias-amplifying data
+      - reference-id: CCC.MARefArc.TH24
+        remarks: Lack of explainability and traceable rationale
+      - reference-id: CCC.MARefArc.TH25
+        remarks: Non-compliant outputs and model-risk-management gaps
+      - reference-id: CCC.MARefArc.TH26
+        remarks: Intellectual-property leakage and licensing violations
+      - reference-id: CCC.MARefArc.TH27
+        remarks: Authorization bypass and tool-chain privilege escalation
+      - reference-id: CCC.MARefArc.TH28
+        remarks: Tool selection, parameter, and sequencing manipulation
+      - reference-id: CCC.MARefArc.TH30
+        remarks: Agent memory and state poisoning
+      - reference-id: CCC.MARefArc.TH32
+        remarks: Credential harvesting via agent tools and storage
 
 groups:
   - id: confidentiality

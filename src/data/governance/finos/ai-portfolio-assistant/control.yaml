@@ -3,17 +3,20 @@ title: AI Portfolio Assistant Control Catalog
 metadata:
   id: apa-controls
   type: ControlCatalog
-  version: "0.1.0"
+  version: "0.3.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-11T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: >
     Threat-informed controls for governing the Financial AI Portfolio
-    Assistant across the observe-to-execute authority ladder.
+    Assistant across the observe-to-execute authority ladder. Composes
+    FINOS AIGF mitigations, CCC Multi-Agent Reference Architecture controls,
+    and CCC Managed Kubernetes host controls via Gemara imports rather than
+    twinning those catalogs.
   mapping-references:
     - id: apa-threats
       title: AI Portfolio Assistant Threat Catalog
@@ -23,10 +26,34 @@ metadata:
         Layer 2 threats mitigated by these controls.
     - id: apa-guidance
       title: AI Portfolio Assistant Guidelines
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://guidance.yaml
       description: >
         Layer 1 guidance implemented by these controls.
+    - id: FINOS-AIR
+      title: FINOS AI Governance Framework
+      version: "0.2.0"
+      url: file://../aigf/guidance.yaml
+      description: >
+        FINOS AIGF mitigations composed into the assistant governance model.
+    - id: CCC.K8S.CN
+      title: CCC Managed Kubernetes Controls
+      version: "v2026.07-rc"
+      url: file://../ccc-k8s/k8s/controls.yaml
+      description: >
+        Host-layer Managed Kubernetes controls assumed for the assistant
+        workload; not re-authored here.
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../ccc-ma-refarch/capabilities.yaml
+    - id: CCC.MARefArc.CN
+      title: CCC Multi-Agent Reference Architecture Controls
+      version: "1.0.0-dev"
+      url: file://../ccc-ma-refarch/controls.yaml
+      description: >
+        Architecture-layer CCC multi-agent controls composed alongside AIGF
+        mitigations for the assistant twin.
   applicability-groups:
     - id: all-authority-levels
       title: All Authority Levels
@@ -104,6 +131,70 @@ groups:
       Controls governing third-party model provider handling of firm and
       client data.
 
+imports:
+  - reference-id: FINOS-AIR
+    entries:
+      - reference-id: AIR-PREV-018
+        remarks: Agent Authority Least Privilege Framework
+      - reference-id: AIR-PREV-019
+        remarks: Tool Chain Validation and Sanitization
+      - reference-id: AIR-DET-021
+        remarks: Agent Decision Audit and Explainability
+      - reference-id: AIR-DET-013
+        remarks: Citations and Source Traceability
+      - reference-id: AIR-DET-011
+        remarks: Human Feedback Loop for AI Systems
+      - reference-id: AIR-PREV-012
+        remarks: Role-Based Access Control for AI Data
+      - reference-id: AIR-DET-001
+        remarks: AI Data Leakage Prevention and Detection
+      - reference-id: AIR-PREV-002
+        remarks: Data Filtering From External Knowledge Bases
+      - reference-id: AIR-PREV-010
+        remarks: AI Model Version Pinning
+      - reference-id: AIR-PREV-007
+        remarks: Legal and Contractual Frameworks for AI Systems
+  - reference-id: CCC.K8S.CN
+    entries:
+      - reference-id: CCC.K8S.CN02
+        remarks: Enforce Least-Privilege Cluster Authorization (host assumption)
+      - reference-id: CCC.K8S.CN03
+        remarks: Use Federated Identities for Workloads (host assumption)
+      - reference-id: CCC.K8S.CN04
+        remarks: Admit Only Trusted Container Images (host assumption)
+      - reference-id: CCC.K8S.CN05
+        remarks: Enforce Restricted Workload Security (host assumption)
+      - reference-id: CCC.K8S.CN06
+        remarks: Enforce Default-Deny Workload Network Policies (host assumption)
+      - reference-id: CCC.K8S.CN07
+        remarks: Protect Workload Secrets (host assumption)
+      - reference-id: CCC.K8S.CN14
+        remarks: Preserve Kubernetes Audit and Monitoring Records (host assumption)
+      - reference-id: CCC.K8S.CN16
+        remarks: Enforce Managed Cluster Authentication (host assumption)
+  - reference-id: CCC.MARefArc.CN
+    entries:
+      - reference-id: CCC.MARefArc.CN11
+        remarks: Agent Authority Least Privilege Framework
+      - reference-id: CCC.MARefArc.CN12
+        remarks: Tool Chain Validation and Sanitization
+      - reference-id: CCC.MARefArc.CN19
+        remarks: Human Feedback Loop for AI Systems
+      - reference-id: CCC.MARefArc.CN20
+        remarks: Citations and Source Traceability
+      - reference-id: CCC.MARefArc.CN23
+        remarks: Agent Decision Audit and Explainability
+      - reference-id: CCC.MARefArc.CN01
+        remarks: Data Filtering From External Knowledge Bases
+      - reference-id: CCC.MARefArc.CN08
+        remarks: Role-Based Access Control for AI Data
+      - reference-id: CCC.MARefArc.CN10
+        remarks: AI Firewall Implementation and Management
+      - reference-id: CCC.MARefArc.CN16
+        remarks: AI Data Leakage Prevention and Detection
+      - reference-id: CCC.MARefArc.CN07
+        remarks: AI Model Version Pinning
+
 controls:
   - id: apa-ctl-001-authority-ceiling
     title: Authority Ceiling Enforcement
@@ -130,6 +221,9 @@ controls:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-authority-ladder
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-PREV-018
     threats:
       - reference-id: apa-threats
         entries:
@@ -157,13 +251,15 @@ controls:
           - analyse
         recommendation: >
           Verify session entitlements and correlate analyse activity with
-          FDC3 calculation app invocations rather than model-computed figures.
+          demo.GetPortfolioRisk and demo.RunStressScenario invocations rather
+          than model-computed figures.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-observe-only
           - reference-id: apa-guidance-deterministic-calcs
+          - reference-id: apa-guidance-demo-intents
     threats:
       - reference-id: apa-threats
         entries:
@@ -242,14 +338,14 @@ controls:
     assessment-requirements:
       - id: apa-ctl-005-propose-human-approval.ar01
         text: >
-          Order proposals MUST NOT leave draft state or be handed to
-          execution workflows without a recorded human approval identifying
-          the approver and approval time.
+          Order proposals produced via demo.CreateOrderProposal MUST NOT leave
+          draft state or be handed to execution workflows without a recorded
+          human approval identifying the approver and approval time.
         applicability:
           - propose
           - human-approval-required
         recommendation: >
-          Correlate order-proposal construction events with approval workflow
+          Correlate demo.CreateOrderProposal events with approval workflow
           records; treat missing or self-approved AI identities as failures.
         state: Active
     guidelines:
@@ -257,6 +353,10 @@ controls:
         entries:
           - reference-id: apa-guidance-propose-approval
           - reference-id: apa-guidance-human-oversight
+          - reference-id: apa-guidance-demo-intents
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-011
     threats:
       - reference-id: apa-threats
         entries:
@@ -273,20 +373,24 @@ controls:
     assessment-requirements:
       - id: apa-ctl-006-execute-prohibit.ar01
         text: >
-          Trade-execution tool calls, order submissions, or equivalent
-          execute-authority actions MUST NOT be initiated by the AI Portfolio
+          demo.SubmitOrders and any equivalent trade-execution tool calls or
+          order submissions MUST NOT be initiated by the AI Portfolio
           Assistant identity under any session entitlement.
         applicability:
           - execute
           - all-authority-levels
         recommendation: >
-          Monitor execution APIs and FDC3 intents for assistant-originated
-          submit actions; any occurrence is a control failure.
+          Monitor FDC3 for assistant-originated demo.SubmitOrders intents;
+          any occurrence is a control failure.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-execute-prohibited
+          - reference-id: apa-guidance-demo-intents
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-PREV-018
     threats:
       - reference-id: apa-threats
         entries:
@@ -393,21 +497,28 @@ controls:
     assessment-requirements:
       - id: apa-ctl-010-tool-allowlist.ar01
         text: >
-          Observed tool calls and FDC3 app invocations by the assistant MUST
-          be members of the approved allowlist for the session's maximum
-          authority level, and execution-capable tools MUST NOT appear on any
-          assistant allowlist.
+          Observed tool calls and FDC3 intents by the assistant MUST be
+          members of the approved allowlist for the session's maximum
+          authority level. The core demo allowlist is demo.GetPortfolioRisk,
+          demo.GetResearch, demo.RunStressScenario, and
+          demo.CreateOrderProposal (authority-scoped). demo.SubmitOrders and
+          other execution-capable intents MUST NOT appear on any assistant
+          allowlist.
         applicability:
           - all-authority-levels
         recommendation: >
-          Diff runtime tool-call logs against the authority-scoped allowlist
-          inventory; flag unknown or execute-capable tools immediately.
+          Diff runtime intent logs against the authority-scoped allowlist;
+          flag unknown or execute-capable intents immediately.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-fdc3-boundaries
           - reference-id: apa-guidance-execute-prohibited
+          - reference-id: apa-guidance-demo-intents
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-PREV-019
     threats:
       - reference-id: apa-threats
         entries:
@@ -465,13 +576,18 @@ controls:
           - recommend
         recommendation: >
           Evaluate sample transcripts for citation coverage and flag rate on
-          unsupported financial claims.
+          unsupported financial claims; verify FDC3 Security signatures on
+          demo.portfolioRisk, demo.researchBundle, and related contexts.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-deterministic-calcs
           - reference-id: apa-guidance-recommend-controls
+          - reference-id: apa-guidance-fdc3-security
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-013
     threats:
       - reference-id: apa-threats
         entries:
@@ -503,6 +619,9 @@ controls:
         entries:
           - reference-id: apa-guidance-logging
           - reference-id: apa-guidance-human-oversight
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-021
     threats:
       - reference-id: apa-threats
         entries:
@@ -574,3 +693,44 @@ controls:
           - reference-id: unauthorized-trade-execution
           - reference-id: third-party-model-leakage
           - reference-id: cross-client-data-contamination
+
+  - id: apa-ctl-016-fdc3-security-provenance
+    title: FDC3 Security Provenance for Demo Contexts
+    objective: >
+      Require FDC3 Security signatures on demo suite contexts that convey
+      risk results, research, recommendations, and order proposals so the
+      assistant and downstream apps can verify provenance.
+    group: assurance
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-016-fdc3-security-provenance.ar01
+        text: >
+          Broadcasts and returns of demo.portfolioRisk, demo.researchBundle,
+          demo.stressScenarioResult, demo.portfolioRecommendation, and
+          demo.orderProposal MUST include verifiable FDC3 Security signatures;
+          the assistant MUST NOT treat unsigned instances of those contexts as
+          authoritative grounding for explain, recommend, or propose actions.
+        applicability:
+          - analyse
+          - explain
+          - recommend
+          - propose
+        recommendation: >
+          Inspect FDC3 context payloads for signature presence and validity on
+          the five demo contexts; reject or flag unsigned material used as
+          evidence.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-fdc3-security
+          - reference-id: apa-guidance-deterministic-calcs
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-013
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: misleading-risk-explanation
+          - reference-id: tool-misuse-manipulation
+          - reference-id: unsuitable-recommendation

@@ -9,10 +9,18 @@ tags:
 ---
 
 import threats from '@site/src/data/governance/finos/ai-portfolio-assistant/threat.yaml';
+import maRefArchThreats from '@site/src/data/governance/finos/ccc-ma-refarch/threats.yaml';
 
 # AI Portfolio Assistant Threats Catalog
 
-Threats spanning confidentiality, decision integrity, unauthorized action, and
-loss of human oversight.
+App-specific threats spanning confidentiality, decision integrity, unauthorized
+action, and loss of human oversight, plus composed
+[CCC Multi-Agent Reference Architecture](../../ccc-ma-refarch/) threats for the
+agent, LLM, knowledge, and runtime layers the assistant depends on.
 
-<GemaraCatalog file={threats} />
+<GemaraCatalog
+  file={threats}
+  resolve={{
+    'CCC.MARefArc.TH': maRefArchThreats,
+  }}
+/>

@@ -3,17 +3,18 @@ title: AI Portfolio Assistant Lexicon
 metadata:
   id: apa-lexicon
   type: Lexicon
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-11T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: >
     Controlled vocabulary for the AI Portfolio Assistant Gemara example,
-    covering FDC3 integration, authority levels, and related governance terms.
+    covering FDC3 integration, demo intents and contexts, authority levels,
+    and related governance terms.
 
 terms:
   - id: fdc3
@@ -156,3 +157,99 @@ terms:
       Assistant: assisting portfolio managers with observation, analysis,
       explanation, and controlled recommendation or proposal across FDC3
       applications, without autonomous trade execution.
+
+  - id: demo-get-portfolio-risk
+    title: demo.GetPortfolioRisk
+    synonyms:
+      - GetPortfolioRisk
+    definition: >
+      Analyse-authority FDC3 intent raised by the assistant with an
+      fdc3.portfolio context. The Risk app responds with demo.portfolioRisk.
+
+  - id: demo-get-research
+    title: demo.GetResearch
+    synonyms:
+      - GetResearch
+    definition: >
+      Explain-authority FDC3 intent raised by the assistant with instrument,
+      instrumentList, or portfolio context. The Research app responds with
+      demo.researchBundle.
+
+  - id: demo-run-stress-scenario
+    title: demo.RunStressScenario
+    synonyms:
+      - RunStressScenario
+    definition: >
+      Analyse-authority FDC3 intent raised by the assistant with a
+      demo.stressScenarioRequest. The Risk app responds with
+      demo.stressScenarioResult.
+
+  - id: demo-create-order-proposal
+    title: demo.CreateOrderProposal
+    synonyms:
+      - CreateOrderProposal
+    definition: >
+      Propose-authority FDC3 intent raised by the assistant with a
+      demo.portfolioRecommendation. Order Entry responds with
+      demo.orderProposal for human review.
+
+  - id: demo-submit-orders
+    title: demo.SubmitOrders
+    synonyms:
+      - SubmitOrders
+    definition: >
+      Execute-authority FDC3 intent raised with an fdc3.orderList. Governance
+      must prevent the AI Portfolio Assistant from successfully exercising
+      this intent.
+
+  - id: demo-portfolio-risk
+    title: demo.portfolioRisk
+    definition: >
+      Structured risk analysis context returned by demo.GetPortfolioRisk,
+      including concentration, exposures, major contributors, and provenance
+      identifying the portfolio and analysis. Must carry an FDC3 Security
+      signature when broadcast.
+
+  - id: demo-research-bundle
+    title: demo.researchBundle
+    definition: >
+      Structured research findings and source references returned by
+      demo.GetResearch, including provenance and timestamps. Must carry an
+      FDC3 Security signature when broadcast.
+
+  - id: demo-stress-scenario-request
+    title: demo.stressScenarioRequest
+    definition: >
+      Request context identifying a portfolio and the hypothetical market
+      changes to apply when raising demo.RunStressScenario.
+
+  - id: demo-stress-scenario-result
+    title: demo.stressScenarioResult
+    definition: >
+      Calculated stress outcome returned by demo.RunStressScenario. Must
+      carry an FDC3 Security signature when broadcast.
+
+  - id: demo-portfolio-recommendation
+    title: demo.portfolioRecommendation
+    definition: >
+      Assistant-produced recommendation describing proposed portfolio
+      changes, rationale, and supporting evidence. Input to
+      demo.CreateOrderProposal. Must carry an FDC3 Security signature when
+      broadcast.
+
+  - id: demo-order-proposal
+    title: demo.orderProposal
+    definition: >
+      Draft order basket returned by demo.CreateOrderProposal for human
+      review before becoming an fdc3.orderList. Must carry an FDC3 Security
+      signature when broadcast.
+
+  - id: fdc3-security
+    title: FDC3 Security
+    synonyms:
+      - Signed FDC3 Context
+    definition: >
+      FDC3 mechanism for attaching cryptographic signatures to context
+      broadcasts so receivers can verify provenance. Required for demo
+      suite contexts that convey risk results, research, recommendations,
+      and order proposals.
