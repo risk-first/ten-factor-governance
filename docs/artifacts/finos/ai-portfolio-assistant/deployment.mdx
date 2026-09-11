@@ -18,14 +18,20 @@ C4Context
   Enterprise_Boundary(b0, "Inside Banking Firewall") {
     Person(portfolioManager, "Portfolio Manager", "Uses the FDC3 desktop to analyse portfolios and manage risk.")
 
-    System_Boundary(b1, "Managed Kubernetes") {
+    Container_Boundary(b1, "Portfolio Assistant Deployment - Managed Kubernetes") {
       System(AIPA, "AI Portfolio Assistant", "Interprets portfolio, risk and research results and raises governed FDC3 intents.")
     }
 
-    System_Boundary(g1, "Governance") {
+    Container_Boundary(g1, "Governance Runtime Deployment - Managed Kubernetes") {
       System(GR, "Portfolio Assistant Governance Runtime")
+    }
+
+    Container_Boundary(r1, "Artifact Repository") {
       System_Ext(GM, "Governance Model", "Gemara, AIMS")
-      System_Ext(DE, "Decisions and Evidence Recorder", "Gemara")
+    }
+
+    Container_Boundary(o1, "Records Deployment - Object Storage Bucket") {
+      System_Ext(DE, "Decisions and Evidence Record", "Gemara")
     }
 
     System_Ext(FDC3, "FDC3 Desktop Agent", "Routes context and intents; enforces governance before forwarding sensitive requests.")
@@ -33,11 +39,11 @@ C4Context
   }
 
   BiRel(portfolioManager, AIPA, "Uses")
-  BiRel(AIPA, FDC3, "Raises intents / receives and broadcasts context", "FDC3")
+  BiRel(AIPA, FDC3, "Raises intents / receives and broadcasts context")
   Rel(FDC3, GR, "Makes requests to")
   Rel(GR, GM, "Is Informed By")
-  Rel(GR, DE, "Records to")
-  Rel(Chat, DE, "Records to")
+  Rel(FDC3, DE, "Records to")
+  Rel(AIPA, GR, "Records to")
   Rel(AIPA, Chat, "Prompts / completions")
 
   UpdateElementStyle(portfolioManager, $bgColor="#e1efed", $fontColor="#0d7c6f", $borderColor="#0d7c6f")
