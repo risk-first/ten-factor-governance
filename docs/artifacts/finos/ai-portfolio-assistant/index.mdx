@@ -33,9 +33,11 @@ and auditable across a real multi-application workflow. The example also shows
 how those governance mechanisms can form part of an ISO/IEC 42001-aligned AI
 management system.
 
-The [Gemara model](./gemara) catalogs make the authority ladder explicit; the
-[ISO/IEC 42001 AIMS](./iso/aims) documents wrap the same example in a
-management-system envelope. Together they form one document set:
+Controls are intended to stack by layer: 
+ - [CCC Kubernetes](../ccc-k8s/) controls at the managed Kubernetes runtime
+ - [FINOS AI Governance Framework](../ai-governance/) controls in the governance-model layer
+ - App-specific controls in the [Gemara](./gemara) catalogs 
+ - The [ISO/IEC 42001 AIMS](./iso/aims) documents wrap that combined set in a management-system envelope.
 
 ## Artifacts by layer
 
