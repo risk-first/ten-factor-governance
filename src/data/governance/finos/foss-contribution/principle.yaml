@@ -1,0 +1,103 @@
+title: FOSS Contribution Principles
+
+metadata:
+  id: foss-contribution-principles
+  type: PrincipleCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Foundational principles guiding employee contribution to Free and Open
+    Source Software projects.
+  lexicon:
+    reference-id: foss-contribution-lexicon
+  mapping-references:
+    - id: foss-contribution-lexicon
+      title: FOSS Contribution Lexicon
+      version: "0.1.0"
+      url: file://lexicon.yaml
+
+groups:
+  - id: governance
+    title: Governance
+    description: >
+      Principles for how FOSS contribution activity is directed and overseen.
+
+  - id: risk-and-value
+    title: Risk and Value
+    description: >
+      Principles balancing business benefit against organizational risk.
+
+  - id: conduct
+    title: Conduct and Separation
+    description: >
+      Principles for appropriate employee conduct and separation of personal
+      from company activity.
+
+principles:
+  - id: company-benefit
+    title: Contribute When There Is Company Benefit
+    group: risk-and-value
+    description: >
+      The company supports FOSS contribution when doing so benefits the
+      company and does not present unacceptable risk.
+    rationale: >
+      FOSS participation should advance business objectives rather than create
+      unmanaged exposure.
+
+  - id: acceptable-risk
+    title: Manage Unacceptable Risk
+    group: risk-and-value
+    description: >
+      Preventative and detective controls must address risks that apply to FOSS
+      contribution activity, including project-specific risks.
+    rationale: >
+      Public contribution creates legal, security, and reputational exposure
+      that must be identified and governed.
+
+  - id: ospo-governance
+    title: Centralized OSPO Governance
+    group: governance
+    description: >
+      The Open Source Program Office establishes, evolves, and executes FOSS
+      contribution strategy and governance under direction of the guidelines
+      owner.
+    rationale: >
+      Consistent oversight enables scalable review, inventory management, and
+      accountability across engagements.
+
+  - id: evidence-based-compliance
+    title: Evidence-Based Compliance
+    group: governance
+    description: >
+      Governance processes must produce evidence of approvals, reviews,
+      scanning, identity use, and lifecycle decisions.
+    rationale: >
+      Automated and manual assurance depends on auditable records of how FOSS
+      contribution activity was authorized and performed.
+
+  - id: separation-personal-company
+    title: Separation of Personal and Company Activity
+    group: conduct
+    description: >
+      Personal FOSS contributions must be distinguishable from company
+      contributions in identity, infrastructure, representation, and
+      intellectual property use.
+    rationale: >
+      Blurred boundaries create conflict-of-interest, attribution, and IP risk.
+
+  - id: regulatory-alignment
+    title: Alignment With Applicable Regulations
+    group: governance
+    description: >
+      FOSS contribution activity must remain aligned with export control,
+      cross-border data flow, conduct, and other applicable regulatory and
+      company policy obligations.
+    rationale: >
+      Global public collaboration can trigger obligations that differ from
+      internal software development.

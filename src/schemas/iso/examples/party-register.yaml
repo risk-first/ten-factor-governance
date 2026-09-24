@@ -1,0 +1,137 @@
+# Example PartyRegister — ISO/IEC 27001 and ISO/IEC 42001 Clause 4.2
+# Illustrative only. Not ISO normative text; conformity assessment requires a
+# licensed copy of the standard.
+# iso-type: PartyRegister
+
+title: "Parties to the Customer Contact Assistant"
+
+metadata:
+  id: cca-party-register
+  type: PartyRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-09T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: "AI Governance Office"
+    type: Human
+  description: |
+    People and organisations with a stake in the Customer Contact Assistant:
+    those who place requirements on it, those accountable for it, and those who
+    bear the consequences of its decisions without ever choosing to use it.
+
+clauses: ["4.2", "5.3", "A.3.2", "A.5.4"]
+
+groups:
+  - id: internal
+    title: "Inside the organisation"
+    description: "Parties within the organisational boundary."
+  - id: external
+    title: "Outside the organisation"
+    description: "Parties the organisation does not control."
+
+parties:
+  - id: exec-sponsor
+    name: "Chief Operating Officer"
+    kind: Individual
+    internal: true
+    group: internal
+    roles: ["Top Management", "Accountable", "Approver"]
+    authority: |
+      Approves the AI policy and the AIMS scope, commits resources, and accepts
+      residual risk above the Medium threshold.
+    contact:
+      name: "Chief Operating Officer"
+      affiliation: "Operations"
+
+  - id: product-owner
+    name: "Contact Assistant Product Owner"
+    kind: Individual
+    internal: true
+    group: internal
+    roles: [Accountable, Responsible]
+    authority: "Approves changes to the assistant's intended use and release gating."
+    contact:
+      name: "Contact Assistant Product Owner"
+      affiliation: "Customer Operations"
+
+  - id: contact-centre-staff
+    name: "Contact centre agents"
+    kind: Group
+    internal: true
+    group: internal
+    roles: [Affected, Informed]
+    description: |
+      Agents whose work is triaged and drafted by the assistant. Affected as
+      well as informed: the system changes how their performance is measured.
+    represented-by: staff-forum
+
+  - id: staff-forum
+    name: "Staff consultative forum"
+    kind: Group
+    internal: true
+    group: internal
+    roles: [Consulted]
+    description: "Speaks for contact centre staff on changes to working practice."
+
+  - id: customers
+    name: "Retail customers"
+    kind: Community
+    internal: false
+    group: external
+    roles: [Affected]
+    description: |
+      People whose enquiries the assistant answers or routes. Affected parties
+      with no contact point of their own: they are reached through the service,
+      not through this register.
+
+  - id: vulnerable-customers
+    name: "Customers in vulnerable circumstances"
+    kind: Community
+    internal: false
+    group: external
+    roles: [Affected]
+    description: |
+      Customers whose circumstances mean a wrong or delayed answer carries
+      disproportionate consequences. Recorded separately because impact
+      assessment must consider differentiated harm.
+    represented-by: consumer-advocacy
+
+  - id: consumer-advocacy
+    name: "Consumer advocacy body"
+    kind: Organisation
+    internal: false
+    group: external
+    roles: [Consulted, Interested]
+    description: "Consulted on impacts to customers who cannot be reached directly."
+
+  - id: regulator
+    name: "Financial Conduct Authority"
+    kind: Regulator
+    internal: false
+    group: external
+    roles: [Interested, Escalation]
+    escalation:
+      trigger: "Serious incident affecting customer outcomes"
+      channel: "Regulatory notification portal"
+      within: "72 hours of confirmation"
+
+  - id: model-supplier
+    name: "Foundation model provider"
+    kind: Supplier
+    internal: false
+    group: external
+    roles: [Interested, Responsible]
+    description: |
+      Supplies the underlying model. Responsible for the model's own
+      development governance, not for its use here.
+
+review:
+  cadence: Biannual
+  last-reviewed: "2026-09-01T00:00:00Z"
+  next-review: "2027-03-01T00:00:00Z"
+  triggers:
+    - "A new customer segment is brought into scope"
+    - "A new regulator takes an interest in the service"

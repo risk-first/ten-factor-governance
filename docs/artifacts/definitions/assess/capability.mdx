@@ -1,0 +1,164 @@
+---
+sidebar_position: 8
+title: Capability
+sidebar_label: Capability
+hide_title: true
+tags:
+  - Artifact
+  - Layer 2
+aka:
+  gemara: CapabilityCatalog
+description: "Capabilities are the features or elements of useful behaviour provided by a sensitive activity."
+---
+
+<GovernanceArtifact>
+
+<Purpose>
+
+Capabilities are the features or elements of useful behaviour provided by a
+sensitive activity.
+
+</Purpose>
+
+<Role>
+
+Capabilities name what the activity *can do* for users and systems—useful
+behaviour that also creates attack surface and therefore needs governing.
+
+Without naming capabilities, threat
+models and controls float free of the real activity.
+
+</Role>
+
+<Examples>
+
+<RevealItem title="Public source publication" defaultOpen>
+
+The ability to publish source, configuration or build artefacts to publicly
+accessible FOSS platforms. That capability is what makes accidental disclosure
+and unreviewed release possible—and what publication controls must govern.
+
+**Source:** [Public Source Publication](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/capability.yaml) (`public-source-publication`) in *FOSS Contribution Capability Catalog*.
+
+</RevealItem>
+
+<RevealItem title="Contributor agreement acceptance">
+
+The ability to accept CLAs, Corporate CLAs or Developer Certificates of Origin
+on behalf of the company. Legal and IP controls exist because this capability
+creates lasting obligations.
+
+**Source:** [Contributor Agreement Acceptance](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/capability.yaml) (`contributor-agreement-acceptance`) in *FOSS Contribution Capability Catalog*.
+
+</RevealItem>
+
+<RevealItem title="Company infrastructure contribution">
+
+The ability to contribute from the company network or managed hardware using
+approved tooling. Infrastructure and scanning controls bind to this capability
+rather than to “the internet” in general.
+
+**Source:** [Company Infrastructure Contribution](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/capability.yaml) (`company-infrastructure-contribution`) in *FOSS Contribution Capability Catalog*.
+
+</RevealItem>
+
+<RevealItem title="Storage buckets">
+
+Object storage provides uniquely identifiable segmentations in which data
+elements may be stored. Buckets are the unit of organisation—and of many
+access, replication and lifecycle decisions that threats and controls must
+address.
+
+**Source:** [Storage Buckets](https://ccc.finos.org/catalogs/storage/object/capabilities) (`CCC.ObjStor.CP01`) in [*FINOS CCC Object Storage*](https://ccc.finos.org/catalogs/storage/object).
+
+</RevealItem>
+
+<RevealItem title="Lifecycle policies">
+
+The ability to define policies that automate data management—especially cost
+and retention tasks. Useful behaviour that also creates a path for premature
+destruction or unintended exposure if misconfigured.
+
+**Source:** [Lifecycle Policies](https://ccc.finos.org/catalogs/storage/object/capabilities) (`CCC.ObjStor.CP08`) in [*FINOS CCC Object Storage*](https://ccc.finos.org/catalogs/storage/object).
+
+</RevealItem>
+
+<RevealItem title="Object-level access control">
+
+The ability to control access to specific objects within the store—not only at
+bucket scope. Fine-grained permission surfaces are exactly what access-control
+threats and controls attach to.
+
+**Source:** [Object Level Access Control](https://ccc.finos.org/catalogs/storage/object/capabilities) (`CCC.ObjStor.CP10`) in [*FINOS CCC Object Storage*](https://ccc.finos.org/catalogs/storage/object).
+
+</RevealItem>
+
+</Examples>
+
+<LinksUpstream>
+
+- Architecture inventories, platform feature lists, SCM/CI capabilities
+
+</LinksUpstream>
+
+<LinksDownstream>
+
+- [Threat](/docs/artifacts/definitions/assess/threat) lists enabling capabilities
+
+</LinksDownstream>
+
+<AntiPatterns>
+
+<RevealItem title="Capabilities that are really controls">
+
+“Secret scanning” is a control (or a tool). “Public source publication” is the
+capability that creates the need for scanning.
+
+</RevealItem>
+
+<RevealItem title="Inventory of products instead of abilities">
+
+Listing GitHub, GitLab and Bitbucket as capabilities without saying what
+dangerous or governable ability each affords.
+
+</RevealItem>
+
+</AntiPatterns>
+
+<RelatedFactors>
+
+- [Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) — build vs runtime capabilities differ
+- [Govern Dependencies](/docs/factors/govern-dependencies) — capabilities often sit on upstream platforms
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) — capabilities shape the twin’s threat surface
+
+</RelatedFactors>
+
+<EntityRelationshipDiagram>
+
+```mermaid
+erDiagram
+  CapabilityCatalog ||--o{ Capability : capabilities
+
+  CapabilityCatalog {
+    string title
+  }
+
+  Capability {
+    string id
+    string title
+    string description
+    string group
+  }
+```
+
+</EntityRelationshipDiagram>
+
+<References>
+
+- [Gemara Capability Catalog schema](https://gemara.openssf.org/schema/capabilitycatalog.html)
+- [FINOS CCC Object Storage](https://ccc.finos.org/catalogs/storage/object)
+- [Gemara](/docs/tools/gemara)
+
+</References>
+
+</GovernanceArtifact>

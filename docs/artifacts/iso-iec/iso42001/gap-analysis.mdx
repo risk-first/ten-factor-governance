@@ -1,0 +1,1828 @@
+---
+sidebar_position: 1
+sidebar_label: Gap Analysis
+title: ISO/IEC 42001 Gap Analysis
+description: "Clause-by-clause and Annex A mapping of ISO/IEC 42001 to Ten Factor Governance."
+---
+
+# ISO/IEC 42001 Gap Analysis
+
+ISO/IEC 42001 is an organisation-wide Artificial Intelligence Management System (AIMS) standard. [Ten Factor Governance](/docs/factors/) is an architectural model for making governance operable.
+
+They are complementary rather than interchangeable: Ten Factor aligns strongly with ISO planning, operation, evaluation and evidence, while the outer management-system envelope (context, leadership, objectives, resources, competence, management review, CAPA) and AI-specific objects (impact assessment, AI system/data/supplier schemas) remain the largest gaps. Proposed management-system and AI objects are stubbed under [ISO/IEC 42001 Definitions](/docs/artifacts/definitions/).
+
+**Coverage labels:** 
+ - **Full** = direct corresponding capability (not by itself ISO conformity); 
+ - **Partial** = useful machinery exists but an ISO-required element is missing; 
+ - **Does not cover** / **Not represented** = no material direct representation.
+
+Requirement descriptions below are concise paraphrases of public ISO material, not a substitute for a licensed copy of the standard.
+
+## Clauses and management-system requirements
+
+<Comparison result="Partial" item="4.1" title="Understanding the organisation and its context">
+
+<Requirement>
+
+Determine internal and external issues relevant to the organisation's purpose and its ability to achieve the intended outcomes of the AIMS.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) gives each sensitive activity a machine-readable governance representation
+- [Context In, Decisions Out](/docs/factors/context-in-decisions-out) makes runtime context explicit
+
+</AddressedBy>
+
+Neither is an organisation-level context assessment.
+
+<Gap>
+
+Context can be consumed, but the ISO management exercise establishing internal/external context is not recorded as a first-class artefact.
+
+</Gap>
+
+<Recommendation>
+
+Add a generic [**OrganisationContext**](/docs/artifacts/definitions/define/organisation-context) artefact/profile covering internal/external issues, jurisdictions, organisational boundaries and change history.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="4.2" title="Needs and expectations of interested parties">
+
+<Requirement>
+
+Identify interested parties relevant to the AIMS and determine which of their requirements are relevant to the management system.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Is Composable](/docs/factors/governance-is-composable) discusses regulator, customer and organisational overlays
+- [Governance Has Owners](/docs/factors/governance-has-owners) identifies accountable organisations
+
+</AddressedBy>
+
+Interested-party requirements themselves are not represented.
+
+<Gap>
+
+Stakeholders can appear around artefacts, but stakeholder requirements are not a distinct object.
+
+</Gap>
+
+<Recommendation>
+
+Add [**InterestedParty**](/docs/artifacts/definitions/cross-cutting/party-register) and [**StakeholderRequirement**](/docs/artifacts/definitions/define/stakeholder-requirement) schemas with mappings into [Guidance](/docs/artifacts/definitions/define/guidance), [Control](/docs/artifacts/definitions/assess/control), [Risk](/docs/artifacts/definitions/decide/risk) and [Policy](/docs/artifacts/definitions/decide/policy).
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="4.3" title="Determining the scope of the AIMS">
+
+<Requirement>
+
+Define the boundaries and applicability of the AIMS, considering organisational context, interested-party requirements and interfaces/dependencies, and maintain the scope as documented information.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Sensitive Activities](/docs/factors/govern-sensitive-activities) provides a strong operational boundary
+- [Govern Dependencies](/docs/factors/govern-dependencies) extends governance through dependency relationships
+
+</AddressedBy>
+
+No formal AIMS scope exists.
+
+<Gap>
+
+Strong operational scoping, weak management-system scoping.
+
+</Gap>
+
+<Recommendation>
+
+Add an [**AIMSScope**](/docs/artifacts/definitions/define/aims-scope)/[**GovernanceScope**](/docs/artifacts/definitions/define/aims-scope) profile referencing organisations, systems, activities, sites, suppliers and exclusions.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial, but architecturally strong" item="4.4" title="AI management system">
+
+<Requirement>
+
+Establish, implement, maintain and continually improve the AIMS and the processes/interactions needed for it.
+
+</Requirement>
+
+The complete [Ten Factors](/docs/factors/) provide a blueprint for operable governance, especially twins, versioning, evidence and continuous governance.
+
+<Gap>
+
+The factors provide much of an implementation substrate, but not an explicit AIMS object/process model.
+
+</Gap>
+
+<Recommendation>
+
+Publish an **ISO 42001 profile for Ten Factor** rather than changing the core model.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="5.1" title="Leadership and commitment">
+
+<Requirement>
+
+Top management must demonstrate leadership, integrate AIMS requirements into business processes, provide resources, support relevant roles and promote continual improvement.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) strongly requires accountability and authority to change governance, approve exceptions and respond to failure
+
+</AddressedBy>
+
+It does not require top-management sponsorship or strategic integration.
+
+<Gap>
+
+Accountability is not the same as top-management commitment.
+
+</Gap>
+
+<Recommendation>
+
+Add a [**GovernanceAuthority**](/docs/artifacts/definitions/cross-cutting/party-register)/[**ManagementCommitment**](/docs/artifacts/definitions/cross-cutting/party-register) artefact or AIMS profile identifying executive sponsor, authority, resources and approvals.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="5.2" title="AI policy">
+
+<Requirement>
+
+Establish an AI policy appropriate to the organisation's purpose and strategic direction, providing a framework for objectives and commitments, and communicate/maintain it.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) explicitly includes policy
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) requires reviewed, approved and versioned changes
+- [Governance Is Composable](/docs/factors/governance-is-composable) supports enterprise and local policy layers
+
+</AddressedBy>
+
+<Gap>
+
+Excellent operational policy machinery; incomplete ISO organisational-policy semantics.
+
+</Gap>
+
+<Recommendation>
+
+Define an **ISO42001 AI Policy profile** with required purpose, commitments, strategic alignment, approver and review cadence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="5.3" title="Organisational roles, responsibilities and authorities">
+
+<Requirement>
+
+Assign and communicate responsibilities and authorities needed for the AIMS, including responsibility for ensuring conformity and reporting AIMS performance to top management.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) says every Twin, artefact and decision needs an accountable owner
+
+</AddressedBy>
+
+It does not define the complete AIMS responsibility structure or reporting chain.
+
+<Gap>
+
+Strong object-level accountability, incomplete management-system responsibility model.
+
+</Gap>
+
+<Recommendation>
+
+Add reusable [**GovernanceRole**](/docs/artifacts/definitions/cross-cutting/party-register) / [**Authority**](/docs/artifacts/definitions/cross-cutting/party-register) / [**Escalation**](/docs/artifacts/definitions/cross-cutting/party-register) entities referenced by all governance artefacts.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="6.1.1" title="Actions addressing risks and opportunities: general">
+
+<Requirement>
+
+Plan actions for AI-related risks and opportunities so the AIMS can achieve intended results, prevent undesired effects and improve.
+
+</Requirement>
+
+[Govern Sensitive Activities](/docs/factors/govern-sensitive-activities) starts from unacceptable risk; twins combine risks/controls/policy and [Continuous Governance](/docs/factors/continuous-governance) feeds operational learning back. Opportunities are not first-class.
+
+<Gap>
+
+Notably stronger on downside risk than on positive opportunity management.
+
+</Gap>
+
+<Recommendation>
+
+Extend the management-system profile with **Opportunity** or generalise Risk into an **Effect of Uncertainty** model where needed.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="6.1.2" title="AI risk assessment">
+
+<Requirement>
+
+Define and apply a repeatable AI risk-assessment process, identifying risks, analysing likelihood/consequences and evaluating them against risk criteria.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) makes risk part of the activity's governance
+- [Govern Dependencies](/docs/factors/govern-dependencies) adds inherited supply-chain risk
+
+</AddressedBy>
+
+The method of risk scoring is deliberately not prescribed.
+
+<Gap>
+
+Good representation, but no complete ISO-specific risk-assessment procedure/methodology.
+
+</Gap>
+
+<Recommendation>
+
+Define an **ISO42001 Risk Assessment profile** with assessment context, likelihood, consequence, criteria, date, assessor and review trigger.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="6.1.3" title="AI risk treatment">
+
+<Requirement>
+
+Select treatment options and controls, determine necessary controls, compare them with Annex A, produce a treatment plan and record applicability, including accepted residual risk. The resulting controls are reflected in the Statement of Applicability.
+
+</Requirement>
+
+Twins link risks, controls and policy; [Governance Is Composable](/docs/factors/governance-is-composable) supports importing selected shared controls; [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) supports explicit exceptions. There is no Statement of Applicability artefact.
+
+<Gap>
+
+The underlying machinery largely exists, but ISO's explicit applicability decision record does not.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ApplicabilityProfile**](/docs/artifacts/definitions/assess/applicability-profile) / [**StatementOfApplicability**](/docs/artifacts/definitions/assess/applicability-profile) mapping each Annex A control to applicable/not-applicable, rationale, implementation state, risk and evidence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial but materially incomplete" item="6.1.4" title="AI system impact assessment">
+
+<Requirement>
+
+Establish a process for assessing and documenting potential consequences of AI systems on individuals, groups and society, feeding the results into AI risk assessment and treatment.
+
+</Requirement>
+
+Sensitive activities can include safety/legal/business risks and twins can contain risks, but there is no dedicated impact-assessment model for affected people/groups/society.
+
+<Gap>
+
+Major AI-specific gap.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ImpactAssessment**](/docs/artifacts/definitions/decide/impact-assessment) and [**Impact**](/docs/artifacts/definitions/decide/impact-assessment) schemas mapped to AI system/activity, affected parties, intended/foreseeable use, risks, controls and assessment evidence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover directly" item="6.2" title="AI objectives and planning to achieve them">
+
+<Requirement>
+
+Establish measurable AI objectives aligned with the AI policy; determine actions, resources, responsibilities, timelines and how results will be evaluated, and retain documented information.
+
+</Requirement>
+
+Controls and governance decisions have objectives implicitly, and owners/continuous governance support delivery, but organisational AIMS objectives and KPIs are absent.
+
+<Gap>
+
+No first-class management objectives/metrics model.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ManagementObjective**](/docs/artifacts/definitions/define/management-objective) / [**Metric**](/docs/artifacts/definitions/define/management-objective) / [**Target**](/docs/artifacts/definitions/define/management-objective) / [**MeasurementPeriod**](/docs/artifacts/definitions/define/management-objective) artefacts linked to policy, owners and evaluation results.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="6.3" title="Planning of changes">
+
+<Requirement>
+
+Changes to the AIMS should be carried out in a planned manner, considering purpose, consequences, integrity, resources and responsibilities.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) requires review, testing, approval and promotion of governance changes
+- [Continuous Governance](/docs/factors/continuous-governance) adds lifecycle feedback
+
+</AddressedBy>
+
+<Gap>
+
+TFG is particularly well aligned to controlled governance change; ISO's management-level change planning is broader.
+
+</Gap>
+
+<Recommendation>
+
+Add a **GovernanceChange** record referencing changed artefacts, rationale, impact, owner, approvals, resources and rollout.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="7.1" title="Resources">
+
+<Requirement>
+
+Determine and provide resources needed to establish, implement, maintain and continually improve the AIMS.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) treats software, data, services, infrastructure and organisations as dependencies
+- [Governance Has Owners](/docs/factors/governance-has-owners) notes owners need authority and resources
+
+</AddressedBy>
+
+It is not an AIMS resource-planning process.
+
+<Gap>
+
+Resources are dependencies/targets, not management resources.
+
+</Gap>
+
+<Recommendation>
+
+Add a **GovernanceResource** schema/profile covering human, data, tooling, compute, financial and external resources.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover directly" item="7.2" title="Competence">
+
+<Requirement>
+
+Determine competence required for people affecting AIMS performance, ensure competence through education/training/experience and retain evidence.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) requires owners capable of doing the work, but does not define competence requirements, training or competence evidence
+
+</AddressedBy>
+
+<Gap>
+
+Competence appears only as evidence of something else, not as a first-class concept.
+
+</Gap>
+
+<Recommendation>
+
+Add [**CompetenceRequirement**](/docs/artifacts/definitions/cross-cutting/competence-record), [**TrainingRecord**](/docs/artifacts/definitions/cross-cutting/competence-record) and mappings to roles/activities.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover" item="7.3" title="Awareness">
+
+<Requirement>
+
+Relevant personnel should understand the AI policy, their contribution to AIMS effectiveness and implications of nonconformity.
+
+</Requirement>
+
+Ownership creates accountability but not workforce awareness.
+
+<Gap>
+
+No awareness/attestation mechanism.
+
+</Gap>
+
+<Recommendation>
+
+Add an **AwarenessRequirement/Attestation** mechanism to a management-system profile rather than a new core factor.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial/weak" item="7.4" title="Communication">
+
+<Requirement>
+
+Determine what AIMS-related communications are required, when they occur, with whom and by what process.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) supports escalation and incident response, and [Evidence by Default](/docs/factors/evidence-by-default) can be reused for reporting, but no communication plan exists
+
+</AddressedBy>
+
+<Gap>
+
+Exception/noncompliance communication is better represented than general AIMS communication.
+
+</Gap>
+
+<Recommendation>
+
+Add [**CommunicationRequirement**](/docs/artifacts/definitions/cross-cutting/communication-requirement) with subject, audience, trigger, channel, owner and evidence of communication.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="7.5" title="Documented information">
+
+<Requirement>
+
+Create, update and control documented information needed by the standard and the organisation, including identification, review/approval, access, storage, protection, versioning, retention and disposition.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) requires governance to be versioned, reviewed, tested and promoted with a history of change
+
+</AddressedBy>
+
+It is weaker on generic records management such as retention/disposition/access protection.
+
+<Gap>
+
+Excellent “governance as code”; incomplete records-management semantics.
+
+</Gap>
+
+<Recommendation>
+
+Extend common metadata with **approval, effective date, supersession, retention, disposition and access-classification** fields where appropriate.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong / closest alignment" item="8.1" title="Operational planning and control">
+
+<Requirement>
+
+Plan, implement and control processes needed to meet AIMS requirements and implement Clause 6 actions; establish criteria, operate to those criteria and manage planned/unintended changes and externally provided processes.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Sensitive Activities](/docs/factors/govern-sensitive-activities), [Build a Governance Twin](/docs/factors/build-a-governance-twin), [Context In, Decisions Out](/docs/factors/context-in-decisions-out), [Continuous Governance](/docs/factors/continuous-governance) and [Govern Dependencies](/docs/factors/govern-dependencies) together establish governed activities, definitions, decision boundaries, continuous verification and external dependencies
+
+</AddressedBy>
+
+<Gap>
+
+Ten Factor operationalises this better than most document-centric frameworks, but does not by itself define the complete AIMS process estate.
+
+</Gap>
+
+<Recommendation>
+
+Document a normative **Governed Activity lifecycle** profile showing ISO planning criteria → Twin → Policy/Controls → Evaluation/Enforcement.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="8.2" title="AI risk assessment in operation">
+
+<Requirement>
+
+Perform AI risk assessments at planned intervals and when significant changes are proposed or occur, retaining results.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Continuous Governance](/docs/factors/continuous-governance) and [Govern Dependencies](/docs/factors/govern-dependencies) provide excellent triggers for reassessment when implementation, data/model or dependencies change
+
+</AddressedBy>
+
+<Gap>
+
+Missing a first-class time-stamped RiskAssessment record tying methodology, inputs and conclusions together.
+
+</Gap>
+
+<Recommendation>
+
+Add [**RiskAssessmentLog**](/docs/artifacts/definitions/decide/risk-assessment) or enrich Risk with assessment instances/history.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="8.3" title="AI risk treatment in operation">
+
+<Requirement>
+
+Implement the risk-treatment plan and retain documented results.
+
+</Requirement>
+
+Twin policy/controls, [Context In, Decisions Out](/docs/factors/context-in-decisions-out), [Continuous Governance](/docs/factors/continuous-governance) and [Evidence by Default](/docs/factors/evidence-by-default) operationalise treatment rather than leaving it in a plan.
+
+<Gap>
+
+Strong execution chain; weaker formal treatment-plan/status artefact.
+
+</Gap>
+
+<Recommendation>
+
+Add treatment status, owner, due date and residual-risk decision to the proposed [**Applicability**](/docs/artifacts/definitions/assess/applicability-profile)/[**RiskTreatment**](/docs/artifacts/definitions/assess/applicability-profile) profile.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial/weak" item="8.4" title="AI system impact assessment in operation">
+
+<Requirement>
+
+Perform AI-system impact assessments at planned intervals and when relevant changes occur, and retain the results.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Continuous Governance](/docs/factors/continuous-governance) provides change triggers, but impact assessment itself is not represented
+
+</AddressedBy>
+
+<Gap>
+
+Partial mechanism, missing object — major gap.
+
+</Gap>
+
+<Recommendation>
+
+Add the proposed [**ImpactAssessment**](/docs/artifacts/definitions/decide/impact-assessment) schema with review frequency/change triggers and Evaluation Log mappings.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="9.1" title="Monitoring, measurement, analysis and evaluation">
+
+<Requirement>
+
+Determine what should be monitored/measured, methods and timing, analyse results and evaluate AIMS performance/effectiveness, retaining evidence.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Evidence by Default](/docs/factors/evidence-by-default) makes evidence an ordinary output
+- [Continuous Governance](/docs/factors/continuous-governance) continuously tests and observes behaviour/drift
+
+</AddressedBy>
+
+Organisational KPIs are not first-class.
+
+<Gap>
+
+Excellent control-level observability; incomplete AIMS objective/KPI performance model.
+
+</Gap>
+
+<Recommendation>
+
+Add [**Metric**](/docs/artifacts/definitions/define/management-objective)/[**ObjectiveResult**](/docs/artifacts/definitions/define/management-objective) alongside Evaluation Log and allow ManagementReview to consume it.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="9.2" title="Internal audit">
+
+<Requirement>
+
+Conduct internal audits at planned intervals to determine whether the AIMS conforms to organisational and ISO requirements and is effectively implemented; maintain an audit programme, impartiality and results.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Measures](/docs/artifacts/gemara) includes audit reviewing evaluation/enforcement evidence
+- [Evidence by Default](/docs/factors/evidence-by-default) and [Governance Has Owners](/docs/factors/governance-has-owners) support auditability
+
+</AddressedBy>
+
+An audit programme/independence model is not supplied.
+
+<Gap>
+
+Audit results are well represented; audit governance is not.
+
+</Gap>
+
+<Recommendation>
+
+Add [**AuditProgramme**](/docs/artifacts/definitions/assure/audit-programme) with scope, cadence, auditor independence/competence, schedule and follow-up.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial but not equivalent" item="9.3" title="Management review">
+
+<Requirement>
+
+Top management reviews the AIMS at planned intervals for continuing suitability, adequacy and effectiveness, considering changes, performance, audits, nonconformities and prior actions; decisions/actions are recorded.
+
+</Requirement>
+
+[Governance Has Owners](/docs/factors/governance-has-owners) says owners review evidence, investigate failures and publish improvements, which resembles local governance review; formal top-management AIMS review is not represented.
+
+<Gap>
+
+One of the largest management-system gaps.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ManagementReview**](/docs/artifacts/definitions/evaluate/management-review) with period, attendees, context changes, objectives/KPIs, audit/NCR/risk inputs, decisions, resources and improvement actions.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="10.1" title="Continual improvement">
+
+<Requirement>
+
+Continually improve the suitability, adequacy and effectiveness of the AIMS.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Continuous Governance](/docs/factors/continuous-governance) creates an engineering feedback loop
+- [Governance Has Owners](/docs/factors/governance-has-owners) explicitly says owners turn evidence and incidents into improved governance
+
+</AddressedBy>
+
+<Gap>
+
+TFG captures the engineering spirit very well, but not the formal AIMS-wide process.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ImprovementAction**](/docs/artifacts/definitions/enforce/corrective-action) linked from review/audit/evaluation back to risk, policy, control and objective revisions.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="10.2" title="Nonconformity and corrective action">
+
+<Requirement>
+
+React to nonconformity, control/correct consequences, investigate causes and possible recurrence elsewhere, implement corrective action, verify effectiveness, update the AIMS if necessary and retain evidence.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Continuous Governance](/docs/factors/continuous-governance) identifies failures
+- [Governance Has Owners](/docs/factors/governance-has-owners) investigate and improve governance
+- [Evidence by Default](/docs/factors/evidence-by-default) records what happened
+
+</AddressedBy>
+
+Root-cause/CAPA lifecycle and effectiveness review are not first-class.
+
+<Gap>
+
+“Enforcement” is narrower than ISO corrective action.
+
+</Gap>
+
+<Recommendation>
+
+Add [**Nonconformity**](/docs/artifacts/definitions/enforce/corrective-action)/[**CAPA**](/docs/artifacts/definitions/enforce/corrective-action) with containment, root cause, systemic scope, corrective action, owner, deadline, effectiveness test and closure.
+
+</Recommendation>
+
+</Comparison>
+
+## Annex A reference controls
+
+<Comparison result="Partial–strong" item="A.2.2" title="AI policy">
+
+<Requirement>
+
+Establish and maintain an organisational policy governing responsible AI development/use.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) includes policy
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) makes it reviewable/versioned
+
+</AddressedBy>
+
+<Gap>
+
+AI-specific policy content is not enforced by schema.
+
+</Gap>
+
+<Recommendation>
+
+Publish an **AI Policy profile/catalogue**.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Full at architectural level" item="A.2.3" title="Alignment with other organisational policies">
+
+<Requirement>
+
+Align AI policy with related organisational policies and obligations.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Is Composable](/docs/factors/governance-is-composable): enterprise, business-unit, customer and regulatory governance can be imported/overlaid rather than copied
+
+</AddressedBy>
+
+<Gap>
+
+The organisation must still define the actual relationships.
+
+</Gap>
+
+<Recommendation>
+
+Create mappings/profiles for common AI, security, privacy and data policies.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.2.4" title="Review of AI policy">
+
+<Requirement>
+
+Review the AI policy at defined intervals and when relevant changes warrant it.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled), [Continuous Governance](/docs/factors/continuous-governance) and [Governance Has Owners](/docs/factors/governance-has-owners) provide a strong review/evolution model
+
+</AddressedBy>
+
+<Gap>
+
+Review mechanics exist; a dedicated review record does not.
+
+</Gap>
+
+<Recommendation>
+
+Add `review-cadence`, `last-reviewed`, `next-review`, approver and review evidence to AI Policy profile.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.3.2" title="AI roles and responsibilities">
+
+<Requirement>
+
+Define and allocate roles and responsibilities for AI governance and lifecycle activities.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) is directly relevant
+
+</AddressedBy>
+
+<Gap>
+
+Missing organisation-wide role/authority catalogue.
+
+</Gap>
+
+<Recommendation>
+
+Add reusable [**GovernanceRole**](/docs/artifacts/definitions/cross-cutting/party-register) and lifecycle responsibilities.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover directly" item="A.3.3" title="Reporting of concerns">
+
+<Requirement>
+
+Provide mechanisms through which AI-related concerns can be reported and handled.
+
+</Requirement>
+
+Owner escalation and incident response are mentioned, but there is no concerns/whistleblowing mechanism.
+
+<Gap>
+
+No concerns/issue-report artefact.
+
+</Gap>
+
+<Recommendation>
+
+Add **Concern/IssueReport** and escalation/triage workflow.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.4.2" title="Resource documentation">
+
+<Requirement>
+
+Identify and document resources relevant to AI systems and responsible AI management.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) provides the strongest conceptual fit, covering software, data, services, infrastructure, organisations and activities
+
+</AddressedBy>
+
+<Gap>
+
+Concept exists; inventory schema does not.
+
+</Gap>
+
+<Recommendation>
+
+Add **Resource/Asset Catalog** with type, owner, provenance, lifecycle and relationships.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial concept" item="A.4.3" title="Data resources">
+
+<Requirement>
+
+Identify and manage data resources needed across the AI lifecycle.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) explicitly treats data as a governance dependency
+
+</AddressedBy>
+
+No data-resource artefact exists.
+
+<Gap>
+
+Data is recognised as a dependency, not modelled as a governed object.
+
+</Gap>
+
+<Recommendation>
+
+Add [**Dataset**](/docs/artifacts/definitions/operate/dataset)/[**DataResource**](/docs/artifacts/definitions/operate/dataset) schema with ownership, purpose, sensitivity, rights, provenance and quality.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong concept" item="A.4.4" title="Tooling resources">
+
+<Requirement>
+
+Identify and govern tools used to develop, evaluate, operate and monitor AI.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) and [Govern Dependencies](/docs/factors/govern-dependencies) recognise tooling/build infrastructure as governed dependencies
+
+</AddressedBy>
+
+<Gap>
+
+Architectural recognition without a ToolResource profile.
+
+</Gap>
+
+<Recommendation>
+
+Introduce [**ToolResource**](/docs/artifacts/definitions/operate/tool-resource) as a Resource/Dependency profile.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.4.5" title="System and computing resources">
+
+<Requirement>
+
+Identify computing, infrastructure and system resources required by AI systems.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) directly includes infrastructure/services
+
+</AddressedBy>
+
+<Gap>
+
+Dependency principle without compute classes.
+
+</Gap>
+
+<Recommendation>
+
+Add compute/infrastructure classes to a generic Resource Catalog, potentially linking to CALM/SBOM representations.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.4.6" title="Human resources">
+
+<Requirement>
+
+Identify human expertise and staffing resources needed for responsible AI activities.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) are required, but workforce capacity and competence are not represented
+
+</AddressedBy>
+
+<Gap>
+
+Named people ≠ capacity/competence model.
+
+</Gap>
+
+<Recommendation>
+
+Add Role + Competence + Capacity/Resource requirements in the management profile.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover directly" item="A.5.2" title="AI-system impact-assessment process">
+
+<Requirement>
+
+Establish a systematic process for assessing AI-system impacts.
+
+</Requirement>
+
+Twins can contain risk but not an impact-assessment process.
+
+<Gap>
+
+Major gap.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ImpactAssessment**](/docs/artifacts/definitions/decide/impact-assessment) compatible with ISO/IEC 42005 concepts.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial mechanism" item="A.5.3" title="Documentation of impact assessments">
+
+<Requirement>
+
+Document impact assessments and their results sufficiently for governance and review.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) and [Evidence by Default](/docs/factors/evidence-by-default) provide excellent generic documentation/provenance patterns
+
+</AddressedBy>
+
+<Gap>
+
+Documentation machinery without the object being documented.
+
+</Gap>
+
+<Recommendation>
+
+Make ImpactAssessment a versioned artefact with evidence mappings.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover directly" item="A.5.4" title="Impact on individuals or groups">
+
+<Requirement>
+
+Assess consequences for affected individuals and groups, including potentially differentiated impacts.
+
+</Requirement>
+
+Sensitive activities can be risk-scoped, but affected-person/group semantics are absent.
+
+<Gap>
+
+No AffectedParty model.
+
+</Gap>
+
+<Recommendation>
+
+Add [**AffectedParty**](/docs/artifacts/definitions/cross-cutting/party-register)/[**Group**](/docs/artifacts/definitions/cross-cutting/party-register), impact category, magnitude, likelihood, reversibility and mitigation.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover" item="A.5.5" title="Societal impacts">
+
+<Requirement>
+
+Assess wider societal impacts arising from AI systems.
+
+</Requirement>
+
+<Gap>
+
+No societal/public-interest impact semantics.
+
+</Gap>
+
+<Recommendation>
+
+Extend Impact schema to societal/public-interest/environmental consequences and affected communities.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.6.1.2" title="Objectives for responsible development">
+
+<Requirement>
+
+Establish responsible-development objectives for AI systems.
+
+</Requirement>
+
+[Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) makes development a separately governed sensitive activity; [Build a Governance Twin](/docs/factors/build-a-governance-twin) can contain its controls/policy.
+
+<Gap>
+
+Factory governance without management-objective artefacts.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ResponsibleDevelopmentObjective**](/docs/artifacts/definitions/define/management-objective) as a profile of management objectives/controls.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.6.1.3" title="Processes for responsible AI design and development">
+
+<Requirement>
+
+Define and operate processes for responsible AI system design/development.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) is unusually well aligned: model training/evaluation/promotion and runtime are separate governed domains
+
+</AddressedBy>
+
+<Gap>
+
+Architectural separation without an AI lifecycle activity profile.
+
+</Gap>
+
+<Recommendation>
+
+Define an **AI lifecycle activity profile** rather than forcing a generic model to cover every engineering process.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.6.2.2" title="AI-system requirements and specification">
+
+<Requirement>
+
+Define and document requirements for the AI system, including responsible-use/trustworthiness needs relevant to its context.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) provides the governance half of specification, distinguishing it from implementation rather than defining a complete system-requirements model
+
+</AddressedBy>
+
+<Gap>
+
+Governance requirements ≠ system requirements.
+
+</Gap>
+
+<Recommendation>
+
+Add/bridge to an [**AI System/Architecture Requirement**](/docs/artifacts/definitions/operate/ai-system) model, possibly via CALM, rather than duplicating architecture languages.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.6.2.3" title="Documentation of AI design and development">
+
+<Requirement>
+
+Maintain appropriate records and documentation of AI-system design/development.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Build a Governance Twin](/docs/factors/build-a-governance-twin) and [Governance is Version Controlled](/docs/factors/governance-is-version-controlled) document how the system is governed, not necessarily technical model/system design
+
+</AddressedBy>
+
+<Gap>
+
+GRC docs ≠ technical design docs.
+
+</Gap>
+
+<Recommendation>
+
+Add [**AI System reference**](/docs/artifacts/definitions/operate/ai-system) to external Model Card/System Card/architecture/development-record artefacts rather than embedding all content.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Full architectural fit" item="A.6.2.4" title="AI-system verification and validation">
+
+<Requirement>
+
+Verify/validate AI systems against defined requirements before and during lifecycle transitions as appropriate.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Continuous Governance](/docs/factors/continuous-governance) requires build-time validation, UAT behavioural tests and production verification
+
+</AddressedBy>
+
+<Gap>
+
+Mechanism is ready; AI validation catalogues still need authoring.
+
+</Gap>
+
+<Recommendation>
+
+Publish reusable AI validation/evaluation Control Catalogues and AssessmentRequirements.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Full architectural fit" item="A.6.2.5" title="AI-system deployment">
+
+<Requirement>
+
+Establish controls around deployment/release of AI systems into target environments.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance is Version Controlled](/docs/factors/governance-is-version-controlled), [Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) and [Continuous Governance](/docs/factors/continuous-governance) govern promotion through environments and separate factory controls from runtime
+
+</AddressedBy>
+
+<Gap>
+
+Gates exist; deployment/release identity does not.
+
+</Gap>
+
+<Recommendation>
+
+Add mappings from deployment/release attestations into Evidence/Evaluation rather than a heavyweight new schema.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Full architectural fit" item="A.6.2.6" title="AI-system operation and monitoring">
+
+<Requirement>
+
+Define how the AI system is operated and monitored after deployment, including ongoing performance/control oversight.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Continuous Governance](/docs/factors/continuous-governance) and [Evidence by Default](/docs/factors/evidence-by-default) are directly aligned
+- [Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) separately governs production inference/behaviour
+
+</AddressedBy>
+
+<Gap>
+
+Concept present; dedicated monitoring result profile optional.
+
+</Gap>
+
+<Recommendation>
+
+Add/standardise a **Continuous Monitoring result/profile** or map telemetry to Evaluation Log.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.6.2.7" title="AI-system technical documentation">
+
+<Requirement>
+
+Produce and maintain technical documentation sufficient to understand and govern the AI system.
+
+</Requirement>
+
+Twin documents governance; version control preserves evolution; neither defines AI technical documentation content.
+
+<Gap>
+
+Need an AI System descriptor with external doc links.
+
+</Gap>
+
+<Recommendation>
+
+Define an [**AI System descriptor**](/docs/artifacts/definitions/operate/ai-system) with links to model cards, architecture, interfaces, limitations, versions and evaluation reports.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Full principle" item="A.6.2.8" title="AI-system event logs">
+
+<Requirement>
+
+Establish appropriate logging of events associated with AI operation for traceability and investigation.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Evidence by Default](/docs/factors/evidence-by-default): activities should emit attributable, machine-readable evidence identifying who/when/governance/outcome
+
+</AddressedBy>
+
+<Gap>
+
+Governance evidence ≠ operational AI event log.
+
+</Gap>
+
+<Recommendation>
+
+Define a standard **evidence/event envelope** or map external telemetry/event logs into governance evidence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.7.2" title="Data for development and enhancement">
+
+<Requirement>
+
+Govern datasets used to develop, train, test or improve AI systems.
+
+</Requirement>
+
+[Govern Dependencies](/docs/factors/govern-dependencies) recognises data; [Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) distinguishes development from runtime; no dataset governance schema exists.
+
+<Gap>
+
+Need Dataset artefact.
+
+</Gap>
+
+<Recommendation>
+
+Add [**Dataset**](/docs/artifacts/definitions/operate/dataset) artefact with lifecycle purpose/allowed uses and AI-system mappings.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.7.3" title="Acquisition of data">
+
+<Requirement>
+
+Define governance for acquiring data, including source/provenance and relevant obligations.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) is conceptually strong for source/supply-chain provenance
+
+</AddressedBy>
+
+<Gap>
+
+Provenance principle without acquisition fields.
+
+</Gap>
+
+<Recommendation>
+
+Add `source`, licence/rights, consent/basis, acquisition method/date and supplier to Dataset schema.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong concept" item="A.7.4" title="Quality of data">
+
+<Requirement>
+
+Define and assess data quality appropriate to the AI system's intended purpose.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) explicitly notes data quality as a dependency whose changes can require reevaluation
+
+</AddressedBy>
+
+<Gap>
+
+Evaluable without a shared quality model.
+
+</Gap>
+
+<Recommendation>
+
+Add [**DataQualityAssessment**](/docs/artifacts/definitions/operate/dataset) or dataset quality attributes with Evaluation mappings.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.7.5" title="Data provenance">
+
+<Requirement>
+
+Maintain information about origin, lineage and provenance of AI data.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) plus [Evidence by Default](/docs/factors/evidence-by-default) are strongly aligned with provenance principles
+
+</AddressedBy>
+
+<Gap>
+
+Prefer referencing a standard provenance representation.
+
+</Gap>
+
+<Recommendation>
+
+Reference a standard provenance representation from Dataset rather than reinventing full lineage.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.7.6" title="Data preparation">
+
+<Requirement>
+
+Govern preparation/transformation of data used by AI systems and retain appropriate records.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern the Factory and the Product Separately](/docs/factors/govern-factory-and-product-separately) can make preparation/training pipeline steps sensitive activities
+- [Evidence by Default](/docs/factors/evidence-by-default) can record them
+
+</AddressedBy>
+
+<Gap>
+
+Model as governed activities linked to Dataset versions.
+
+</Gap>
+
+<Recommendation>
+
+Model preparation steps as governed [activities](/docs/artifacts/definitions/operate/sensitive-activity) and link Dataset versions to provenance/evidence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.8.2" title="System documentation and information for users">
+
+<Requirement>
+
+Provide users with information needed to understand and appropriately use the AI system, including relevant characteristics and limitations.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Context In, Decisions Out](/docs/factors/context-in-decisions-out) can expose reasons and obligations, and twins hold governance context, but user-facing transparency documentation is not represented
+
+</AddressedBy>
+
+<Gap>
+
+Need System Card / user-information references.
+
+</Gap>
+
+<Recommendation>
+
+Add [**AI System Information/System Card**](/docs/artifacts/definitions/operate/ai-system) references including purpose, limitations, human oversight and expected user behaviour.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.8.3" title="External reporting">
+
+<Requirement>
+
+Define processes for required or appropriate external reporting about the AI system.
+
+</Requirement>
+
+[Evidence by Default](/docs/factors/evidence-by-default) can support compliance/audits; [Governance Has Owners](/docs/factors/governance-has-owners) supplies accountable organisations; external reporting obligations are not modelled.
+
+<Gap>
+
+No ReportingObligation artefact.
+
+</Gap>
+
+<Recommendation>
+
+Add [**ReportingObligation**](/docs/artifacts/definitions/assure/reporting-obligation) linking trigger, recipient, content, deadline, owner and evidence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.8.4" title="Communication of incidents">
+
+<Requirement>
+
+Establish processes for communicating AI incidents to relevant parties as appropriate.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) incident examples include owner/CISO action and escalation
+- [Evidence by Default](/docs/factors/evidence-by-default) makes incidents reconstructable
+
+</AddressedBy>
+
+No incident/comms artefact exists.
+
+<Gap>
+
+Adjacent enforcement/notification ≠ incident communication lifecycle.
+
+</Gap>
+
+<Recommendation>
+
+Add [**Incident**](/docs/artifacts/definitions/operate/incident) plus [**IncidentCommunication**](/docs/artifacts/definitions/operate/incident) mappings to Evaluation, Enforcement, affected systems and stakeholders.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial" item="A.8.5" title="Information for interested parties">
+
+<Requirement>
+
+Identify and provide appropriate AI-related information to relevant interested parties.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Is Composable](/docs/factors/governance-is-composable) recognises customers/regulators/suppliers but no stakeholder-information requirement exists
+
+</AddressedBy>
+
+<Gap>
+
+Reuse proposed InterestedParty + CommunicationRequirement schemas.
+
+</Gap>
+
+<Recommendation>
+
+Reuse proposed [**InterestedParty**](/docs/artifacts/definitions/cross-cutting/party-register) + [**CommunicationRequirement**](/docs/artifacts/definitions/cross-cutting/communication-requirement) schemas.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Full architectural fit" item="A.9.2" title="Processes for responsible use">
+
+<Requirement>
+
+Define processes ensuring AI systems are used responsibly and consistently with organisational policy.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Sensitive Activities](/docs/factors/govern-sensitive-activities), [Build a Governance Twin](/docs/factors/build-a-governance-twin) and [Context In, Decisions Out](/docs/factors/context-in-decisions-out) provide a particularly good architecture for use-time controls
+
+</AddressedBy>
+
+<Gap>
+
+Author the catalogue; architecture is ready.
+
+</Gap>
+
+<Recommendation>
+
+Publish reusable responsible-use controls/assessment requirements as a catalogue.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Does not cover directly" item="A.9.3" title="Objectives for responsible use">
+
+<Requirement>
+
+Establish objectives guiding responsible use of AI systems.
+
+</Requirement>
+
+Policies/owners can implement such objectives indirectly.
+
+<Gap>
+
+Reuse proposed ManagementObjective/Metric artefact.
+
+</Gap>
+
+<Recommendation>
+
+Reuse proposed [**ManagementObjective**](/docs/artifacts/definitions/define/management-objective)/[**Metric**](/docs/artifacts/definitions/define/management-objective) artefact.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.9.4" title="Intended use of the AI system">
+
+<Requirement>
+
+Identify and govern the AI system's intended use and ensure use remains consistent with that intent.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Sensitive Activities](/docs/factors/govern-sensitive-activities), [Build a Governance Twin](/docs/factors/build-a-governance-twin) and [Context In, Decisions Out](/docs/factors/context-in-decisions-out) strongly support contextual permitted use, but there is no first-class AI `intended-use` object
+
+</AddressedBy>
+
+<Gap>
+
+Need intended use fields on an AI System schema.
+
+</Gap>
+
+<Recommendation>
+
+Add intended use, prohibited use, foreseeable misuse and user classes to [**AI System**](/docs/artifacts/definitions/operate/ai-system) schema.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.10.2" title="Allocating responsibilities">
+
+<Requirement>
+
+Allocate AI governance responsibilities between the organisation and relevant external parties.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) and [Governance Has Owners](/docs/factors/governance-has-owners) are especially strong
+- [Governance Is Composable](/docs/factors/governance-is-composable) supports governance contracts between independently implemented systems
+
+</AddressedBy>
+
+<Gap>
+
+Need PartyResponsibility / GovernanceContract.
+
+</Gap>
+
+<Recommendation>
+
+Add [**PartyResponsibility**](/docs/artifacts/definitions/cross-cutting/governance-contract) / [**GovernanceContract**](/docs/artifacts/definitions/cross-cutting/governance-contract) mapping organisation, obligation, activity/system and evidence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Full architectural principle" item="A.10.3" title="Suppliers">
+
+<Requirement>
+
+Establish appropriate governance for suppliers contributing AI systems/services/resources and their obligations.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Govern Dependencies](/docs/factors/govern-dependencies) is directly on point
+- [Governance Is Composable](/docs/factors/governance-is-composable) describes suppliers publishing reusable governance and customers consuming it through contracts
+
+</AddressedBy>
+
+<Gap>
+
+Composition principle without Supplier Assurance profile.
+
+</Gap>
+
+<Recommendation>
+
+Add [**Supplier/Dependency Assurance**](/docs/artifacts/definitions/cross-cutting/supplier-assurance) profile with contract obligations, attestations, versions, risk, controls and evidence.
+
+</Recommendation>
+
+</Comparison>
+
+<Comparison result="Partial–strong" item="A.10.4" title="Customers">
+
+<Requirement>
+
+Define and communicate appropriate responsibilities between the organisation and customers concerning AI systems/services.
+
+</Requirement>
+
+<AddressedBy>
+
+- [Governance Has Owners](/docs/factors/governance-has-owners) discusses provider commitments, customer reliance and contractual remedies
+- [Governance Is Composable](/docs/factors/governance-is-composable) provides the architecture
+
+</AddressedBy>
+
+<Gap>
+
+Generalise GovernanceContract to customer relationships.
+
+</Gap>
+
+<Recommendation>
+
+Generalise [**GovernanceContract**](/docs/artifacts/definitions/cross-cutting/governance-contract)/[**PartyResponsibility**](/docs/artifacts/definitions/cross-cutting/governance-contract) to supplier, provider and customer relationships.
+
+</Recommendation>
+
+</Comparison>
+
+## Synthesis
+
+Across Annex A, **Ten Factor often has the right architectural principle but not the domain object**, and it lacks the AI-specific schemas ISO expects. Deployment, verification/validation, operation/monitoring, event evidence, responsible use and supplier governance fit existing factors without inventing new principles—the missing work is mostly concrete interoperable artefacts and profiles.
+
+The highest-value additions remain [**ImpactAssessment**](/docs/artifacts/definitions/decide/impact-assessment) (largest AI-specific semantic hole) and [**ManagementReview**](/docs/artifacts/definitions/evaluate/management-review)/[**CAPA**](/docs/artifacts/definitions/enforce/corrective-action) (largest management-system structural hole). Proposed objects are stubbed as [definitions](/docs/artifacts/definitions/). The intended division of labour:
+
+- **ISO/IEC 42001** — what organisational management system must exist for responsible AI
+- **[Ten Factor Governance](/docs/factors/)** — what architectural properties make that governance operable

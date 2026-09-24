@@ -1,0 +1,28 @@
+---
+sidebar_position: 1
+sidebar_label: Capabilities Catalog
+title: CCC Object Storage Capabilities Catalog
+description: "FINOS Common Cloud Controls Object Storage capabilities rendered as a Gemara CapabilityCatalog."
+tags:
+  - CCC Object Storage
+  - Layer 2
+---
+
+import capabilities from '@site/src/data/governance/finos/ccc-object-storage/capabilities.yaml';
+import coreCapabilities from '@site/src/data/governance/finos/ccc-core/capabilities.yaml';
+
+# CCC Object Storage Capabilities Catalog
+
+This page renders the FINOS Common Cloud Controls Object Storage capabilities as
+a [Gemara](/docs/artifacts/gemara) `CapabilityCatalog`, including the shared CCC
+Core capabilities this service catalog imports. Native Object Storage entries
+and imported Core entries appear together, grouped by capability domain.
+
+For the companion catalogs, see the
+[Threats Catalog](./threats-catalog) and
+[Controls Catalog](./controls-catalog).
+
+<GemaraCatalog
+  file={capabilities}
+  resolve={{'CCC.Core.CP': coreCapabilities}}
+/>

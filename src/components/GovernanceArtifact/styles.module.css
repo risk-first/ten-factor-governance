@@ -15,47 +15,13 @@
   margin: 0 0 0.85rem;
 }
 
-.eyebrow,
-.layerBadge,
 .typeBadge {
   display: inline-block;
   margin: 0;
   padding: 0.2rem 0.55rem;
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   border-radius: 4px;
-}
-
-.eyebrow {
-  color: var(--gf-tone, var(--ifm-color-primary));
-  background: var(--gf-tone-soft, var(--gf-accent-soft, var(--ifm-color-emphasis-100)));
-}
-
-.layerBadge {
-  color: #fff;
-  background: var(--gf-tone, var(--gf-ink, var(--ifm-font-color-base)));
-  letter-spacing: 0.04em;
-  text-decoration: none;
-}
-
-a.layerBadge:hover {
-  color: #fff;
-  text-decoration: none;
-  filter: brightness(1.08);
-  opacity: 0.95;
-}
-
-[data-theme='dark'] .layerBadge {
-  color: var(--gf-surface, #121816);
-}
-
-[data-theme='dark'] a.layerBadge:hover {
-  color: var(--gf-surface, #121816);
-}
-
-.typeBadge {
   text-transform: none;
   letter-spacing: 0;
   font-weight: 600;
@@ -65,9 +31,34 @@ a.layerBadge:hover {
 
 .typeBadge code {
   font-size: 0.78rem;
+  line-height: 1;
   background: transparent;
   padding: 0;
   border: none;
+}
+
+a.typeBadge {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.typeBadge:hover {
+  text-decoration: none;
+  filter: brightness(1.04);
+}
+
+.aliasKey {
+  display: inline-block;
+  margin-right: 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gf-tone, var(--ifm-color-primary));
+}
+
+.aliasValue {
+  font-weight: 600;
 }
 
 .title {
@@ -109,46 +100,6 @@ a.layerBadge:hover {
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--gf-tone, var(--ifm-color-primary));
-}
-
-.layer1 {
-  --gf-tone: var(--gf-layer-1);
-  --gf-tone-soft: var(--gf-layer-1-soft);
-}
-
-.layer2 {
-  --gf-tone: var(--gf-layer-2);
-  --gf-tone-soft: var(--gf-layer-2-soft);
-}
-
-.layer3 {
-  --gf-tone: var(--gf-layer-3);
-  --gf-tone-soft: var(--gf-layer-3-soft);
-}
-
-.layer4 {
-  --gf-tone: var(--gf-layer-4);
-  --gf-tone-soft: var(--gf-layer-4-soft);
-}
-
-.layer5 {
-  --gf-tone: var(--gf-layer-5);
-  --gf-tone-soft: var(--gf-layer-5-soft);
-}
-
-.layer6 {
-  --gf-tone: var(--gf-layer-6);
-  --gf-tone-soft: var(--gf-layer-6-soft);
-}
-
-.layer7 {
-  --gf-tone: var(--gf-layer-7);
-  --gf-tone-soft: var(--gf-layer-7-soft);
-}
-
-.layerCross {
-  --gf-tone: var(--gf-layer-cross);
-  --gf-tone-soft: var(--gf-layer-cross-soft);
 }
 
 .section {

@@ -1,0 +1,192 @@
+title: AI Portfolio Assistant Capability Catalog
+
+metadata:
+  id: apa-capabilities
+  type: CapabilityCatalog
+  version: "0.3.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    System capabilities that create the attack surface and authority surface
+    for the Financial AI Portfolio Assistant operating across FDC3 applications,
+    including the named demo intents the assistant may raise. Composes relevant
+    CCC Multi-Agent Reference Architecture capabilities rather than twinning
+    that catalog.
+  mapping-references:
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-ma-refarch/capabilities.yaml
+      description: >
+        Subsystem capabilities from
+        https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch imported as
+        architectural dependencies of the assistant.
+
+imports:
+  - reference-id: CCC.MARefArc.CP
+    entries:
+      - reference-id: CCC.MARefArc.CP01
+        remarks: User-facing application surface (desktop assistant)
+      - reference-id: CCC.MARefArc.CP02
+        remarks: Human-in-the-loop output review (propose approval)
+      - reference-id: CCC.MARefArc.CP05
+        remarks: Agent-ingress zero-trust guardrails (governance gateway path)
+      - reference-id: CCC.MARefArc.CP07
+        remarks: Unified sandboxed agent runtime (assistant execution envelope)
+      - reference-id: CCC.MARefArc.CP08
+        remarks: Built-in trusted tools (deterministic FDC3 specialist apps)
+      - reference-id: CCC.MARefArc.CP09
+        remarks: Agent memory (session context retention)
+      - reference-id: CCC.MARefArc.CP12
+        remarks: Authoritative knowledge source bases (research corpus)
+      - reference-id: CCC.MARefArc.CP13
+        remarks: Vector-based semantic retrieval (research RAG path)
+      - reference-id: CCC.MARefArc.CP14
+        remarks: Approved-model registry and lifecycle
+      - reference-id: CCC.MARefArc.CP15
+        remarks: LLM inference gateway routing
+      - reference-id: CCC.MARefArc.CP16
+        remarks: Model-interaction zero-trust guardrails
+      - reference-id: CCC.MARefArc.CP21
+        remarks: Human supervision and oversight
+      - reference-id: CCC.MARefArc.CP22
+        remarks: Runtime protection (governance runtime DENY/ALLOW)
+      - reference-id: CCC.MARefArc.CP23
+        remarks: Cross-layer telemetry collection (session evidence)
+
+groups:
+  - id: data-access
+    title: Data Access
+    description: >
+      Capabilities that read portfolio holdings, client context, or investment
+      research content used by the assistant.
+
+  - id: calculation-integration
+    title: Calculation Integration
+    description: >
+      Capabilities that invoke deterministic FDC3 applications and consume
+      their calculated outputs rather than computing financial figures in the
+      model.
+
+  - id: interpretation
+    title: Interpretation
+    description: >
+      Capabilities through which the assistant interprets calculated results
+      and research to produce explanations and recommendations.
+
+  - id: authority-actions
+    title: Authority Actions
+    description: >
+      Capabilities that construct or submit consequential investment actions
+      along the propose and execute authority levels.
+
+  - id: session-and-context
+    title: Session and Context
+    description: >
+      Capabilities that retain session state, broadcast desktop context, or
+      invoke tools across the multi-application workspace.
+
+capabilities:
+  - id: portfolio-read
+    title: Portfolio Read
+    description: >
+      Ability to read portfolio holdings, positions, cash, and related client
+      portfolio attributes available to the authenticated portfolio manager.
+    group: data-access
+
+  - id: research-retrieval
+    title: Investment Research Retrieval
+    description: >
+      Ability to retrieve investment research via demo.GetResearch (and related
+      approved channels) for use as interpretive context by the assistant.
+    group: data-access
+
+  - id: fdc3-app-invocation
+    title: FDC3 Application Invocation
+    description: >
+      Ability to raise approved FDC3 intents against specialist desktop
+      applications (Risk, Research, Order Entry) that perform portfolio, risk,
+      or market functions on behalf of the user.
+    group: calculation-integration
+
+  - id: exposure-calculation-consume
+    title: Exposure Calculation Consumption
+    description: >
+      Ability to raise demo.GetPortfolioRisk and consume demo.portfolioRisk
+      (and related exposure figures) from the Risk app rather than inventing
+      numeric risk measures in the model.
+    group: calculation-integration
+
+  - id: stress-scenario-consume
+    title: Stress Scenario Consumption
+    description: >
+      Ability to raise demo.RunStressScenario with demo.stressScenarioRequest
+      and consume demo.stressScenarioResult from the Risk app.
+    group: calculation-integration
+
+  - id: research-intent-consume
+    title: Research Intent Consumption
+    description: >
+      Ability to raise demo.GetResearch and consume demo.researchBundle from
+      the Research app as evidence for explanations.
+    group: calculation-integration
+
+  - id: explanation-generation
+    title: Explanation Generation
+    description: >
+      Ability to generate natural-language explanations of portfolio positions,
+      exposures, stress results, and related risk information, grounded in
+      signed demo.portfolioRisk, demo.stressScenarioResult, and
+      demo.researchBundle contexts where available.
+    group: interpretation
+
+  - id: recommendation-generation
+    title: Recommendation Generation
+    description: >
+      Ability to generate a demo.portfolioRecommendation describing suggested
+      portfolio changes, rationale, and supporting evidence for the portfolio
+      manager, without constructing or submitting executable orders.
+    group: interpretation
+
+  - id: order-proposal-construction
+    title: Order Proposal Construction
+    description: >
+      Ability to raise demo.CreateOrderProposal with a
+      demo.portfolioRecommendation and receive a demo.orderProposal draft
+      basket from Order Entry for human review.
+    group: authority-actions
+
+  - id: trade-execution
+    title: Trade Execution
+    description: >
+      Ability to raise demo.SubmitOrders with an fdc3.orderList. Autonomous
+      use of this capability by the assistant is prohibited.
+    group: authority-actions
+
+  - id: session-context-retention
+    title: Session Context Retention
+    description: >
+      Ability to retain conversation history, selected instruments, and other
+      session context across turns within an assistant session.
+    group: session-and-context
+
+  - id: multi-app-context-broadcast
+    title: Multi-Application Context Broadcast
+    description: >
+      Ability to broadcast or receive FDC3 context so that multiple desktop
+      applications share the same instrument, portfolio, or intent state.
+    group: session-and-context
+
+  - id: tool-calling
+    title: Tool Calling
+    description: >
+      Ability to call registered tools and APIs, including the demo intent
+      allowlist (demo.GetPortfolioRisk, demo.GetResearch,
+      demo.RunStressScenario, demo.CreateOrderProposal) and model-invoked
+      functions. demo.SubmitOrders must not appear on any assistant allowlist.
+    group: session-and-context

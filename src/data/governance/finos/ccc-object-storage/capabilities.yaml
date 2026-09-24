@@ -1,0 +1,153 @@
+# Sourced from FINOS CCC Object Storage
+# https://ccc.finos.org/catalogs/storage/object
+# Upstream: common-cloud-controls/catalogs/storage/object
+title: CCC Object Storage Capabilities
+metadata:
+  id: CCC.ObjStor.CP
+  type: CapabilityCatalog
+  gemara-version: 1.2.0
+  version: 1.0.0-dev
+  draft: true
+  date: 2026-09-11T00:00:00Z
+  author:
+    id: FINOS-CCC
+    name: FINOS Common Cloud Controls
+    type: Human
+  description: Object Storage capabilities from FINOS CCC. Includes imported CCC Core capabilities.
+  mapping-references:
+    - id: CCC.Core.CP
+      title: CCC Core Capabilities
+      version: v2025.10
+      url: file://../ccc-core/capabilities.yaml
+    - id: CCC.ObjStor.TH
+      title: CCC Object Storage Threats
+      version: 1.0.0-dev
+      url: file://threats.yaml
+    - id: CCC.ObjStor.CN
+      title: CCC Object Storage Controls
+      version: 1.0.0-dev
+      url: file://controls.yaml
+groups:
+  - id: Data
+    title: Data
+    description: Data storage, lifecycle, and durability capabilities.
+  - id: Resource
+    title: Resource
+    description: Capacity, classes, and resource management.
+  - id: Access
+    title: Access
+    description: Access control and public exposure boundaries.
+imports:
+  - reference-id: CCC.Core.CP
+    entries:
+      - reference-id: CCC.Core.CP01
+        remarks: Encryption in Transit Enabled by Default
+      - reference-id: CCC.Core.CP02
+        remarks: Encryption at Rest Enabled by Default
+      - reference-id: CCC.Core.CP03
+        remarks: Access Log Publication
+      - reference-id: CCC.Core.CP04
+        remarks: Transaction Rate Limits
+      - reference-id: CCC.Core.CP05
+        remarks: Signed URLs
+      - reference-id: CCC.Core.CP06
+        remarks: Access Control
+      - reference-id: CCC.Core.CP07
+        remarks: Event Publication
+      - reference-id: CCC.Core.CP08
+        remarks: Data Replication
+      - reference-id: CCC.Core.CP09
+        remarks: Metrics Publication
+      - reference-id: CCC.Core.CP14
+        remarks: API Access
+      - reference-id: CCC.Core.CP15
+        remarks: Cost Management
+      - reference-id: CCC.Core.CP16
+        remarks: Budgeting
+      - reference-id: CCC.Core.CP18
+        remarks: Resource Versioning
+      - reference-id: CCC.Core.CP20
+        remarks: Resource Tagging
+      - reference-id: CCC.Core.CP22
+        remarks: Location Lock-In
+      - reference-id: CCC.Core.CP28
+        remarks: Command-line Interface
+      - reference-id: CCC.Core.CP29
+        remarks: Active Ingestion
+      - reference-id: CCC.Core.CP30
+        remarks: Passive Ingestion
+capabilities:
+  - id: CCC.ObjStor.CP01
+    group: Data
+    title: Storage Buckets
+    description: |
+      Provides uniquely identifiable segmentations in which data elements may
+      be stored.
+  - id: CCC.ObjStor.CP02
+    group: Data
+    title: Storage Objects
+    description: |
+      Supports storing, accessing, and managing data elements which contain
+      both data and metadata.
+  - id: CCC.ObjStor.CP03
+    group: Resource
+    title: Bucket Capacity Limit
+    description: |
+      Provides the ability to set a maximum total capacity for objects within
+      a bucket.
+  - id: CCC.ObjStor.CP04
+    group: Resource
+    title: Object Size Limit
+    description: |
+      Supports setting a maximum object size for storing objects.
+  - id: CCC.ObjStor.CP05
+    group: Data
+    title: Store New Objects
+    description: |
+      Supports for storing a new object in the bucket.
+  - id: CCC.ObjStor.CP06
+    group: Data
+    title: Replace Stored Objects
+    description: |
+      Supports for replacing an object in the bucket with a new object for the same key.
+  - id: CCC.ObjStor.CP07
+    group: Data
+    title: Delete Stored Objects
+    description: |
+      Supports for deleting objects from the bucket given the object key.
+  - id: CCC.ObjStor.CP08
+    group: Resource
+    title: Lifecycle Policies
+    description: |
+      Supports defining policies to automate data management tasks, especially
+      those related to cost management.
+  - id: CCC.ObjStor.CP09
+    group: Data
+    title: Object Modification Locks
+    description: |
+      Allows locking of objects to disable modification and/or deletion of an
+      object for a defined period of time.
+  - id: CCC.ObjStor.CP10
+    group: Access
+    title: Object Level Access Control
+    description: |
+      Supports controlling access to specific objects within the object store.
+  - id: CCC.ObjStor.CP11
+    group: Data
+    title: Querying
+    description: |
+      Supports performing simple select queries to retrieve only a subset of
+      objects from the bucket.
+  - id: CCC.ObjStor.CP12
+    group: Resource
+    title: Storage Classes
+    description: |
+      Provides different storage classes for frequently and infrequently
+      accessed objects.
+  - id: CCC.ObjStor.CP13
+    group: Access
+    title: Public Access Block
+    description: |
+      Supports configuring a default block on all public access to buckets
+      and objects, preventing any policy or ACL from granting unauthenticated
+      or anonymous access.

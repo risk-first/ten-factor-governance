@@ -1,0 +1,31 @@
+---
+sidebar_position: 2
+sidebar_label: Threats Catalog
+title: CCC Object Storage Threats Catalog
+description: "FINOS Common Cloud Controls Object Storage threats rendered as a Gemara ThreatCatalog."
+tags:
+  - CCC Object Storage
+  - Layer 2
+---
+
+import threats from '@site/src/data/governance/finos/ccc-object-storage/threats.yaml';
+import coreThreats from '@site/src/data/governance/finos/ccc-core/threats.yaml';
+import coreCapabilities from '@site/src/data/governance/finos/ccc-core/capabilities.yaml';
+
+# CCC Object Storage Threats Catalog
+
+This page renders the FINOS Common Cloud Controls Object Storage threats as a
+[Gemara](/docs/artifacts/gemara) `ThreatCatalog`, including shared CCC Core
+threats this service imports.
+
+For the companion catalogs, see the
+[Capabilities Catalog](./capabilities-catalog) and
+[Controls Catalog](./controls-catalog).
+
+<GemaraCatalog
+  file={threats}
+  resolve={{
+    'CCC.Core.TH': coreThreats,
+    'CCC.Core.CP': coreCapabilities,
+  }}
+/>

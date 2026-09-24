@@ -1,0 +1,84 @@
+title: APA Artifact Repository Controls
+
+metadata:
+  id: apa-artifact-repository-controls
+  type: ControlCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Controls for publishing and serving the shared Governance Model from the
+    Artifact Repository. Catalog content itself remains at the Gemara root;
+    this twin covers repository posture only.
+  mapping-references:
+    - id: apa-artifact-repository-threats
+      title: APA Artifact Repository Threats
+      version: "0.1.0"
+      url: file://threat.yaml
+
+groups:
+  - id: release-posture
+    title: Release Posture
+    description: Controls on how model artifacts are published and consumed.
+
+controls:
+  - id: apa-artifact-immutable-releases
+    title: Immutable Versioned Model Releases
+    objective: >
+      Publish Governance Model releases as immutable, versioned artifact sets
+      so consumers can pin and audit the exact catalogs in force.
+    assessment-requirements:
+      - id: apa-artifact-immutable-releases-ar01
+        text: >
+          Each published Governance Model release MUST be immutable and
+          uniquely versioned; mutation of an existing release identifier MUST
+          be prohibited.
+        applicability:
+          - all
+        recommendation: ""
+    threats:
+      - reference-id: apa-artifact-repository-threats
+        entries:
+          - reference-id: apa-artifact-unauthorized-modify
+          - reference-id: apa-artifact-stale-or-wrong-version
+  - id: apa-artifact-runtime-pin
+    title: Runtime Pins an Explicit Model Release
+    objective: >
+      Ensure the Governance Runtime evaluates against a configured, pinned
+      Artifact Repository release rather than a floating or implicit latest.
+    assessment-requirements:
+      - id: apa-artifact-runtime-pin-ar01
+        text: >
+          Governance Runtime configuration MUST identify an explicit Artifact
+          Repository model release version used for evaluation.
+        applicability:
+          - all
+        recommendation: ""
+    threats:
+      - reference-id: apa-artifact-repository-threats
+        entries:
+          - reference-id: apa-artifact-stale-or-wrong-version
+          - reference-id: apa-artifact-model-unavailable
+  - id: apa-artifact-publish-change-control
+    title: Change Control for Model Publication
+    objective: >
+      Restrict who may publish Governance Model releases and require reviewed
+      change control before a new release is served to the runtime.
+    assessment-requirements:
+      - id: apa-artifact-publish-change-control-ar01
+        text: >
+          Publication of a new Governance Model release MUST require authorised
+          change control; unauthenticated or broad write access to the
+          Artifact Repository MUST be denied.
+        applicability:
+          - all
+        recommendation: ""
+    threats:
+      - reference-id: apa-artifact-repository-threats
+        entries:
+          - reference-id: apa-artifact-unauthorized-modify

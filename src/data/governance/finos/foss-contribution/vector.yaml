@@ -1,0 +1,200 @@
+title: FOSS Contribution Vector Catalog
+
+metadata:
+  id: foss-contribution-vectors
+  type: VectorCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Attack vectors and exploitation pathways through which FOSS contribution
+    threats may be realized.
+  lexicon:
+    reference-id: foss-contribution-lexicon
+
+groups:
+  - id: publication
+    title: Public Publication
+    description: >
+      Vectors involving publication of code, documentation, or communications
+      to public FOSS platforms.
+
+  - id: identity-and-infrastructure
+    title: Identity and Infrastructure
+    description: >
+      Vectors involving contributor identity, attribution, and the
+      infrastructure used to contribute.
+
+  - id: legal-commitment
+    title: Legal Commitment
+    description: >
+      Vectors involving licenses, contributor agreements, and legal
+      obligations created through participation.
+
+  - id: governance-process
+    title: Governance Process
+    description: >
+      Vectors involving bypass or failure of OSPO governance, approval, and
+      lifecycle processes.
+
+  - id: conduct
+    title: Conduct and Engagement
+    description: >
+      Vectors involving public conduct, community engagement, and conflict of
+      interest.
+
+vectors:
+  - id: accidental-sensitive-commit
+    title: Accidental Commit of Sensitive Information
+    group: publication
+    description: >
+      A contributor inadvertently includes credentials, client data, internal
+      hostnames, security procedures, or other non-public information in a
+      public commit, issue, or document.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+
+  - id: unreviewed-public-release
+    title: Unreviewed Public Release
+    group: publication
+    description: >
+      Material is published to a public repository or platform before
+      information classification, export-control, or IP review is completed.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+
+  - id: non-standard-crypto-publication
+    title: Publication of Non-Standard Cryptography
+    group: publication
+    description: >
+      Software containing non-standard cryptography or authentication
+      mechanisms is contributed without export-control review.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+
+  - id: company-identity-misuse
+    title: Company Identity Misuse
+    group: identity-and-infrastructure
+    description: >
+      A contributor uses a company-associated identity for personal activity,
+      continues using a company email after employment ends, or fails to use
+      the required company external identity for company contributions.
+    applicability:
+      - personal-contribution-projects
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+
+  - id: company-infrastructure-misuse
+    title: Company Infrastructure Misuse
+    group: identity-and-infrastructure
+    description: >
+      Personal contributions are made from company-owned hardware, company
+      network, or company-managed tooling.
+    applicability:
+      - personal-contribution-projects
+
+  - id: unapproved-tooling-use
+    title: Use of Unapproved Tooling on Company Infrastructure
+    group: identity-and-infrastructure
+    description: >
+      Contributions from company-managed hardware or the company network bypass
+      OSPO-approved tools, scanning, or review workflows.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+
+  - id: unapproved-license-contribution
+    title: Contribution Under Unapproved License
+    group: legal-commitment
+    description: >
+      A contributor participates in a project whose license is not approved in
+      the OSPO license inventory or has changed without reassessment.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+
+  - id: unreviewed-contributor-agreement
+    title: Acceptance of Unreviewed Contributor Agreement
+    group: legal-commitment
+    description: >
+      A contributor accepts a CLA, CCLA, DCO, or similar agreement creating
+      legal obligations without required legal review.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+
+  - id: perpetual-license-grant-without-approval
+    title: Perpetual License Grant Without Approval
+    group: legal-commitment
+    description: >
+      Valuable company software is contributed under a FOSS license without
+      sponsor or financial write-down approval.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+
+  - id: ungoverned-project-contribution
+    title: Ungoverned Project Contribution
+    group: governance-process
+    description: >
+      Contribution proceeds without required OSPO registration, approval, or
+      inventory association.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+
+  - id: peer-review-bypass
+    title: Peer Review Bypass
+    group: governance-process
+    description: >
+      Contributions are merged or published without required peer review,
+      maker-checker separation, or recorded approval history.
+    applicability:
+      - company-moderated-projects
+
+  - id: stale-engagement-neglect
+    title: Stale Engagement Neglect
+    group: governance-process
+    description: >
+      FOSS engagements are not recertified, risk changes are not recorded, or
+      retired projects retain active contribution entitlements.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+
+  - id: conflict-of-interest-participation
+    title: Conflict of Interest Participation
+    group: conduct
+    description: >
+      An employee participates in a project where external interests interfere
+      with company obligations or appear to do so.
+    applicability:
+      - personal-contribution-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+
+  - id: reputational-public-conduct
+    title: Reputational Public Conduct
+    group: conduct
+    description: >
+      Public statements, code quality, project association, or community
+      behavior reflect poorly on the company brand.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+      - personal-contribution-projects

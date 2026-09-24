@@ -1,0 +1,9 @@
+{
+  "label": "ISO/IEC 27001",
+  "position": 1,
+  "collapsed": true,
+  "link": {
+    "type": "doc",
+    "id": "artifacts/iso-iec/iso27001/index"
+  }
+}

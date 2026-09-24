@@ -1,0 +1,9 @@
+{
+  "label": "CCC Object Storage",
+  "position": 4,
+  "collapsed": true,
+  "link": {
+    "type": "doc",
+    "id": "artifacts/finos/ccc-obj-stor/index"
+  }
+}

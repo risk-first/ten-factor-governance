@@ -20,7 +20,28 @@ const config = {
 
   themes: ['@docusaurus/theme-mermaid'],
 
-  plugins: [require.resolve('./src/plugins/category-listing')],
+  plugins: [
+    require.resolve('./src/plugins/category-listing'),
+    // Lets MDX pages `import catalog from '@site/src/data/....yaml'`.
+    // Attaches original YAML text for the Download YAML Source button.
+    function yamlLoaderPlugin() {
+      return {
+        name: 'yaml-with-source-loader',
+        configureWebpack() {
+          return {
+            module: {
+              rules: [
+                {
+                  test: /\.ya?ml$/,
+                  use: require.resolve('./src/plugins/yaml-with-source-loader.js'),
+                },
+              ],
+            },
+          };
+        },
+      };
+    },
+  ],
 
   i18n: {
     defaultLocale: 'en',

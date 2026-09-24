@@ -1,0 +1,114 @@
+metadata:
+  id: foss-enforcement-internal-tools-pr417
+  type: EnforcementLog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T09:15:10Z"
+  description: >
+    Enforcement actions taken after failed data-leakage evaluation for PR #417
+  author:
+    id: foss-compliance-pipeline
+    name: FOSS Contribution Compliance Pipeline
+    type: Software
+    version: "0.4.2"
+    uri: https://example.com/ospo/compliance-pipeline
+  mapping-references:
+    - id: foss-contribution-policy
+      title: FOSS Contribution Policy
+      version: "0.1.0"
+      url: file://../policy.yaml
+    - id: foss-contribution-controls
+      title: FOSS Contribution Control Catalog
+      version: "0.1.0"
+      url: file://../control.yaml
+    - id: foss-eval-internal-tools-pr417
+      title: internal-tools PR #417 Evaluation Log
+      version: "0.1.0"
+      url: file://evaluation-internal-tools-pr417.yaml
+
+disposition: Enforced
+
+target:
+  id: foss-engagement-internal-tools
+  name: example-corp/internal-tools
+  type: Software
+  uri: https://github.com/example-corp/internal-tools
+  environment: company-moderated
+  owner:
+    name: FOSS Project Administrator
+    affiliation: Open Source Program Office
+    email: foss-admin@example.com
+
+actions:
+  - disposition: Enforced
+    method:
+      reference-id: foss-contribution-policy
+      entry-id: em-foss-block-merge
+    message: >
+      Blocked merge of pull request #417: secret scan reported uncleared AWS
+      access key (GL-2026-07-06-00417-01).
+    start: "2026-07-06T09:15:10Z"
+    end: "2026-07-06T09:15:11Z"
+    steps:
+      - ospo/enforcement/github.setPullRequestMergeBlocked
+      - ospo/enforcement/github.postCheckRunFailure
+    justification:
+      assessments:
+        - result: Failed
+          requirement:
+            reference-id: foss-contribution-controls
+            entry-id: foss-ctl-008-data-leakage-review.ar01
+          plan:
+            reference-id: foss-contribution-policy
+            entry-id: ap-foss-008-data-leakage-review
+          log:
+            reference-id: foss-eval-internal-tools-pr417
+            entry-id: foss-ctl-008-data-leakage-review
+
+  - disposition: Enforced
+    method:
+      reference-id: foss-contribution-policy
+      entry-id: em-foss-notify-noncompliance
+    message: >
+      Notified contributor and OSPO of failed secret-scan finding on PR #417.
+    start: "2026-07-06T09:15:11Z"
+    end: "2026-07-06T09:15:12Z"
+    steps:
+      - ospo/enforcement/notify.emailContributor
+      - ospo/enforcement/notify.postOspoSlackAlert
+    justification:
+      assessments:
+        - result: Failed
+          requirement:
+            reference-id: foss-contribution-controls
+            entry-id: foss-ctl-008-data-leakage-review.ar01
+          plan:
+            reference-id: foss-contribution-policy
+            entry-id: ap-foss-008-data-leakage-review
+          log:
+            reference-id: foss-eval-internal-tools-pr417
+            entry-id: foss-ctl-008-data-leakage-review
+
+  - disposition: Clear
+    method:
+      reference-id: foss-contribution-policy
+      entry-id: em-foss-block-merge
+    message: >
+      IP review evaluation passed; no enforcement action required for
+      foss-ctl-007-ip-review.
+    start: "2026-07-06T09:15:12Z"
+    steps:
+      - ospo/enforcement/allow.recordPassingControl
+    justification:
+      assessments:
+        - result: Passed
+          requirement:
+            reference-id: foss-contribution-controls
+            entry-id: foss-ctl-007-ip-review.ar01
+          plan:
+            reference-id: foss-contribution-policy
+            entry-id: ap-foss-007-ip-review
+          log:
+            reference-id: foss-eval-internal-tools-pr417
+            entry-id: foss-ctl-007-ip-review

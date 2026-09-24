@@ -1,0 +1,137 @@
+# Example AIPolicy — ISO/IEC 42001 Clause 5.2 and Annex A.2
+# A valid Gemara Policy carrying the commitments ISO requires an AI policy to
+# make. Illustrative only; not ISO normative text.
+# iso-type: AIPolicy (extends gemara Policy)
+
+title: "AI Policy"
+
+metadata:
+  id: ai-policy
+  type: Policy
+  version: "1.0.0"
+  gemara-version: "1.5.0"
+  date: "2026-09-09T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: "AI Governance Office"
+    type: Human
+  description: |
+    How the organisation develops and uses AI systems, what it commits to, and
+    the controls that carry those commitments into effect.
+  mapping-references:
+    - id: ai-controls
+      title: "AI control catalog"
+      version: "0.1.0"
+    - id: objectives
+      title: "AI management objectives"
+      version: "0.1.0"
+    - id: security-policy
+      title: "Information security policy"
+      version: "4.2.0"
+    - id: comms
+      title: "AIMS communication plan"
+      version: "0.1.0"
+
+# --- Gemara Policy ------------------------------------------------------------
+
+contacts:
+  responsible:
+    - name: "AI Governance Office"
+  accountable:
+    - name: "Chief Operating Officer"
+  consulted:
+    - name: "Data Protection Officer"
+  informed:
+    - name: "Contact centre leadership"
+
+scope:
+  in:
+    technologies: ["Machine learning systems", "Generative AI services"]
+    geopolitical: ["United Kingdom"]
+  out:
+    technologies: ["Deterministic rules engines"]
+
+imports:
+  catalogs:
+    - reference-id: ai-controls
+
+adherence:
+  evaluation-methods:
+    - id: pre-release-evaluation
+      type: Behavioral
+      mode: Automated
+      required: true
+      description: "Every release is evaluated against the AI control catalog before promotion."
+  enforcement-methods:
+    - id: release-gate
+      type: Gate
+      mode: Automated
+      required: true
+      description: "Promotion is blocked where required controls do not hold."
+  non-compliance: |
+    Deployment without a current impact assessment is a nonconformity and is
+    raised in the corrective action log.
+
+# --- ISO/IEC 42001 additions --------------------------------------------------
+
+purpose: |
+  The organisation uses AI to serve customers faster without shifting the cost
+  of error onto them. This policy exists so that intent is checkable rather
+  than merely stated.
+
+commitments:
+  - id: meet-requirements
+    statement: |
+      Meet the legal, regulatory and contractual requirements applicable to the
+      AI systems in scope.
+    type: Requirements
+    objectives:
+      - reference-id: objectives
+        entry-id: obligation-coverage
+  - id: human-oversight
+    statement: |
+      Keep a person accountable for every consequential decision an AI system
+      informs, and give that person what they need to disagree with it.
+    type: Responsible Use
+  - id: assess-impact
+    statement: |
+      Assess the consequences of each AI system for the people affected by it
+      before deployment and whenever it materially changes.
+    type: Responsible Use
+    objectives:
+      - reference-id: objectives
+        entry-id: impact-assessment-currency
+  - id: improve
+    statement: |
+      Continually improve the management system using evidence from evaluation,
+      incidents and audit.
+    type: Continual Improvement
+
+objectives:
+  reference-id: objectives
+  entry-id: ai-objectives-2026
+
+aligned-with:
+  - reference-id: security-policy
+    entry-id: information-security-policy
+    remarks: "AI systems remain in scope of the information security policy."
+
+approval:
+  approved-by:
+    name: "Chief Operating Officer"
+  date: "2026-09-08T00:00:00Z"
+  effective-date: "2026-10-01T00:00:00Z"
+  supersedes: "0.9.0"
+
+review:
+  cadence: Annual
+  last-reviewed: "2026-09-08T00:00:00Z"
+  next-review: "2027-09-08T00:00:00Z"
+  triggers:
+    - "Material change to applicable AI regulation"
+    - "A serious AI incident"
+    - "Entry into a new jurisdiction"
+
+communication:
+  - reference-id: comms
+    entry-id: policy-publication

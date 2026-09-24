@@ -1,0 +1,9 @@
+{
+  "label": "CCC Kubernetes",
+  "position": 2,
+  "collapsed": true,
+  "link": {
+    "type": "doc",
+    "id": "artifacts/finos/ccc-k8s/index"
+  }
+}

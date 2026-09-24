@@ -1,0 +1,174 @@
+# PartyRegister — ISO/IEC 42001 Clauses 4.2, 5.1, 5.3 and Annex A.3.2, A.5.4
+# Illustrative AIMS document for the AI Portfolio Assistant example.
+# iso-type: PartyRegister
+
+title: "Parties to the AI Portfolio Assistant"
+
+metadata:
+  id: apa-party-register
+  type: PartyRegister
+  version: "0.1.0"
+  gemara-version: "1.5.0"
+  standard: "ISO/IEC 42001:2023"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: |
+    People and organisations with a stake in the AI Portfolio Assistant: those
+    who place requirements on it, those accountable for it, and those who bear
+    the consequences of its recommendations and proposals.
+  mapping-references:
+    - id: apa-stakeholder-requirements
+      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      version: "0.1.0"
+      url: file://stakeholder-requirements.yaml
+
+clauses: ["4.2", "5.1", "5.3", "A.3.2", "A.5.4"]
+
+groups:
+  - id: internal
+    title: "Inside the organisation"
+    description: "Parties within the organisational boundary."
+  - id: external
+    title: "Outside the organisation"
+    description: "Parties the organisation does not control."
+
+parties:
+  - id: cio-top-management
+    name: "Chief Information Officer"
+    kind: Individual
+    internal: true
+    group: internal
+    roles: ["Top Management", "Accountable", "Approver"]
+    authority: |
+      Approves the AI policy and AIMS scope, commits resources for the AI
+      Portfolio Assistant, and accepts residual risk above the Medium threshold.
+    contact:
+      name: "Chief Information Officer"
+      affiliation: "Technology"
+
+  - id: ai-governance-office
+    name: "AI Governance Office"
+    kind: Team
+    internal: true
+    group: internal
+    roles: [Accountable, Responsible, Consulted]
+    authority: |
+      Maintains the AIMS documents, coordinates impact and risk assessment, and
+      owns the Statement of Applicability for apa-controls.
+    contact:
+      name: "AI Governance Office"
+      affiliation: "Risk and Governance"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-impact-assessment-currency
+
+  - id: portfolio-managers
+    name: "Portfolio managers"
+    kind: Group
+    internal: true
+    group: internal
+    roles: [Responsible, Affected, Informed]
+    description: |
+      Users of the assistant who retain accountability for investment decisions,
+      approval of order proposals, and any execution of orders.
+    contact:
+      name: "Investment Management desk heads"
+      affiliation: "Investment Management"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-human-oversight
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-no-autonomous-trading
+
+  - id: clients
+    name: "Investment clients"
+    kind: Customer
+    internal: false
+    group: external
+    roles: [Affected]
+    description: |
+      Beneficial owners of portfolios the assistant observes and may influence
+      through recommendations or proposals. Affected parties reached through
+      client reporting and complaints routes, not through this register directly.
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-client-confidentiality
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-suitability
+
+  - id: compliance
+    name: "Compliance"
+    kind: Team
+    internal: true
+    group: internal
+    roles: [Consulted, Interested, Escalation]
+    authority: "Interprets conduct and suitability obligations for AI-assisted recommendations."
+    contact:
+      name: "Compliance"
+      affiliation: "Compliance"
+    escalation:
+      trigger: "Suspected conduct breach or unsupervised recommendation treated as advice"
+      channel: "Compliance escalation mailbox"
+      within: "1 business day"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-suitability
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-no-autonomous-trading
+
+  - id: model-risk
+    name: "Model Risk Management"
+    kind: Team
+    internal: true
+    group: internal
+    roles: [Consulted, Responsible]
+    authority: "Reviews model inventory entries and evaluation evidence for the assistant."
+    contact:
+      name: "Model Risk Management"
+      affiliation: "Risk"
+
+  - id: foundation-model-provider
+    name: "Foundation model provider"
+    kind: Supplier
+    internal: false
+    group: external
+    roles: [Interested, Responsible]
+    description: |
+      Supplies the hosted foundation model. Responsible for the model's own
+      development governance, not for how the firm deploys it on the desk.
+
+  - id: market-data-vendor
+    name: "Market data vendor"
+    kind: Supplier
+    internal: false
+    group: external
+    roles: [Interested, Responsible]
+    description: |
+      Licenses market data consumed by deterministic specialist applications
+      whose outputs the assistant explains.
+
+  - id: regulator-fca
+    name: "Financial Conduct Authority"
+    kind: Regulator
+    internal: false
+    group: external
+    roles: [Interested, Escalation]
+    escalation:
+      trigger: "Serious AI incident affecting client outcomes or market integrity"
+      channel: "Regulatory notification portal"
+      within: "72 hours of confirmation"
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-regulatory-oversight
+
+review:
+  cadence: Biannual
+  last-reviewed: "2026-09-01T00:00:00Z"
+  next-review: "2027-03-01T00:00:00Z"
+  triggers:
+    - "A new client segment is brought into scope"
+    - "A new supplier is added to the critical dependency list"

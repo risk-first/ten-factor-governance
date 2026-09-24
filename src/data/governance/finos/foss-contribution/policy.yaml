@@ -1,0 +1,465 @@
+metadata:
+  id: foss-contribution-policy
+  type: Policy
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Policy for governing employee contribution to Free and Open Source Software
+    projects, adapted from the Citi FOSS Contribution Guidelines into a
+    machine-readable Gemara policy structure.
+  mapping-references:
+    - id: foss-risk-catalog
+      title: FOSS Contribution Risk Catalog
+      version: "0.1.0"
+      url: file://risk.yaml
+    - id: foss-contribution-guidance
+      title: FOSS Contribution Guidelines
+      version: "0.1.0"
+      url: file://guidance.yaml
+    - id: foss-contribution-lexicon
+      title: FOSS Contribution Lexicon
+      version: "0.1.0"
+      url: file://lexicon.yaml
+    - id: foss-contribution-principles
+      title: FOSS Contribution Principles
+      version: "0.1.0"
+      url: file://principle.yaml
+    - id: foss-contribution-vectors
+      title: FOSS Contribution Vector Catalog
+      version: "0.1.0"
+      url: file://vector.yaml
+    - id: foss-contribution-controls
+      title: FOSS Contribution Control Catalog
+      version: "0.1.0"
+      url: file://control.yaml
+    - id: company-code-of-conduct
+      title: Company Code of Conduct
+      version: "1.0.0"
+      url: https://example.com/policies/code-of-conduct
+    - id: company-information-classification-policy
+      title: Company Information Classification Policy
+      version: "1.0.0"
+      url: https://example.com/policies/information-classification
+    - id: company-export-control-policy
+      title: Company Export Control Policy
+      version: "1.0.0"
+      url: https://example.com/policies/export-control
+    - id: company-social-media-policy
+      title: Company Social Media Policy
+      version: "1.0.0"
+      url: https://example.com/policies/social-media
+    - id: company-records-management-policy
+      title: Company Records Management Policy
+      version: "1.0.0"
+      url: https://example.com/policies/records-management
+    - id: company-third-party-management-policy
+      title: Company Third-Party Management Policy
+      version: "1.0.0"
+      url: https://example.com/policies/third-party-management
+
+title: Free and Open Source Software Contribution Policy
+
+contacts:
+  responsible:
+    - name: OSPO Chair
+  accountable:
+    - name: Guidelines Owner
+  consulted:
+    - name: Legal
+    - name: Line Manager
+    - name: FOSS Project Administrator
+    - name: FOSS Sponsor
+  informed:
+    - name: FOSS Contributor
+
+scope:
+  in:
+    users:
+      - employees
+      - contractors-authorized-to-contribute
+    technologies:
+      - free-and-open-source-software
+      - source-code-management
+      - public-collaboration-platforms
+    groups:
+      - company-moderated-projects
+      - company-interest-major-projects
+      - company-interest-minor-projects
+      - personal-contribution-projects
+  out:
+    technologies:
+      - foss-consumption
+    groups:
+      - non-employee-community-contributors
+
+imports:
+  policies:
+    - reference-id: company-code-of-conduct
+    - reference-id: company-information-classification-policy
+    - reference-id: company-export-control-policy
+    - reference-id: company-social-media-policy
+    - reference-id: company-records-management-policy
+    - reference-id: company-third-party-management-policy
+  catalogs:
+    - reference-id: foss-contribution-controls
+  guidance:
+    - reference-id: foss-contribution-guidance
+
+risks:
+  mitigated:
+    - id: risk-data-leakage
+      risk:
+        reference-id: foss-risk-catalog
+        entry-id: data-leakage
+    - id: risk-ip-loss
+      risk:
+        reference-id: foss-risk-catalog
+        entry-id: intellectual-property-loss
+    - id: risk-license-non-compliance
+      risk:
+        reference-id: foss-risk-catalog
+        entry-id: foss-license-non-compliance
+    - id: risk-export-control
+      risk:
+        reference-id: foss-risk-catalog
+        entry-id: export-control-non-compliance
+    - id: risk-reputational-damage
+      risk:
+        reference-id: foss-risk-catalog
+        entry-id: reputational-damage
+    - id: risk-conflict-of-interest
+      risk:
+        reference-id: foss-risk-catalog
+        entry-id: conflict-of-interest
+
+implementation-plan:
+  evaluation-timeline:
+    start: "2026-07-06T00:00:00Z"
+    notes: >
+      Begin with manual OSPO review and evidence collection. Automate checks
+      progressively through SCM, inventory, license, secret scanning, and
+      approval workflow integrations.
+  enforcement-timeline:
+    start: "2026-10-01T00:00:00Z"
+    notes: >
+      Treat missing evidence as review-required during pilot. Move to blocking
+      enforcement once inventory, identity, license, scanning, and approval
+      evidence sources are integrated.
+  notification-process: >
+    Non-compliance findings are reported to the contributor, project
+    administrator, line manager where applicable, OSPO, and Legal or other SMEs
+    where review is required.
+
+adherence:
+  non-compliance: >
+    Contributions lacking required classification, approval, evidence, scanning,
+    identity, license approval, or SME review must not proceed until remediated
+    or formally risk-accepted by the OSPO.
+
+  assessment-plans:
+
+    - id: ap-foss-001-project-classification
+      requirement-id: foss-ctl-001-project-classification.ar01
+      frequency: per-request
+      evaluation-methods:
+        - id: manual-ospo-review
+          type: Intent
+          mode: Manual
+          description: manual ospo review
+        - id: automated-inventory-check
+          type: Behavioral
+          mode: Automated
+          description: automated inventory check
+      evidence-requirements: >
+        Inventory and SCM evidence showing all staff-associated contribution
+        activity maps to a classified project record, with no contributions
+        observed against unclassified projects.
+
+    - id: ap-foss-002-ospo-registration
+      requirement-id: foss-ctl-002-ospo-registration.ar01
+      frequency: per-project
+      evaluation-methods:
+        - id: automated-inventory-check
+          type: Behavioral
+          mode: Automated
+          description: automated inventory check
+      evidence-requirements: >
+        Evidence that OSPO inventory registration predates first observed
+        contribution for each governed project engagement.
+
+    - id: ap-foss-003-ospo-approval
+      requirement-id: foss-ctl-003-ospo-approval.ar01
+      frequency: per-project
+      evaluation-methods:
+        - id: manual-ospo-review
+          type: Intent
+          mode: Manual
+          description: manual ospo review
+        - id: automated-inventory-check
+          type: Behavioral
+          mode: Automated
+          description: automated inventory check
+      evidence-requirements: >
+        Evidence that no contribution activity occurred before recorded OSPO
+        approval for company-moderated and company-interest-major projects.
+
+    - id: ap-foss-004-minor-project-manager-approval
+      requirement-id: foss-ctl-004-minor-project-manager-approval.ar01
+      frequency: per-access-request
+      evaluation-methods:
+        - id: workflow-approval-check
+          type: Behavioral
+          mode: Automated
+          description: workflow approval check
+      evidence-requirements: >
+        Evidence that active minor-project access has a current line-manager
+        approval record and no unapproved access is in use.
+
+    - id: ap-foss-005-approved-license
+      requirement-id: foss-ctl-005-approved-license.ar01
+      frequency: per-project-and-on-license-change
+      evaluation-methods:
+        - id: automated-license-check
+          type: Behavioral
+          mode: Automated
+          description: automated license check
+        - id: manual-legal-review
+          type: Intent
+          mode: Manual
+          description: manual legal review
+      evidence-requirements: >
+        Evidence that company-attributed contribution activity occurs only on
+        projects with approved license status in the OSPO license inventory.
+
+    - id: ap-foss-006-legal-review
+      requirement-id: foss-ctl-006-legal-review.ar01
+      frequency: when-triggered
+      evaluation-methods:
+        - id: manual-legal-review
+          type: Intent
+          mode: Manual
+          description: manual legal review
+      evidence-requirements: >
+        Evidence that triggered license or contributor-agreement conditions
+        have a corresponding Legal review disposition before contribution
+        proceeds.
+
+    - id: ap-foss-007-ip-review
+      requirement-id: foss-ctl-007-ip-review.ar01
+      frequency: per-project-or-material-contribution
+      evaluation-methods:
+        - id: manual-sponsor-review
+          type: Intent
+          mode: Manual
+          description: manual sponsor review
+        - id: manual-legal-review
+          type: Intent
+          mode: Manual
+          description: manual legal review
+      evidence-requirements: >
+        IP review workflow disposition approving contribution, with review date
+        preceding the evaluated contribution activity.
+
+    - id: ap-foss-008-data-leakage-review
+      requirement-id: foss-ctl-008-data-leakage-review.ar01
+      frequency: per-contribution
+      evaluation-methods:
+        - id: automated-secret-scan
+          type: Behavioral
+          mode: Automated
+          description: automated secret scan
+        - id: automated-sensitive-data-scan
+          type: Behavioral
+          mode: Automated
+          description: automated sensitive data scan
+        - id: manual-review
+          type: Intent
+          mode: Manual
+          description: manual review
+      evidence-requirements: >
+        Aggregated evaluation outputs from secret scan, sensitive-data scan, and
+        manual reviewer sign-off showing no uncleared prohibited disclosures.
+
+    - id: ap-foss-009-export-control-review
+      requirement-id: foss-ctl-009-export-control-review.ar01
+      frequency: when-triggered
+      evaluation-methods:
+        - id: automated-crypto-detection
+          type: Behavioral
+          mode: Automated
+          description: automated crypto detection
+        - id: manual-export-control-review
+          type: Intent
+          mode: Manual
+          description: manual export control review
+      evidence-requirements: >
+        Evidence that export-control triggers have a recorded review disposition
+        before affected contribution activity is approved or published.
+
+    - id: ap-foss-010-approved-tools
+      requirement-id: foss-ctl-010-approved-tools.ar01
+      frequency: per-contribution
+      evaluation-methods:
+        - id: automated-tooling-check
+          type: Behavioral
+          mode: Automated
+          description: automated tooling check
+        - id: automated-scm-check
+          type: Behavioral
+          mode: Automated
+          description: automated scm check
+      evidence-requirements: >
+        Evidence that company-infrastructure contribution activity occurs only
+        through OSPO-approved tooling with recorded compliance scan results.
+
+    - id: ap-foss-011-peer-review
+      requirement-id: foss-ctl-011-peer-review.ar01
+      frequency: per-contribution
+      evaluation-methods:
+        - id: automated-peer-review-check
+          type: Behavioral
+          mode: Automated
+          description: automated peer review check
+      evidence-requirements: >
+        Evidence that each company-moderated contribution has a recorded peer
+        review with reviewer identity and approval timestamp.
+
+    - id: ap-foss-012-maker-checker
+      requirement-id: foss-ctl-012-maker-checker.ar01
+      frequency: per-contribution
+      evaluation-methods:
+        - id: automated-maker-checker-check
+          type: Behavioral
+          mode: Automated
+          description: automated maker checker check
+      evidence-requirements: >
+        Evidence that contributor and reviewer identities differ on each
+        governed contribution transaction.
+
+    - id: ap-foss-013-company-identity
+      requirement-id: foss-ctl-013-company-identity.ar01
+      frequency: per-contribution
+      evaluation-methods:
+        - id: automated-identity-check
+          type: Behavioral
+          mode: Automated
+          description: automated identity check
+      evidence-requirements: >
+        Evidence that company-attributed public activity does not use internal
+        usernames or internal email addresses.
+
+    - id: ap-foss-014-personal-identity
+      requirement-id: foss-ctl-014-personal-identity.ar01
+      frequency: per-personal-contribution-review
+      evaluation-methods:
+        - id: manual-review
+          type: Intent
+          mode: Manual
+          description: manual review
+      evidence-requirements: >
+        Evidence that personal contribution activity is not attributed to a
+        company-associated public identity.
+
+    - id: ap-foss-015-personal-infrastructure
+      requirement-id: foss-ctl-015-personal-infrastructure.ar01
+      frequency: per-personal-contribution-review
+      evaluation-methods:
+        - id: contributor-attestation
+          type: Intent
+          mode: Manual
+          description: contributor attestation
+      evidence-requirements: >
+        Contributor attestation and review records showing no indication of
+        company-owned, company-managed, or company-network infrastructure use.
+
+    - id: ap-foss-016-security-policy
+      requirement-id: foss-ctl-016-security-policy.ar01
+      frequency: per-company-moderated-project
+      evaluation-methods:
+        - id: repository-file-check
+          type: Behavioral
+          mode: Automated
+          description: repository file check
+        - id: manual-ospo-review
+          type: Intent
+          mode: Manual
+          description: manual ospo review
+      evidence-requirements: >
+        Repository evidence that active company-moderated projects publish
+        OSPO-approved vulnerability reporting instructions.
+
+    - id: ap-foss-017-annual-training
+      requirement-id: foss-ctl-017-annual-training.ar01
+      frequency: annually
+      evaluation-methods:
+        - id: training-record-check
+          type: Behavioral
+          mode: Automated
+          description: training record check
+      evidence-requirements: >
+        Training records showing all active FOSS participants have current
+        annual training completion on file.
+
+    - id: ap-foss-018-annual-recertification
+      requirement-id: foss-ctl-018-annual-recertification.ar01
+      frequency: annually
+      evaluation-methods:
+        - id: recertification-workflow-check
+          type: Behavioral
+          mode: Automated
+          description: recertification workflow check
+      evidence-requirements: >
+        Evidence that all active engagements have annual recertification within
+        the required review period.
+
+    - id: ap-foss-019-risk-change-review
+      requirement-id: foss-ctl-019-risk-change-review.ar01
+      frequency: when-triggered
+      evaluation-methods:
+        - id: inventory-change-monitoring
+          type: Behavioral
+          mode: Automated
+          description: inventory change monitoring
+        - id: manual-ospo-review
+          type: Intent
+          mode: Manual
+          description: manual ospo review
+      evidence-requirements: >
+        Evidence that detected material risk changes are recorded in the FOSS
+        inventory with OSPO or SME disposition.
+
+    - id: ap-foss-020-retirement
+      requirement-id: foss-ctl-020-retirement.ar01
+      frequency: when-triggered
+      evaluation-methods:
+        - id: inventory-status-check
+          type: Behavioral
+          mode: Automated
+          description: inventory status check
+        - id: entitlement-review
+          type: Behavioral
+          mode: Automated
+          description: entitlement review
+      evidence-requirements: >
+        Evidence that retired or withdrawn engagements have no remaining active
+        contribution entitlements in OSPO-approved tooling.
+
+  enforcement-methods:
+    - id: em-foss-block-merge
+      type: Gate
+      mode: Automated
+      required: true
+      description: >
+        Block pull-request merge when contribution compliance evaluation fails.
+    - id: em-foss-notify-noncompliance
+      type: Remediation
+      mode: Automated
+      required: true
+      description: >
+        Notify contributor, OSPO, and required reviewers of compliance findings.

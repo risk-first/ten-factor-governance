@@ -1,0 +1,2406 @@
+# Gemara GuidanceCatalog — ISO/IEC 27001:2022 (paraphrased structure)
+# NOT ISO normative text. Licensed ISO/IEC 27001:2022 required for conformity.
+# gemara-type: GuidanceCatalog
+
+title: "ISO/IEC 27001:2022 Information Security Management Systems — Requirements"
+
+metadata:
+  id: iso-iec-27001-2022-guidance
+  type: GuidanceCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-06T00:00:00Z"
+  author:
+    id: local-adaptation
+    name: "Local Gemara adaptation (paraphrase)"
+    type: Human
+  description: |
+    Machine-readable Gemara GuidanceCatalog structurally aligned to ISO/IEC 27001:2022
+    (third edition). Guideline IDs follow clause and Annex A control numbering.
+    Statement text is a non-authoritative paraphrase for interoperability; it is not
+    a substitute for a licensed copy of ISO/IEC 27001:2022 and does not reproduce ISO
+    normative wording.
+
+type: Standard
+
+front-matter: |
+  This catalog re-expresses the structure of ISO/IEC 27001:2022 as Gemara guidelines
+  so that Governance Twins, controls, policies and evaluations can cite stable
+  identifiers (for example iso27001-6.1.2 or iso27001-A.8.25).
+  
+  COPYRIGHT NOTICE: ISO/IEC 27001 is a copyrighted ISO/IEC publication. This file
+  intentionally uses paraphrased objectives and statements rather than copying
+  normative ISO text. For conformity assessment and audit, always consult a licensed
+  copy of ISO/IEC 27001:2022 (and applicable amendments). Annex A control titles
+  follow the publicly documented 2022 control set; control purposes here are concise
+  paraphrases suitable for machine-readable mapping, not ISO control wording.
+  
+  Scope of this catalog: Clauses 4–10 management-system requirements and the 93
+  Annex A reference controls. Clauses 1–3 (scope, normative references, terms) are
+  omitted as they do not define operable guidelines.
+
+groups:
+  - id: context
+    title: "Context of the organization"
+    description: |
+      Clause 4 — organisational context, interested parties, ISMS scope and the ISMS itself.
+
+  - id: leadership
+    title: "Leadership"
+    description: |
+      Clause 5 — leadership commitment, information security policy, and roles/responsibilities/authorities.
+
+  - id: planning
+    title: "Planning"
+    description: |
+      Clause 6 — risks and opportunities, risk assessment and treatment, objectives, and planned changes.
+
+  - id: support
+    title: "Support"
+    description: |
+      Clause 7 — resources, competence, awareness, communication and documented information.
+
+  - id: operation
+    title: "Operation"
+    description: |
+      Clause 8 — operational planning and control, and operational risk assessment and treatment.
+
+  - id: performance-evaluation
+    title: "Performance evaluation"
+    description: |
+      Clause 9 — monitoring/measurement, internal audit and management review.
+
+  - id: improvement
+    title: "Improvement"
+    description: |
+      Clause 10 — continual improvement and nonconformity/corrective action.
+
+  - id: organisational
+    title: "Annex A — Organisational controls"
+    description: |
+      Annex A theme: organisational information security controls (A.5.1–A.5.37).
+
+  - id: people
+    title: "Annex A — People controls"
+    description: |
+      Annex A theme: people controls (A.6.1–A.6.8).
+
+  - id: physical
+    title: "Annex A — Physical controls"
+    description: |
+      Annex A theme: physical controls (A.7.1–A.7.14).
+
+  - id: technological
+    title: "Annex A — Technological controls"
+    description: |
+      Annex A theme: technological controls (A.8.1–A.8.34).
+
+exemptions:
+  - description: "Clauses 1–3 (Scope, Normative references, Terms and definitions)"
+    reason: |
+      These clauses define document scope and vocabulary rather than operable ISMS
+      guidelines; terms should live in a shared lexicon if needed.
+  - description: "Detailed risk-methodology guidance"
+    reason: |
+      ISO/IEC 27005 elaborates risk assessment and treatment method detail; represent
+      that as a companion GuidanceCatalog or RiskAssessment profile rather than
+      expanding this catalog.
+    redirect: "ISO/IEC 27005:2022"
+
+guidelines:
+  - id: iso27001-4.1
+    title: "Understanding the organization and its context"
+    group: context
+    state: Active
+    objective: |
+      Determine internal and external issues relevant to the organisation's purpose and to achieving the intended outcomes of the ISMS.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-4.1.1
+        text: |
+          Identify and maintain awareness of internal and external issues that affect information security and the ISMS.
+
+  - id: iso27001-4.2
+    title: "Understanding the needs and expectations of interested parties"
+    group: context
+    state: Active
+    objective: |
+      Identify interested parties relevant to the ISMS and determine which of their requirements are addressed through the ISMS.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-4.2.1
+        text: |
+          Identify interested parties relevant to the ISMS.
+      - id: iso27001-4.2.2
+        text: |
+          Determine which interested-party requirements are relevant to information security and will be addressed through the ISMS.
+
+  - id: iso27001-4.3
+    title: "Determining the scope of the information security management system"
+    group: context
+    state: Active
+    objective: |
+      Define and document the boundaries and applicability of the ISMS, considering organisational context, interested-party requirements and interfaces/dependencies.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-4.3.1
+        text: |
+          Determine the ISMS scope considering context, interested-party requirements and interfaces/dependencies with other organisations.
+      - id: iso27001-4.3.2
+        text: |
+          Make the ISMS scope available as documented information.
+
+  - id: iso27001-4.4
+    title: "Information security management system"
+    group: context
+    state: Active
+    objective: |
+      Establish, implement, maintain and continually improve an ISMS in accordance with the requirements of ISO/IEC 27001.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-4.4.1
+        text: |
+          Establish, implement, maintain and continually improve the ISMS, including the processes needed and their interactions.
+
+  - id: iso27001-5.1
+    title: "Leadership and commitment"
+    group: leadership
+    state: Active
+    objective: |
+      Top management demonstrates leadership and commitment with respect to the ISMS.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-5.1.1
+        text: |
+          Ensure the information security policy and objectives are established and compatible with the strategic direction of the organisation.
+      - id: iso27001-5.1.2
+        text: |
+          Ensure ISMS requirements are integrated into the organisation's processes.
+      - id: iso27001-5.1.3
+        text: |
+          Ensure resources needed for the ISMS are available.
+      - id: iso27001-5.1.4
+        text: |
+          Communicate the importance of effective information security management and of conforming to ISMS requirements.
+      - id: iso27001-5.1.5
+        text: |
+          Ensure the ISMS achieves its intended outcomes.
+      - id: iso27001-5.1.6
+        text: |
+          Direct and support persons to contribute to the effectiveness of the ISMS.
+      - id: iso27001-5.1.7
+        text: |
+          Promote continual improvement and support other relevant management roles.
+
+  - id: iso27001-5.2
+    title: "Policy"
+    group: leadership
+    state: Active
+    objective: |
+      Top management establishes an information security policy appropriate to the organisation's purpose.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-5.2.1
+        text: |
+          Establish an information security policy that is appropriate to the purpose of the organisation.
+      - id: iso27001-5.2.2
+        text: |
+          Include a commitment to satisfy applicable information-security requirements.
+      - id: iso27001-5.2.3
+        text: |
+          Include a commitment to continual improvement of the ISMS.
+      - id: iso27001-5.2.4
+        text: |
+          Make the policy available as documented information, communicate it within the organisation, and make it available to interested parties as appropriate.
+
+  - id: iso27001-5.3
+    title: "Organizational roles, responsibilities and authorities"
+    group: leadership
+    state: Active
+    objective: |
+      Top management ensures that responsibilities and authorities for roles relevant to information security are assigned and communicated.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-5.3.1
+        text: |
+          Assign and communicate responsibilities and authorities for roles relevant to information security.
+      - id: iso27001-5.3.2
+        text: |
+          Assign responsibility and authority for ensuring the ISMS conforms to ISO/IEC 27001 requirements.
+      - id: iso27001-5.3.3
+        text: |
+          Assign responsibility and authority for reporting on ISMS performance to top management.
+
+  - id: iso27001-6.1.1
+    title: "Actions to address risks and opportunities — General"
+    group: planning
+    state: Active
+    objective: |
+      When planning the ISMS, determine risks and opportunities that need to be addressed so the ISMS can achieve intended outcomes, prevent undesired effects and achieve continual improvement.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-6.1.1.1
+        text: |
+          Determine risks and opportunities that need to be addressed for the ISMS.
+      - id: iso27001-6.1.1.2
+        text: |
+          Plan actions to address these risks and opportunities.
+      - id: iso27001-6.1.1.3
+        text: |
+          Plan how to integrate and implement the actions into ISMS processes, and how to evaluate their effectiveness.
+
+  - id: iso27001-6.1.2
+    title: "Information security risk assessment"
+    group: planning
+    state: Active
+    objective: |
+      Define and apply an information security risk assessment process that establishes risk criteria, ensures consistent and valid results, and identifies, analyses and evaluates information security risks.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-6.1.2.1
+        title: "Risk criteria"
+        text: |
+          Establish and maintain information security risk criteria that include risk-acceptance criteria and criteria for performing assessments.
+      - id: iso27001-6.1.2.2
+        title: "Consistency"
+        text: |
+          Ensure that repeated assessments produce consistent, valid and comparable results.
+      - id: iso27001-6.1.2.3
+        title: "Risk identification"
+        text: |
+          Identify information security risks associated with loss of confidentiality, integrity and/or availability, and identify risk owners.
+      - id: iso27001-6.1.2.4
+        title: "Risk analysis"
+        text: |
+          Analyse risks by assessing potential consequences, realistic likelihood, and determining levels of risk.
+      - id: iso27001-6.1.2.5
+        title: "Risk evaluation"
+        text: |
+          Compare analysis results with risk criteria and prioritise analysed risks for treatment.
+      - id: iso27001-6.1.2.6
+        title: "Documented information"
+        text: |
+          Retain documented information about the information security risk assessment process.
+
+  - id: iso27001-6.1.3
+    title: "Information security risk treatment"
+    group: planning
+    state: Active
+    objective: |
+      Define and apply an information security risk treatment process that selects options, determines necessary controls, compares them with Annex A, produces a Statement of Applicability, formulates a treatment plan, and obtains risk-owner approval of residual risk.
+    applicability:
+      - isms
+    recommendations:
+      - "Represent the Statement of Applicability as an ApplicabilityProfile over Annex A guidelines."
+      - "Map chosen controls to iso27001-A.* guideline IDs in this catalog."
+    statements:
+      - id: iso27001-6.1.3.1
+        title: "Treatment options"
+        text: |
+          Select appropriate information security risk treatment options, taking account of assessment results.
+      - id: iso27001-6.1.3.2
+        title: "Necessary controls"
+        text: |
+          Determine all controls necessary to implement the chosen treatment options.
+      - id: iso27001-6.1.3.3
+        title: "Annex A comparison"
+        text: |
+          Compare necessary controls with those in Annex A and verify that no necessary controls have been omitted.
+      - id: iso27001-6.1.3.4
+        title: "Statement of Applicability"
+        text: |
+          Produce a Statement of Applicability that contains necessary controls, justification for inclusion, whether implemented, and justification for exclusions of Annex A controls.
+      - id: iso27001-6.1.3.5
+        title: "Treatment plan"
+        text: |
+          Formulate an information security risk treatment plan.
+      - id: iso27001-6.1.3.6
+        title: "Risk-owner approval"
+        text: |
+          Obtain risk owners' approval of the treatment plan and acceptance of residual information security risks.
+      - id: iso27001-6.1.3.7
+        title: "Documented information"
+        text: |
+          Retain documented information about the information security risk treatment process.
+
+  - id: iso27001-6.2
+    title: "Information security objectives and planning to achieve them"
+    group: planning
+    state: Active
+    objective: |
+      Establish information security objectives at relevant functions and levels that are consistent with the policy, measurable where practicable, monitored, communicated and updated.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-6.2.1
+        text: |
+          Establish information security objectives consistent with the information security policy.
+      - id: iso27001-6.2.2
+        text: |
+          Ensure objectives are measurable (if practicable), take account of requirements and risk-assessment/treatment results, are monitored, communicated and updated as appropriate.
+      - id: iso27001-6.2.3
+        text: |
+          When planning how to achieve objectives, determine what will be done, what resources will be required, who will be responsible, when it will be completed, and how results will be evaluated.
+      - id: iso27001-6.2.4
+        text: |
+          Retain documented information on the information security objectives.
+
+  - id: iso27001-6.3
+    title: "Planning of changes"
+    group: planning
+    state: Active
+    objective: |
+      When the organisation determines the need for changes to the ISMS, the changes are carried out in a planned manner.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-6.3.1
+        text: |
+          Carry out changes to the ISMS in a planned manner.
+
+  - id: iso27001-7.1
+    title: "Resources"
+    group: support
+    state: Active
+    objective: |
+      Determine and provide the resources needed for the establishment, implementation, maintenance and continual improvement of the ISMS.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-7.1.1
+        text: |
+          Determine and provide the resources needed for the ISMS.
+
+  - id: iso27001-7.2
+    title: "Competence"
+    group: support
+    state: Active
+    objective: |
+      Ensure persons doing work under the organisation's control that affects information-security performance are competent on the basis of appropriate education, training or experience.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-7.2.1
+        text: |
+          Determine the necessary competence of persons doing work under the organisation's control that affects its information security performance.
+      - id: iso27001-7.2.2
+        text: |
+          Ensure these persons are competent on the basis of appropriate education, training or experience.
+      - id: iso27001-7.2.3
+        text: |
+          Where applicable, take actions to acquire the necessary competence and evaluate the effectiveness of the actions taken.
+      - id: iso27001-7.2.4
+        text: |
+          Retain appropriate documented information as evidence of competence.
+
+  - id: iso27001-7.3
+    title: "Awareness"
+    group: support
+    state: Active
+    objective: |
+      Persons doing work under the organisation's control are aware of the information security policy, their contribution to ISMS effectiveness, and implications of not conforming with ISMS requirements.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-7.3.1
+        text: |
+          Ensure relevant persons are aware of the information security policy.
+      - id: iso27001-7.3.2
+        text: |
+          Ensure relevant persons are aware of their contribution to the effectiveness of the ISMS, including benefits of improved information security performance.
+      - id: iso27001-7.3.3
+        text: |
+          Ensure relevant persons are aware of the implications of not conforming with the ISMS requirements.
+
+  - id: iso27001-7.4
+    title: "Communication"
+    group: support
+    state: Active
+    objective: |
+      Determine the need for internal and external communications relevant to the ISMS, including what, when, with whom, how and who communicates.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-7.4.1
+        text: |
+          Determine what to communicate, when to communicate, with whom to communicate, how to communicate, and who communicates, for communications relevant to the ISMS.
+
+  - id: iso27001-7.5.1
+    title: "Documented information — General"
+    group: support
+    state: Active
+    objective: |
+      The organisation's ISMS includes documented information required by ISO/IEC 27001 and documented information determined by the organisation as necessary for ISMS effectiveness.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-7.5.1.1
+        text: |
+          Include documented information required by ISO/IEC 27001.
+      - id: iso27001-7.5.1.2
+        text: |
+          Include documented information determined by the organisation as being necessary for the effectiveness of the ISMS.
+
+  - id: iso27001-7.5.2
+    title: "Creating and updating"
+    group: support
+    state: Active
+    objective: |
+      When creating and updating documented information, ensure appropriate identification, format, and review and approval for suitability and adequacy.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-7.5.2.1
+        text: |
+          Ensure appropriate identification and description (for example title, date, author, reference number).
+      - id: iso27001-7.5.2.2
+        text: |
+          Ensure appropriate format (for example language, software version, graphics) and media (for example paper, electronic).
+      - id: iso27001-7.5.2.3
+        text: |
+          Ensure review and approval for suitability and adequacy.
+
+  - id: iso27001-7.5.3
+    title: "Control of documented information"
+    group: support
+    state: Active
+    objective: |
+      Control documented information required by the ISMS and by ISO/IEC 27001 to ensure it is available, suitable, and adequately protected.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-7.5.3.1
+        text: |
+          Ensure documented information is available and suitable for use, where and when it is needed.
+      - id: iso27001-7.5.3.2
+        text: |
+          Ensure documented information is adequately protected (for example from loss of confidentiality, improper use, or loss of integrity).
+      - id: iso27001-7.5.3.3
+        text: |
+          Address distribution, access, retrieval, use, storage, preservation, control of changes, retention and disposition as applicable.
+      - id: iso27001-7.5.3.4
+        text: |
+          Identify and control documented information of external origin determined by the organisation to be necessary for the planning and operation of the ISMS.
+
+  - id: iso27001-8.1
+    title: "Operational planning and control"
+    group: operation
+    state: Active
+    objective: |
+      Plan, implement and control the processes needed to meet information-security requirements and to implement actions determined in Clause 6, including criteria, control of planned changes, and control of outsourced processes.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-8.1.1
+        text: |
+          Plan, implement and control processes needed to meet information security requirements and to implement Clause 6 actions.
+      - id: iso27001-8.1.2
+        text: |
+          Establish criteria for the processes and implement control of the processes in accordance with the criteria.
+      - id: iso27001-8.1.3
+        text: |
+          Keep documented information to the extent necessary to have confidence that processes have been carried out as planned.
+      - id: iso27001-8.1.4
+        text: |
+          Control planned changes and review the consequences of unintended changes, taking action to mitigate adverse effects as necessary.
+      - id: iso27001-8.1.5
+        text: |
+          Ensure that outsourced processes are determined and controlled.
+
+  - id: iso27001-8.2
+    title: "Information security risk assessment (operation)"
+    group: operation
+    state: Active
+    objective: |
+      Perform information security risk assessments at planned intervals and when significant changes are proposed or occur, retaining results of those assessments.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-8.2.1
+        text: |
+          Perform information security risk assessments at planned intervals.
+      - id: iso27001-8.2.2
+        text: |
+          Perform information security risk assessments when significant changes are proposed or occur.
+      - id: iso27001-8.2.3
+        text: |
+          Retain documented information of the results of the information security risk assessments.
+
+  - id: iso27001-8.3
+    title: "Information security risk treatment (operation)"
+    group: operation
+    state: Active
+    objective: |
+      Implement the information security risk treatment plan and retain documented information of the results of treatment.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-8.3.1
+        text: |
+          Implement the information security risk treatment plan.
+      - id: iso27001-8.3.2
+        text: |
+          Retain documented information of the results of information security risk treatment.
+
+  - id: iso27001-9.1
+    title: "Monitoring, measurement, analysis and evaluation"
+    group: performance-evaluation
+    state: Active
+    objective: |
+      Determine what needs to be monitored and measured, the methods, when monitoring/measurement is performed, when results are analysed and evaluated, and evaluate information security performance and ISMS effectiveness.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-9.1.1
+        text: |
+          Determine what needs to be monitored and measured, including information security processes and controls.
+      - id: iso27001-9.1.2
+        text: |
+          Determine the methods for monitoring, measurement, analysis and evaluation, as applicable, to ensure valid results.
+      - id: iso27001-9.1.3
+        text: |
+          Determine when monitoring and measuring is performed, and when results are analysed and evaluated.
+      - id: iso27001-9.1.4
+        text: |
+          Evaluate information security performance and the effectiveness of the ISMS.
+      - id: iso27001-9.1.5
+        text: |
+          Retain appropriate documented information as evidence of the monitoring and measurement results.
+
+  - id: iso27001-9.2.1
+    title: "Internal audit — General"
+    group: performance-evaluation
+    state: Active
+    objective: |
+      Conduct internal audits at planned intervals to provide information on whether the ISMS conforms to the organisation's own requirements and to ISO/IEC 27001, and is effectively implemented and maintained.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-9.2.1.1
+        text: |
+          Conduct internal audits at planned intervals.
+      - id: iso27001-9.2.1.2
+        text: |
+          Determine whether the ISMS conforms to the organisation's own requirements for its ISMS and to the requirements of ISO/IEC 27001.
+      - id: iso27001-9.2.1.3
+        text: |
+          Determine whether the ISMS is effectively implemented and maintained.
+
+  - id: iso27001-9.2.2
+    title: "Internal audit programme"
+    group: performance-evaluation
+    state: Active
+    objective: |
+      Plan, establish, implement and maintain an audit programme including frequency, methods, responsibilities, planning requirements and reporting.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-9.2.2.1
+        text: |
+          Plan, establish, implement and maintain an audit programme including the frequency, methods, responsibilities, planning requirements and reporting.
+      - id: iso27001-9.2.2.2
+        text: |
+          Take into consideration the importance of the processes concerned and the results of previous audits when establishing the audit programme.
+      - id: iso27001-9.2.2.3
+        text: |
+          Define the audit criteria and scope for each audit.
+      - id: iso27001-9.2.2.4
+        text: |
+          Select auditors and conduct audits that ensure objectivity and the impartiality of the audit process.
+      - id: iso27001-9.2.2.5
+        text: |
+          Ensure that the results of the audits are reported to relevant management.
+      - id: iso27001-9.2.2.6
+        text: |
+          Retain documented information as evidence of the implementation of the audit programme and the audit results.
+
+  - id: iso27001-9.3.1
+    title: "Management review — General"
+    group: performance-evaluation
+    state: Active
+    objective: |
+      Top management reviews the organisation's ISMS at planned intervals to ensure its continuing suitability, adequacy and effectiveness.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-9.3.1.1
+        text: |
+          Top management reviews the ISMS at planned intervals to ensure its continuing suitability, adequacy and effectiveness.
+
+  - id: iso27001-9.3.2
+    title: "Management review inputs"
+    group: performance-evaluation
+    state: Active
+    objective: |
+      Management review considers prior actions, changes in context and interested-party needs, information-security performance, risk results and improvement opportunities.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-9.3.2.1
+        text: |
+          Consider the status of actions from previous management reviews.
+      - id: iso27001-9.3.2.2
+        text: |
+          Consider changes in external and internal issues relevant to the ISMS.
+      - id: iso27001-9.3.2.3
+        text: |
+          Consider changes in needs and expectations of interested parties that are relevant to the ISMS.
+      - id: iso27001-9.3.2.4
+        text: |
+          Consider information on information security performance, including nonconformities and corrective actions, monitoring and measurement results, audit results, and fulfilment of information security objectives.
+      - id: iso27001-9.3.2.5
+        text: |
+          Consider feedback from interested parties.
+      - id: iso27001-9.3.2.6
+        text: |
+          Consider results of risk assessment and status of the risk treatment plan.
+      - id: iso27001-9.3.2.7
+        text: |
+          Consider opportunities for continual improvement.
+
+  - id: iso27001-9.3.3
+    title: "Management review results"
+    group: performance-evaluation
+    state: Active
+    objective: |
+      The results of the management review include decisions related to continual improvement opportunities and any need for changes to the ISMS.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-9.3.3.1
+        text: |
+          Include decisions related to continual improvement opportunities.
+      - id: iso27001-9.3.3.2
+        text: |
+          Include any need for changes to the ISMS.
+      - id: iso27001-9.3.3.3
+        text: |
+          Retain documented information as evidence of the results of management reviews.
+
+  - id: iso27001-10.1
+    title: "Continual improvement"
+    group: improvement
+    state: Active
+    objective: |
+      Continually improve the suitability, adequacy and effectiveness of the ISMS.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-10.1.1
+        text: |
+          Continually improve the suitability, adequacy and effectiveness of the ISMS.
+
+  - id: iso27001-10.2
+    title: "Nonconformity and corrective action"
+    group: improvement
+    state: Active
+    objective: |
+      When a nonconformity occurs, react to it, evaluate the need for action to eliminate causes, implement needed action, review effectiveness, and make changes to the ISMS if necessary.
+    applicability:
+      - isms
+    statements:
+      - id: iso27001-10.2.1
+        text: |
+          React to the nonconformity and, as applicable, take action to control and correct it and deal with the consequences.
+      - id: iso27001-10.2.2
+        text: |
+          Evaluate the need for action to eliminate the causes of the nonconformity so that it does not recur or occur elsewhere.
+      - id: iso27001-10.2.3
+        text: |
+          Implement any action needed.
+      - id: iso27001-10.2.4
+        text: |
+          Review the effectiveness of any corrective action taken.
+      - id: iso27001-10.2.5
+        text: |
+          Make changes to the ISMS, if necessary.
+      - id: iso27001-10.2.6
+        text: |
+          Ensure corrective actions are appropriate to the effects of the nonconformities encountered.
+      - id: iso27001-10.2.7
+        text: |
+          Retain documented information as evidence of the nature of the nonconformities, subsequent actions taken, and results of corrective action.
+
+  - id: iso27001-A.5.1
+    title: "A.5.1 Policies for information security"
+    group: organisational
+    state: Active
+    objective: |
+      Define, approve, communicate and review information security policies.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.1.1
+        title: "Control purpose"
+        text: |
+          Define, approve, communicate and review information security policies.
+
+  - id: iso27001-A.5.2
+    title: "A.5.2 Information security roles and responsibilities"
+    group: organisational
+    state: Active
+    objective: |
+      Define and allocate information security roles and responsibilities according to organisational needs.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.2.1
+        title: "Control purpose"
+        text: |
+          Define and allocate information security roles and responsibilities according to organisational needs.
+
+  - id: iso27001-A.5.3
+    title: "A.5.3 Segregation of duties"
+    group: organisational
+    state: Active
+    objective: |
+      Segregate conflicting duties and areas of responsibility to reduce opportunities for unauthorised or unintentional misuse.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.3.1
+        title: "Control purpose"
+        text: |
+          Segregate conflicting duties and areas of responsibility to reduce opportunities for unauthorised or unintentional misuse.
+
+  - id: iso27001-A.5.4
+    title: "A.5.4 Management responsibilities"
+    group: organisational
+    state: Active
+    objective: |
+      Require management to ensure personnel apply information security in accordance with established policy and procedures.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.4.1
+        title: "Control purpose"
+        text: |
+          Require management to ensure personnel apply information security in accordance with established policy and procedures.
+
+  - id: iso27001-A.5.5
+    title: "A.5.5 Contact with authorities"
+    group: organisational
+    state: Active
+    objective: |
+      Establish and maintain appropriate contact with relevant authorities.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.5.1
+        title: "Control purpose"
+        text: |
+          Establish and maintain appropriate contact with relevant authorities.
+
+  - id: iso27001-A.5.6
+    title: "A.5.6 Contact with special interest groups"
+    group: organisational
+    state: Active
+    objective: |
+      Establish and maintain appropriate contact with special interest groups and other specialist security forums.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.6.1
+        title: "Control purpose"
+        text: |
+          Establish and maintain appropriate contact with special interest groups and other specialist security forums.
+
+  - id: iso27001-A.5.7
+    title: "A.5.7 Threat intelligence"
+    group: organisational
+    state: Active
+    objective: |
+      Collect and analyse information relating to information security threats to produce threat intelligence.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.7.1
+        title: "Control purpose"
+        text: |
+          Collect and analyse information relating to information security threats to produce threat intelligence.
+
+  - id: iso27001-A.5.8
+    title: "A.5.8 Information security in project management"
+    group: organisational
+    state: Active
+    objective: |
+      Integrate information security into project management.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.8.1
+        title: "Control purpose"
+        text: |
+          Integrate information security into project management.
+
+  - id: iso27001-A.5.9
+    title: "A.5.9 Inventory of information and other associated assets"
+    group: organisational
+    state: Active
+    objective: |
+      Develop and maintain an inventory of information and other associated assets, including owners.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.9.1
+        title: "Control purpose"
+        text: |
+          Develop and maintain an inventory of information and other associated assets, including owners.
+
+  - id: iso27001-A.5.10
+    title: "A.5.10 Acceptable use of information and other associated assets"
+    group: organisational
+    state: Active
+    objective: |
+      Identify, document and implement rules for acceptable use and procedures for handling information and other associated assets.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.10.1
+        title: "Control purpose"
+        text: |
+          Identify, document and implement rules for acceptable use and procedures for handling information and other associated assets.
+
+  - id: iso27001-A.5.11
+    title: "A.5.11 Return of assets"
+    group: organisational
+    state: Active
+    objective: |
+      Ensure personnel and other interested parties return organisational assets upon change or termination of employment, contract or agreement.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.11.1
+        title: "Control purpose"
+        text: |
+          Ensure personnel and other interested parties return organisational assets upon change or termination of employment, contract or agreement.
+
+  - id: iso27001-A.5.12
+    title: "A.5.12 Classification of information"
+    group: organisational
+    state: Active
+    objective: |
+      Classify information according to information security needs based on confidentiality, integrity, availability and relevant interested-party requirements.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.12.1
+        title: "Control purpose"
+        text: |
+          Classify information according to information security needs based on confidentiality, integrity, availability and relevant interested-party requirements.
+
+  - id: iso27001-A.5.13
+    title: "A.5.13 Labelling of information"
+    group: organisational
+    state: Active
+    objective: |
+      Develop and implement procedures for labelling information according to the organisation's classification scheme.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.13.1
+        title: "Control purpose"
+        text: |
+          Develop and implement procedures for labelling information according to the organisation's classification scheme.
+
+  - id: iso27001-A.5.14
+    title: "A.5.14 Information transfer"
+    group: organisational
+    state: Active
+    objective: |
+      Establish information transfer rules, procedures or agreements for transfers within the organisation and with other parties.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.14.1
+        title: "Control purpose"
+        text: |
+          Establish information transfer rules, procedures or agreements for transfers within the organisation and with other parties.
+
+  - id: iso27001-A.5.15
+    title: "A.5.15 Access control"
+    group: organisational
+    state: Active
+    objective: |
+      Establish rules to control physical and logical access to information and other associated assets based on business and information security requirements.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.15.1
+        title: "Control purpose"
+        text: |
+          Establish rules to control physical and logical access to information and other associated assets based on business and information security requirements.
+
+  - id: iso27001-A.5.16
+    title: "A.5.16 Identity management"
+    group: organisational
+    state: Active
+    objective: |
+      Manage the full lifecycle of identities.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.16.1
+        title: "Control purpose"
+        text: |
+          Manage the full lifecycle of identities.
+
+  - id: iso27001-A.5.17
+    title: "A.5.17 Authentication information"
+    group: organisational
+    state: Active
+    objective: |
+      Control allocation and management of authentication information, including advising personnel on appropriate handling.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.17.1
+        title: "Control purpose"
+        text: |
+          Control allocation and management of authentication information, including advising personnel on appropriate handling.
+
+  - id: iso27001-A.5.18
+    title: "A.5.18 Access rights"
+    group: organisational
+    state: Active
+    objective: |
+      Provision, review, modify and remove access rights in accordance with the organisation's access-control policy.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.18.1
+        title: "Control purpose"
+        text: |
+          Provision, review, modify and remove access rights in accordance with the organisation's access-control policy.
+
+  - id: iso27001-A.5.19
+    title: "A.5.19 Information security in supplier relationships"
+    group: organisational
+    state: Active
+    objective: |
+      Define and implement processes to manage information security risks associated with supplier products or services.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.19.1
+        title: "Control purpose"
+        text: |
+          Define and implement processes to manage information security risks associated with supplier products or services.
+
+  - id: iso27001-A.5.20
+    title: "A.5.20 Addressing information security within supplier agreements"
+    group: organisational
+    state: Active
+    objective: |
+      Establish and agree relevant information security requirements with each supplier based on the type of relationship.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.20.1
+        title: "Control purpose"
+        text: |
+          Establish and agree relevant information security requirements with each supplier based on the type of relationship.
+
+  - id: iso27001-A.5.21
+    title: "A.5.21 Managing information security in the ICT supply chain"
+    group: organisational
+    state: Active
+    objective: |
+      Define and implement processes to manage information security risks in the ICT products and services supply chain.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.21.1
+        title: "Control purpose"
+        text: |
+          Define and implement processes to manage information security risks in the ICT products and services supply chain.
+
+  - id: iso27001-A.5.22
+    title: "A.5.22 Monitoring, review and change management of supplier services"
+    group: organisational
+    state: Active
+    objective: |
+      Regularly monitor, review, evaluate and manage change in supplier information security practices and service delivery.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.22.1
+        title: "Control purpose"
+        text: |
+          Regularly monitor, review, evaluate and manage change in supplier information security practices and service delivery.
+
+  - id: iso27001-A.5.23
+    title: "A.5.23 Information security for use of cloud services"
+    group: organisational
+    state: Active
+    objective: |
+      Establish processes for acquisition, use, management and exit from cloud services aligned to information security requirements.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.23.1
+        title: "Control purpose"
+        text: |
+          Establish processes for acquisition, use, management and exit from cloud services aligned to information security requirements.
+
+  - id: iso27001-A.5.24
+    title: "A.5.24 Information security incident management planning and preparation"
+    group: organisational
+    state: Active
+    objective: |
+      Plan and prepare for managing information security incidents by defining processes, roles and responsibilities.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.24.1
+        title: "Control purpose"
+        text: |
+          Plan and prepare for managing information security incidents by defining processes, roles and responsibilities.
+
+  - id: iso27001-A.5.25
+    title: "A.5.25 Assessment and decision on information security events"
+    group: organisational
+    state: Active
+    objective: |
+      Assess information security events and decide whether they are information security incidents.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.25.1
+        title: "Control purpose"
+        text: |
+          Assess information security events and decide whether they are information security incidents.
+
+  - id: iso27001-A.5.26
+    title: "A.5.26 Response to information security incidents"
+    group: organisational
+    state: Active
+    objective: |
+      Respond to information security incidents in accordance with documented procedures.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.26.1
+        title: "Control purpose"
+        text: |
+          Respond to information security incidents in accordance with documented procedures.
+
+  - id: iso27001-A.5.27
+    title: "A.5.27 Learning from information security incidents"
+    group: organisational
+    state: Active
+    objective: |
+      Use knowledge gained from information security incidents to strengthen and improve controls.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.27.1
+        title: "Control purpose"
+        text: |
+          Use knowledge gained from information security incidents to strengthen and improve controls.
+
+  - id: iso27001-A.5.28
+    title: "A.5.28 Collection of evidence"
+    group: organisational
+    state: Active
+    objective: |
+      Establish and implement procedures for identification, collection, acquisition and preservation of evidence related to information security events.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.28.1
+        title: "Control purpose"
+        text: |
+          Establish and implement procedures for identification, collection, acquisition and preservation of evidence related to information security events.
+
+  - id: iso27001-A.5.29
+    title: "A.5.29 Information security during disruption"
+    group: organisational
+    state: Active
+    objective: |
+      Plan how to maintain information security at an appropriate level during disruption.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.29.1
+        title: "Control purpose"
+        text: |
+          Plan how to maintain information security at an appropriate level during disruption.
+
+  - id: iso27001-A.5.30
+    title: "A.5.30 ICT readiness for business continuity"
+    group: organisational
+    state: Active
+    objective: |
+      Plan, implement, maintain and test ICT readiness based on business continuity objectives and ICT continuity requirements.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.30.1
+        title: "Control purpose"
+        text: |
+          Plan, implement, maintain and test ICT readiness based on business continuity objectives and ICT continuity requirements.
+
+  - id: iso27001-A.5.31
+    title: "A.5.31 Legal, statutory, regulatory and contractual requirements"
+    group: organisational
+    state: Active
+    objective: |
+      Identify, document and keep up to date applicable legal, statutory, regulatory and contractual information-security requirements and the approach to meet them.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.31.1
+        title: "Control purpose"
+        text: |
+          Identify, document and keep up to date applicable legal, statutory, regulatory and contractual information-security requirements and the approach to meet them.
+
+  - id: iso27001-A.5.32
+    title: "A.5.32 Intellectual property rights"
+    group: organisational
+    state: Active
+    objective: |
+      Implement procedures to protect intellectual property rights.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.32.1
+        title: "Control purpose"
+        text: |
+          Implement procedures to protect intellectual property rights.
+
+  - id: iso27001-A.5.33
+    title: "A.5.33 Protection of records"
+    group: organisational
+    state: Active
+    objective: |
+      Protect records against loss, destruction, falsification, unauthorised access and unauthorised release.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.33.1
+        title: "Control purpose"
+        text: |
+          Protect records against loss, destruction, falsification, unauthorised access and unauthorised release.
+
+  - id: iso27001-A.5.34
+    title: "A.5.34 Privacy and protection of PII"
+    group: organisational
+    state: Active
+    objective: |
+      Meet applicable requirements for privacy and protection of personally identifiable information.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.34.1
+        title: "Control purpose"
+        text: |
+          Meet applicable requirements for privacy and protection of personally identifiable information.
+
+  - id: iso27001-A.5.35
+    title: "A.5.35 Independent review of information security"
+    group: organisational
+    state: Active
+    objective: |
+      Independently review the organisation's approach to managing information security and its implementation at planned intervals or when significant changes occur.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.35.1
+        title: "Control purpose"
+        text: |
+          Independently review the organisation's approach to managing information security and its implementation at planned intervals or when significant changes occur.
+
+  - id: iso27001-A.5.36
+    title: "A.5.36 Compliance with policies, rules and standards for information security"
+    group: organisational
+    state: Active
+    objective: |
+      Regularly review compliance with the organisation's information security policy, topic-specific policies, rules and standards.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.36.1
+        title: "Control purpose"
+        text: |
+          Regularly review compliance with the organisation's information security policy, topic-specific policies, rules and standards.
+
+  - id: iso27001-A.5.37
+    title: "A.5.37 Documented operating procedures"
+    group: organisational
+    state: Active
+    objective: |
+      Make operating procedures for information processing facilities available and maintain them as documented information.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.5.37.1
+        title: "Control purpose"
+        text: |
+          Make operating procedures for information processing facilities available and maintain them as documented information.
+
+  - id: iso27001-A.6.1
+    title: "A.6.1 Screening"
+    group: people
+    state: Active
+    objective: |
+      Perform background verification checks on candidates prior to joining, proportionate to business requirements, information classification and perceived risks.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.1.1
+        title: "Control purpose"
+        text: |
+          Perform background verification checks on candidates prior to joining, proportionate to business requirements, information classification and perceived risks.
+
+  - id: iso27001-A.6.2
+    title: "A.6.2 Terms and conditions of employment"
+    group: people
+    state: Active
+    objective: |
+      State information security responsibilities in contractual agreements with personnel and other interested parties.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.2.1
+        title: "Control purpose"
+        text: |
+          State information security responsibilities in contractual agreements with personnel and other interested parties.
+
+  - id: iso27001-A.6.3
+    title: "A.6.3 Information security awareness, education and training"
+    group: people
+    state: Active
+    objective: |
+      Provide appropriate information security awareness, education and training, and regular updates, to personnel and relevant interested parties.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.3.1
+        title: "Control purpose"
+        text: |
+          Provide appropriate information security awareness, education and training, and regular updates, to personnel and relevant interested parties.
+
+  - id: iso27001-A.6.4
+    title: "A.6.4 Disciplinary process"
+    group: people
+    state: Active
+    objective: |
+      Formalise and communicate a disciplinary process for information security policy violations.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.4.1
+        title: "Control purpose"
+        text: |
+          Formalise and communicate a disciplinary process for information security policy violations.
+
+  - id: iso27001-A.6.5
+    title: "A.6.5 Responsibilities after termination or change of employment"
+    group: people
+    state: Active
+    objective: |
+      Define, enforce and communicate information security responsibilities that remain valid after termination or change of employment.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.5.1
+        title: "Control purpose"
+        text: |
+          Define, enforce and communicate information security responsibilities that remain valid after termination or change of employment.
+
+  - id: iso27001-A.6.6
+    title: "A.6.6 Confidentiality or non-disclosure agreements"
+    group: people
+    state: Active
+    objective: |
+      Identify, document, regularly review and conclude confidentiality or non-disclosure agreements reflecting protection needs.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.6.1
+        title: "Control purpose"
+        text: |
+          Identify, document, regularly review and conclude confidentiality or non-disclosure agreements reflecting protection needs.
+
+  - id: iso27001-A.6.7
+    title: "A.6.7 Remote working"
+    group: people
+    state: Active
+    objective: |
+      Implement security measures for remote working to protect information accessed, processed or stored outside organisational premises.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.7.1
+        title: "Control purpose"
+        text: |
+          Implement security measures for remote working to protect information accessed, processed or stored outside organisational premises.
+
+  - id: iso27001-A.6.8
+    title: "A.6.8 Information security event reporting"
+    group: people
+    state: Active
+    objective: |
+      Provide a mechanism for personnel to report observed or suspected information security events promptly through appropriate channels.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.6.8.1
+        title: "Control purpose"
+        text: |
+          Provide a mechanism for personnel to report observed or suspected information security events promptly through appropriate channels.
+
+  - id: iso27001-A.7.1
+    title: "A.7.1 Physical security perimeters"
+    group: physical
+    state: Active
+    objective: |
+      Define security perimeters and use them to protect areas that contain information and other associated assets.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.1.1
+        title: "Control purpose"
+        text: |
+          Define security perimeters and use them to protect areas that contain information and other associated assets.
+
+  - id: iso27001-A.7.2
+    title: "A.7.2 Physical entry"
+    group: physical
+    state: Active
+    objective: |
+      Secure sites and buildings with appropriate entry controls, and protect secure areas with appropriate entry controls and access points.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.2.1
+        title: "Control purpose"
+        text: |
+          Secure sites and buildings with appropriate entry controls, and protect secure areas with appropriate entry controls and access points.
+
+  - id: iso27001-A.7.3
+    title: "A.7.3 Securing offices, rooms and facilities"
+    group: physical
+    state: Active
+    objective: |
+      Design and implement physical security for offices, rooms and facilities.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.3.1
+        title: "Control purpose"
+        text: |
+          Design and implement physical security for offices, rooms and facilities.
+
+  - id: iso27001-A.7.4
+    title: "A.7.4 Physical security monitoring"
+    group: physical
+    state: Active
+    objective: |
+      Continuously monitor premises for unauthorised physical access.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.4.1
+        title: "Control purpose"
+        text: |
+          Continuously monitor premises for unauthorised physical access.
+
+  - id: iso27001-A.7.5
+    title: "A.7.5 Protecting against physical and environmental threats"
+    group: physical
+    state: Active
+    objective: |
+      Design and implement protection against physical and environmental threats to infrastructure.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.5.1
+        title: "Control purpose"
+        text: |
+          Design and implement protection against physical and environmental threats to infrastructure.
+
+  - id: iso27001-A.7.6
+    title: "A.7.6 Working in secure areas"
+    group: physical
+    state: Active
+    objective: |
+      Design and implement security measures for working in secure areas.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.6.1
+        title: "Control purpose"
+        text: |
+          Design and implement security measures for working in secure areas.
+
+  - id: iso27001-A.7.7
+    title: "A.7.7 Clear desk and clear screen"
+    group: physical
+    state: Active
+    objective: |
+      Define and enforce clear desk rules for papers and removable storage media, and clear screen rules for information processing facilities.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.7.1
+        title: "Control purpose"
+        text: |
+          Define and enforce clear desk rules for papers and removable storage media, and clear screen rules for information processing facilities.
+
+  - id: iso27001-A.7.8
+    title: "A.7.8 Equipment siting and protection"
+    group: physical
+    state: Active
+    objective: |
+      Site and protect equipment securely.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.8.1
+        title: "Control purpose"
+        text: |
+          Site and protect equipment securely.
+
+  - id: iso27001-A.7.9
+    title: "A.7.9 Security of assets off-premises"
+    group: physical
+    state: Active
+    objective: |
+      Protect off-site assets taking account of the different risks of working outside organisational premises.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.9.1
+        title: "Control purpose"
+        text: |
+          Protect off-site assets taking account of the different risks of working outside organisational premises.
+
+  - id: iso27001-A.7.10
+    title: "A.7.10 Storage media"
+    group: physical
+    state: Active
+    objective: |
+      Manage storage media through acquisition, use, transportation and disposal in accordance with classification and handling requirements.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.10.1
+        title: "Control purpose"
+        text: |
+          Manage storage media through acquisition, use, transportation and disposal in accordance with classification and handling requirements.
+
+  - id: iso27001-A.7.11
+    title: "A.7.11 Supporting utilities"
+    group: physical
+    state: Active
+    objective: |
+      Protect information processing facilities from power failures and other disruptions caused by failures in supporting utilities.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.11.1
+        title: "Control purpose"
+        text: |
+          Protect information processing facilities from power failures and other disruptions caused by failures in supporting utilities.
+
+  - id: iso27001-A.7.12
+    title: "A.7.12 Cabling security"
+    group: physical
+    state: Active
+    objective: |
+      Protect cables carrying power, data or supporting information services from interception, interference or damage.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.12.1
+        title: "Control purpose"
+        text: |
+          Protect cables carrying power, data or supporting information services from interception, interference or damage.
+
+  - id: iso27001-A.7.13
+    title: "A.7.13 Equipment maintenance"
+    group: physical
+    state: Active
+    objective: |
+      Maintain equipment correctly to ensure availability, integrity and confidentiality of information.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.13.1
+        title: "Control purpose"
+        text: |
+          Maintain equipment correctly to ensure availability, integrity and confidentiality of information.
+
+  - id: iso27001-A.7.14
+    title: "A.7.14 Secure disposal or re-use of equipment"
+    group: physical
+    state: Active
+    objective: |
+      Verify equipment containing storage media is wiped or securely overwritten prior to disposal or re-use.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.7.14.1
+        title: "Control purpose"
+        text: |
+          Verify equipment containing storage media is wiped or securely overwritten prior to disposal or re-use.
+
+  - id: iso27001-A.8.1
+    title: "A.8.1 User endpoint devices"
+    group: technological
+    state: Active
+    objective: |
+      Protect information stored on, processed by or accessible via user endpoint devices.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.1.1
+        title: "Control purpose"
+        text: |
+          Protect information stored on, processed by or accessible via user endpoint devices.
+
+  - id: iso27001-A.8.2
+    title: "A.8.2 Privileged access rights"
+    group: technological
+    state: Active
+    objective: |
+      Restrict and manage the allocation and use of privileged access rights.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.2.1
+        title: "Control purpose"
+        text: |
+          Restrict and manage the allocation and use of privileged access rights.
+
+  - id: iso27001-A.8.3
+    title: "A.8.3 Information access restriction"
+    group: technological
+    state: Active
+    objective: |
+      Restrict access to information and other associated assets in accordance with the access-control policy.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.3.1
+        title: "Control purpose"
+        text: |
+          Restrict access to information and other associated assets in accordance with the access-control policy.
+
+  - id: iso27001-A.8.4
+    title: "A.8.4 Access to source code"
+    group: technological
+    state: Active
+    objective: |
+      Manage read and write access to source code, development tools and software libraries appropriately.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.4.1
+        title: "Control purpose"
+        text: |
+          Manage read and write access to source code, development tools and software libraries appropriately.
+
+  - id: iso27001-A.8.5
+    title: "A.8.5 Secure authentication"
+    group: technological
+    state: Active
+    objective: |
+      Implement secure authentication technologies and procedures based on access restrictions and access-control policy.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.5.1
+        title: "Control purpose"
+        text: |
+          Implement secure authentication technologies and procedures based on access restrictions and access-control policy.
+
+  - id: iso27001-A.8.6
+    title: "A.8.6 Capacity management"
+    group: technological
+    state: Active
+    objective: |
+      Monitor and adjust resource use, and project future capacity requirements to ensure required system performance.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.6.1
+        title: "Control purpose"
+        text: |
+          Monitor and adjust resource use, and project future capacity requirements to ensure required system performance.
+
+  - id: iso27001-A.8.7
+    title: "A.8.7 Protection against malware"
+    group: technological
+    state: Active
+    objective: |
+      Implement protection against malware, supported by appropriate user awareness.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.7.1
+        title: "Control purpose"
+        text: |
+          Implement protection against malware, supported by appropriate user awareness.
+
+  - id: iso27001-A.8.8
+    title: "A.8.8 Management of technical vulnerabilities"
+    group: technological
+    state: Active
+    objective: |
+      Obtain information about technical vulnerabilities, evaluate exposure, and take appropriate measures.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.8.1
+        title: "Control purpose"
+        text: |
+          Obtain information about technical vulnerabilities, evaluate exposure, and take appropriate measures.
+
+  - id: iso27001-A.8.9
+    title: "A.8.9 Configuration management"
+    group: technological
+    state: Active
+    objective: |
+      Establish, document, implement, monitor and review configurations, including security configurations, of hardware, software, services and networks.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.9.1
+        title: "Control purpose"
+        text: |
+          Establish, document, implement, monitor and review configurations, including security configurations, of hardware, software, services and networks.
+
+  - id: iso27001-A.8.10
+    title: "A.8.10 Information deletion"
+    group: technological
+    state: Active
+    objective: |
+      Delete information stored in information systems, devices or other storage media when no longer required.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.10.1
+        title: "Control purpose"
+        text: |
+          Delete information stored in information systems, devices or other storage media when no longer required.
+
+  - id: iso27001-A.8.11
+    title: "A.8.11 Data masking"
+    group: technological
+    state: Active
+    objective: |
+      Use data masking in accordance with access-control and related policies, business requirements and applicable legislation.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.11.1
+        title: "Control purpose"
+        text: |
+          Use data masking in accordance with access-control and related policies, business requirements and applicable legislation.
+
+  - id: iso27001-A.8.12
+    title: "A.8.12 Data leakage prevention"
+    group: technological
+    state: Active
+    objective: |
+      Apply data leakage prevention measures to systems, networks and devices that process, store or transmit sensitive information.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.12.1
+        title: "Control purpose"
+        text: |
+          Apply data leakage prevention measures to systems, networks and devices that process, store or transmit sensitive information.
+
+  - id: iso27001-A.8.13
+    title: "A.8.13 Information backup"
+    group: technological
+    state: Active
+    objective: |
+      Maintain backup copies of information, software and systems, and test them regularly in accordance with backup policy.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.13.1
+        title: "Control purpose"
+        text: |
+          Maintain backup copies of information, software and systems, and test them regularly in accordance with backup policy.
+
+  - id: iso27001-A.8.14
+    title: "A.8.14 Redundancy of information processing facilities"
+    group: technological
+    state: Active
+    objective: |
+      Implement information processing facilities with redundancy sufficient to meet availability requirements.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.14.1
+        title: "Control purpose"
+        text: |
+          Implement information processing facilities with redundancy sufficient to meet availability requirements.
+
+  - id: iso27001-A.8.15
+    title: "A.8.15 Logging"
+    group: technological
+    state: Active
+    objective: |
+      Produce, store, protect and analyse logs that record activities, exceptions, faults and other relevant events.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.15.1
+        title: "Control purpose"
+        text: |
+          Produce, store, protect and analyse logs that record activities, exceptions, faults and other relevant events.
+
+  - id: iso27001-A.8.16
+    title: "A.8.16 Monitoring activities"
+    group: technological
+    state: Active
+    objective: |
+      Monitor networks, systems and applications for anomalous behaviour and take appropriate action regarding potential incidents.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.16.1
+        title: "Control purpose"
+        text: |
+          Monitor networks, systems and applications for anomalous behaviour and take appropriate action regarding potential incidents.
+
+  - id: iso27001-A.8.17
+    title: "A.8.17 Clock synchronization"
+    group: technological
+    state: Active
+    objective: |
+      Synchronise clocks of information processing systems to approved time sources.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.17.1
+        title: "Control purpose"
+        text: |
+          Synchronise clocks of information processing systems to approved time sources.
+
+  - id: iso27001-A.8.18
+    title: "A.8.18 Use of privileged utility programs"
+    group: technological
+    state: Active
+    objective: |
+      Restrict and tightly control utility programs that can override system and application controls.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.18.1
+        title: "Control purpose"
+        text: |
+          Restrict and tightly control utility programs that can override system and application controls.
+
+  - id: iso27001-A.8.19
+    title: "A.8.19 Installation of software on operational systems"
+    group: technological
+    state: Active
+    objective: |
+      Implement procedures and measures to securely manage software installation on operational systems.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.19.1
+        title: "Control purpose"
+        text: |
+          Implement procedures and measures to securely manage software installation on operational systems.
+
+  - id: iso27001-A.8.20
+    title: "A.8.20 Networks security"
+    group: technological
+    state: Active
+    objective: |
+      Secure, manage and control networks and network devices to protect information in systems and applications.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.20.1
+        title: "Control purpose"
+        text: |
+          Secure, manage and control networks and network devices to protect information in systems and applications.
+
+  - id: iso27001-A.8.21
+    title: "A.8.21 Security of network services"
+    group: technological
+    state: Active
+    objective: |
+      Identify, implement and monitor security mechanisms, service levels and service requirements of network services.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.21.1
+        title: "Control purpose"
+        text: |
+          Identify, implement and monitor security mechanisms, service levels and service requirements of network services.
+
+  - id: iso27001-A.8.22
+    title: "A.8.22 Segregation of networks"
+    group: technological
+    state: Active
+    objective: |
+      Segregate groups of information services, users and information systems in the organisation's networks.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.22.1
+        title: "Control purpose"
+        text: |
+          Segregate groups of information services, users and information systems in the organisation's networks.
+
+  - id: iso27001-A.8.23
+    title: "A.8.23 Web filtering"
+    group: technological
+    state: Active
+    objective: |
+      Manage access to external websites to reduce exposure to malicious content.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.23.1
+        title: "Control purpose"
+        text: |
+          Manage access to external websites to reduce exposure to malicious content.
+
+  - id: iso27001-A.8.24
+    title: "A.8.24 Use of cryptography"
+    group: technological
+    state: Active
+    objective: |
+      Define and implement rules for effective use of cryptography, including cryptographic key management.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.24.1
+        title: "Control purpose"
+        text: |
+          Define and implement rules for effective use of cryptography, including cryptographic key management.
+
+  - id: iso27001-A.8.25
+    title: "A.8.25 Secure development life cycle"
+    group: technological
+    state: Active
+    objective: |
+      Establish and apply rules for the secure development of software and systems.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.25.1
+        title: "Control purpose"
+        text: |
+          Establish and apply rules for the secure development of software and systems.
+
+  - id: iso27001-A.8.26
+    title: "A.8.26 Application security requirements"
+    group: technological
+    state: Active
+    objective: |
+      Identify, specify and approve information security requirements when developing or acquiring applications.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.26.1
+        title: "Control purpose"
+        text: |
+          Identify, specify and approve information security requirements when developing or acquiring applications.
+
+  - id: iso27001-A.8.27
+    title: "A.8.27 Secure system architecture and engineering principles"
+    group: technological
+    state: Active
+    objective: |
+      Establish, document, maintain and apply principles for engineering secure systems across development activities.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.27.1
+        title: "Control purpose"
+        text: |
+          Establish, document, maintain and apply principles for engineering secure systems across development activities.
+
+  - id: iso27001-A.8.28
+    title: "A.8.28 Secure coding"
+    group: technological
+    state: Active
+    objective: |
+      Apply secure coding principles to software development.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.28.1
+        title: "Control purpose"
+        text: |
+          Apply secure coding principles to software development.
+
+  - id: iso27001-A.8.29
+    title: "A.8.29 Security testing in development and acceptance"
+    group: technological
+    state: Active
+    objective: |
+      Define and implement security testing processes in the development life cycle.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.29.1
+        title: "Control purpose"
+        text: |
+          Define and implement security testing processes in the development life cycle.
+
+  - id: iso27001-A.8.30
+    title: "A.8.30 Outsourced development"
+    group: technological
+    state: Active
+    objective: |
+      Direct, monitor and review activities related to outsourced system development.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.30.1
+        title: "Control purpose"
+        text: |
+          Direct, monitor and review activities related to outsourced system development.
+
+  - id: iso27001-A.8.31
+    title: "A.8.31 Separation of development, test and production environments"
+    group: technological
+    state: Active
+    objective: |
+      Separate and secure development, testing and production environments.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.31.1
+        title: "Control purpose"
+        text: |
+          Separate and secure development, testing and production environments.
+
+  - id: iso27001-A.8.32
+    title: "A.8.32 Change management"
+    group: technological
+    state: Active
+    objective: |
+      Subject changes to information processing facilities and information systems to change management procedures.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.32.1
+        title: "Control purpose"
+        text: |
+          Subject changes to information processing facilities and information systems to change management procedures.
+
+  - id: iso27001-A.8.33
+    title: "A.8.33 Test information"
+    group: technological
+    state: Active
+    objective: |
+      Select, protect and manage test information appropriately.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.33.1
+        title: "Control purpose"
+        text: |
+          Select, protect and manage test information appropriately.
+
+  - id: iso27001-A.8.34
+    title: "A.8.34 Protection of information systems during audit testing"
+    group: technological
+    state: Active
+    objective: |
+      Plan and agree audit tests and other assurance activities involving operational systems between tester and appropriate management.
+    applicability:
+      - annex-a
+      - soa
+    recommendations:
+      - "Select this control via risk treatment and record applicability in the Statement of Applicability."
+      - "Implement assessment requirements as Gemara Control Catalog entries mapped to this guideline."
+    statements:
+      - id: iso27001-A.8.34.1
+        title: "Control purpose"
+        text: |
+          Plan and agree audit tests and other assurance activities involving operational systems between tester and appropriate management.

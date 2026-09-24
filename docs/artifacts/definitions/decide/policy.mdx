@@ -1,0 +1,156 @@
+---
+sidebar_position: 15
+title: Policy
+sidebar_label: Policy
+hide_title: true
+tags:
+  - Artifact
+  - Layer 3
+aka:
+  gemara: Policy
+  iso27001: Information Security Policy
+  iso42001: AI Policy
+description: "Risk-informed guidance tailored to your organization's specific needs and risk appetite."
+---
+
+<GovernanceArtifact>
+
+<Purpose>
+
+Risk-informed guidance tailored to your organization's specific needs and risk
+appetite.
+
+</Purpose>
+
+<Role>
+
+Policy is the organisation-specific binding: who is in scope, which catalogs and
+guidance are imported, which risks are mitigated or accepted, and which
+assessment plans and enforcement methods apply. 
+
+It says how an organisation uses those definitions for governing a sensitive activity.
+
+</Role>
+
+<Examples>
+
+<RevealItem title="FOSS contribution policy scope" defaultOpen>
+
+A policy covers employees and authorised contractors contributing to
+company-moderated and company-interest projects, and explicitly excludes FOSS
+*consumption*. Contacts name OSPO, Legal, line managers and contributors in
+RACI form so ownership is not implied.
+
+**Source:** [Free and Open Source Software Contribution Policy](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/policy.yaml) (`foss-contribution-policy`) scope and contacts.
+
+</RevealItem>
+
+<RevealItem title="Mitigated data-leakage with assessment plans">
+
+The policy imports the FOSS control catalog, lists data-leakage and related
+risks as mitigated, and defines per-contribution assessment plans—such as IP
+review and secret-scan checks—that evaluation logs later execute.
+
+**Source:** Mitigated risks and assessment plans in the [FOSS Contribution Policy](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/policy.yaml).
+
+</RevealItem>
+
+<RevealItem title="Enforcement methods for failed evaluations">
+
+Methods such as blocking merge and notifying the OSPO are declared on the
+policy so enforcement logs cite an authorised response rather than an improvised
+script.
+
+**Source:** [em-foss-block-merge](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/policy.yaml) and related enforcement methods in the *FOSS Contribution Policy*.
+
+</RevealItem>
+
+</Examples>
+
+<LinksUpstream>
+
+- [Control](/docs/artifacts/definitions/assess/control) — imported into assessment plans
+- [Risk](/docs/artifacts/definitions/decide/risk) — mitigated or accepted
+- [Guidance](/docs/artifacts/definitions/define/guidance) — informs organisational rules
+- [Party Register](/docs/artifacts/definitions/cross-cutting/party-register) as `contacts`
+
+</LinksUpstream>
+
+<LinksDownstream>
+
+- [Evaluation Log](/docs/artifacts/definitions/evaluate/evaluation-log) — executes assessment
+  plans against activity instances
+- [Enforcement Log](/docs/artifacts/definitions/enforce/enforcement-log) — applies methods
+  justified by evaluation results
+- [Audit Log](/docs/artifacts/definitions/assure/audit-log) — reviews conformance using
+  policy criteria and recorded evidence
+
+</LinksDownstream>
+
+<RelatedFactors>
+
+- [Context In, Decisions Out](/docs/factors/context-in-decisions-out) — policy drives decision shape
+- [Continuous Governance](/docs/factors/continuous-governance) — plans and methods in the path of change
+- [Governance Is Composable](/docs/factors/governance-is-composable) — imported catalogs and overlays
+- [Governance Has Owners](/docs/factors/governance-has-owners) — policy RACI
+
+</RelatedFactors>
+
+<EntityRelationshipDiagram>
+
+```mermaid
+erDiagram
+  Policy ||--|| RACI : contacts
+  Policy ||--|| Scope : scope
+  Policy ||--|| Imports : imports
+  Policy ||--o| ImplementationPlan : implementation_plan
+  Policy ||--o| Risks : risks
+  Policy ||--|| Adherence : adherence
+  Imports }o--o{ ControlCatalog : catalogs
+  Imports }o--o{ GuidanceCatalog : guidance
+  Risks }o--o{ Risk : mitigated_accepted
+
+  Policy {
+    string title
+  }
+
+  Scope {
+    Dimensions in
+    Dimensions out
+  }
+
+  Imports {
+    ArtifactMapping policies
+    CatalogImport catalogs
+    GuidanceImport guidance
+  }
+
+  ImplementationPlan {
+    string notification_process
+    ImplementationDetails evaluation_timeline
+    ImplementationDetails enforcement_timeline
+  }
+
+  Risks {
+    MitigatedRisk mitigated
+    AcceptedRisk accepted
+  }
+
+  Adherence {
+    AcceptedMethod evaluation_methods
+    AssessmentPlan assessment_plans
+    AcceptedMethod enforcement_methods
+    string non_compliance
+  }
+```
+
+</EntityRelationshipDiagram>
+
+<References>
+
+- [Gemara Policy schema](https://gemara.openssf.org/schema/policy.html)
+- [Gemara](/docs/tools/gemara)
+
+</References>
+
+</GovernanceArtifact>

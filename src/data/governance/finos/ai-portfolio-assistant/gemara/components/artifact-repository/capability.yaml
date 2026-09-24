@@ -1,0 +1,57 @@
+# Twin: Artifact Repository — deployment home for the shared Governance Model.
+
+title: APA Artifact Repository Capabilities
+
+metadata:
+  id: apa-artifact-repository-capabilities
+  type: CapabilityCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Capabilities of the Artifact Repository that hosts and serves the shared
+    APA Governance Model (Gemara lexicon → policy) and related AIMS artifacts
+    to the Governance Runtime and other consumers inside the banking firewall.
+  mapping-references:
+    - id: apa-gemara-policy
+      title: APA Policy Catalog
+      version: "0.1.0"
+      url: file://../../policy.yaml
+    - id: apa-gemara-guidance
+      title: APA Guidance Catalog
+      version: "0.1.0"
+      url: file://../../guidance.yaml
+
+groups:
+  - id: model-hosting
+    title: Model Hosting
+    description: >
+      Publish, version, and serve machine-readable governance artifacts that
+      inform evaluation across all APA Gemara component twins.
+
+capabilities:
+  - id: apa-artifact-publish-model
+    title: Publish Versioned Governance Model
+    description: >
+      Ability to publish immutable, versioned releases of the shared Governance
+      Model catalogs (lexicon, principles, vectors, guidance, and policy) and
+      referenced AIMS documents for consumption inside the banking firewall.
+    group: model-hosting
+  - id: apa-artifact-serve-model
+    title: Serve Governance Model to Runtime
+    description: >
+      Ability to serve a pinned Governance Model release to the Governance
+      Runtime so sensitive-activity evaluation is informed by an explicit,
+      auditable artifact set rather than ad hoc configuration.
+    group: model-hosting
+  - id: apa-artifact-inventory
+    title: Inventory Released Governance Artifacts
+    description: >
+      Ability to list released model versions and the catalog and AIMS documents
+      each release contains, supporting change control and audit.
+    group: model-hosting

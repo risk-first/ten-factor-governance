@@ -1,0 +1,204 @@
+title: AI Portfolio Assistant Vector Catalog
+
+metadata:
+  id: apa-vectors
+  type: VectorCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-10T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Pathways through which the AI Portfolio Assistant may cause harm,
+    exceed delegated authority, or degrade decision quality across FDC3
+    applications.
+  lexicon:
+    reference-id: apa-lexicon
+
+groups:
+  - id: injection-and-manipulation
+    title: Injection and Manipulation
+    description: >
+      Vectors where untrusted content or tool arguments alter the
+      assistant's behaviour beyond its intended use.
+
+  - id: authority-abuse
+    title: Authority Abuse
+    description: >
+      Vectors where the assistant escalates, bypasses, or exceeds its
+      granted authority level on the observe-to-execute ladder.
+
+  - id: information-disclosure
+    title: Information Disclosure
+    description: >
+      Vectors involving unauthorized exposure of portfolio, client, or
+      market-sensitive information.
+
+  - id: decision-quality
+    title: Decision Quality
+    description: >
+      Vectors where incorrect, stale, or overconfident AI outputs degrade
+      investment decision-making.
+
+  - id: integration
+    title: Integration
+    description: >
+      Vectors arising from FDC3 interoperability, tool use, and third-party
+      model provider boundaries.
+
+vectors:
+  - id: prompt-injection-via-research
+    title: Prompt Injection via Investment Research
+    group: injection-and-manipulation
+    description: >
+      Malicious or crafted instructions embedded in investment research or
+      other retrieved documents cause the assistant to ignore policies,
+      escalate authority, or produce unsafe outputs.
+    applicability:
+      - analyse
+      - explain
+      - recommend
+      - propose
+
+  - id: tool-argument-injection
+    title: Tool Argument Injection
+    group: injection-and-manipulation
+    description: >
+      Untrusted input influences tool call parameters so the assistant
+      invokes deterministic applications with unintended portfolios,
+      scenarios, or order details.
+    applicability:
+      - analyse
+      - recommend
+      - propose
+      - execute
+
+  - id: authority-escalation
+    title: Authority Escalation
+    group: authority-abuse
+    description: >
+      The assistant operates above its granted authority level—for example
+      recommending or proposing when only explain is permitted, or treating
+      a recommendation as an approved proposal.
+    applicability:
+      - observe
+      - analyse
+      - explain
+      - recommend
+      - propose
+      - execute
+
+  - id: hallucinated-financial-claim
+    title: Hallucinated Financial Claim
+    group: decision-quality
+    description: >
+      The assistant invents exposures, returns, prices, or regulatory
+      assertions that are not supported by deterministic application output
+      or approved data sources.
+    applicability:
+      - explain
+      - recommend
+      - propose
+
+  - id: stale-or-incorrect-market-data
+    title: Stale or Incorrect Market Data
+    group: decision-quality
+    description: >
+      Analysis, explanation, or recommendation proceeds from outdated,
+      incomplete, or incorrect market or portfolio data without detecting
+      or disclosing the data quality defect.
+    applicability:
+      - analyse
+      - explain
+      - recommend
+      - propose
+
+  - id: cross-portfolio-context-bleed
+    title: Cross-Portfolio Context Bleed
+    group: information-disclosure
+    description: >
+      Context from one client or portfolio contaminates prompts, tool
+      calls, or explanations for another, disclosing confidential holdings
+      or influencing unsuitable advice.
+    applicability:
+      - observe
+      - analyse
+      - explain
+      - recommend
+      - propose
+
+  - id: unsupervised-recommendation-acceptance
+    title: Unsupervised Recommendation Acceptance
+    group: authority-abuse
+    description: >
+      A recommendation is treated as an instruction or is acted upon without
+      required human review, controls, or suitability checks.
+    applicability:
+      - recommend
+      - propose
+      - execute
+
+  - id: order-proposal-without-approval
+    title: Order Proposal Without Approval
+    group: authority-abuse
+    description: >
+      An order proposal is forwarded to trading or execution workflows
+      without recorded human-in-the-loop approval by an authorized portfolio
+      manager.
+    applicability:
+      - propose
+      - execute
+
+  - id: execution-bypass
+    title: Execution Bypass
+    group: authority-abuse
+    description: >
+      The assistant submits or triggers order execution through FDC3
+      intents, APIs, or tooling despite the prohibition on autonomous
+      execution.
+    applicability:
+      - execute
+
+  - id: overconfident-explanation
+    title: Overconfident Explanation
+    group: decision-quality
+    description: >
+      The assistant presents uncertain, partial, or model-inferred
+      interpretations as definitive fact, leading the portfolio manager to
+      place undue reliance on the output.
+    applicability:
+      - explain
+      - recommend
+      - propose
+
+  - id: unintended-fdc3-broadcast
+    title: Unintended FDC3 Broadcast
+    group: integration
+    description: >
+      Portfolio context, proposals, or sensitive explanations are broadcast
+      or shared through FDC3 channels beyond the authorized applications
+      and users for the current session.
+    applicability:
+      - observe
+      - analyse
+      - explain
+      - recommend
+      - propose
+      - execute
+
+  - id: model-provider-data-exfiltration
+    title: Model Provider Data Exfiltration
+    group: information-disclosure
+    description: >
+      Client portfolio details, research, or proprietary analytics are sent
+      to an external model provider outside approved residency, retention,
+      and contractual controls.
+    applicability:
+      - observe
+      - analyse
+      - explain
+      - recommend
+      - propose

@@ -1,0 +1,728 @@
+# AIGF Vector Catalog
+title: AI Governance Framework Risk Vectors
+metadata:
+  id: AIR-VEC
+  type: VectorCatalog
+  gemara-version: "1.1.0"
+  version: "0.2.0"
+  description: >
+    AIGF risks expressed as Gemara vectors. Each vector describes a
+    pathway through which AI system failures or negative outcomes
+    may be realized in financial services deployments.
+  author:
+    id: FINOS-AIGF
+    name: FINOS-AIGF
+    type: Human
+  draft: true
+
+groups:
+  - id: model-availability
+    title: Model Availability
+    description: >
+      Foundation models often rely on GPU-heavy infrastructure hosted by third-party providers, introducing risks 
+      related to service availability and performance. Key threats include Denial of Wallet (excessive usage leading 
+      to cost spikes or throttling), outages from immature Technology Service Providers, and VRAM exhaustion due to 
+      memory leaks or configuration changes. These issues can disrupt operations, limit failover options, and 
+      undermine the reliability of LLM-based applications.
+  - id: operational
+    title: Operational
+    description: >
+      Risks arising from AI system behaviour, reliability, and
+      operational characteristics that may impact business processes.
+  - id: prompt-injection
+    title: Prompt Injection
+    description: >
+      Prompt injection occurs when attackers craft inputs that manipulate a language model into producing 
+      unintended, harmful, or unauthorized outputs. These attacks can be direct—overriding the model’s 
+      intended behaviour—or indirect, where malicious instructions are hidden in third-party content and 
+      later processed by the model. This threat can lead to misinformation, data leakage, reputational damage, 
+      or unsafe automated actions, especially in systems without strong safeguards or human oversight.
+  - id: data-poisoning
+    title: Data Poisoning
+    description: >
+      Data poisoning occurs when adversaries tamper with training or fine-tuning data to manipulate an 
+      AI model’s behaviour, often by injecting misleading or malicious patterns. This can lead to biased 
+      decision-making, such as incorrectly approving fraudulent transactions or degrading model performance 
+      in subtle ways. The risk is heightened in systems that continuously learn from unvalidated or 
+      third-party data, with impacts that may remain hidden until a major failure occurs.
+  - id: information-leakage
+    title: Information Leakage
+    description: >
+      Using third-party hosted LLMs creates a two-way trust boundary where neither inputs nor outputs can be fully trusted.
+      Sensitive financial data sent for inference may be memorized by models, leaked through prompt attacks, or exposed via 
+      inadequate provider controls. This risks exposing customer PII, proprietary algorithms, and confidential business 
+      information, particularly with free or poorly-governed LLM services.
+  - id: output-integrity
+    title: Output Integrity
+    description: >
+      Risks where AI systems produce confident but incorrect, fabricated,
+      inconsistent, or misaligned outputs that diverge from facts, retrieved
+      sources, or the intended business purpose.
+  - id: model-integrity
+    title: Model Integrity
+    description: >
+      Risks to the integrity, stability, and provenance of the foundation
+      model itself, spanning silent version drift and adversarial tampering of
+      training data, weights, or supporting infrastructure.
+  - id: data-quality
+    title: Data Quality
+    description: >
+      Risks arising from inaccurate, outdated, biased, or drifting data that
+      degrade the reliability and fairness of AI outputs over time.
+  - id: fairness
+    title: Fairness
+    description: >
+      Risks where AI systems systematically disadvantage protected groups
+      through biased data, flawed design, or proxy variables that correlate
+      with sensitive characteristics.
+  - id: governance-compliance
+    title: Governance and Compliance
+    description: >
+      Risks relating to regulatory compliance, supervision, explainability,
+      and intellectual-property obligations for AI systems in financial
+      services.
+  - id: agentic-security
+    title: Agentic Security
+    description: >
+      Risks specific to autonomous and multi-agent systems, including
+      authorization bypass, tool-chain manipulation, supply-chain compromise,
+      state poisoning, trust-boundary violations, and credential harvesting.
+
+vectors:
+  - id: AIR-RC-001-01
+    title: Model Memorization
+    group: information-leakage
+    description: >
+      LLMs can memorize sensitive data from training or user interactions,
+      later disclosing customer details, loan terms, or trading strategies
+      in unrelated sessions. This includes cross-user leakage, where one
+      user's sensitive data is disclosed to another.
+  - id: AIR-RC-001-02
+    title: Prompt-Based Data Extraction
+    group: information-leakage
+    description: >
+      Adversaries craft prompts to extract memorized sensitive information
+      from hosted models. Targeted prompt sequences can cause the model to
+      reproduce confidential training data, PII, or proprietary algorithms
+      that were not intended to be accessible.
+  - id: AIR-RC-001-03
+    title: Inadequate Provider Data Controls
+    group: information-leakage
+    description: >
+      Insufficient sanitization, encryption, or access controls by hosted
+      model providers increases disclosure risk. Providers may lack
+      transparent mechanisms for how input data is processed, retained,
+      or sanitized, leading to persistent exposure of proprietary data.
+  - id: AIR-RC-001-04
+    title: Provider Data Handling Deficiency
+    group: information-leakage
+    description: >
+      Without clear contracts ensuring encryption, retention limits, and
+      secure deletion, institutions lose control over sensitive data sent
+      to hosted models. Providers may lack transparency about data
+      processing and retention practices.
+  - id: AIR-RC-001-05
+    title: Fine-Tuning Data Exposure
+    group: information-leakage
+    description: >
+      Using proprietary data for fine-tuning embeds sensitive information
+      directly into model weights, potentially making it accessible to
+      unauthorized users if access controls are inadequate.
+  - id: AIR-SEC-009-01
+    title: Training Data Manipulation
+    group: data-poisoning
+    description: >
+      Adversaries alter training datasets by changing labels or injecting
+      crafted data points with hidden patterns. In financial services,
+      this includes marking fraudulent transactions as legitimate to
+      corrupt fraud detection models, or embedding backdoor triggers
+      exploitable after deployment.
+  - id: AIR-SEC-009-02
+    title: Continuous Learning Exploitation
+    group: data-poisoning
+    description: >
+      Systems that continuously learn from new data are vulnerable when
+      validation mechanisms are inadequate. Adversaries systematically
+      feed misleading information over time to gradually skew
+      decision-making in credit scoring, trading, or risk models.
+  - id: AIR-SEC-009-03
+    title: Third-Party Data Compromise
+    group: data-poisoning
+    description: >
+      Financial institutions rely on external data feeds such as market
+      data, credit references, and KYC/AML watchlists. Compromise of
+      these sources introduces poisoned data that can unknowingly embed
+      biases or vulnerabilities into downstream models.
+  - id: AIR-SEC-009-04
+    title: Bias Introduction
+    group: data-poisoning
+    description: >
+      Deliberate data poisoning amplifies biases in credit scoring or
+      loan approval models, leading to discriminatory outcomes and
+      regulatory non-compliance. Effects are subtle and may remain
+      hidden until major failures or regulatory interventions occur.
+  - id: AIR-OP-007-01
+    title: Denial of Wallet
+    group: model-availability
+    description: >
+      Usage patterns inadvertently lead to excessive costs, throttling,
+      or service disruptions. Overly long prompts from large document
+      chunking, multimedia content, or token-expensive adversarial queries
+      can exhaust token limits or drive up charges. Poorly throttled
+      scripts or agentic systems may generate excessive API calls,
+      overwhelming resources and bypassing capacity planning.
+  - id: AIR-OP-007-02
+    title: TSP Outage or Degradation
+    group: model-availability
+    description: >
+      External technology service providers may lack operational maturity
+      to maintain stable service levels, leading to unexpected outages or
+      performance degradation under load. Tight coupling to a specific
+      proprietary provider limits failover capability, violating business
+      continuity expectations.
+  - id: AIR-OP-007-03
+    title: VRAM Exhaustion
+    group: model-availability
+    description: >
+      Video RAM exhaustion on serving infrastructure compromises model
+      responsiveness or triggers crashes. Causes include configuration
+      changes that exceed available resources, caching strategies that
+      trade VRAM for throughput, and memory leaks in model-serving
+      libraries that prevent proper resource release.
+  - id: AIR-SEC-010-01
+    title: Direct Prompt Injection
+    group: prompt-injection
+    description: >
+      Attackers interact directly with the LLM to override its intended
+      behaviour. Crafted inputs attempt to bypass system prompts, ignore
+      safety guardrails, or coerce the model into disclosing sensitive
+      information. Requires no special privileges and can be executed
+      through simple input manipulation.
+  - id: AIR-SEC-010-02
+    title: Indirect Prompt Injection
+    group: prompt-injection
+    description: >
+      Malicious instructions are embedded in third-party content such as
+      websites, emails, or uploaded documents. When the LLM processes
+      this contaminated data, the injected prompts can hijack decision-making,
+      escalate privileges, trigger unauthorized actions, or exfiltrate
+      data being processed. Especially dangerous in automated workflows
+      or multi-agent architectures.
+  - id: AIR-SEC-010-03
+    title: Model Profiling and Inversion
+    group: prompt-injection
+    description: >
+      Sophisticated prompt injection techniques probe the internal
+      structure of an LLM to extract model biases, proprietary system
+      prompts, configurations, or training data used in fine-tuning or
+      RAG corpora. Enables intellectual property theft, facilitates
+      future attacks, or supports creation of clone models.
+  - id: AIR-OP-018
+    title: Model Overreach / Expanded Use
+    group: operational
+    description: >
+      AI systems may be used beyond their originally intended and
+      validated scope, leading to unreliable outputs in contexts the
+      model was not designed or tested for. Scope creep can occur
+      gradually as users discover new applications, or suddenly when
+      systems are repurposed without adequate re-evaluation of risks
+      and performance characteristics.
+  - id: AIR-OP-020
+    title: Reputational Risk
+    group: operational
+    description: >
+      AI systems may generate outputs that are offensive, inappropriate,
+      misleading, or otherwise damaging to the organization's
+      reputation. This risk is amplified when attackers deliberately
+      manipulate models into producing harmful content that is then
+      attributed to the organization.
+  - id: AIR-SEC-002-01
+    title: Embedding Inversion
+    group: information-leakage
+    description: >
+      Although embeddings are not human-readable, inversion attacks can
+      reconstruct the original text from stored vectors, exposing proprietary
+      or personally identifiable information held in a RAG vector store.
+  - id: AIR-SEC-002-02
+    title: Membership Inference
+    group: information-leakage
+    description: >
+      An adversary probes the vector store to determine whether specific
+      information is present, for example generating embeddings for a
+      confidential transaction and inferring from similarity whether such a
+      deal is being discussed internally.
+  - id: AIR-SEC-002-03
+    title: Embedding Store Poisoning
+    group: information-leakage
+    description: >
+      An attacker with access injects malicious or misleading embeddings into
+      the vector store, degrading the accuracy of retrieved context; dense
+      numerical representations make such tampering difficult to detect.
+  - id: AIR-SEC-002-04
+    title: Misconfigured Vector Store Access Controls
+    group: information-leakage
+    description: >
+      Missing role-based access control or overly permissive settings on the
+      vector store allow unauthorized users to retrieve embeddings of
+      sensitive internal data.
+  - id: AIR-SEC-002-05
+    title: Encryption and Audit Deficiencies
+    group: information-leakage
+    description: >
+      Vector stores lacking encryption at rest expose embeddings to anyone
+      with storage access, while absent audit logging prevents detection of
+      unauthorized access, modification, or exfiltration.
+  - id: AIR-OP-004-01
+    title: Lack of Ground Truth
+    group: output-integrity
+    description: >
+      The model cannot distinguish accurate from inaccurate information in its
+      training corpus, so it may generate plausible but fabricated financial
+      facts, figures, or citations.
+  - id: AIR-OP-004-02
+    title: Ambiguous or Incomplete Prompts
+    group: output-integrity
+    description: >
+      When prompts lack clarity or precision, the model is more likely to
+      fabricate plausible-sounding but incorrect details to fill the gaps.
+  - id: AIR-OP-004-03
+    title: Confident Presentation of Errors
+    group: output-integrity
+    description: >
+      Hallucinated content is delivered with high fluency and syntactic
+      confidence, making inaccuracies difficult for users to recognise and
+      increasing the chance they act on false information.
+  - id: AIR-OP-004-04
+    title: Fine-Tuning or Prompt Bias
+    group: output-integrity
+    description: >
+      Instructions or fine-tuning intended to improve helpfulness or
+      creativity can inadvertently increase the model's tendency to produce
+      unsupported statements.
+  - id: AIR-OP-005-01
+    title: Silent Model Updates
+    group: model-integrity
+    description: >
+      Providers retrain, fine-tune, or re-architect foundation models without
+      explicit notification or version pinning, causing behaviour to shift
+      even when inputs are unchanged and breaking testing and reproducibility.
+  - id: AIR-OP-005-02
+    title: System Prompt Modifications
+    group: model-integrity
+    description: >
+      Changes to a model's hidden or implicit system prompt, for example for
+      safety or compliance, alter outputs subtly or significantly even when
+      user inputs remain identical.
+  - id: AIR-OP-005-03
+    title: Deployment Environment or API Changes
+    group: model-integrity
+    description: >
+      Changes to deployment infrastructure such as hardware, quantization, or
+      tokenization, or to API defaults, affect model behaviour, particularly
+      for latency- or performance-sensitive applications.
+  - id: AIR-OP-005-04
+    title: Prompt Perturbation Sensitivity
+    group: model-integrity
+    description: >
+      Minor variations in phrasing significantly change outputs and can be
+      exploited to attack model grounding or circumvent safeguards,
+      introducing further unpredictability.
+  - id: AIR-OP-006-01
+    title: Probabilistic Sampling Variability
+    group: output-integrity
+    description: >
+      Because models sample from a probability distribution over next tokens
+      rather than always selecting the most likely token, identical inputs can
+      yield different outputs across runs.
+  - id: AIR-OP-006-02
+    title: Internal State Variation
+    group: output-integrity
+    description: >
+      Random seeds, GPU computation variations, and floating-point precision
+      differences cause non-reproducible outputs even with fixed inputs and
+      parameters.
+  - id: AIR-OP-006-03
+    title: Context Sensitivity
+    group: output-integrity
+    description: >
+      Output varies with the position of content in the token window or with
+      slight rephrasing, producing inconsistent results for semantically
+      equivalent prompts.
+  - id: AIR-OP-006-04
+    title: Decoding Parameter Effects
+    group: output-integrity
+    description: >
+      Sampling parameters such as temperature and top-p amplify or dampen
+      variability, trading consistency against creativity.
+  - id: AIR-SEC-008-01
+    title: Training Data and Weight Tampering
+    group: model-integrity
+    description: >
+      Adversaries tamper with training data, fine-tuning datasets, or
+      pretrained model weights in the provider's pipeline, embedding subtle
+      manipulations that are difficult to detect downstream.
+  - id: AIR-SEC-008-02
+    title: Infrastructure and ML Library Compromise
+    group: model-integrity
+    description: >
+      Compromise of GPU firmware, operating systems, cloud orchestration, or
+      ML libraries such as TensorFlow, PyTorch, and CUDA enables tampering
+      with the model or its runtime behaviour without detection.
+  - id: AIR-SEC-008-03
+    title: Adversarial Fine-Tuning
+    group: model-integrity
+    description: >
+      Where model weights are accessible, attackers craft subtle adversarial
+      modifications during fine-tuning that cause unsafe responses or bypass
+      content filters under specific conditions.
+  - id: AIR-SEC-008-04
+    title: Backdoor Triggers
+    group: model-integrity
+    description: >
+      A model is engineered to behave maliciously when presented with a
+      specific trigger phrase or input pattern, activating offensive outputs,
+      bypassing constraints, or revealing sensitive information.
+  - id: AIR-SEC-008-05
+    title: Safety Mechanism Disablement
+    group: model-integrity
+    description: >
+      Tampering disables alignment or content-moderation systems, neutralising
+      the safeguards intended to enforce responsible model behaviour.
+  - id: AIR-OP-014-01
+    title: Retrieval-Response Disconnect
+    group: output-integrity
+    description: >
+      The model generates confident responses that contradict or misinterpret
+      the retrieved financial documents, for example omitting critical
+      regulatory exceptions documented in policy.
+  - id: AIR-OP-014-02
+    title: Context-Window Truncation of Caveats
+    group: output-integrity
+    description: >
+      Important regulatory caveats, disclaimers, or conditional statements are
+      truncated or deprioritised when documents exceed the context window,
+      yielding authoritative-looking but incomplete guidance.
+  - id: AIR-OP-014-03
+    title: Domain Knowledge Gap-Filling
+    group: output-integrity
+    description: >
+      When retrieved documents do not fully address a query, the model fills
+      gaps with plausible but incorrect general knowledge, blending accurate
+      institutional content with inaccurate information.
+  - id: AIR-OP-014-04
+    title: Scope Boundary Violation
+    group: output-integrity
+    description: >
+      The model provides advice or recommendations beyond its authorised
+      scope, such as offering investment advice from a system licensed only
+      for general account information.
+  - id: AIR-OP-014-05
+    title: Tone and Compliance Mismatch
+    group: output-integrity
+    description: >
+      The model adopts an inappropriate tone or level of certainty for
+      financial communications, such as being overly definitive about complex
+      regulatory matters.
+  - id: AIR-OP-016-01
+    title: Data Bias
+    group: fairness
+    description: >
+      Training datasets reflect historical societal biases or under-represent
+      populations, leading the model to learn and perpetuate discriminatory
+      patterns such as lower loan-approval rates for certain groups.
+  - id: AIR-OP-016-02
+    title: Algorithmic Bias
+    group: fairness
+    description: >
+      Model architecture, feature selection, or optimization choices
+      unintentionally introduce or amplify bias, for example by over-weighting
+      a feature correlated with a protected characteristic.
+  - id: AIR-OP-016-03
+    title: Proxy Discrimination
+    group: fairness
+    description: >
+      Seemingly neutral data points such as postal codes or transaction
+      history act as proxies for protected characteristics, producing
+      discriminatory decisions.
+  - id: AIR-OP-016-04
+    title: Bias Feedback Loops
+    group: fairness
+    description: >
+      A biased system's outputs are fed back into its learning cycle without
+      correction, making the bias self-reinforcing and amplified over time.
+  - id: AIR-OP-017
+    title: Lack of Explainability
+    group: governance-compliance
+    description: >
+      Complex foundation models operate as black boxes, producing outputs
+      without a clear, traceable rationale. Firms cannot adequately justify
+      AI-driven decisions to regulators, stakeholders, or customers, and
+      underlying errors or biases may go undetected, complicating
+      model-soundness assessment and risk management.
+  - id: AIR-OP-019-01
+    title: Poor-Quality Training Data
+    group: data-quality
+    description: >
+      Inaccurate, incomplete, or biased training or fine-tuning data leads the
+      model to produce unreliable, misleading, or irrelevant outputs,
+      especially in decision-making and risk analysis.
+  - id: AIR-OP-019-02
+    title: Data and Concept Drift
+    group: data-quality
+    description: >
+      Models become stale as the statistical properties of input data change
+      over time, eroding predictive power and causing failure to recognise
+      emerging market shifts or new regulatory requirements.
+  - id: AIR-OP-019-03
+    title: Bias and Error Amplification
+    group: data-quality
+    description: >
+      Errors or embedded biases in historical training data propagate into the
+      model and are magnified at scale, undermining performance and
+      introducing legal and reputational risk.
+  - id: AIR-RC-022-01
+    title: Non-Compliant AI Outputs
+    group: governance-compliance
+    description: >
+      AI-generated financial advice, marketing, or communications must meet
+      the same standards as human-produced outputs, including KYC,
+      suitability, fair and accurate disclosure, and record-keeping; failing
+      to do so breaches regimes such as MiFID II, SEC rules, and FINRA
+      guidelines.
+  - id: AIR-RC-022-02
+    title: Model Risk Management Gaps
+    group: governance-compliance
+    description: >
+      AI models informing critical decisions fall under divergent
+      model-risk-management expectations, such as the UK PRA's SS1/23, with
+      recently shifting US scope; inadequate validation, monitoring,
+      documentation, and oversight create compliance exposure.
+  - id: AIR-RC-022-03
+    title: Inadequate AI Supervision and Accountability
+    group: governance-compliance
+    description: >
+      Firms remain accountable for supervising AI systems; failure to define
+      clear lines of accountability and ensure staff understand system
+      capabilities and limitations leads directly to non-compliance.
+  - id: AIR-RC-022-04
+    title: Evolving Regulatory Obligations
+    group: governance-compliance
+    description: >
+      New and diverging legislation, such as the EU AI Act's high-risk
+      classification and Fundamental Rights Impact Assessments alongside US
+      fair-lending, FCRA, and state AI laws, imposes additional transparency,
+      fairness, and oversight obligations that firms must anticipate.
+  - id: AIR-RC-023-01
+    title: Copyright Infringement in Outputs
+    group: governance-compliance
+    description: >
+      AI outputs may replicate copyrighted material from training data,
+      creating legal liability when used in marketing, code generation, or
+      research reports.
+  - id: AIR-RC-023-02
+    title: Trade Secret Leakage to AI Tools
+    group: governance-compliance
+    description: >
+      Employees inputting proprietary algorithms, M&A strategies, or
+      confidential data into public AI tools risk irretrievable loss of
+      valuable intellectual property.
+  - id: AIR-RC-023-03
+    title: Licensing and Terms-of-Service Violations
+    group: governance-compliance
+    description: >
+      Improper licensing of AI platforms or failure to comply with terms of
+      service results in contractual breaches.
+  - id: AIR-SEC-024-01
+    title: API Endpoint Discovery and Exploitation
+    group: agentic-security
+    description: >
+      Agents discover and use API endpoints not intended for their use case,
+      for example a balance-inquiry agent invoking payment-transfer APIs,
+      because endpoint restrictions are insufficient.
+  - id: AIR-SEC-024-02
+    title: Tool Chain Privilege Escalation
+    group: agentic-security
+    description: >
+      By chaining individually authorized API calls, an agent achieves
+      outcomes that no single authorized action should permit, such as
+      aggregating data to enable unauthorized decisions.
+  - id: AIR-SEC-024-03
+    title: Business Logic Circumvention
+    group: agentic-security
+    description: >
+      Agents bypass intended workflows, approval processes, or
+      segregation-of-duties requirements on which regulatory compliance
+      depends.
+  - id: AIR-SEC-024-04
+    title: Dynamic Privilege Drift
+    group: agentic-security
+    description: >
+      An agent's interpretation of its granted permissions expands during
+      operation, producing permission creep and broader access than originally
+      intended without explicit reconfiguration.
+  - id: AIR-SEC-025-01
+    title: Tool Selection Manipulation
+    group: agentic-security
+    description: >
+      Crafted inputs cause the agent to select inappropriate tools for the
+      task, for example choosing payment-transfer tools when only a balance
+      check was requested.
+  - id: AIR-SEC-025-02
+    title: API Parameter Injection
+    group: agentic-security
+    description: >
+      Malicious inputs influence the parameters an agent passes to legitimate
+      API calls, such as injecting attacker-controlled account numbers,
+      amounts, or authorization codes.
+  - id: AIR-SEC-025-03
+    title: Tool Chain Sequencing Attacks
+    group: agentic-security
+    description: >
+      Adversaries manipulate the order in which an agent executes tools,
+      creating dangerous combinations of otherwise safe individual operations.
+  - id: AIR-SEC-025-04
+    title: Tool State Corruption
+    group: agentic-security
+    description: >
+      Attacks corrupt the agent's understanding of tool states, capabilities,
+      or relationships, leading to inappropriate or dangerous tool usage.
+  - id: AIR-SEC-025-05
+    title: Cross-Tool Data Injection
+    group: agentic-security
+    description: >
+      Outputs from one tool are used to inject malicious data into subsequent
+      tool calls, creating a chain of compromised operations.
+  - id: AIR-SEC-026-01
+    title: Third-Party MCP Server Compromise
+    group: agentic-security
+    description: >
+      External MCP servers operated by vendors or partners are compromised,
+      injecting malicious data or logic into services that agents consume.
+  - id: AIR-SEC-026-02
+    title: MCP Server Update Poisoning
+    group: agentic-security
+    description: >
+      Legitimate MCP servers receive malicious updates or patches that
+      introduce backdoors, data corruption, or logic manipulation without
+      operator knowledge.
+  - id: AIR-SEC-026-03
+    title: Insider Threats to MCP Services
+    group: agentic-security
+    description: >
+      Malicious insiders with access to MCP infrastructure deliberately
+      corrupt data, introduce backdoors, or modify business logic to benefit
+      attackers.
+  - id: AIR-SEC-026-04
+    title: MCP Protocol Manipulation
+    group: agentic-security
+    description: >
+      Attacks target the MCP communication protocol itself, including
+      man-in-the-middle, protocol-downgrade, or exploitation of protocol
+      vulnerabilities.
+  - id: AIR-SEC-026-05
+    title: DNS and Infrastructure Redirection
+    group: agentic-security
+    description: >
+      Agent MCP connections are redirected to attacker-controlled servers
+      through DNS poisoning, BGP hijacking, or other network-level attacks.
+  - id: AIR-SEC-027-01
+    title: Memory Injection
+    group: agentic-security
+    description: >
+      Prompt injection or similar techniques cause agents to store malicious
+      instructions or compromised reasoning patterns in their persistent
+      memory.
+  - id: AIR-SEC-027-02
+    title: Learned Behavior Corruption
+    group: agentic-security
+    description: >
+      Through repeated exposure to malicious inputs, agents learn
+      inappropriate patterns or exceptions to business rules that persist
+      across sessions.
+  - id: AIR-SEC-027-03
+    title: State Storage Compromise
+    group: agentic-security
+    description: >
+      Direct attacks on the databases, files, or cloud storage holding agent
+      state allow attackers to modify agent memory without interacting with
+      the agent.
+  - id: AIR-SEC-027-04
+    title: Cross-Session Instruction Persistence
+    group: agentic-security
+    description: >
+      Malicious instructions embedded in one session persist and influence
+      agent behaviour in subsequent sessions with different users or contexts.
+  - id: AIR-SEC-027-05
+    title: Preference Poisoning
+    group: agentic-security
+    description: >
+      Corrupting agent preferences, configuration, or learned user patterns
+      biases the agent toward specific outcomes or bypasses security controls.
+  - id: AIR-OP-028-01
+    title: Agent-to-Agent Communication Compromise
+    group: agentic-security
+    description: >
+      Malicious agents inject harmful data, instructions, or corrupted state
+      into communication channels, causing receiving agents to adopt
+      compromised behaviours.
+  - id: AIR-OP-028-02
+    title: Shared Resource Contamination
+    group: agentic-security
+    description: >
+      Compromised agents corrupt shared databases, APIs, or state storage
+      relied upon by other agents, causing systematic errors across multiple
+      agent types.
+  - id: AIR-OP-028-03
+    title: Agent Authority Impersonation
+    group: agentic-security
+    description: >
+      Compromised agents impersonate higher-privilege agents or use stolen
+      credentials to access resources or influence decisions outside their
+      intended scope.
+  - id: AIR-OP-028-04
+    title: Cross-Agent Privilege Inheritance
+    group: agentic-security
+    description: >
+      Design flaws allow agents to inherit or assume privileges from agents
+      they interact with, escalating privilege across the multi-agent system.
+  - id: AIR-OP-028-05
+    title: Cascade Failure Propagation
+    group: agentic-security
+    description: >
+      Failures or compromises in one agent cascade to dependent agents,
+      potentially bringing down entire business processes or decision chains.
+  - id: AIR-SEC-029-01
+    title: Tool Chain Credential Enumeration
+    group: agentic-security
+    description: >
+      Agents are manipulated to use legitimate file, database, or API tools to
+      systematically search for credentials in configuration files,
+      environment variables, logs, and source repositories.
+  - id: AIR-SEC-029-02
+    title: Memory and Process Credential Extraction
+    group: agentic-security
+    description: >
+      Compromised agents use system access to extract credentials from process
+      memory, swap files, core dumps, or temporary storage where they may be
+      cached.
+  - id: AIR-SEC-029-03
+    title: Database and Storage Credential Mining
+    group: agentic-security
+    description: >
+      Agents exploit database access to search for credentials stored in user
+      tables, configuration tables, or other locations holding passwords, API
+      keys, or tokens.
+  - id: AIR-SEC-029-04
+    title: Cloud and Infrastructure Credential Harvesting
+    group: agentic-security
+    description: >
+      Agents leverage cloud-management APIs and infrastructure tools to
+      discover credentials in key vaults, secret stores, instance metadata, or
+      infrastructure-as-code.
+  - id: AIR-SEC-029-05
+    title: Cross-System Credential Correlation
+    group: agentic-security
+    description: >
+      Agents correlate partial credential information across systems,
+      reconstruct full credentials from fragments, or identify
+      credential-reuse patterns.

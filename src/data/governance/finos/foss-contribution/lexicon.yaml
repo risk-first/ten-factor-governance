@@ -1,0 +1,134 @@
+title: FOSS Contribution Lexicon
+
+metadata:
+  id: foss-contribution-lexicon
+  type: Lexicon
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Controlled vocabulary for Free and Open Source Software contribution
+    governance terms used across FOSS contribution Gemara artifacts.
+
+terms:
+  - id: cla
+    title: Contributor License Agreement
+    synonyms:
+      - CLA
+    definition: >
+      A contract between the FOSS project and either an individual developer
+      or the company contributing code. CLAs may be categorized as Individual
+      CLAs or Corporate CLAs (CCLA).
+
+  - id: individual-cla
+    title: Individual CLA
+    definition: >
+      An individual developer agrees they have the right to contribute code and
+      binds their contributions to the FOSS project under the terms of the CLA.
+
+  - id: corporate-cla
+    title: Corporate CLA
+    synonyms:
+      - CCLA
+    definition: >
+      Provides direct corporate authority for employees of a company to make
+      contributions with explicit authority for a patent grant in an open
+      source license. Corporate CLAs must be signed by an authorized
+      signatory to be valid.
+
+  - id: dco
+    title: Developer Certificate of Origin
+    synonyms:
+      - DCO
+    definition: >
+      A per-commit sign-off made by a contributor indicating they agree to the
+      terms published at https://developercertificate.org for that particular
+      contribution.
+    references:
+      - citation: Developer Certificate of Origin
+        url: https://developercertificate.org
+
+  - id: foss-community
+    title: FOSS Community
+    synonyms:
+      - Open Source Community
+    definition: >
+      A group of authorized individuals with contribution or review entitlement
+      to a FOSS project. The FOSS project can be organized as part of a
+      foundation or for-profit entity.
+
+  - id: foss
+    title: Free and Open Source Software
+    synonyms:
+      - FOSS
+      - Open Source
+    definition: >
+      Software made available under an Open Source Definition compliant license
+      in source code form to facilitate modification. FOSS and Open Source are
+      interchangeable in these guidelines.
+
+  - id: osd
+    title: Open Source Definition
+    synonyms:
+      - OSD
+    definition: >
+      A document published by the Open Source Initiative used to determine if a
+      license can be labeled with the Open Source Certification mark.
+    references:
+      - citation: Open Source Initiative
+        url: https://opensource.org/about
+
+  - id: open-source-foundation
+    title: Open Source Foundation
+    definition: >
+      Not-for-profit and charitable organizations providing a neutral playing
+      field for developers, technologists, and companies to collectively
+      contribute to common solutions and growth.
+
+  - id: company-moderated-project
+    title: Company Moderated Project
+    definition: >
+      An open-source project initiated by the company where the company acts as
+      the primary project moderator or maintainer.
+
+  - id: company-interest-major-project
+    title: Company Interest (Major) Project
+    definition: >
+      An open-source project consumed in company applications, moderated by a
+      non-company entity, where the company wishes to influence project
+      direction or contribute significant functionality.
+
+  - id: company-interest-minor-project
+    title: Company Interest (Minor) Project
+    definition: >
+      An open-source project consumed in company applications where the company
+      does not wish to influence direction but benefits from allowing employee
+      contributions such as small enhancements and bug fixes.
+
+  - id: personal-contribution-project
+    title: Personal Contribution Project
+    definition: >
+      An open-source contribution effort conducted by employees outside regular
+      company-contracted activities for projects that are not company moderated
+      or company interest and provide no benefit to the company.
+
+  - id: non-standard-cryptography
+    title: Non-Standard Cryptography
+    definition: >
+      Any implementation of cryptography involving proprietary or unpublished
+      cryptographic functionality, including encryption algorithms or protocols
+      that have not been adopted or approved by a duly recognized international
+      standards body and have not otherwise been published.
+
+  - id: security-policy
+    title: Security Policy
+    synonyms:
+      - SECURITY.md
+    definition: >
+      Project-published instructions describing how to report security
+      vulnerabilities in the project, commonly provided as SECURITY.md.

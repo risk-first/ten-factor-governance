@@ -1,0 +1,108 @@
+---
+sidebar_position: 22
+title: Evaluation Log
+sidebar_label: Evaluation Log
+hide_title: true
+tags:
+  - Artifact
+  - Layer 5
+aka:
+  gemara: EvaluationLog
+description: "The results of evaluating a control's assessment requirements."
+---
+
+<GovernanceArtifact>
+
+<Purpose>
+
+The results of evaluating a control's assessment requirements.
+
+</Purpose>
+
+<Role>
+
+Evaluation is measurement: did this instance of a sensitive activity satisfy the
+assessment requirements cited by a policy plan? The log records targets, control
+requirement ids, plan ids, pass/fail results and messages. 
+
+It is evidence of inspection—not the policy itself and not yet the enforcement action.
+
+</Role>
+
+<Examples>
+
+<RevealItem title="Failed secret scan on internal-tools PR #417" defaultOpen>
+
+A company-moderated pull request is evaluated against the FOSS contribution
+policy. IP review passes with a recorded legal disposition; the data-leakage
+secret scan fails when an uncleared AWS access key is found. The evaluation log
+captures both results against named control requirements and assessment plans.
+
+**Source:** [internal-tools PR #417 Evaluation Log](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/logs/evaluation-internal-tools-pr417.yaml) (`foss-eval-internal-tools-pr417`).
+
+</RevealItem>
+
+<RevealItem title="Passed evaluation on commons-lang PR #482">
+
+A company-interest contribution clears the same per-contribution plans—showing
+that evaluation is routine exhaust for successful paths, not only failure
+packs.
+
+**Source:** [commons-lang PR #482 Evaluation Log](https://github.com/robmoffat/FOSS-Contribution-Gemara/blob/main/logs/evaluation-commons-lang-pr482.yaml) (`foss-eval-commons-lang-pr482`).
+
+</RevealItem>
+
+</Examples>
+
+<LinksUpstream>
+
+- [Policy](/docs/artifacts/definitions/decide/policy) — assessment plans and methods that
+  define what to evaluate
+- [Control](/docs/artifacts/definitions/assess/control) — assessment requirements that are the subject of the log's contents
+- [Activity](/docs/artifacts/definitions/operate/sensitive-activity) — the sensitive activity instance under
+  evaluation
+
+</LinksUpstream>
+
+<LinksDownstream>
+
+- [Enforcement Log](/docs/artifacts/definitions/enforce/enforcement-log) justified by failed
+  (or cleared) evaluations
+- [Audit Log](/docs/artifacts/definitions/assure/audit-log) cites evaluation evidence
+
+</LinksDownstream>
+
+<AntiPatterns>
+
+<RevealItem title="Evaluation without a cited plan">
+
+Ad-hoc scanner output that cannot point at a policy assessment plan or control
+requirement. Auditors cannot replay intent.
+
+</RevealItem>
+
+<RevealItem title="Only logging failures">
+
+Passing evaluations discarded. Continuous governance and audit then lack the
+positive evidence trail.
+
+</RevealItem>
+
+</AntiPatterns>
+
+<RelatedFactors>
+
+- [Context In, Decisions Out](/docs/factors/context-in-decisions-out) — evaluation is a structured decision
+- [Evidence by Default](/docs/factors/evidence-by-default) — logs as normal exhaust
+- [Continuous Governance](/docs/factors/continuous-governance) — inspection in the path of change
+
+</RelatedFactors>
+
+<References>
+
+- [Gemara Evaluation Log schema](https://gemara.openssf.org/schema/evaluationlog.html)
+- [Gemara](/docs/tools/gemara)
+
+</References>
+
+</GovernanceArtifact>

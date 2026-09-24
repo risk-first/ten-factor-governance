@@ -18,15 +18,25 @@ import GovernanceArtifact, {
   Examples,
   LinksUpstream,
   LinksDownstream,
+  EntityRelationshipDiagram,
 } from '@site/src/components/GovernanceArtifact';
 import FactorList from '@site/src/components/FactorList';
-import ArtifactList from '@site/src/components/ArtifactList';
 import RevealItem from '@site/src/components/RevealItem';
 import CodeExample, {Output, Outputs} from '@site/src/components/CodeExample';
-import LayerPill from '@site/src/components/LayerPill';
+import BandPill from '@site/src/components/BandPill';
 import ArtifactLayerMap from '@site/src/components/ArtifactLayerMap';
 import Tool, {HelpsWith} from '@site/src/components/Tool';
 import ToolList from '@site/src/components/ToolList';
+import GemaraGuidance from '@site/src/components/GemaraGuidance';
+import GemaraCatalog from '@site/src/components/GemaraCatalog';
+import IsoDocument from '@site/src/components/IsoDocument';
+import DownloadYamlButton from '@site/src/components/DownloadYamlButton';
+import Comparison, {
+  Requirement,
+  AddressedBy,
+  Gap,
+  Recommendation,
+} from '@site/src/components/Comparison';
 
 export default {
   ...MDXComponents,
@@ -47,15 +57,24 @@ export default {
   Examples,
   LinksUpstream,
   LinksDownstream,
+  EntityRelationshipDiagram,
   FactorList,
-  ArtifactList,
   RevealItem,
   CodeExample,
   Outputs,
   Output,
-  LayerPill,
+  BandPill,
   ArtifactLayerMap,
   Tool,
   HelpsWith,
   ToolList,
+  GemaraGuidance,
+  GemaraCatalog,
+  IsoDocument,
+  DownloadYamlButton,
+  Comparison,
+  Requirement,
+  AddressedBy,
+  Gap,
+  Recommendation,
 };

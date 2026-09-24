@@ -1,0 +1,605 @@
+title: FOSS Contribution Guidelines
+
+metadata:
+  id: foss-contribution-guidance
+  type: GuidanceCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Machine-readable guidance for employee contribution to Free and Open Source
+    Software projects, adapted from the FOSS Contribution Guidelines.
+  lexicon:
+    reference-id: foss-contribution-lexicon
+  mapping-references:
+    - id: foss-contribution-lexicon
+      title: FOSS Contribution Lexicon
+      version: "0.1.0"
+      url: file://lexicon.yaml
+    - id: foss-contribution-principles
+      title: FOSS Contribution Principles
+      version: "0.1.0"
+      url: file://principle.yaml
+    - id: foss-contribution-vectors
+      title: FOSS Contribution Vector Catalog
+      version: "0.1.0"
+      url: file://vector.yaml
+
+type: Framework
+
+front-matter: |
+  These guidelines establish the minimum requirements and controls to be met by
+  contributors to Free and Open Source Software communities. The company supports
+  certain FOSS contribution activities when doing so benefits the company and
+  does not present unacceptable risk. They apply to employees who wish to
+  contribute to FOSS projects.
+
+groups:
+  - id: governance
+    title: Governance
+    description: >
+      OSPO oversight, approval, and program governance for FOSS contribution.
+
+  - id: taxonomy
+    title: Taxonomy and Scope
+    description: >
+      Classification of contribution activity and applicability boundaries.
+
+  - id: infrastructure
+    title: Infrastructure and Tooling
+    description: >
+      Where and how contribution activity may be performed.
+
+  - id: compliance
+    title: Compliance and Regulatory Alignment
+    description: >
+      Alignment with legal, export, data-flow, and company policy obligations.
+
+  - id: lifecycle
+    title: Engagement Lifecycle
+    description: >
+      Registration, maintenance, risk review, and retirement of FOSS engagements.
+
+  - id: roles
+    title: Roles and Enablement
+    description: >
+      Roles, training, and support structures for FOSS contribution.
+
+exemptions:
+  - description: FOSS consumption and introduction requirements
+    reason: >
+      These guidelines do not introduce or change established requirements for
+      the introduction and consumption of free and open source software.
+
+guidelines:
+  - id: foss-guidance-program-objective
+    title: FOSS Contribution Program Objective
+    group: governance
+    state: Active
+    objective: >
+      Support employee contribution and publication of FOSS when it benefits
+      the company and does not present unacceptable risk.
+    rationale:
+      importance: >
+        Public contribution can create data leakage, IP loss, legal exposure, and
+        reputational harm without appropriate governance.
+      goals:
+        - Enable beneficial open source participation
+        - Establish minimum activities, approvals, and evidence of compliance
+    principles:
+      - reference-id: foss-contribution-principles
+        entries:
+          - reference-id: company-benefit
+          - reference-id: acceptable-risk
+
+  - id: foss-guidance-ospo-governance
+    title: Open Source Program Office Governance
+    group: governance
+    state: Active
+    objective: >
+      Ensure FOSS contribution strategy and governance are established,
+      evolved, and executed under OSPO oversight.
+    statements:
+      - id: foss-guidance-ospo-governance.1
+        text: >
+          The procedures and governance processes described in these guidelines
+          are overseen by the Chair of the Open Source Program Office.
+      - id: foss-guidance-ospo-governance.2
+        text: >
+          The OSPO is responsible for establishing, evolving, and executing FOSS
+          contribution strategy and governance under the direction of the
+          guidelines owner.
+    principles:
+      - reference-id: foss-contribution-principles
+        entries:
+          - reference-id: ospo-governance
+
+  - id: foss-guidance-project-categories
+    title: FOSS Project Categories
+    group: taxonomy
+    state: Active
+    objective: >
+      Classify every employee FOSS contribution into one of four project
+      categories and apply the corresponding requirements.
+    statements:
+      - id: foss-guidance-project-categories.company-moderated
+        title: Company Moderated
+        text: >
+          Open-source projects initiated by the company where the company acts
+          as the primary project moderator or maintainer.
+      - id: foss-guidance-project-categories.company-interest-major
+        title: Company Interest (Major)
+        text: >
+          Projects consumed in company applications where the company wishes to
+          influence direction or contribute significant functionality.
+      - id: foss-guidance-project-categories.company-interest-minor
+        title: Company Interest (Minor)
+        text: >
+          Projects consumed in company applications where the company benefits
+          from small employee contributions such as enhancements and bug fixes.
+      - id: foss-guidance-project-categories.personal-contribution
+        title: Personal Contribution
+        text: >
+          Contribution conducted outside regular company-contracted activities
+          to projects that are not company moderated or company interest and
+          provide no benefit to the company.
+    see-also:
+      - foss-guidance-personal-contribution
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: ungoverned-project-contribution
+
+  - id: foss-guidance-company-infrastructure
+    title: Company Infrastructure Use
+    group: infrastructure
+    state: Active
+    objective: >
+      Define where company-moderated, company-interest, and personal
+      contributions may be performed.
+    statements:
+      - id: foss-guidance-company-infrastructure.1
+        text: >
+          Company moderated and company interest FOSS contribution activities
+          may be performed within or outside of the company network.
+      - id: foss-guidance-company-infrastructure.2
+        text: >
+          Personal FOSS contributions must be performed outside the company
+          network using non-company managed hardware.
+      - id: foss-guidance-company-infrastructure.3
+        text: >
+          External infrastructure used to host company moderated projects must
+          be approved by the OSPO.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: company-infrastructure-misuse
+
+  - id: foss-guidance-standard-tools
+    title: OSPO Standard Tools and Scanning
+    group: infrastructure
+    state: Active
+    objective: >
+      Use OSPO-approved tools and compliance scanning when contributing from
+      company infrastructure or managed hardware.
+    statements:
+      - id: foss-guidance-standard-tools.1
+        text: >
+          Preventative and detective internal controls must address the risks
+          described in FOSS contribution risk guidance.
+      - id: foss-guidance-standard-tools.2
+        text: >
+          Company moderated and company interest activities on company network or
+          hardware must use OSPO approved standard tools.
+      - id: foss-guidance-standard-tools.3
+        text: >
+          Contribution activity from company network or managed hardware must be
+          subject to compliance scanning and review for license compliance,
+          maker-checker separation, sensitive data disclosure, copyright text,
+          and export regulations.
+    recommendations:
+      - Company moderated projects must use an OSPO approved source code management tool.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: unapproved-tooling-use
+
+  - id: foss-guidance-inventory-registration
+    title: FOSS Inventory Registration
+    group: lifecycle
+    state: Active
+    objective: >
+      Register company moderated and company interest contribution activity in
+      an OSPO-approved inventory system.
+    statements:
+      - id: foss-guidance-inventory-registration.1
+        text: >
+          Company moderated and company interest FOSS contribution activity must
+          be registered in an OSPO approved inventory system.
+    see-also:
+      - foss-guidance-ospo-project-approval
+
+  - id: foss-guidance-foss-identity
+    title: FOSS Contributor Identity
+    group: compliance
+    state: Active
+    objective: >
+      Ensure contributor identity on public FOSS platforms is appropriate to the
+      project category.
+    statements:
+      - id: foss-guidance-foss-identity.1
+        text: >
+          Contributors to company moderated and company interest projects must
+          identify contributions using their company external email address while
+          employed at the company.
+      - id: foss-guidance-foss-identity.2
+        text: >
+          Contributors must not use company internal email addresses or internal
+          usernames for company-associated contributions.
+      - id: foss-guidance-foss-identity.3
+        text: >
+          On cessation of employment, contributors must not tag commits with
+          their company email.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: company-identity-misuse
+
+  - id: foss-guidance-information-classification
+    title: Information Classification for Publication
+    group: compliance
+    state: Active
+    objective: >
+      Review and approve company moderated and company interest contributions
+      before transmitting material out of the company network.
+    statements:
+      - id: foss-guidance-information-classification.1
+        text: >
+          Contributions must be associated to an inventoried FOSS project
+          registered in the OSPO FOSS inventory.
+      - id: foss-guidance-information-classification.2
+        text: >
+          Contributions containing material non-public information, non-standard
+          cryptography, or non-standard authentication mechanisms must be
+          remediated before approval.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: accidental-sensitive-commit
+          - reference-id: unreviewed-public-release
+
+  - id: foss-guidance-export-control
+    title: Technology Export Regulations Compliance
+    group: compliance
+    state: Active
+    objective: >
+      Ensure FOSS projects and contributions involving export-sensitive
+      functionality receive appropriate review.
+    statements:
+      - id: foss-guidance-export-control.1
+        text: >
+          Company moderated and company interest projects providing or
+          performing non-standard cryptography must be reviewed prior to OSPO
+          approval.
+      - id: foss-guidance-export-control.2
+        text: >
+          Company staff participating in FOSS contribution activities must
+          comply with local export regulations.
+    principles:
+      - reference-id: foss-contribution-principles
+        entries:
+          - reference-id: regulatory-alignment
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: non-standard-crypto-publication
+
+  - id: foss-guidance-license-inventory
+    title: FOSS License Inventory and Management
+    group: lifecycle
+    state: Active
+    objective: >
+      Maintain an auditable inventory of FOSS licenses approved for
+      contribution activity.
+    statements:
+      - id: foss-guidance-license-inventory.1
+        text: >
+          The OSPO must maintain an inventory of FOSS licenses approved for
+          contribution activity by company contributors.
+      - id: foss-guidance-license-inventory.2
+        text: >
+          The inventory must provide an auditable workflow of legal review and
+          business approval or rejection detailing permissions, conditions, and
+          limitations.
+    see-also:
+      - foss-guidance-legal-support
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: unapproved-license-contribution
+
+  - id: foss-guidance-legal-support
+    title: Legal Support for FOSS Contribution
+    group: roles
+    state: Active
+    objective: >
+      Engage legal review when license, contributor agreement, or obligation
+      questions arise.
+    statements:
+      - id: foss-guidance-legal-support.1
+        text: >
+          The legal department's role is advisory to the OSPO when adding
+          licenses, when licenses change, or when CLA, CCLA, DCO, or similar
+          agreements require review.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: unreviewed-contributor-agreement
+
+  - id: foss-guidance-ip-review
+    title: Intellectual Property Review
+    group: compliance
+    state: Active
+    objective: >
+      Review contributions for intellectual property, patent, trademark, and
+      competing-interest concerns before contribution begins.
+    statements:
+      - id: foss-guidance-ip-review.1
+        text: >
+          Contribution requests must include intellectual property and competing
+          interest review and determine whether trademark or patent applications
+          are needed in advance.
+      - id: foss-guidance-ip-review.2
+        text: >
+          Company interest minor projects may not be used to publish company
+          patentable or trademarked contributions.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: perpetual-license-grant-without-approval
+
+  - id: foss-guidance-ospo-project-approval
+    title: OSPO Project Review and Approval
+    group: lifecycle
+    state: Active
+    objective: >
+      Require OSPO review and approval before company moderated and company
+      interest major contributions proceed.
+    applicability:
+      - company-moderated-projects
+      - company-interest-major-projects
+    statements:
+      - id: foss-guidance-ospo-project-approval.1
+        text: >
+          FOSS projects must be reviewed and approved by the OSPO before
+          contributions can be made.
+      - id: foss-guidance-ospo-project-approval.2
+        text: >
+          Company contributions are prohibited when the OSPO withdraws approval
+          or the FOSS project is retired or archived.
+      - id: foss-guidance-ospo-project-approval.3
+        text: >
+          OSPO review does not apply to personal contributions.
+    see-also:
+      - foss-guidance-inventory-registration
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: ungoverned-project-contribution
+
+  - id: foss-guidance-minor-project-access
+    title: Company Interest Minor Project Access
+    group: lifecycle
+    state: Active
+    objective: >
+      Govern employee access to contribute to company interest minor projects.
+    applicability:
+      - company-interest-minor-projects
+    statements:
+      - id: foss-guidance-minor-project-access.1
+        text: >
+          Access requests must be submitted and recorded using an OSPO-approved
+          tool and classified as company interest minor.
+      - id: foss-guidance-minor-project-access.2
+        text: >
+          The requestor's line manager must approve the access request and
+          confirm the project is approved for company use and beneficial to the
+          company.
+      - id: foss-guidance-minor-project-access.3
+        text: >
+          Explicit OSPO approval is not required when the product and license
+          are already approved in official inventories.
+
+  - id: foss-guidance-personal-contribution
+    title: Personal Contribution Conditions
+    group: taxonomy
+    state: Active
+    objective: >
+      Define conditions under which employees may contribute to FOSS in a
+      personal capacity.
+    applicability:
+      - personal-contribution-projects
+    statements:
+      - id: foss-guidance-personal-contribution.1
+        text: >
+          The FOSS project must not be registered as company moderated or
+          company interest in the FOSS inventory.
+      - id: foss-guidance-personal-contribution.2
+        text: >
+          Personal contributions must not conflict with the code of conduct,
+          represent a conflict of interest, leverage company intellectual
+          property, or represent the contributor as a company employee.
+      - id: foss-guidance-personal-contribution.3
+        text: >
+          Personal contributions must not be made from company-owned hardware
+          or infrastructure and must not use a company-associated identity.
+    principles:
+      - reference-id: foss-contribution-principles
+        entries:
+          - reference-id: separation-personal-company
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: company-identity-misuse
+          - reference-id: company-infrastructure-misuse
+          - reference-id: conflict-of-interest-participation
+
+  - id: foss-guidance-peer-review
+    title: Peer Review and Maker-Checker Controls
+    group: infrastructure
+    state: Active
+    objective: >
+      Maintain evidence of peer review and separation of duties for governed
+      contributions.
+    applicability:
+      - company-moderated-projects
+    statements:
+      - id: foss-guidance-peer-review.1
+        text: >
+          Company moderated projects must maintain transaction history showing
+          peer review, approver, and approval date.
+      - id: foss-guidance-peer-review.2
+        text: >
+          Where company controls apply, peer reviewer and contributor must not
+          be the same person.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: peer-review-bypass
+
+  - id: foss-guidance-vulnerability-reporting
+    title: Vulnerability Reporting Instructions
+    group: compliance
+    state: Active
+    objective: >
+      Ensure company moderated projects publish instructions for reporting
+      security vulnerabilities.
+    applicability:
+      - company-moderated-projects
+    statements:
+      - id: foss-guidance-vulnerability-reporting.1
+        text: >
+          Company moderated project teams must define and document OSPO
+          approved instructions describing how to report security
+          vulnerabilities in the project.
+
+  - id: foss-guidance-engagement-maintenance
+    title: FOSS Engagement Maintenance and Recertification
+    group: lifecycle
+    state: Active
+    objective: >
+      Monitor engagements for risk changes and recertify access at least
+      annually.
+    statements:
+      - id: foss-guidance-engagement-maintenance.1
+        text: >
+          Administrators must monitor engagements for inactive projects,
+          license changes, cross-border impacts, and export regulation changes.
+      - id: foss-guidance-engagement-maintenance.2
+        text: >
+          FOSS engagements and access requests must be reviewed or recertified
+          at least annually.
+      - id: foss-guidance-engagement-maintenance.3
+        text: >
+          Project access requests for company interest minor projects must be
+          recertified at least annually and licenses validated regularly.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: stale-engagement-neglect
+
+  - id: foss-guidance-risk-change-management
+    title: Risk Change Management
+    group: lifecycle
+    state: Active
+    objective: >
+      Record and review material changes in FOSS project risk.
+    statements:
+      - id: foss-guidance-risk-change-management.1
+        text: >
+          Potential changes in risk must be captured in the FOSS inventory upon
+          identification and reviewed by OSPO or relevant SMEs.
+      - id: foss-guidance-risk-change-management.2
+        text: >
+          Disposition and actions taken for risk changes must be recorded in
+          the FOSS inventory.
+
+  - id: foss-guidance-project-retirement
+    title: Project Transition and Retirement
+    group: lifecycle
+    state: Active
+    objective: >
+      Transition, archive, or decommission FOSS engagements when they are no
+      longer approved or active.
+    statements:
+      - id: foss-guidance-project-retirement.1
+        text: >
+          Disengagement from a FOSS project, foundation, or community must be
+          reviewed and approved by the OSPO.
+      - id: foss-guidance-project-retirement.2
+        text: >
+          Retired or archived projects must have contribution entitlements
+          removed from OSPO-approved tooling on the agreed effective date.
+      - id: foss-guidance-project-retirement.3
+        text: >
+          FOSS contribution projects and access requests must be decommissioned
+          within three months of project retirement or removal from the official
+          product inventory.
+    vectors:
+      - reference-id: foss-contribution-vectors
+        entries:
+          - reference-id: stale-engagement-neglect
+
+  - id: foss-guidance-training
+    title: FOSS Contribution Training
+    group: roles
+    state: Active
+    objective: >
+      Ensure employees participating in FOSS contribution activities complete
+      annual training appropriate to their role.
+    statements:
+      - id: foss-guidance-training.1
+        text: >
+          Company staff participating in FOSS contribution activities must
+          complete an annual training class demonstrating knowledge of these
+          guidelines and associated governance.
+
+  - id: foss-guidance-roles-responsibilities
+    title: Roles and Responsibilities
+    group: roles
+    state: Active
+    objective: >
+      Define accountable roles for FOSS contribution governance across project
+      categories.
+    statements:
+      - id: foss-guidance-roles-responsibilities.ospo
+        title: Open Source Program Office
+        text: >
+          Committee responsible for maintaining the open source contribution
+          guidelines across company moderated, company interest major, and
+          company interest minor projects.
+      - id: foss-guidance-roles-responsibilities.line-manager
+        title: Line Manager
+        text: >
+          Approver of company interest minor FOSS contribution access requests
+          via OSPO tooling.
+      - id: foss-guidance-roles-responsibilities.maintainer
+        title: FOSS Project Moderator or Maintainer
+        text: >
+          Ensures the community adheres to the OSPO approved code of conduct and
+          formal contribution processes.
+      - id: foss-guidance-roles-responsibilities.sponsor
+        title: FOSS Sponsor
+        text: >
+          Sponsors the project including business case, budget approval, and IP
+          review.
+      - id: foss-guidance-roles-responsibilities.administrator
+        title: FOSS Project Administrator
+        text: >
+          Ensures control requirements are met and evidenced for assigned FOSS
+          projects.

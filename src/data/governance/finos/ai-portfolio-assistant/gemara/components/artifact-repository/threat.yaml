@@ -1,0 +1,64 @@
+title: APA Artifact Repository Threats
+
+metadata:
+  id: apa-artifact-repository-threats
+  type: ThreatCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-09-11T00:00:00Z"
+  author:
+    id: ai-governance-office
+    name: AI Governance Office
+    type: Human
+  description: >
+    Threats to integrity, authenticity, and correct consumption of Governance
+    Model artifacts hosted in the Artifact Repository.
+  mapping-references:
+    - id: apa-artifact-repository-capabilities
+      title: APA Artifact Repository Capabilities
+      version: "0.1.0"
+      url: file://capability.yaml
+
+groups:
+  - id: integrity
+    title: Integrity and Authenticity
+    description: Risks to the published model set and its consumers.
+  - id: availability
+    title: Availability
+    description: Risks that the runtime cannot obtain a valid model release.
+
+threats:
+  - id: apa-artifact-unauthorized-modify
+    title: Unauthorised Modification of Published Model
+    description: >
+      An attacker or unauthorised publisher alters lexicon, guidance, or policy
+      artifacts so evaluation outcomes no longer match approved governance.
+    group: integrity
+    capabilities:
+      - reference-id: apa-artifact-repository-capabilities
+        entries:
+          - reference-id: apa-artifact-publish-model
+          - reference-id: apa-artifact-serve-model
+  - id: apa-artifact-stale-or-wrong-version
+    title: Runtime Uses Stale or Wrong Model Version
+    description: >
+      The Governance Runtime evaluates sensitive activities against an outdated,
+      unpinned, or unintended model release, producing allow/deny decisions that
+      diverge from the currently approved Governance Model.
+    group: integrity
+    capabilities:
+      - reference-id: apa-artifact-repository-capabilities
+        entries:
+          - reference-id: apa-artifact-serve-model
+          - reference-id: apa-artifact-inventory
+  - id: apa-artifact-model-unavailable
+    title: Governance Model Unavailable to Runtime
+    description: >
+      The Artifact Repository cannot serve a required model release, blocking
+      informed evaluation or forcing unsafe fallback behaviour.
+    group: availability
+    capabilities:
+      - reference-id: apa-artifact-repository-capabilities
+        entries:
+          - reference-id: apa-artifact-serve-model

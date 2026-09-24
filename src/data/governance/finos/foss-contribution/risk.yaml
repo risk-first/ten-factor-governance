@@ -1,0 +1,245 @@
+title: FOSS Contribution Risk Catalog
+
+metadata:
+  id: foss-risk-catalog
+  type: RiskCatalog
+  version: "0.1.0"
+  gemara-version: "1.2.0"
+  draft: true
+  date: "2026-07-06T00:00:00Z"
+  author:
+    id: ospo
+    name: Open Source Program Office
+    type: Human
+  description: >
+    Risk catalog for employee contribution to Free and Open Source Software
+    projects, intended to support FOSS contribution governance policies.
+  mapping-references:
+    - id: foss-contribution-threat-catalog
+      title: FOSS Contribution Threat Catalog
+      version: "0.1.0"
+      url: file://threat.yaml
+      description: >
+        Layer 2 threats associated with FOSS contribution activity.
+
+groups:
+  - id: information-protection
+    title: Information Protection
+    description: >
+      Risks involving unauthorized disclosure or loss of sensitive information.
+    appetite: Low
+    max-severity: Medium
+
+  - id: intellectual-property
+    title: Intellectual Property
+    description: >
+      Risks involving loss, weakening, or misuse of intellectual property.
+    appetite: Low
+    max-severity: Medium
+
+  - id: legal-and-compliance
+    title: Legal and Compliance
+    description: >
+      Risks involving legal, license, export-control, or regulatory exposure.
+    appetite: Low
+    max-severity: Medium
+
+  - id: operational-governance
+    title: Operational Governance
+    description: >
+      Risks involving governance, conflicts of interest, and process integrity.
+    appetite: Moderate
+    max-severity: High
+
+  - id: reputation-and-conduct
+    title: Reputation and Conduct
+    description: >
+      Risks involving reputational harm and inappropriate public conduct.
+    appetite: Low
+    max-severity: Medium
+
+risks:
+  - id: data-leakage
+    title: Disclosure of Non-Public or Sensitive Information
+    group: information-protection
+    severity: High
+    description: >
+      A contributor may disclose confidential, proprietary, client, customer,
+      security-sensitive, regulated, credential, key, architectural, or other
+      non-public information through a public FOSS contribution.
+    impact: >
+      Could result in regulatory breach, client harm, security exposure,
+      contractual breach, reputational damage, and loss of trust.
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: sensitive-data-disclosure
+    owner:
+      responsible:
+        - name: FOSS Contributor
+        - name: FOSS Project Administrator
+      accountable:
+        - name: Open Source Program Office
+          affiliation: Company OSPO
+      consulted:
+        - name: Information Security
+          affiliation: Company
+        - name: Legal
+          affiliation: Company
+      informed:
+        - name: Line Manager
+
+  - id: intellectual-property-loss
+    title: Loss or Misuse of Intellectual Property
+    group: intellectual-property
+    severity: High
+    description: >
+      A contributor may publish company-owned intellectual property, patentable
+      material, trade secrets, trademarks, proprietary methods, or other protected
+      assets without appropriate review or authorization.
+    impact: >
+      Could weaken ownership rights, create patent or licensing complications,
+      expose trade secrets, or impair the organization's ability to protect or
+      commercialize its intellectual property.
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: intellectual-property-disclosure
+    owner:
+      responsible:
+        - name: FOSS Contributor
+      accountable:
+        - name: Legal
+          affiliation: Company
+      consulted:
+        - name: Open Source Program Office
+          affiliation: Company OSPO
+        - name: Business Sponsor
+      informed:
+        - name: Line Manager
+
+  - id: foss-license-non-compliance
+    title: FOSS License or Contributor Obligation Non-Compliance
+    group: legal-and-compliance
+    severity: High
+    description: >
+      A contribution may be made to a project with an unapproved or incompatible
+      license, or under a CLA, CCLA, DCO, or similar contribution agreement that
+      creates unreviewed legal obligations.
+    impact: >
+      Could create legal exposure, incompatible obligations, unexpected patent
+      grants, contribution rights issues, or inability to use or distribute the
+      resulting software.
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: unapproved-license-contribution
+          - reference-id: contributor-agreement-exposure
+    owner:
+      responsible:
+        - name: FOSS Contributor
+        - name: FOSS Project Administrator
+      accountable:
+        - name: Legal
+          affiliation: Company
+      consulted:
+        - name: Open Source Program Office
+          affiliation: Company OSPO
+      informed:
+        - name: Business Sponsor
+
+  - id: export-control-non-compliance
+    title: Export Control or Sanctions Non-Compliance
+    group: legal-and-compliance
+    severity: High
+    description: >
+      A project or contribution may involve cryptography, authentication,
+      cross-border collaboration, restricted jurisdictions, sanctioned entities,
+      or other export-control-sensitive functionality without appropriate review.
+    impact: >
+      Could result in breach of export-control, sanctions, or cross-border
+      technology-transfer obligations, with regulatory, legal, and reputational
+      consequences.
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: export-control-violation
+    owner:
+      responsible:
+        - name: FOSS Contributor
+        - name: FOSS Project Administrator
+      accountable:
+        - name: Export Control
+          affiliation: Company
+      consulted:
+        - name: Legal
+          affiliation: Company
+        - name: Open Source Program Office
+          affiliation: Company OSPO
+      informed:
+        - name: Business Sponsor
+
+  - id: reputational-damage
+    title: Reputational Damage from Public Contribution Activity
+    group: reputation-and-conduct
+    severity: Medium
+    description: >
+      A contributor may behave publicly in a way that is inconsistent with
+      organizational conduct expectations, misrepresent the organization, disclose
+      inappropriate opinions as company positions, or participate in a project
+      whose activity creates reputational risk.
+    impact: >
+      Could damage trust with clients, regulators, open source communities,
+      employees, partners, or the public.
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: reputational-harm-from-contribution
+          - reference-id: identity-misattribution
+    owner:
+      responsible:
+        - name: FOSS Contributor
+      accountable:
+        - name: Line Manager
+      consulted:
+        - name: Open Source Program Office
+          affiliation: Company OSPO
+        - name: Communications
+          affiliation: Company
+        - name: Legal
+          affiliation: Company
+      informed:
+        - name: Business Sponsor
+
+  - id: conflict-of-interest
+    title: Conflict of Interest in FOSS Contribution Activity
+    group: operational-governance
+    severity: Medium
+    description: >
+      A contributor may participate in a project where personal interests,
+      external roles, commercial relationships, employment obligations, or
+      competing project interests conflict with the organization's interests or
+      decision-making expectations.
+    impact: >
+      Could create governance concerns, impaired decision-making, misuse of
+      company time or resources, inappropriate influence, or loss of confidence in
+      the contribution process.
+    threats:
+      - reference-id: foss-contribution-threat-catalog
+        entries:
+          - reference-id: employee-conflict-of-interest
+          - reference-id: ungoverned-contribution-activity
+    owner:
+      responsible:
+        - name: FOSS Contributor
+      accountable:
+        - name: Line Manager
+      consulted:
+        - name: Open Source Program Office
+          affiliation: Company OSPO
+        - name: Legal
+          affiliation: Company
+        - name: Compliance
+          affiliation: Company
+      informed:
+        - name: Business Sponsor

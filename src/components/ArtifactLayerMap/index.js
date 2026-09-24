@@ -1,77 +1,95 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
+import {usePluginData} from '@docusaurus/useGlobalData';
+import {BANDS, bandFromTags} from '@site/src/data/bands';
 import styles from './styles.module.css';
 
-const GROUPS = [
-  {
-    key: 'definitions',
-    label: 'Definitions',
-    to: '/docs/artifacts/definitions/',
-    toneClass: styles.groupDefinitions,
-    items: [
-      {to: '/docs/artifacts/definitions/principle', label: 'Principle'},
-      {to: '/docs/artifacts/definitions/vector', label: 'Vector'},
-      {to: '/docs/artifacts/definitions/guidance', label: 'Guidance'},
-      {to: '/docs/artifacts/definitions/capability', label: 'Capability'},
-      {to: '/docs/artifacts/definitions/threat', label: 'Threat'},
-      {to: '/docs/artifacts/definitions/control', label: 'Control'},
-      {to: '/docs/artifacts/definitions/risk', label: 'Risk'},
-      {to: '/docs/artifacts/definitions/policy', label: 'Policy'},
-    ],
-  },
-  {
-    key: 'activity',
-    label: 'Activity',
-    to: '/docs/artifacts/activity/',
-    toneClass: styles.groupActivity,
-    items: [
-      {
-        to: '/docs/artifacts/activity/',
-        label: 'Sensitive Activity',
-      },
-    ],
-  },
-  {
-    key: 'measures',
-    label: 'Measures',
-    to: '/docs/artifacts/measures/',
-    toneClass: styles.groupMeasures,
-    items: [
-      {to: '/docs/artifacts/measures/evaluation-log', label: 'Evaluation Log'},
-      {to: '/docs/artifacts/measures/enforcement-log', label: 'Enforcement Log'},
-      {to: '/docs/artifacts/measures/audit-log', label: 'Audit Log'},
-    ],
-  },
-];
+/** Names an artifact goes by in one catalog, as a list. */
+function namesIn(frontMatter, catalog) {
+  const value = frontMatter?.aka?.[catalog];
+  const names = Array.isArray(value) ? value : [value];
+  return names.filter((name) => typeof name === 'string' && name.trim());
+}
 
 /**
- * Three-band map of governance artifact groups with links into each page.
+ * What to call an artifact here: its catalog names when `filter` is set, else
+ * the short sidebar label (or title) so example twins stay readable.
  */
-export default function ArtifactLayerMap() {
+function labelsFor(doc, catalog) {
+  if (catalog) {
+    return namesIn(doc.frontMatter, catalog);
+  }
+  const short =
+    doc.frontMatter?.sidebar_label ||
+    doc.frontMatter?.title ||
+    doc.title;
+  return short ? [short] : [];
+}
+
+/**
+ * Map of governance documents stacked in lifecycle order.
+ *
+ * Document sets are selected by tag. Definition pages use `Artifact`; an
+ * example twin (Gemara + AIMS mixed) uses its own set tag such as
+ * `AI Portfolio Assistant`.
+ *
+ * @param {object} props
+ * @param {string} [props.tag='Artifact'] - Document-set tag. Only pages carrying
+ *   this tag are shown.
+ * @param {string} [props.filter] - Optional `aka` key (`gemara`, `iso27001`,
+ *   `iso42001`) to label chips by catalog name. Omit to use each page's
+ *   sidebar label / title — typical for a mixed example twin.
+ */
+export default function ArtifactLayerMap({filter, tag = 'Artifact'}) {
+  const listing = usePluginData('category-listing') ?? {};
+
+  const chips = [...(listing[tag] ?? [])]
+    .sort((a, b) => a.order - b.order)
+    .flatMap((doc) =>
+      labelsFor(doc, filter).map((name) => ({
+        band: bandFromTags(doc.tags),
+        name,
+        permalink: doc.permalink,
+      })),
+    )
+    .filter((chip) => chip.band);
+
+  const bands = BANDS.map((band) => ({
+    ...band,
+    items: chips.filter((chip) => chip.band?.key === band.key),
+  })).filter((band) => band.items.length > 0);
+
+  if (bands.length === 0) {
+    return null;
+  }
+
   return (
-    <div className={styles.map} role="img" aria-label="Governance artifact groups">
-      {GROUPS.map((group, index) => (
-        <React.Fragment key={group.key}>
-          {index > 0 ? (
-            <p className={styles.flowHint}>
-              {index === 1 ? 'governs ↓' : 'measures ↓'}
-            </p>
-          ) : null}
-          <div className={`${styles.band} ${group.toneClass}`}>
-            <p className={styles.bandLabel}>
-              <Link className={styles.bandLink} to={group.to}>
-                {group.label}
+    <div
+      className={styles.map}
+      role="navigation"
+      aria-label={`${tag} artifacts by layer`}
+    >
+      {bands.map((band) => (
+        <div className={styles.band} key={band.key} data-band={band.key}>
+          <p className={styles.bandLabel}>
+            {band.number ? (
+              <span className={styles.bandNumber}>{band.number}</span>
+            ) : null}
+            {band.label}
+            <span className={styles.bandBlurb}>{band.blurb}</span>
+          </p>
+          <div className={styles.items}>
+            {band.items.map((item) => (
+              <Link
+                key={`${item.name}-${item.permalink}`}
+                className={styles.chip}
+                to={item.permalink}
+              >
+                {item.name}
               </Link>
-            </p>
-            <div className={styles.items}>
-              {group.items.map((item) => (
-                <Link key={item.to} className={styles.chip} to={item.to}>
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+            ))}
           </div>
-        </React.Fragment>
+        </div>
       ))}
     </div>
   );

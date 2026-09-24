@@ -1,0 +1,21 @@
+---
+sidebar_position: 0
+title: FINOS CCC Kubernetes
+description: "FINOS Common Cloud Controls Managed Kubernetes catalogs rendered as Gemara capabilities, threats, and controls."
+---
+
+# FINOS CCC Kubernetes
+
+[FINOS Common Cloud Controls](https://www.finos.org/projects/common-cloud-controls)
+defines shared security capabilities, threats, and controls for cloud services.
+This section renders the Managed Kubernetes service catalogs as Gemara artifacts.
+Each catalog inlines the CCC Core entries it imports. The threats page also
+attaches CWE and MITRE ATT&CK mappings onto matching threats.
+
+The catalogs are sourced from `src/data/governance/finos/ccc-k8s/` (plus
+Core YAML under `ccc-core/`) and rendered for browsing and reuse in downstream
+governance content.
+
+## Artifacts by layer
+
+<ArtifactLayerMap tag="CCC Kubernetes" />
