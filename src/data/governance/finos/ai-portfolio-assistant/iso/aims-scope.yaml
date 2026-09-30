@@ -1,35 +1,34 @@
 # GovernanceScope — ISO/IEC 42001 Clause 4.3
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: GovernanceScope
 
-title: "AIMS scope — AI Portfolio Assistant"
+title: "AIMS scope — AIPA"
 
 metadata:
   id: apa-aims-scope
   type: GovernanceScope
-  version: "0.1.0"
+  version: "0.1.1"
   gemara-version: "1.5.0"
   standard: "ISO/IEC 42001:2023"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-30T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: |
-    Boundary of the Artificial Intelligence Management System for the AI
-    Portfolio Assistant used in Investment Management.
+    Boundary of the Artificial Intelligence Management System for the AIPA used in Investment Management.
   mapping-references:
     - id: apa-organisation-context
-      title: "Organisational context for the AI Portfolio Assistant AIMS"
-      version: "0.1.0"
+      title: "Organisational context for the AIPA AIMS"
+      version: "0.1.1"
       url: file://organisation-context.yaml
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-stakeholder-requirements
-      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      title: "Stakeholder requirements for the AIPA"
       version: "0.1.0"
       url: file://stakeholder-requirements.yaml
     - id: apa-ai-system-register
@@ -37,7 +36,7 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-governance-contract
-      title: "Governance contracts for the AI Portfolio Assistant"
+      title: "Governance contracts for the AIPA"
       version: "0.1.0"
       url: file://governance-contract.yaml
     - id: CCC.K8S.CN
@@ -53,22 +52,23 @@ clauses: ["4.3"]
 
 statement: |
   This AIMS covers the development, deployment, operation and continual
-  improvement of the AI Portfolio Assistant used by portfolio managers in the
-  Investment Management division of the firm. It includes the assistant's
+  improvement of the AIPA used by portfolio managers in the
+  Investment Management division of the firm. It includes AIPA's
   FDC3-mediated access to specialist applications, retrieval of investment
-  research, and authority-bounded recommendation and order-proposal behaviour.
-  Autonomous order submission, firm-wide foundation-model training, and retail
-  banking AI products are out of scope.
+  research, authority-bounded recommendation and order-proposal behaviour, and
+  the controls that detect, deny and evidence any attempt at unsupervised
+  trade execution. Firm-wide foundation-model training and retail banking AI
+  products are out of scope.
 
 inclusions:
   - id: apa-system
-    name: "AI Portfolio Assistant"
+    name: "AIPA"
     type: System
     description: |
-      The production assistant operating on the investment desktop across
+      The production AIPA operating on the investment desktop across
       observe, analyse, explain, recommend and propose authority levels.
     owner:
-      name: "AI Portfolio Assistant Product Owner"
+      name: "AIPA Product Owner"
       affiliation: "Investment Management"
     target:
       reference-id: apa-ai-system-register
@@ -78,21 +78,20 @@ inclusions:
     name: "Portfolio assistance activity"
     type: Activity
     description: |
-      Human-supervised sessions in which a portfolio manager uses the assistant
+      Human-supervised sessions in which a portfolio manager uses AIPA
       to observe portfolio context, run deterministic analytics, explain results,
       recommend actions and construct order proposals for approval.
 
-exclusions:
-  - id: autonomous-execution
-    name: "Autonomous trade execution"
+  - id: autonomous-execution-control
+    name: "Prevention of autonomous trade execution"
     type: Activity
-    justification: |
-      Submitting or otherwise effecting orders without a human authorising
-      execution is prohibited intended use. Excluding it keeps the AIMS aligned
-      with the declared authority ceiling rather than governing a capability
-      the organisation refuses to provide.
-    governed-elsewhere: "Trading desk execution controls outside this AIMS"
+    description: |
+      Detecting, denying and evidencing attempts by AIPA or its tool
+      path to submit or effect orders without human authorisation. Unsupervised
+      execution is a prohibited intended use; governing that prohibition is in
+      scope of this AIMS, not an exclusion from it.
 
+exclusions:
   - id: model-training
     name: "Foundation model training and fine-tuning"
     type: Process
@@ -111,40 +110,68 @@ exclusions:
     governed-elsewhere: "Retail Banking AI management system"
 
 interfaces:
-  - id: model-supplier-interface
+  # Relations from docs/artifacts/finos/ai-portfolio-assistant/deployment.mdx
+  - id: pm-uses-aipa
     description: |
-      Hosted foundation-model API used for generation and interpretation;
-      version pinning, content filters and incident notification cross the
-      organisational boundary.
+      Portfolio Manager uses the AIPA on the FDC3 desktop to
+      analyse portfolios and manage risk (deployment: BiRel Uses).
+    direction: Bidirectional
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: portfolio-managers
+
+  - id: fdc3-interface
+    description: |
+      AIPA raises FDC3 intents and receives / broadcasts desktop context
+      via the FDC3 Desktop Agent (deployment: BiRel Raises intents / receives
+      and broadcasts context).
+    direction: Bidirectional
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: fdc3-desktop-agent
+
+  - id: fdc3-governance-runtime
+    description: |
+      FDC3 Desktop Agent makes requests to the AIPA Governance
+      Runtime before forwarding sensitive requests (deployment: Rel Makes
+      requests to).
+    direction: Bidirectional
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: governance-runtime
+
+  - id: runtime-governance-model
+    description: |
+      Governance Runtime is informed by versioned Governance Model releases
+      from the Artifact Repository (deployment: Rel Is Informed By).
     direction: Inbound
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: artifact-repository
+
+  - id: runtime-evidence-record
+    description: |
+      Governance Runtime records, reports and aggregates evaluation and
+      enforcement evidence to the Decisions and Evidence Record (deployment:
+      Rel Records / reports / aggregates).
+    direction: Outbound
+    counterparty:
+      reference-id: apa-party-register
+      entry-id: evidence-record
+
+  - id: aipa-agentic-model
+    description: |
+      AIPA sends prompts to and receives completions from the hosted
+      Agentic Model / foundation-model API (deployment: Rel Prompts /
+      completions). Version pinning, content filters and incident notification
+      cross the organisational boundary.
+    direction: Bidirectional
     counterparty:
       reference-id: apa-party-register
       entry-id: foundation-model-provider
     responsibilities:
       reference-id: apa-governance-contract
       entry-id: model-provider-governance
-
-  - id: market-data-interface
-    description: |
-      Licensed market data consumed by deterministic specialist applications
-      whose outputs the assistant explains; data quality and redistribution
-      terms cross the AIMS boundary.
-    direction: Inbound
-    counterparty:
-      reference-id: apa-party-register
-      entry-id: market-data-vendor
-
-  - id: managed-kubernetes-host
-    description: |
-      Managed Kubernetes platform hosting the assistant service. Host security
-      controls are composed from CCC Managed Kubernetes (CCC.K8S.CN) as
-      assumptions in the Statement of Applicability rather than re-authored
-      in this AIMS. App-layer AI controls remain in apa-controls; FINOS AIGF
-      mitigations are composed into the governance model via Gemara imports.
-    direction: Both
-    counterparty:
-      reference-id: apa-party-register
-      entry-id: ai-governance-office
 
 context:
   reference-id: apa-organisation-context
@@ -159,8 +186,9 @@ requirements:
 
 review:
   cadence: Annual
-  last-reviewed: "2026-09-01T00:00:00Z"
-  next-review: "2027-09-01T00:00:00Z"
+  last-reviewed: "2026-09-30T00:00:00Z"
+  next-review: "2027-09-30T00:00:00Z"
   triggers:
     - "Request to bring execute authority into production"
-    - "Extension of the assistant to another business unit"
+    - "Extension of AIPA to another business unit"
+    - "Change to the deployment topology or firewall-crossing interfaces"

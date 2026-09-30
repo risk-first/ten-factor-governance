@@ -1,8 +1,8 @@
 # ImpactAssessment — ISO/IEC 42001 Clauses 6.1.4 and 8.4, Annex A.5
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: ImpactAssessment
 
-title: "AI Portfolio Assistant — AI system impact assessment"
+title: "AIPA — AI system impact assessment"
 
 metadata:
   id: apa-impact-assessment
@@ -17,7 +17,7 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    Consequences of the AI Portfolio Assistant for clients, portfolio managers
+    Consequences of the AIPA for clients, portfolio managers
     and the firm, rated from affected parties' point of view and fed into risk
     treatment.
   mapping-references:
@@ -26,15 +26,15 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
   approval:
@@ -59,7 +59,7 @@ purpose-assessed: |
 
 deployment-context: |
   UK/EU Investment Management desks using the firm desktop. Portfolio managers
-  open FDC3-enabled applications; the assistant sees entitled portfolio context,
+  open FDC3-enabled applications; AIPA sees entitled portfolio context,
   invokes deterministic risk/stress tools, retrieves research, and may recommend
   or propose actions subject to human approval at propose level.
 
@@ -132,7 +132,7 @@ impacts:
         and mandate rules allow.
 
   - id: pm-overreliance
-    title: "Portfolio manager overreliance on assistant outputs"
+    title: "Portfolio manager overreliance on AIPA outputs"
     description: |
       Sustained reliance on explanations and recommendations erodes independent
       challenge, so the human-in-the-loop control becomes formal rather than
@@ -157,7 +157,7 @@ impacts:
       justification: |
         Disclosure of sources and periodic sampling detect declining challenge quality.
       accepted-by:
-        name: "AI Portfolio Assistant Product Owner"
+        name: "AIPA Product Owner"
         affiliation: "Investment Management"
 
   - id: firm-regulatory-impact
@@ -203,7 +203,7 @@ conclusion:
     not support continued operation.
   conditions:
     - "apa-ctl-005 propose human approval remains enforced in production"
-    - "apa-ctl-006 execute prohibition remains absolute for the assistant"
+    - "apa-ctl-006 execute prohibition remains absolute for the AIPA"
     - "Cross-portfolio isolation and session logging remain enabled"
     - "Impact assessment is refreshed before raising the authority ceiling"
   approved-by:

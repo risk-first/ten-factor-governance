@@ -1,28 +1,28 @@
 # PartyRegister — ISO/IEC 42001 Clauses 4.2, 5.1, 5.3 and Annex A.3.2, A.5.4
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: PartyRegister
 
-title: "Parties to the AI Portfolio Assistant"
+title: "Parties to the AIPA"
 
 metadata:
   id: apa-party-register
   type: PartyRegister
-  version: "0.1.0"
+  version: "0.1.1"
   gemara-version: "1.5.0"
   standard: "ISO/IEC 42001:2023"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-30T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: |
-    People and organisations with a stake in the AI Portfolio Assistant: those
+    People and organisations with a stake in the AIPA: those
     who place requirements on it, those accountable for it, and those who bear
     the consequences of its recommendations and proposals.
   mapping-references:
     - id: apa-stakeholder-requirements
-      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      title: "Stakeholder requirements for the AIPA"
       version: "0.1.0"
       url: file://stakeholder-requirements.yaml
 
@@ -44,8 +44,7 @@ parties:
     group: internal
     roles: ["Top Management", "Accountable", "Approver"]
     authority: |
-      Approves the AI policy and AIMS scope, commits resources for the AI
-      Portfolio Assistant, and accepts residual risk above the Medium threshold.
+      Approves the AI policy and AIMS scope, commits resources for the AIPA, and accepts residual risk above the Medium threshold.
     contact:
       name: "Chief Information Officer"
       affiliation: "Technology"
@@ -73,7 +72,7 @@ parties:
     group: internal
     roles: [Responsible, Affected, Informed]
     description: |
-      Users of the assistant who retain accountability for investment decisions,
+      Users of AIPA who retain accountability for investment decisions,
       approval of order proposals, and any execution of orders.
     contact:
       name: "Investment Management desk heads"
@@ -91,7 +90,7 @@ parties:
     group: external
     roles: [Affected]
     description: |
-      Beneficial owners of portfolios the assistant observes and may influence
+      Beneficial owners of portfolios AIPA observes and may influence
       through recommendations or proposals. Affected parties reached through
       client reporting and complaints routes, not through this register directly.
     requirements:
@@ -126,7 +125,7 @@ parties:
     internal: true
     group: internal
     roles: [Consulted, Responsible]
-    authority: "Reviews model inventory entries and evaluation evidence for the assistant."
+    authority: "Reviews model inventory entries and evaluation evidence for the AIPA."
     contact:
       name: "Model Risk Management"
       affiliation: "Risk"
@@ -138,8 +137,9 @@ parties:
     group: external
     roles: [Interested, Responsible]
     description: |
-      Supplies the hosted foundation model. Responsible for the model's own
-      development governance, not for how the firm deploys it on the desk.
+      Supplies the hosted foundation model (the Agentic Model on the deployment
+      diagram). Responsible for the model's own development governance, not for
+      how the firm deploys it on the desk.
 
   - id: market-data-vendor
     name: "Market data vendor"
@@ -149,7 +149,61 @@ parties:
     roles: [Interested, Responsible]
     description: |
       Licenses market data consumed by deterministic specialist applications
-      whose outputs the assistant explains.
+      whose outputs AIPA explains.
+
+  - id: fdc3-desktop-agent
+    name: "FDC3 Desktop Agent"
+    kind: System
+    internal: true
+    group: internal
+    roles: [Responsible]
+    description: |
+      Desktop interoperability layer inside the banking firewall. Routes context
+      and intents between the portfolio manager, specialist apps and the AIPA; calls the Governance Runtime before forwarding
+      sensitive requests.
+    contact:
+      name: "Desktop Platform"
+      affiliation: "Technology"
+
+  - id: governance-runtime
+    name: "AIPA Governance Runtime"
+    kind: System
+    internal: true
+    group: internal
+    roles: [Responsible]
+    description: |
+      Evaluates proposed sensitive activities (ALLOW / DENY / REQUIRE APPROVAL)
+      and writes decisions and evidence. Deployed on managed Kubernetes inside
+      the banking firewall.
+    contact:
+      name: "AI Governance Office"
+      affiliation: "Risk and Governance"
+
+  - id: artifact-repository
+    name: "Artifact Repository (Governance Model)"
+    kind: System
+    internal: true
+    group: internal
+    roles: [Responsible]
+    description: |
+      Hosts and serves versioned Governance Model releases (Gemara, AIMS) that
+      inform the Governance Runtime.
+    contact:
+      name: "AI Governance Office"
+      affiliation: "Risk and Governance"
+
+  - id: evidence-record
+    name: "Decisions and Evidence Record"
+    kind: System
+    internal: true
+    group: internal
+    roles: [Responsible]
+    description: |
+      Object-storage-backed record of evaluation and enforcement evidence
+      written by the Governance Runtime.
+    contact:
+      name: "AI Governance Office"
+      affiliation: "Risk and Governance"
 
   - id: regulator-fca
     name: "Financial Conduct Authority"
@@ -167,8 +221,9 @@ parties:
 
 review:
   cadence: Biannual
-  last-reviewed: "2026-09-01T00:00:00Z"
-  next-review: "2027-03-01T00:00:00Z"
+  last-reviewed: "2026-09-30T00:00:00Z"
+  next-review: "2027-03-30T00:00:00Z"
   triggers:
     - "A new client segment is brought into scope"
     - "A new supplier is added to the critical dependency list"
+    - "A new deployment interface component is introduced"

@@ -1,8 +1,8 @@
 # RiskAssessment — ISO/IEC 42001 Clauses 6.1.2 and 8.2
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: RiskAssessment
 
-title: "AI Portfolio Assistant — AI risk assessment"
+title: "AIPA — AI risk assessment"
 
 metadata:
   id: apa-risk-assessment
@@ -17,8 +17,7 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    Dated assessment of risks in the apa-risks catalog for the AI Portfolio
-    Assistant, informed by the system impact assessment and producing treatment
+    Dated assessment of risks in the apa-risks catalog for the AIPA, informed by the system impact assessment and producing treatment
     decisions recorded in the applicability profile.
   mapping-references:
     - id: apa-ai-system-register
@@ -26,19 +25,19 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-threats
-      title: "AI Portfolio Assistant threat catalog"
+      title: "AIPA threat catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/threat.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-impact-assessment
-      title: "AI Portfolio Assistant impact assessment"
+      title: "AIPA impact assessment"
       version: "0.1.0"
       url: file://impact-assessment.yaml
     - id: apa-applicability-profile
@@ -240,10 +239,10 @@ entries:
     residual:
       severity: Low
       accepted-by:
-        name: "AI Portfolio Assistant Product Owner"
+        name: "AIPA Product Owner"
       date: "2026-09-08T00:00:00Z"
     owner:
-      name: "AI Portfolio Assistant Product Owner"
+      name: "AIPA Product Owner"
       affiliation: "Investment Management"
 
   - id: ra-model-supply-chain-exposure

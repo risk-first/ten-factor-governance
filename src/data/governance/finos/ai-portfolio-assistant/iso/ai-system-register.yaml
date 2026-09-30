@@ -1,5 +1,5 @@
 # AISystemRegister — ISO/IEC 42001 Annex A.6, A.8.2, A.9.4
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: AISystemRegister
 
 title: "AI systems in the scope of the AIMS"
@@ -29,11 +29,11 @@ metadata:
       version: "0.1.0"
       url: file://tool-resource-register.yaml
     - id: apa-impact-assessment
-      title: "AI Portfolio Assistant impact assessment"
+      title: "AIPA impact assessment"
       version: "0.1.0"
       url: file://impact-assessment.yaml
     - id: apa-risk-assessment
-      title: "AI Portfolio Assistant risk assessment"
+      title: "AIPA risk assessment"
       version: "0.1.0"
       url: file://risk-assessment.yaml
     - id: apa-supplier-assurance
@@ -45,9 +45,9 @@ clauses: ["A.6.2.2", "A.6.2.7", "A.6.2.8", "A.8.2", "A.9.4"]
 
 systems:
   - id: ai-portfolio-assistant
-    name: "AI Portfolio Assistant"
+    name: "AIPA"
     description: |
-      Retrieval-augmented assistant that operates across FDC3 applications to
+      Retrieval-augmented AI system that operates across FDC3 applications to
       observe portfolio context, invoke deterministic risk and exposure tools,
       retrieve investment research, explain results, and optionally recommend
       or propose actions within an authorised authority level.
@@ -56,10 +56,10 @@ systems:
     stage: Operation
     owner:
       responsible:
-        - name: "AI Portfolio Assistant Engineering"
+        - name: "AIPA Engineering"
           affiliation: "Investment Management Technology"
       accountable:
-        - name: "AI Portfolio Assistant Product Owner"
+        - name: "AIPA Product Owner"
           affiliation: "Investment Management"
       consulted:
         - name: "AI Governance Office"
@@ -100,7 +100,7 @@ systems:
         any path toward execution. Autonomous execute is prohibited.
       intervention: |
         Portfolio managers may discard, edit or refuse recommendations and
-        proposals; compliance may suspend the assistant for a desk.
+        proposals; compliance may suspend AIPA for a desk.
       override: |
         Humans retain exclusive authority to approve proposals and to execute
         orders through approved trading channels.
@@ -149,7 +149,7 @@ systems:
 
     documentation:
       - type: System Card
-        title: "AI Portfolio Assistant system card"
+        title: "AIPA system card"
         audience: Internal
         version: "1.0.0"
       - type: User Information

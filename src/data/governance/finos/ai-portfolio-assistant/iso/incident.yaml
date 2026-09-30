@@ -1,8 +1,8 @@
 # IncidentLog — ISO/IEC 42001 Annex A.8.4
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: IncidentLog
 
-title: "AI incident log for the AI Portfolio Assistant"
+title: "AI incident log for the AIPA"
 
 metadata:
   id: apa-incident
@@ -17,7 +17,7 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    Operational AI incidents for the Portfolio Assistant, including the
+    Operational AI incidents for the AIPA, including the
     propose-without-approval near miss.
   mapping-references:
     - id: apa-ai-system-register
@@ -25,15 +25,15 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-communication-plan
@@ -53,9 +53,9 @@ clauses: ["A.8.4"]
 
 entries:
   - id: inc-propose-without-approval
-    title: "Near miss — assistant constructed order proposal without approval gate"
+    title: "Near miss — AIPA constructed order proposal without approval gate"
     description: |
-      During a propose-level session the assistant constructed a structured order
+      During a propose-level session AIPA constructed a structured order
       proposal that was presented as ready for trading-desk handoff without the
       human approval gate enforcing acknowledgement. The portfolio manager did
       not approve; no order was submitted. Detected via session-logger alert when

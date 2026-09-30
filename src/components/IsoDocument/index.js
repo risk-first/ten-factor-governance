@@ -21,6 +21,21 @@ function textOf(value) {
   return String(value).trim();
 }
 
+function isReference(value) {
+  return (
+    value != null &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    typeof value['reference-id'] === 'string' &&
+    !value.id &&
+    !value.title &&
+    !value.name &&
+    !value.description &&
+    !value.statement &&
+    !value.justification
+  );
+}
+
 const GEMARA_MODEL_DOCS = {
   policy: 'policy',
   lexicon: 'lexicon',
@@ -82,23 +97,88 @@ function indexMappingReferences(metadata) {
   return byId;
 }
 
-function MappingRefLink({id, mappingById}) {
+function MappingRefLink({id, entryId, mappingById}) {
   const mapping = mappingById.get(id);
   const href = mapping ? docHrefFromFileUrl(mapping.url) : null;
   const title = textOf(mapping?.title);
+  const label = entryId ? (
+    <>
+      <code>{id}</code>
+      <span className={styles.entryId}>/{entryId}</span>
+    </>
+  ) : (
+    <code>{id}</code>
+  );
 
   if (!href) {
-    return <code>{id}</code>;
+    return (
+      <span className={styles.refInline}>
+        {label}
+        {title ? <span className={styles.refTitle}>{title}</span> : null}
+      </span>
+    );
   }
 
+  const anchor = entryId ? `#${entryId}` : '';
   return (
-    <Link to={href} className={styles.refLink} title={title || undefined}>
-      <code>{id}</code>
+    <Link
+      to={`${href}${anchor}`}
+      className={styles.refLink}
+      title={title || undefined}
+    >
+      {label}
       {title ? <span className={styles.refTitle}>{title}</span> : null}
     </Link>
   );
 }
 
+function ReferenceList({refs, mappingById}) {
+  return (
+    <div className={styles.itemList}>
+      {refs.map((ref, index) => {
+        const id = ref['reference-id'];
+        if (!id) {
+          return null;
+        }
+        const entryId = ref['entry-id'];
+        const mapping = mappingById.get(id);
+        const title = textOf(mapping?.title) || id;
+
+        return (
+          <div key={`${id}-${entryId || index}`} id={entryId || undefined}>
+            <RevealItem
+              title={
+                <>
+                  {entryId ? (
+                    <span className={styles.itemId}>{entryId}</span>
+                  ) : (
+                    <span className={styles.itemId}>{id}</span>
+                  )}
+                  {title}
+                </>
+              }
+            >
+              <dl className={styles.metaList}>
+                <div className={styles.metaRow}>
+                  <dt>Source</dt>
+                  <dd>
+                    <MappingRefLink
+                      id={id}
+                      entryId={entryId}
+                      mappingById={mappingById}
+                    />
+                  </dd>
+                </div>
+              </dl>
+            </RevealItem>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Entity collections rendered as expandable cards. */
 const COLLECTION_KEYS = [
   'parties',
   'requirements',
@@ -126,6 +206,26 @@ const COLLECTION_KEYS = [
   'commitments',
 ];
 
+/**
+ * Keys that may hold either entity rows or bare `#Reference` lists.
+ * Scope `requirements` are references; stakeholder-requirement catalogs are
+ * full entries. Detect per array so neither case renders as empty "Item N".
+ */
+const REFERENCE_OR_ENTITY_KEYS = new Set(['requirements']);
+
+function splitReferenceOrEntityItems(items) {
+  const refs = [];
+  const entities = [];
+  for (const item of items) {
+    if (isReference(item)) {
+      refs.push(item);
+    } else {
+      entities.push(item);
+    }
+  }
+  return {refs, entities};
+}
+
 function itemTitle(item, index) {
   return (
     textOf(item.title) ||
@@ -136,7 +236,7 @@ function itemTitle(item, index) {
   );
 }
 
-function ItemBody({item}) {
+function ItemBody({item, mappingById}) {
   const descriptionText =
     textOf(item.description) ||
     textOf(item.justification) ||
@@ -147,6 +247,21 @@ function ItemBody({item}) {
 
   const extras = [];
   const maybeExtra = (label, value) => {
+    if (value == null || value === '') {
+      return;
+    }
+    if (isReference(value)) {
+      extras.push([
+        label,
+        <MappingRefLink
+          key={label}
+          id={value['reference-id']}
+          entryId={value['entry-id']}
+          mappingById={mappingById}
+        />,
+      ]);
+      return;
+    }
     const text = textOf(value);
     if (text) {
       extras.push([label, text]);
@@ -162,6 +277,12 @@ function ItemBody({item}) {
   maybeExtra('Severity', item.severity);
   maybeExtra('Likelihood', item.likelihood);
   maybeExtra('Disposition', item.disposition);
+  maybeExtra('Direction', item.direction);
+  maybeExtra('Effect', item.effect);
+  maybeExtra('Counterparty', item.counterparty);
+  maybeExtra('Responsibilities', item.responsibilities);
+  maybeExtra('Governed elsewhere', item['governed-elsewhere']);
+  maybeExtra('Target', item.target);
   if (typeof item.applicable === 'boolean') {
     extras.push(['Applicable', item.applicable ? 'Yes' : 'No']);
   }
@@ -201,10 +322,26 @@ export default function IsoDocument({file}) {
   }
 
   const metadata = file.metadata ?? {};
-  const collections = COLLECTION_KEYS.map((key) => ({
-    key,
-    items: Array.isArray(file[key]) ? file[key] : null,
-  })).filter((entry) => entry.items && entry.items.length > 0);
+  const collections = [];
+  const referenceLists = [];
+
+  for (const key of COLLECTION_KEYS) {
+    const items = Array.isArray(file[key]) ? file[key] : null;
+    if (!items || items.length === 0) {
+      continue;
+    }
+    if (REFERENCE_OR_ENTITY_KEYS.has(key)) {
+      const {refs, entities} = splitReferenceOrEntityItems(items);
+      if (refs.length > 0) {
+        referenceLists.push({key, refs});
+      }
+      if (entities.length > 0) {
+        collections.push({key, items: entities});
+      }
+      continue;
+    }
+    collections.push({key, items});
+  }
 
   const isAimsProfile =
     metadata.type === 'AIMS' || (!metadata.type && file.scope && file.policy);
@@ -278,7 +415,11 @@ export default function IsoDocument({file}) {
                         return (
                           <React.Fragment key={`${key}-${id}`}>
                             {index > 0 ? ', ' : null}
-                            <MappingRefLink id={id} mappingById={mappingById} />
+                            <MappingRefLink
+                              id={id}
+                              entryId={ref['entry-id']}
+                              mappingById={mappingById}
+                            />
                           </React.Fragment>
                         );
                       })}
@@ -289,6 +430,16 @@ export default function IsoDocument({file}) {
           </ul>
         </section>
       ) : null}
+
+      {referenceLists.map(({key, refs}) => (
+        <section key={key} className={styles.group} id={`group-${key}`}>
+          <h2 className={styles.groupTitle}>
+            {key.replace(/-/g, ' ')}
+            <span className={styles.count}> ({refs.length})</span>
+          </h2>
+          <ReferenceList refs={refs} mappingById={mappingById} />
+        </section>
+      ))}
 
       {collections.map(({key, items}) => (
         <section key={key} className={styles.group} id={`group-${key}`}>
@@ -309,7 +460,7 @@ export default function IsoDocument({file}) {
                     </>
                   }
                 >
-                  <ItemBody item={item} />
+                  <ItemBody item={item} mappingById={mappingById} />
                 </RevealItem>
               </div>
             ))}

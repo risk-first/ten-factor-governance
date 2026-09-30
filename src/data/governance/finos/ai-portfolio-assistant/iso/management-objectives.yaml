@@ -1,8 +1,8 @@
 # ManagementObjectiveCatalog — ISO/IEC 42001 Clauses 6.2 and 9.1
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: ManagementObjectiveCatalog
 
-title: "AI management objectives for the AI Portfolio Assistant"
+title: "AI management objectives for the AIPA"
 
 metadata:
   id: apa-management-objectives
@@ -22,15 +22,15 @@ metadata:
     evaluation pass rate.
   mapping-references:
     - id: apa-policy
-      title: "AI Portfolio Assistant policy"
+      title: "AIPA policy"
       version: "0.1.0"
       url: file://../gemara/policy.yaml
     - id: apa-stakeholder-requirements
-      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      title: "Stakeholder requirements for the AIPA"
       version: "0.1.0"
       url: file://stakeholder-requirements.yaml
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
 
@@ -44,7 +44,7 @@ objectives:
       and unauthorised propose escalations are blocked and logged.
     owner:
       responsible:
-        - name: "AI Portfolio Assistant Engineering"
+        - name: "AIPA Engineering"
           affiliation: "Investment Management Technology"
       accountable:
         - name: "AI Governance Office"
@@ -175,7 +175,7 @@ objectives:
       for authority controls, grounding and tool allowlisting.
     owner:
       responsible:
-        - name: "AI Portfolio Assistant Engineering"
+        - name: "AIPA Engineering"
           affiliation: "Investment Management Technology"
       accountable:
         - name: "Model Risk Management"

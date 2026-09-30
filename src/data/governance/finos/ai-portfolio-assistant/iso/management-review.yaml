@@ -1,8 +1,8 @@
 # ManagementReview — ISO/IEC 42001 Clause 9.3
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: ManagementReview
 
-title: "Management review — AI Portfolio Assistant AIMS Q3 2026"
+title: "Management review — AIPA AIMS Q3 2026"
 
 metadata:
   id: apa-management-review-2026-q3
@@ -17,11 +17,11 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    Q3 2026 top-management review of the AI Portfolio Assistant AIMS:
+    Q3 2026 top-management review of the AIPA AIMS:
     suitability, adequacy and effectiveness.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-organisation-context
@@ -29,7 +29,7 @@ metadata:
       version: "0.1.0"
       url: file://organisation-context.yaml
     - id: apa-aims-scope
-      title: "AIMS scope — AI Portfolio Assistant"
+      title: "AIMS scope — AIPA"
       version: "0.1.0"
       url: file://aims-scope.yaml
     - id: apa-ai-system-register
@@ -178,7 +178,7 @@ actions:
   - id: mra-partial-controls
     description: "Drive apa-ctl-011 and apa-ctl-014 to Implemented and update the Statement of Applicability"
     owner:
-      name: "AI Portfolio Assistant Engineering"
+      name: "AIPA Engineering"
       affiliation: "Investment Management Technology"
     due: "2026-12-15T00:00:00Z"
     status: Open

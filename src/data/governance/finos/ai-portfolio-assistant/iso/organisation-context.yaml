@@ -1,31 +1,31 @@
 # OrganisationContext — ISO/IEC 42001 Clause 4.1
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: OrganisationContext
 
-title: "Organisational context for the AI Portfolio Assistant AIMS"
+title: "Organisational context for the AIPA AIMS"
 
 metadata:
   id: apa-organisation-context
   type: OrganisationContext
-  version: "0.1.0"
+  version: "0.1.1"
   gemara-version: "1.5.0"
   standard: "ISO/IEC 42001:2023"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-30T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: |
     Internal and external issues that determine how the firm can achieve the
-    intended outcomes of the AI Portfolio Assistant management system.
+    intended outcomes of the AIPA management system.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
 
@@ -33,23 +33,25 @@ clauses: ["4.1"]
 
 purpose: |
   The financial institution provides portfolio managers in Investment Management
-  with an AI Portfolio Assistant that observes FDC3 desktop context, invokes
-  deterministic specialist applications for portfolio, risk and stress analysis,
-  retrieves investment research, and helps managers understand positions and
-  risks. The assistant may recommend or propose actions only within declared
-  authority levels; autonomous trade execution is outside the organisation's
-  purpose for this system.
+  with the AIPA (AI Portfolio Assistant), which observes FDC3 desktop context,
+  invokes deterministic specialist applications for portfolio, risk and stress
+  analysis, retrieves investment research, and helps managers understand
+  positions and risks. AIPA may recommend or propose actions only within
+  declared authority levels. Unsupervised trade execution is a prohibited
+  intended use; preventing and evidencing that prohibition is part of how the
+  organisation achieves the intended outcomes of this AIMS.
 
 issues:
-  - id: mifid-conduct
-    title: "MiFID II and UK conduct obligations on investment advice and suitability"
+  - id: ai-influenced-suitability
+    title: "AI-influenced recommendations can engage suitability and best-interest duties"
     origin: External
     category: Regulatory
     description: |
-      Recommendations and order proposals that influence portfolio decisions can
-      engage suitability, best-interest and conduct rules. The AIMS must keep
-      human accountability and prevent AI outputs from being treated as unsupervised
-      investment advice or execution.
+      The issue is not "MiFID exists"; it is that AIPA outputs can steer
+      portfolio decisions in ways that engage suitability, client best interest
+      and related conduct duties under UK/EU investment-services rules (MiFID II
+      / UK MiFIR, COBS). The AIMS must keep human accountability and stop AI
+      outputs being treated as unsupervised investment advice or execution.
     effect: Threat
     parties:
       - reference-id: apa-party-register
@@ -63,15 +65,108 @@ issues:
         entry-id: regulatory-non-compliance
     identified: "2026-06-01T00:00:00Z"
 
-  - id: model-risk
-    title: "Model risk from foundation-model interpretation of portfolio analytics"
+  - id: market-abuse-and-information-barriers
+    title: "Portfolio context and research in AIPA path can create market-abuse exposure"
+    origin: External
+    category: Regulatory
+    description: |
+      Sessions expose holdings, research and proposed actions. Misuse, leakage
+      across desks or poorly controlled dissemination of AI-drafted commentary
+      can engage Market Abuse Regulation (UK MAR / EU MAR) and the firm's
+      information-barrier arrangements. The AIMS must treat session isolation,
+      logging and outbound communication controls as part of achieving intended
+      outcomes—not as optional product polish.
+    effect: Threat
+    parties:
+      - reference-id: apa-party-register
+        entry-id: compliance
+      - reference-id: apa-party-register
+        entry-id: portfolio-managers
+    risks:
+      - reference-id: apa-risks
+        entry-id: market-conduct-breach
+      - reference-id: apa-risks
+        entry-id: client-confidentiality-breach
+    identified: "2026-09-30T00:00:00Z"
+
+  - id: client-comms-and-recordkeeping
+    title: "AI-assisted client or desk communications create recordkeeping and fair-comms duties"
+    origin: External
+    category: Regulatory
+    description: |
+      If AIPA drafts or shapes explanations, recommendations or
+      proposal text that later reach clients or are retained as part of the
+      investment process, firm obligations under COBS (fair, clear and not
+      misleading communications), MiFID recordkeeping and related UK/EU
+      conduct rules apply to those outputs. The AIMS must define which
+      AIPA outputs are internal working material versus regulated
+      communications, and retain evidence accordingly.
+    effect: Threat
+    parties:
+      - reference-id: apa-party-register
+        entry-id: compliance
+      - reference-id: apa-party-register
+        entry-id: clients
+    risks:
+      - reference-id: apa-risks
+        entry-id: regulatory-non-compliance
+    identified: "2026-09-30T00:00:00Z"
+
+  - id: privacy-and-third-country-processing
+    title: "Portfolio and client data sent to hosted models engages privacy and transfer controls"
+    origin: External
+    category: Legal
+    description: |
+      Prompting a hosted foundation model with portfolio context, client
+      identifiers or research can constitute processing of personal data and
+      confidential client information under UK GDPR / EU GDPR and client
+      agreements. Cross-border transfer, retention by the supplier and
+      secondary use are issues the AIMS must bound via contracts, redaction
+      and monitoring—not assume away because the model is "just a tool".
+    effect: Threat
+    parties:
+      - reference-id: apa-party-register
+        entry-id: clients
+      - reference-id: apa-party-register
+        entry-id: foundation-model-provider
+    risks:
+      - reference-id: apa-risks
+        entry-id: client-confidentiality-breach
+      - reference-id: apa-risks
+        entry-id: model-supply-chain-exposure
+    identified: "2026-09-30T00:00:00Z"
+
+  - id: smcr-accountability
+    title: "Senior-manager accountability for AI that influences investment decisions"
+    origin: External
+    category: Regulatory
+    description: |
+      Under the Senior Managers and Certification Regime, accountable
+      executives must be able to demonstrate reasonable steps over systems that
+      influence investment outcomes. Ambiguous ownership of AIPA's
+      authority ceiling, incidents or model changes is itself an issue for the
+      AIMS achieving its intended outcomes.
+    effect: Threat
+    parties:
+      - reference-id: apa-party-register
+        entry-id: cio-top-management
+      - reference-id: apa-party-register
+        entry-id: regulator-fca
+    risks:
+      - reference-id: apa-risks
+        entry-id: regulatory-non-compliance
+    identified: "2026-09-30T00:00:00Z"
+
+  - id: model-interpretation-risk
+    title: "Managers may treat model interpretation of analytics as authoritative calculation"
     origin: Internal
     category: Organisational
     description: |
-      The assistant interprets deterministic tool outputs and research rather than
-      computing exposures itself. Hallucinated figures, weak grounding or drift in
-      the hosted model can still mislead portfolio managers and create model-risk
-      inventory obligations.
+      AIPA interprets deterministic tool outputs and research rather
+      than computing exposures itself. The organisational issue is over-reliance
+      and weak challenge: hallucinated figures, weak grounding or drift can
+      still mislead managers and create model-risk inventory and challenge
+      obligations even though the numerical engines sit elsewhere.
     effect: Threat
     parties:
       - reference-id: apa-party-register
@@ -85,29 +180,35 @@ issues:
         entry-id: model-supply-chain-exposure
     identified: "2026-06-01T00:00:00Z"
 
-  - id: fdc3-desktop-tech
-    title: "Dependence on FDC3 desktop interoperability and specialist apps"
+  - id: desktop-control-plane
+    title: "FDC3 desktop interoperability is both the value path and a sensitive-intent control plane"
     origin: Internal
     category: Technological
     description: |
-      The assistant's value depends on FDC3 context sharing and approved intents
-      into portfolio, risk, stress and research applications. Tool allowlisting,
-      session isolation and desktop security therefore bound the AIMS as much as
-      model controls do.
+      AIPA's usefulness depends on FDC3 context sharing and approved
+      intents into portfolio, risk, stress and research applications. That same
+      path is how sensitive activities are raised and gated. Tool allowlisting,
+      session isolation and desktop security therefore bound AIMS outcomes as
+      much as model controls do—this is a technological dependency, not a
+      separate "IT topic" outside Clause 4.1.
     effect: Both
     parties:
       - reference-id: apa-party-register
         entry-id: portfolio-managers
+      - reference-id: apa-party-register
+        entry-id: fdc3-desktop-agent
     identified: "2026-06-15T00:00:00Z"
 
-  - id: competitive-pressure
-    title: "Competitive pressure to increase AI autonomy in front-office workflows"
+  - id: authority-ceiling-erosion
+    title: "Commercial pressure to raise autonomy can erode the declared authority ceiling"
     origin: External
     category: Competitive
     description: |
-      Peer firms advertise higher autonomy and faster proposal-to-trade loops.
-      Commercial pressure can erode authority ceilings unless top management
-      explicitly retains the prohibition on unsupervised execution.
+      Peer offerings and internal productivity targets push toward faster
+      proposal-to-trade loops. The issue for the AIMS is erosion of the
+      prohibition on unsupervised execution unless top management explicitly
+      retains and resources that ceiling. Competitive pressure is relevant only
+      insofar as it threatens the intended authority boundary.
     effect: Threat
     parties:
       - reference-id: apa-party-register
@@ -127,7 +228,7 @@ boundaries:
     type: "Business Unit"
     description: |
       Institutional and discretionary portfolio management desks that use the
-      AI Portfolio Assistant on the firm desktop. Retail banking AI products and
+      AIPA on the firm desktop. Retail banking AI products and
       firm-wide model training platforms are outside this boundary.
     owner:
       name: "Chief Investment Officer"
@@ -135,9 +236,10 @@ boundaries:
 
 review:
   cadence: Annual
-  last-reviewed: "2026-09-01T00:00:00Z"
-  next-review: "2027-09-01T00:00:00Z"
+  last-reviewed: "2026-09-30T00:00:00Z"
+  next-review: "2027-09-30T00:00:00Z"
   triggers:
-    - "Material change to MiFID/conduct interpretation affecting AI recommendations"
+    - "Material change to MiFID/COBS/MAR interpretation affecting AI recommendations or communications"
     - "Introduction of a new FDC3 specialist application into the tool allowlist"
     - "Proposal to raise the authority ceiling above propose"
+    - "Change to model-supplier data residency or subprocessors"

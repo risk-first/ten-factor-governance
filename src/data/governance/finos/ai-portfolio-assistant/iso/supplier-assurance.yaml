@@ -1,8 +1,8 @@
 # SupplierAssuranceRegister — ISO/IEC 42001 Annex A.10.3
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: SupplierAssuranceRegister
 
-title: "Supplier assurance for the AI Portfolio Assistant"
+title: "Supplier assurance for the AIPA"
 
 metadata:
   id: apa-supplier-assurance
@@ -18,22 +18,22 @@ metadata:
     type: Human
   description: |
     Assurance for the foundation model provider and market data vendor that the
-    AI Portfolio Assistant depends on.
+    AIPA depends on.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-governance-contract
-      title: "Governance contracts for the AI Portfolio Assistant"
+      title: "Governance contracts for the AIPA"
       version: "0.1.0"
       url: file://governance-contract.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-tool-resource-register

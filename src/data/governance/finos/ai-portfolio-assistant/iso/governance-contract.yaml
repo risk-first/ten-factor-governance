@@ -1,8 +1,8 @@
 # GovernanceContractRegister — ISO/IEC 42001 Annex A.10.2, A.10.4
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: GovernanceContractRegister
 
-title: "Governance contracts for the AI Portfolio Assistant"
+title: "Governance contracts for the AIPA"
 
 metadata:
   id: apa-governance-contract
@@ -18,10 +18,10 @@ metadata:
     type: Human
   description: |
     Allocation of governance responsibility between the firm and the foundation
-    model provider for the AI Portfolio Assistant deployment.
+    model provider for the AIPA deployment.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-ai-system-register
@@ -29,11 +29,11 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-stakeholder-requirements
-      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      title: "Stakeholder requirements for the AIPA"
       version: "0.1.0"
       url: file://stakeholder-requirements.yaml
 
@@ -62,7 +62,7 @@ contracts:
       - id: alloc-intended-use
         responsibility: |
           Define intended use, authority ceiling, human oversight and prohibited
-          uses for the AI Portfolio Assistant on the firm's desks.
+          uses for the AIPA on the firm's desks.
         holder: Organisation
         lifecycle-stage: Operation
         controls:

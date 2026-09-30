@@ -1,8 +1,8 @@
 # ApplicabilityProfile — ISO/IEC 42001 Clause 6.1.3
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: ApplicabilityProfile
 
-title: "Statement of Applicability — AI Portfolio Assistant controls"
+title: "Statement of Applicability — AIPA controls"
 
 metadata:
   id: apa-applicability-profile
@@ -23,23 +23,23 @@ metadata:
     and the Governance Runtime twin.
   mapping-references:
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.2.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-risk-assessment
-      title: "AI Portfolio Assistant risk assessment"
+      title: "AIPA risk assessment"
       version: "0.1.0"
       url: file://risk-assessment.yaml
     - id: apa-policy
-      title: "AI Portfolio Assistant policy"
+      title: "AIPA policy"
       version: "0.2.0"
       url: file://../gemara/policy.yaml
     - id: apa-stakeholder-requirements
-      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      title: "Stakeholder requirements for the AIPA"
       version: "0.1.0"
       url: file://stakeholder-requirements.yaml
     - id: CCC.K8S.CN
@@ -61,7 +61,7 @@ metadata:
 
 clauses: ["6.1.3"]
 
-reference-set: "apa-controls (AI Portfolio Assistant ControlCatalog)"
+reference-set: "apa-controls (AIPA ControlCatalog)"
 
 risk-assessment:
   reference-id: apa-risk-assessment
@@ -90,7 +90,7 @@ decisions:
     justification: "Permits low-consequence observe/analyse within the ceiling."
     state: Implemented
     owner:
-      name: "AI Portfolio Assistant Engineering"
+      name: "AIPA Engineering"
 
   - id: soa-apa-ctl-003
     control:
@@ -103,7 +103,7 @@ decisions:
       - reference-id: apa-risks
         entry-id: operational-overreliance
     owner:
-      name: "AI Portfolio Assistant Engineering"
+      name: "AIPA Engineering"
 
   - id: soa-apa-ctl-004
     control:
@@ -205,7 +205,7 @@ decisions:
     justification: "Restricts FDC3 intents and tools to approved specialist applications."
     state: Implemented
     owner:
-      name: "AI Portfolio Assistant Engineering"
+      name: "AIPA Engineering"
 
   - id: soa-apa-ctl-011
     control:
@@ -220,7 +220,7 @@ decisions:
       - reference-id: apa-risks
         entry-id: unauthorized-trading
     owner:
-      name: "AI Portfolio Assistant Engineering"
+      name: "AIPA Engineering"
     due: "2026-12-15T00:00:00Z"
     implementation: |
       Input filtering and tool-call confirmation present; adversarial research
@@ -239,7 +239,7 @@ decisions:
       - reference-id: apa-risks
         entry-id: operational-overreliance
     owner:
-      name: "AI Portfolio Assistant Engineering"
+      name: "AIPA Engineering"
 
   - id: soa-apa-ctl-013
     control:
@@ -302,7 +302,7 @@ decisions:
       - reference-id: apa-risks
         entry-id: operational-overreliance
     owner:
-      name: "AI Portfolio Assistant Engineering"
+      name: "AIPA Engineering"
     due: "2026-11-30T00:00:00Z"
     implementation: |
       Signature verification hooked for demo.portfolioRisk and
@@ -315,7 +315,7 @@ decisions:
       entry-id: CCC.K8S.CN02
     applicable: true
     justification: >
-      Host assumption via CCC Managed Kubernetes host controls (shared by Portfolio Assistant
+      Host assumption via CCC Managed Kubernetes host controls (shared by AIPA
       and Governance Runtime deployments): least-privilege cluster authorization.
     state: Assumed
     owner:
@@ -328,7 +328,7 @@ decisions:
     applicable: true
     justification: >
       Host assumption via CCC Managed Kubernetes host controls: federated workload identity
-      for assistant and runtime services.
+      for the AIPA and runtime services.
     state: Assumed
     owner:
       name: "Platform Engineering"
@@ -340,7 +340,7 @@ decisions:
     applicable: true
     justification: >
       Host assumption via CCC Managed Kubernetes host controls: restricted workload security
-      for assistant and runtime pods.
+      for the AIPA and runtime pods.
     state: Assumed
     owner:
       name: "Platform Engineering"
@@ -364,7 +364,7 @@ decisions:
     applicable: true
     justification: >
       Host assumption via CCC Managed Kubernetes host controls: Kubernetes secrets protected
-      per CCC for assistant and runtime workloads.
+      per CCC for the AIPA and runtime workloads.
     state: Assumed
     owner:
       name: "Platform Engineering"

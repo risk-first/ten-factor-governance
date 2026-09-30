@@ -1,8 +1,8 @@
 # DatasetRegister — ISO/IEC 42001 Annex A.7, A.4.3
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: DatasetRegister
 
-title: "Data resources for the AI Portfolio Assistant"
+title: "Data resources for the AIPA"
 
 metadata:
   id: apa-dataset-register
@@ -17,7 +17,7 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    Data resources used to operate and evaluate the AI Portfolio Assistant,
+    Data resources used to operate and evaluate the AIPA,
     including portfolio holdings snapshots, investment research and synthetic
     historical recommendations for evaluation.
   mapping-references:
@@ -26,7 +26,7 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-supplier-assurance
@@ -40,7 +40,7 @@ datasets:
   - id: portfolio-holdings-snapshots
     name: "Portfolio holdings snapshots"
     description: |
-      Point-in-time holdings and mandate metadata exposed to the assistant for
+      Point-in-time holdings and mandate metadata exposed to AIPA for
       the authenticated portfolio manager's entitled portfolios via FDC3 context.
     version: "2026.09"
     owner:
@@ -52,7 +52,7 @@ datasets:
           affiliation: "Data"
     stages: ["Inference Input", "Retrieval"]
     purpose: |
-      Provide current portfolio context so the assistant can observe positions
+      Provide current portfolio context so AIPA can observe positions
       and invoke deterministic analytics against the correct book.
     permitted-uses:
       - "Session-scoped observation and analysis for entitled managers"
@@ -102,7 +102,7 @@ datasets:
       Ground explanations and recommendations in retrieved research passages
       rather than unaudited model recollection.
     permitted-uses:
-      - "RAG retrieval during authorised assistant sessions"
+      - "RAG retrieval during authorised AIPA sessions"
       - "Evaluation of grounding quality"
     prohibited-uses:
       - "Training third-party foundation models on licensed content beyond licence"
@@ -139,7 +139,7 @@ datasets:
     version: "1.0.0"
     owner:
       responsible:
-        - name: "AI Portfolio Assistant Engineering"
+        - name: "AIPA Engineering"
           affiliation: "Investment Management Technology"
       accountable:
         - name: "Model Risk Management"

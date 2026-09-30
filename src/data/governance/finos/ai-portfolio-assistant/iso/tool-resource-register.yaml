@@ -1,8 +1,8 @@
 # ToolResourceRegister — ISO/IEC 42001 Annex A.4.2–A.4.6
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: ToolResourceRegister
 
-title: "Tooling resources for the AI Portfolio Assistant"
+title: "Tooling resources for the AIPA"
 
 metadata:
   id: apa-tool-resource-register
@@ -17,7 +17,7 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    Tooling and services the AI Portfolio Assistant depends on: FDC3 portfolio,
+    Tooling and services the AIPA depends on: FDC3 portfolio,
     risk, research and order-entry applications, stress engine, foundation model
     API and session logging.
   mapping-references:
@@ -26,11 +26,11 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-supplier-assurance
@@ -38,7 +38,7 @@ metadata:
       version: "0.1.0"
       url: file://supplier-assurance.yaml
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
 
@@ -58,7 +58,7 @@ resources:
         - name: "Desktop platforms"
           affiliation: "Investment Management Technology"
       accountable:
-        - name: "AI Portfolio Assistant Product Owner"
+        - name: "AIPA Product Owner"
     used-by:
       - reference-id: apa-ai-system-register
         entry-id: ai-portfolio-assistant
@@ -73,7 +73,7 @@ resources:
     kind: Tooling
     description: |
       Deterministic Risk app responding to demo.GetPortfolioRisk with
-      demo.portfolioRisk; the assistant interprets results rather than inventing them.
+      demo.portfolioRisk; AIPA interprets results rather than inventing them.
     functions: [Deployment]
     external: false
     owner:
@@ -126,7 +126,7 @@ resources:
     external: false
     owner:
       responsible:
-        - name: "AI Portfolio Assistant Engineering"
+        - name: "AIPA Engineering"
       accountable:
         - name: "Head of Research"
     used-by:
@@ -146,8 +146,8 @@ resources:
     description: |
       Desktop Order Entry app that responds to demo.CreateOrderProposal with
       demo.orderProposal for human review, and that would receive
-      demo.SubmitOrders if execution were permitted (it is not for the
-      assistant).
+      demo.SubmitOrders if execution were permitted (it is not for
+      AIPA).
     functions: [Deployment]
     external: false
     owner:
@@ -174,7 +174,7 @@ resources:
     kind: Tooling
     description: |
       Execution path that would process fdc3.orderList via demo.SubmitOrders.
-      The assistant must not successfully invoke this path; human-authorised
+      AIPA must not successfully invoke this path; human-authorised
       execution remains outside autonomous AI use.
     functions: [Deployment]
     external: false
@@ -230,7 +230,7 @@ resources:
     external: false
     owner:
       responsible:
-        - name: "AI Portfolio Assistant Engineering"
+        - name: "AIPA Engineering"
       accountable:
         - name: "AI Governance Office"
     used-by:

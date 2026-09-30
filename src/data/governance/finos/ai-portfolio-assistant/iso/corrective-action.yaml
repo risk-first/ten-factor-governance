@@ -1,8 +1,8 @@
 # CorrectiveActionLog — ISO/IEC 42001 Clause 10.2
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: CorrectiveActionLog
 
-title: "Corrective action log for the AI Portfolio Assistant AIMS"
+title: "Corrective action log for the AIPA AIMS"
 
 metadata:
   id: apa-corrective-action
@@ -21,7 +21,7 @@ metadata:
     propose-without-approval near miss.
   mapping-references:
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-incident
@@ -43,7 +43,7 @@ entries:
   - id: nc-propose-without-approval
     title: "Propose-level order construction without approval gate"
     description: |
-      The assistant constructed an order proposal in a session where the active
+      AIPA constructed an order proposal in a session where the active
       authority level and UI approval gate did not enforce human approval before
       the proposal was presented as ready for trading-desk handoff. No order was
       submitted. This is a nonconformity against apa-ctl-005-propose-human-approval
@@ -65,7 +65,7 @@ entries:
         invalidated the unapproved proposal; notified Compliance and desk head.
       taken: "2026-08-28T14:40:00Z"
       by:
-        name: "AI Portfolio Assistant Engineering"
+        name: "AIPA Engineering"
         affiliation: "Investment Management Technology"
     root-cause:
       method: "Five whys with session-log and configuration review"
@@ -83,7 +83,7 @@ entries:
       - id: ca-restore-gate
         description: "Restore and hard-fail propose flow when approval gate is unavailable"
         owner:
-          name: "AI Portfolio Assistant Engineering"
+          name: "AIPA Engineering"
           affiliation: "Investment Management Technology"
         due: "2026-09-12T00:00:00Z"
         status: Complete
@@ -91,7 +91,7 @@ entries:
       - id: ca-regression-suite
         description: "Add behavioural regression covering propose-without-approval-gate failure mode"
         owner:
-          name: "AI Portfolio Assistant Engineering"
+          name: "AIPA Engineering"
           affiliation: "Investment Management Technology"
         due: "2026-09-30T00:00:00Z"
         status: "In Progress"

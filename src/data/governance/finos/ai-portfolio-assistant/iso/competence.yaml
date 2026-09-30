@@ -1,8 +1,8 @@
 # CompetenceRegister — ISO/IEC 42001 Clauses 7.2 and 7.3
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: CompetenceRegister
 
-title: "Competence register for the AI Portfolio Assistant AIMS"
+title: "Competence register for the AIPA AIMS"
 
 metadata:
   id: apa-competence
@@ -21,7 +21,7 @@ metadata:
     model risk reviewers for the AIMS to operate as designed.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-ai-system-register
@@ -29,7 +29,7 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-policy
-      title: "AI Portfolio Assistant policy"
+      title: "AIPA policy"
       version: "0.1.0"
       url: file://../gemara/policy.yaml
 
@@ -39,7 +39,7 @@ requirements:
   - id: comp-pm-user
     title: "Portfolio manager authority-aware use"
     description: |
-      Operate the assistant within declared authority levels; challenge grounded
+      Operate AIPA within declared authority levels; challenge grounded
       explanations; approve or reject propose-level outputs with accountability
       for investment decisions retained.
     role:
@@ -66,7 +66,7 @@ requirements:
     revalidation: Annual
 
   - id: comp-model-risk-reviewer
-    title: "Model risk review of AI Portfolio Assistant"
+    title: "Model risk review of AIPA"
     description: |
       Challenge evaluation evidence, inventory the system, and assess residual
       model risk from hosted foundation models and RAG configurations.
@@ -81,7 +81,7 @@ requirements:
 
 awareness:
   - id: aware-policy
-    subject: "AI Portfolio Assistant policy and authority ceiling"
+    subject: "AIPA policy and authority ceiling"
     audience:
       - reference-id: apa-party-register
         entry-id: portfolio-managers

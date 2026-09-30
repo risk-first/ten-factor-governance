@@ -1,8 +1,8 @@
 # AuditProgramme — ISO/IEC 42001 Clause 9.2
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: AuditProgramme
 
-title: "Internal audit programme for the AI Portfolio Assistant AIMS"
+title: "Internal audit programme for the AIPA AIMS"
 
 metadata:
   id: apa-audit-programme
@@ -21,7 +21,7 @@ metadata:
     sampling of authority controls.
   mapping-references:
     - id: apa-aims-scope
-      title: "AIMS scope — AI Portfolio Assistant"
+      title: "AIMS scope — AIPA"
       version: "0.1.0"
       url: file://aims-scope.yaml
     - id: apa-applicability-profile
@@ -29,7 +29,7 @@ metadata:
       version: "0.1.0"
       url: file://applicability-profile.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-competence
@@ -37,7 +37,7 @@ metadata:
       version: "0.1.0"
       url: file://competence.yaml
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-corrective-action
@@ -58,7 +58,7 @@ objectives:
 
 criteria:
   - description: "ISO/IEC 42001:2023 clauses applicable to the AIMS scope"
-  - description: "Firm AI Portfolio Assistant policy and apa-controls Statement of Applicability"
+  - description: "Firm AIPA policy and apa-controls Statement of Applicability"
     reference:
       reference-id: apa-applicability-profile
   - description: "Declared intended use and prohibited uses for ai-portfolio-assistant"
@@ -76,7 +76,7 @@ coverage:
 independence:
   requirement: |
     Auditors must not audit work they performed or own; AIMS document authors
-    and product engineering for the assistant are excluded from leading audits
+    and product engineering for the AIPA are excluded from leading audits
     of their own deliverables.
   verification: "Independence checklist signed before each audit kickoff"
 
