@@ -1,8 +1,45 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Link from '@docusaurus/Link';
 import DownloadYamlButton from '@site/src/components/DownloadYamlButton';
 import RevealItem from '@site/src/components/RevealItem';
 import styles from './styles.module.css';
+
+/**
+ * Wrap rendered YAML entities so their `id` field is an HTML anchor of the
+ * same name. Duplicate ids within one document are invalid HTML; fix the YAML.
+ */
+function Anchored({id: yamlId, className, children, as: Tag = 'div'}) {
+  return (
+    <Tag
+      id={typeof yamlId === 'string' && yamlId ? yamlId : undefined}
+      className={className}
+      data-yaml-id={typeof yamlId === 'string' && yamlId ? yamlId : undefined}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+function scrollToLocationHash() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  const hash = window.location.hash?.replace(/^#/, '');
+  if (!hash) {
+    return;
+  }
+  const el = document.getElementById(hash);
+  if (!el) {
+    return;
+  }
+  const details = el.matches('details')
+    ? el
+    : el.querySelector('details') || el.closest('details');
+  if (details) {
+    details.open = true;
+  }
+  el.scrollIntoView({block: 'start'});
+}
 
 function textOf(value) {
   if (value == null) {
@@ -27,13 +64,33 @@ function isReference(value) {
     typeof value === 'object' &&
     !Array.isArray(value) &&
     typeof value['reference-id'] === 'string' &&
-    !value.id &&
-    !value.title &&
-    !value.name &&
-    !value.description &&
-    !value.statement &&
-    !value.justification
+    Object.keys(value).every((k) =>
+      ['reference-id', 'entry-id', 'version', 'url', 'title'].includes(k),
+    )
   );
+}
+
+function isContact(value) {
+  return (
+    value != null &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    (value.name || value.affiliation) &&
+    !value['reference-id'] &&
+    !value.id &&
+    !value.title
+  );
+}
+
+function contactText(contact) {
+  if (!isContact(contact)) {
+    return '';
+  }
+  return [contact.name, contact.affiliation].filter(Boolean).join(' — ');
+}
+
+function humanizeKey(key) {
+  return String(key).replace(/-/g, ' ');
 }
 
 const GEMARA_MODEL_DOCS = {
@@ -47,9 +104,6 @@ const GEMARA_MODEL_DOCS = {
 /**
  * Map a mapping-reference `file://` URL (relative to the YAML) onto a docs
  * route relative to the page rendering this document.
- *
- * Sibling ISO YAML (`file://aims-scope.yaml`) → sibling MDX (`./aims-scope`).
- * Shared model YAML under gemara/ (`file://../gemara/policy.yaml`) → gemara root pages.
  */
 function docHrefFromFileUrl(url) {
   if (typeof url !== 'string' || !url.startsWith('file://')) {
@@ -97,6 +151,41 @@ function indexMappingReferences(metadata) {
   return byId;
 }
 
+const ISO42001_GUIDANCE_CATALOG =
+  '/docs/artifacts/iso-iec/iso42001/guidance-catalog';
+
+const ISO42001_CLAUSE_ANCHOR_OVERRIDES = {
+  '9.2': 'iso42001-9.2.1',
+  '9.3': 'iso42001-9.3.1',
+};
+
+function iso42001GuidanceHref(clause) {
+  if (typeof clause !== 'string' || !clause.trim()) {
+    return null;
+  }
+  const key = clause.trim();
+  const anchor = ISO42001_CLAUSE_ANCHOR_OVERRIDES[key] ?? `iso42001-${key}`;
+  return `${ISO42001_GUIDANCE_CATALOG}#${anchor}`;
+}
+
+function ClauseBadge({clause, standard}) {
+  const is42001 = typeof standard === 'string' && standard.includes('42001');
+  const href = is42001 ? iso42001GuidanceHref(clause) : null;
+  const badge = <code className={styles.clause}>{clause}</code>;
+  if (!href) {
+    return badge;
+  }
+  return (
+    <Link
+      to={href}
+      className={styles.clauseLink}
+      title={`ISO/IEC 42001 guidance: ${clause}`}
+    >
+      {badge}
+    </Link>
+  );
+}
+
 function MappingRefLink({id, entryId, mappingById}) {
   const mapping = mappingById.get(id);
   const href = mapping ? docHrefFromFileUrl(mapping.url) : null;
@@ -134,96 +223,29 @@ function MappingRefLink({id, entryId, mappingById}) {
 
 function ReferenceList({refs, mappingById}) {
   return (
-    <div className={styles.itemList}>
+    <ul className={styles.flatList}>
       {refs.map((ref, index) => {
         const id = ref['reference-id'];
         if (!id) {
           return null;
         }
         const entryId = ref['entry-id'];
-        const mapping = mappingById.get(id);
-        const title = textOf(mapping?.title) || id;
-
         return (
-          <div key={`${id}-${entryId || index}`} id={entryId || undefined}>
-            <RevealItem
-              title={
-                <>
-                  {entryId ? (
-                    <span className={styles.itemId}>{entryId}</span>
-                  ) : (
-                    <span className={styles.itemId}>{id}</span>
-                  )}
-                  {title}
-                </>
-              }
-            >
-              <dl className={styles.metaList}>
-                <div className={styles.metaRow}>
-                  <dt>Source</dt>
-                  <dd>
-                    <MappingRefLink
-                      id={id}
-                      entryId={entryId}
-                      mappingById={mappingById}
-                    />
-                  </dd>
-                </div>
-              </dl>
-            </RevealItem>
-          </div>
+          <li
+            key={`${id}-${entryId || index}`}
+            id={entryId || undefined}
+            className={styles.flatItem}
+          >
+            <MappingRefLink
+              id={id}
+              entryId={entryId}
+              mappingById={mappingById}
+            />
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
-}
-
-/** Entity collections rendered as expandable cards. */
-const COLLECTION_KEYS = [
-  'parties',
-  'requirements',
-  'objectives',
-  'systems',
-  'datasets',
-  'resources',
-  'tools',
-  'suppliers',
-  'contracts',
-  'obligations',
-  'issues',
-  'inclusions',
-  'exclusions',
-  'interfaces',
-  'decisions',
-  'entries',
-  'impacts',
-  'audits',
-  'incidents',
-  'findings',
-  'inputs',
-  'attendees',
-  'consultation',
-  'commitments',
-];
-
-/**
- * Keys that may hold either entity rows or bare `#Reference` lists.
- * Scope `requirements` are references; stakeholder-requirement catalogs are
- * full entries. Detect per array so neither case renders as empty "Item N".
- */
-const REFERENCE_OR_ENTITY_KEYS = new Set(['requirements']);
-
-function splitReferenceOrEntityItems(items) {
-  const refs = [];
-  const entities = [];
-  for (const item of items) {
-    if (isReference(item)) {
-      refs.push(item);
-    } else {
-      entities.push(item);
-    }
-  }
-  return {refs, entities};
 }
 
 function itemTitle(item, index) {
@@ -231,69 +253,229 @@ function itemTitle(item, index) {
     textOf(item.title) ||
     textOf(item.name) ||
     textOf(item.id) ||
+    textOf(item.outcome) ||
+    textOf(item.subject) ||
+    textOf(item.method) ||
+    (item.party?.['entry-id'] ? String(item.party['entry-id']) : '') ||
     textOf(item.statement) ||
+    textOf(item.description) ||
     `Item ${index + 1}`
   );
 }
 
-function ItemBody({item, mappingById}) {
-  const descriptionText =
-    textOf(item.description) ||
-    textOf(item.justification) ||
-    textOf(item.purpose) ||
-    textOf(item.summary) ||
-    textOf(item.action) ||
-    textOf(item['root-cause']?.statement);
+/** Named entities keep an accordion; thin objects (criteria, etc.) list flat. */
+function hasEntityIdentity(item) {
+  return Boolean(
+    (typeof item?.id === 'string' && item.id) ||
+      textOf(item?.title) ||
+      textOf(item?.name),
+  );
+}
+
+function FlatItemList({items, mappingById}) {
+  return (
+    <ul className={styles.flatList}>
+      {items.map((item, index) => {
+        const primaryKey = ['description', 'statement', 'summary'].find(
+          (key) => typeof item?.[key] === 'string' && item[key].trim(),
+        );
+        const primary = primaryKey
+          ? item[primaryKey].trim()
+          : itemTitle(item, index);
+        const bodyItem = primaryKey
+          ? Object.fromEntries(
+              Object.entries(item).filter(([key]) => key !== primaryKey),
+            )
+          : item;
+        return (
+          <Anchored
+            key={item?.id || `flat-${index}`}
+            id={item?.id}
+            className={styles.flatItem}
+            as="li"
+          >
+            <div className={styles.flatPrimary}>{primary}</div>
+            <ItemBody
+              item={bodyItem}
+              mappingById={mappingById}
+              omitBodyKeys={false}
+            />
+          </Anchored>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Keys used as the RevealItem title — still shown as fields when useful. */
+const TITLE_KEYS = new Set(['id', 'title', 'name']);
+
+/** Prefer these as the leading prose body when present. */
+const BODY_KEYS = [
+  'description',
+  'narrative',
+  'statement',
+  'summary',
+  'justification',
+  'purpose',
+  'action',
+  'content',
+  'influence',
+];
+
+function NestedObject({value, mappingById}) {
+  return (
+    <dl className={styles.nestedMeta}>
+      {Object.entries(value).map(([key, child]) => {
+        const rendered = renderValue(child, mappingById, key);
+        if (rendered == null || rendered === '') {
+          return null;
+        }
+        return (
+          <div key={key} className={styles.metaRow}>
+            <dt>{humanizeKey(key)}</dt>
+            <dd>{rendered}</dd>
+          </div>
+        );
+      })}
+    </dl>
+  );
+}
+
+function renderValue(value, mappingById, label) {
+  if (value == null || value === '') {
+    return null;
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+  if (typeof value === 'number') {
+    return String(value);
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (isReference(value)) {
+    return (
+      <MappingRefLink
+        key={label}
+        id={value['reference-id']}
+        entryId={value['entry-id']}
+        mappingById={mappingById}
+      />
+    );
+  }
+  if (isContact(value)) {
+    return contactText(value);
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return null;
+    }
+    if (value.every(isReference)) {
+      return (
+        <span className={styles.refTargets}>
+          {value.map((ref, index) => (
+            <React.Fragment key={`${label}-${ref['reference-id']}-${index}`}>
+              {index > 0 ? ', ' : null}
+              <MappingRefLink
+                id={ref['reference-id']}
+                entryId={ref['entry-id']}
+                mappingById={mappingById}
+              />
+            </React.Fragment>
+          ))}
+        </span>
+      );
+    }
+    if (value.every((v) => typeof v === 'string' || typeof v === 'number')) {
+      return (
+        <ul className={styles.bulletList}>
+          {value.map((entry, index) => (
+            <li key={`${label}-${index}`}>{String(entry)}</li>
+          ))}
+        </ul>
+      );
+    }
+    // Array of structured objects (metrics, allocations, actions, …)
+    return (
+      <div className={styles.nestedList}>
+        {value.map((entry, index) => (
+          <Anchored
+            key={entry?.id || `${label}-${index}`}
+            id={entry?.id}
+            className={styles.nestedCard}
+          >
+            <div className={styles.nestedCardTitle}>
+              {itemTitle(entry, index)}
+            </div>
+            <ItemBody item={entry} mappingById={mappingById} omitBodyKeys={false} />
+          </Anchored>
+        ))}
+      </div>
+    );
+  }
+  if (typeof value === 'object') {
+    const nested = <NestedObject value={value} mappingById={mappingById} />;
+    if (typeof value.id === 'string' && value.id) {
+      return <Anchored id={value.id}>{nested}</Anchored>;
+    }
+    return nested;
+  }
+  return String(value);
+}
+
+function ItemBody({item, mappingById, omitBodyKeys = true}) {
+  if (!item || typeof item !== 'object') {
+    return null;
+  }
+
+  let bodyKey = null;
+  let bodyText = '';
+  for (const key of BODY_KEYS) {
+    if (typeof item[key] === 'string' && item[key].trim()) {
+      bodyKey = key;
+      bodyText = item[key].trim();
+      break;
+    }
+  }
+  // root-cause.statement special case for corrective actions
+  if (!bodyText && item['root-cause']?.statement) {
+    bodyKey = 'root-cause';
+    bodyText = textOf(item['root-cause'].statement);
+  }
 
   const extras = [];
-  const maybeExtra = (label, value) => {
-    if (value == null || value === '') {
-      return;
+  for (const [key, value] of Object.entries(item)) {
+    if (TITLE_KEYS.has(key)) {
+      continue;
     }
-    if (isReference(value)) {
-      extras.push([
-        label,
-        <MappingRefLink
-          key={label}
-          id={value['reference-id']}
-          entryId={value['entry-id']}
-          mappingById={mappingById}
-        />,
-      ]);
-      return;
+    if (omitBodyKeys && key === bodyKey && key !== 'root-cause') {
+      continue;
     }
-    const text = textOf(value);
-    if (text) {
-      extras.push([label, text]);
+    if (key === 'root-cause' && bodyKey === 'root-cause') {
+      // still render nested fields other than statement via NestedObject below
+      const rest = {...item['root-cause']};
+      delete rest.statement;
+      if (Object.keys(rest).length === 0) {
+        continue;
+      }
+      const rendered = renderValue(rest, mappingById, key);
+      if (rendered != null && rendered !== '') {
+        extras.push([humanizeKey(key), rendered]);
+      }
+      continue;
     }
-  };
-  maybeExtra('Kind', item.kind);
-  maybeExtra('Category', item.category);
-  maybeExtra('Origin', item.origin);
-  maybeExtra('Source', item.source);
-  maybeExtra('Stage', item.stage);
-  maybeExtra('State', item.state);
-  maybeExtra('Status', item.status);
-  maybeExtra('Severity', item.severity);
-  maybeExtra('Likelihood', item.likelihood);
-  maybeExtra('Disposition', item.disposition);
-  maybeExtra('Direction', item.direction);
-  maybeExtra('Effect', item.effect);
-  maybeExtra('Counterparty', item.counterparty);
-  maybeExtra('Responsibilities', item.responsibilities);
-  maybeExtra('Governed elsewhere', item['governed-elsewhere']);
-  maybeExtra('Target', item.target);
-  if (typeof item.applicable === 'boolean') {
-    extras.push(['Applicable', item.applicable ? 'Yes' : 'No']);
+    const rendered = renderValue(value, mappingById, key);
+    if (rendered == null || rendered === '') {
+      continue;
+    }
+    extras.push([humanizeKey(key), rendered]);
   }
-  maybeExtra('Roles', item.roles);
-  maybeExtra('Type', item.type);
 
   return (
     <>
-      {descriptionText ? (
-        <p className={styles.bodyText}>{descriptionText}</p>
-      ) : null}
+      {bodyText ? <p className={styles.bodyText}>{bodyText}</p> : null}
       {extras.length > 0 ? (
         <dl className={styles.metaList}>
           {extras.map(([label, value]) => (
@@ -308,11 +490,240 @@ function ItemBody({item, mappingById}) {
   );
 }
 
+function CollectionSection({title, items, mappingById, id}) {
+  const named = items.filter(hasEntityIdentity);
+  const useAccordion = named.length === items.length && items.length > 0;
+
+  return (
+    <section className={styles.group} id={id}>
+      <h2 className={styles.groupTitle}>
+        {title}
+        <span className={styles.count}> ({items.length})</span>
+      </h2>
+      {useAccordion ? (
+        <div className={styles.itemList}>
+          {items.map((item, index) => (
+            <Anchored key={item?.id || `${id}-${index}`} id={item?.id}>
+              <RevealItem
+                title={
+                  <>
+                    {item?.id ? (
+                      <span className={styles.itemId}>{item.id}</span>
+                    ) : null}
+                    {itemTitle(item, index)}
+                  </>
+                }
+              >
+                <ItemBody item={item} mappingById={mappingById} />
+              </RevealItem>
+            </Anchored>
+          ))}
+        </div>
+      ) : (
+        <FlatItemList items={items} mappingById={mappingById} />
+      )}
+    </section>
+  );
+}
+
+function ObjectSection({title, object, mappingById, id}) {
+  if (!object || typeof object !== 'object' || Array.isArray(object)) {
+    return null;
+  }
+  const named = hasEntityIdentity(object);
+  return (
+    <section className={styles.group} id={id}>
+      <h2 className={styles.groupTitle}>{title}</h2>
+      {named ? (
+        <div className={styles.itemList}>
+          <Anchored id={object.id}>
+            <RevealItem title={itemTitle(object, 0)}>
+              <ItemBody item={object} mappingById={mappingById} />
+            </RevealItem>
+          </Anchored>
+        </div>
+      ) : (
+        <div className={styles.flatItem}>
+          <Anchored id={object.id}>
+            <ItemBody
+              item={object}
+              mappingById={mappingById}
+              omitBodyKeys={false}
+            />
+          </Anchored>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ScalarSection({title, value, id}) {
+  const text = textOf(value);
+  if (!text) {
+    return null;
+  }
+  return (
+    <section className={styles.group} id={id}>
+      <h2 className={styles.groupTitle}>{title}</h2>
+      <p className={styles.bodyText}>{text}</p>
+    </section>
+  );
+}
+
+function ApprovalBanner({approval}) {
+  if (!approval || typeof approval !== 'object') {
+    return null;
+  }
+  const who = contactText(approval['approved-by']);
+  const bits = [
+    who ? `Approved by ${who}` : null,
+    approval.date ? `on ${approval.date}` : null,
+    approval['effective-date']
+      ? `effective ${approval['effective-date']}`
+      : null,
+  ].filter(Boolean);
+  if (bits.length === 0) {
+    return null;
+  }
+  return <p className={styles.approval}>{bits.join(' · ')}</p>;
+}
+
+/** Top-level keys handled specially or skipped (not generic sections). */
+const SKIP_TOP_KEYS = new Set(['title', 'metadata', 'clauses']);
+
 /**
- * Lightweight renderer for ISO management-system documents that are not
- * Gemara catalogs. Shows metadata, download, and expandable collection items.
+ * Front-matter callout: scope statement if present, else metadata description.
+ * Document-level `purpose` is always its own section when present and distinct.
+ */
+function FrontMatter({file, metadata}) {
+  const primary = textOf(file.statement) || textOf(metadata.description);
+  const purpose = textOf(file.purpose);
+  const showPurpose =
+    Boolean(purpose) && purpose !== primary;
+
+  if (!primary && !showPurpose) {
+    return null;
+  }
+
+  return (
+    <>
+      {primary ? <div className={styles.frontMatter}>{primary}</div> : null}
+      {showPurpose ? (
+        <section className={styles.group} id="group-purpose">
+          <h2 className={styles.groupTitle}>Purpose</h2>
+          <p className={styles.bodyText}>{purpose}</p>
+        </section>
+      ) : null}
+    </>
+  );
+}
+
+function skippedBecauseFrontMatter(file, metadata, key) {
+  if (key === 'statement' && textOf(file.statement)) {
+    return true;
+  }
+  if (key === 'purpose' && textOf(file.purpose)) {
+    return true;
+  }
+  return false;
+}
+
+function TopLevelSection({sectionKey, value, mappingById}) {
+  const title = humanizeKey(sectionKey);
+  const id = `group-${sectionKey}`;
+
+  if (value == null) {
+    return null;
+  }
+
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return <ScalarSection title={title} value={value} id={id} />;
+  }
+
+  if (isReference(value)) {
+    return (
+      <section className={styles.group} id={id}>
+        <h2 className={styles.groupTitle}>{title}</h2>
+        <p>
+          <MappingRefLink
+            id={value['reference-id']}
+            entryId={value['entry-id']}
+            mappingById={mappingById}
+          />
+        </p>
+      </section>
+    );
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return null;
+    }
+    if (value.every(isReference)) {
+      return (
+        <section className={styles.group} id={id}>
+          <h2 className={styles.groupTitle}>
+            {title}
+            <span className={styles.count}> ({value.length})</span>
+          </h2>
+          <ReferenceList refs={value} mappingById={mappingById} />
+        </section>
+      );
+    }
+    if (value.every((v) => typeof v === 'string' || typeof v === 'number')) {
+      return (
+        <section className={styles.group} id={id}>
+          <h2 className={styles.groupTitle}>{title}</h2>
+          <ul className={styles.bulletList}>
+            {value.map((entry, index) => (
+              <li key={`${sectionKey}-${index}`}>{String(entry)}</li>
+            ))}
+          </ul>
+        </section>
+      );
+    }
+    return (
+      <CollectionSection
+        title={title}
+        items={value}
+        mappingById={mappingById}
+        id={id}
+      />
+    );
+  }
+
+  if (typeof value === 'object') {
+    return (
+      <ObjectSection
+        title={title}
+        object={value}
+        mappingById={mappingById}
+        id={id}
+      />
+    );
+  }
+
+  return null;
+}
+
+/**
+ * Renderer for ISO management-system documents that are not Gemara catalogs.
+ * Walks every top-level YAML field (except title/metadata/clauses handled
+ * above) so document content is not silently dropped. Every YAML `id` is
+ * exposed as an HTML element id of the same name (first occurrence wins if
+ * duplicated within the document).
  */
 export default function IsoDocument({file}) {
+  useEffect(() => {
+    const run = () => {
+      // Defer until after RevealItems / nested anchors mount.
+      requestAnimationFrame(() => scrollToLocationHash());
+    };
+    run();
+    window.addEventListener('hashchange', run);
+    return () => window.removeEventListener('hashchange', run);
+  }, [file]);
+
   if (!file) {
     return (
       <p className={styles.empty}>
@@ -322,34 +733,18 @@ export default function IsoDocument({file}) {
   }
 
   const metadata = file.metadata ?? {};
-  const collections = [];
-  const referenceLists = [];
-
-  for (const key of COLLECTION_KEYS) {
-    const items = Array.isArray(file[key]) ? file[key] : null;
-    if (!items || items.length === 0) {
-      continue;
-    }
-    if (REFERENCE_OR_ENTITY_KEYS.has(key)) {
-      const {refs, entities} = splitReferenceOrEntityItems(items);
-      if (refs.length > 0) {
-        referenceLists.push({key, refs});
-      }
-      if (entities.length > 0) {
-        collections.push({key, items: entities});
-      }
-      continue;
-    }
-    collections.push({key, items});
-  }
-
+  const mappingById = indexMappingReferences(metadata);
   const isAimsProfile =
     metadata.type === 'AIMS' || (!metadata.type && file.scope && file.policy);
 
-  const mappingById = indexMappingReferences(metadata);
+  const topEntries = Object.entries(file).filter(
+    ([key]) =>
+      !SKIP_TOP_KEYS.has(key) &&
+      !skippedBecauseFrontMatter(file, metadata, key),
+  );
 
   return (
-    <div className={styles.doc}>
+    <div className={styles.doc} id={metadata.id || undefined}>
       <div className={styles.header}>
         <div className={styles.badges}>
           <span className={styles.badge}>
@@ -366,24 +761,22 @@ export default function IsoDocument({file}) {
             </span>
           ) : null}
           {metadata.draft ? (
-            <span className={`${styles.badge} ${styles.badgeMuted}`}>draft</span>
+            <span className={`${styles.badge} ${styles.badgeMuted}`}>
+              draft
+            </span>
           ) : null}
         </div>
         <DownloadYamlButton file={file} />
       </div>
 
-      {textOf(metadata.description) || textOf(file.statement) || textOf(file.purpose) ? (
-        <div className={styles.frontMatter}>
-          {textOf(metadata.description) ||
-            textOf(file.statement) ||
-            textOf(file.purpose)}
-        </div>
-      ) : null}
+      <FrontMatter file={file} metadata={metadata} />
+      <ApprovalBanner approval={metadata.approval} />
 
       {Array.isArray(file.clauses) && file.clauses.length > 0 ? (
         <p className={styles.clauses}>
-          Clauses: {file.clauses.map((c) => (
-            <code key={c} className={styles.clause}>{c}</code>
+          Clauses:{' '}
+          {file.clauses.map((c) => (
+            <ClauseBadge key={c} clause={c} standard={metadata.standard} />
           ))}
         </p>
       ) : null}
@@ -400,7 +793,7 @@ export default function IsoDocument({file}) {
                   : value?.['reference-id']
                     ? [value]
                     : [];
-                if (refs.length === 0) {
+                if (refs.length === 0 || !refs.every(isReference)) {
                   return null;
                 }
                 return (
@@ -429,44 +822,16 @@ export default function IsoDocument({file}) {
               })}
           </ul>
         </section>
-      ) : null}
-
-      {referenceLists.map(({key, refs}) => (
-        <section key={key} className={styles.group} id={`group-${key}`}>
-          <h2 className={styles.groupTitle}>
-            {key.replace(/-/g, ' ')}
-            <span className={styles.count}> ({refs.length})</span>
-          </h2>
-          <ReferenceList refs={refs} mappingById={mappingById} />
-        </section>
-      ))}
-
-      {collections.map(({key, items}) => (
-        <section key={key} className={styles.group} id={`group-${key}`}>
-          <h2 className={styles.groupTitle}>
-            {key.replace(/-/g, ' ')}
-            <span className={styles.count}> ({items.length})</span>
-          </h2>
-          <div className={styles.itemList}>
-            {items.map((item, index) => (
-              <div key={item.id || `${key}-${index}`} id={item.id}>
-                <RevealItem
-                  title={
-                    <>
-                      {item.id ? (
-                        <span className={styles.itemId}>{item.id}</span>
-                      ) : null}
-                      {itemTitle(item, index)}
-                    </>
-                  }
-                >
-                  <ItemBody item={item} mappingById={mappingById} />
-                </RevealItem>
-              </div>
-            ))}
-          </div>
-        </section>
-      ))}
+      ) : (
+        topEntries.map(([key, value]) => (
+          <TopLevelSection
+            key={key}
+            sectionKey={key}
+            value={value}
+            mappingById={mappingById}
+          />
+        ))
+      )}
     </div>
   );
 }

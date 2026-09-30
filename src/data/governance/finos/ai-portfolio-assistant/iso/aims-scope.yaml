@@ -161,10 +161,10 @@ interfaces:
 
   - id: aipa-agentic-model
     description: |
-      AIPA sends prompts to and receives completions from the hosted
-      Agentic Model / foundation-model API (deployment: Rel Prompts /
-      completions). Version pinning, content filters and incident notification
-      cross the organisational boundary.
+      AIPA sends prompts to and receives completions from the foundation
+      model API hosted inside the banking firewall (deployment: Rel Prompts /
+      completions). Model artefacts are supplied by the foundation model
+      provider; prompts and portfolio context do not egress to that supplier.
     direction: Bidirectional
     counterparty:
       reference-id: apa-party-register

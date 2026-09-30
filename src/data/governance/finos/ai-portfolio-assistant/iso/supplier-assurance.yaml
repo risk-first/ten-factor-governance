@@ -50,24 +50,35 @@ suppliers:
       entry-id: foundation-model-provider
     provides:
       - type: Model
-        description: "Hosted foundation model API for generation and interpretation"
+        description: |
+          Foundation model runtime for generation and interpretation, deployed
+          and served inside the banking firewall (no prompt or portfolio
+          context egress to the supplier).
         resources:
           - reference-id: apa-tool-resource-register
             entry-id: foundation-model-api
       - type: "AI Service"
-        description: "Content filtering and model version channels"
+        description: "Content filtering and model version channels under firm-controlled hosting"
     criticality: High
     obligations:
       - id: fm-no-train-on-prompts
-        statement: "Customer prompts and portfolio context are not used to train shared models."
-        source: "Data processing agreement § training prohibition"
+        statement: |
+          The foundation model used by AIPA is hosted and inferred inside the
+          banking firewall. Prompts, completions and portfolio context must not
+          leave the firm boundary to the model supplier (or any
+          supplier-operated multi-tenant cloud endpoint), so there is no path
+          for session data to leak back for training, logging or secondary use.
+        source: "AI policy; data processing / hosting schedule — on-premises or VPC-isolated inference"
         controls:
           - reference-id: apa-controls
             entry-id: apa-ctl-014-model-provider-controls
-        verification: "Annual DPA attestation and technical configuration review"
+        verification: |
+          Network and architecture review confirming inference endpoints are
+          internal-only; annual attestation that no prompt/completion telemetry
+          is exported to the supplier; spot-check of egress controls.
         status: Met
       - id: fm-security-incident-notify
-        statement: "Notify the firm of security or model-integrity incidents affecting the service."
+        statement: "Notify the firm of security or model-integrity incidents affecting the supplied model artefacts or support channel."
         source: "Master services agreement incident clause"
         verification: "Contractual SLA; tested annually via tabletop"
         status: Unverified
@@ -79,7 +90,7 @@ suppliers:
         type: "Audit Report"
         title: "SOC 2 Type II report"
         issuer: "Independent auditor (supplier-provided)"
-        scope: "Hosted model API control environment"
+        scope: "Supplier control environment for model artefacts and support (not multi-tenant prompt hosting)"
         issued: "2026-03-01T00:00:00Z"
         expires: "2027-03-01T00:00:00Z"
       - id: fm-model-card
@@ -94,8 +105,9 @@ suppliers:
       - reference-id: apa-controls
         entry-id: apa-ctl-014-model-provider-controls
     exit: |
-      Maintain alternate approved model channel; freeze promotions on provider
-      failure; degrade to deterministic-tool explain-only mode if generation unavailable.
+      Maintain alternate approved model channel hosted inside the firewall;
+      freeze promotions on provider artefact failure; degrade to
+      deterministic-tool explain-only mode if generation unavailable.
     review:
       cadence: Annual
       next-review: "2027-03-01T00:00:00Z"

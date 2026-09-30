@@ -97,8 +97,9 @@ import "github.com/finos/ten-factor-governance/schemas/iso/common:iso"
 	// audit-programme is the internal audit programme (Clause 9.2)
 	"audit-programme": iso.#Reference
 
-	// reviews are the management reviews held (Clause 9.3)
-	reviews: [iso.#Reference, ...iso.#Reference]
+	// management-review-programme is how top management reviews the AIMS
+	// (Clause 9.3)
+	"management-review-programme": iso.#Reference
 
 	// corrective-actions is the nonconformity and corrective action log
 	// (Clause 10.2)

@@ -93,9 +93,9 @@ metadata:
       title: "Internal audit programme for the AIPA AIMS"
       version: "0.1.0"
       url: file://audit-programme.yaml
-    - id: apa-management-review-2026-q3
-      title: "Management review — AIPA AIMS Q3 2026"
-      version: "0.1.0"
+    - id: apa-management-review-programme
+      title: "Management review programme for the AIPA AIMS"
+      version: "0.2.0"
       url: file://management-review.yaml
     - id: apa-corrective-action
       title: "Corrective action log for the AIPA AIMS"
@@ -160,8 +160,8 @@ reporting:
 audit-programme:
   reference-id: apa-audit-programme
 
-reviews:
-  - reference-id: apa-management-review-2026-q3
+management-review-programme:
+  reference-id: apa-management-review-programme
 
 corrective-actions:
   reference-id: apa-corrective-action

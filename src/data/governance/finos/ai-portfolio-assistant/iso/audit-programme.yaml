@@ -7,18 +7,19 @@ title: "Internal audit programme for the AIPA AIMS"
 metadata:
   id: apa-audit-programme
   type: AuditProgramme
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.5.0"
   standard: "ISO/IEC 42001:2023"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-09-30T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: |
-    Internal audit cycle covering an annual AIMS conformity audit and quarterly
-    sampling of authority controls.
+    Recurring internal audit programme: annual AIMS conformity audit and
+    quarterly sampling of authority controls. Defined by frequency, not by
+    calendar windows.
   mapping-references:
     - id: apa-aims-scope
       title: "AIMS scope — AIPA"
@@ -47,9 +48,7 @@ metadata:
 
 clauses: ["9.2"]
 
-cycle:
-  start: "2026-01-01T00:00:00Z"
-  end: "2026-12-31T23:59:59Z"
+coverage-cycle: Annual
 
 objectives:
   - "Verify conformity of the AIMS with ISO/IEC 42001:2023 requirements taken on by the firm"
@@ -85,8 +84,9 @@ competence:
     entry-id: comp-ai-ops
 
 audits:
-  - id: audit-aims-annual-2026
-    title: "Annual AIMS conformity audit 2026"
+  - id: audit-aims-conformity
+    title: "AIMS conformity audit"
+    frequency: Annual
     scope: |
       Full AIMS document set, policy adherence, risk/impact assessment currency,
       supplier assurance and management review follow-up.
@@ -94,12 +94,9 @@ audits:
       - reference-id: apa-aims-scope
       - reference-id: apa-applicability-profile
     method: "Document review, interview and sample of session evidence"
-    period:
-      start: "2026-11-01T00:00:00Z"
-      end: "2026-11-30T23:59:59Z"
     auditor:
-      id: internal-audit-ai
-      name: "Internal Audit — Technology & AI"
+      id: internal-audit
+      name: "Internal Audit"
       type: Human
     independence-confirmed: true
     status: Planned
@@ -110,8 +107,9 @@ audits:
       - reference-id: apa-party-register
         entry-id: ai-governance-office
 
-  - id: audit-authority-q3-2026
-    title: "Q3 2026 authority-control sampling"
+  - id: audit-authority-sampling
+    title: "Authority-control sampling"
+    frequency: Quarterly
     scope: |
       Sample production sessions for authority ceiling enforcement, propose
       human-approval coverage and absence of execute paths.
@@ -123,43 +121,19 @@ audits:
       - reference-id: apa-controls
         entry-id: apa-ctl-006-execute-prohibit
     method: "Session-log sampling and control configuration review"
-    period:
-      start: "2026-07-01T00:00:00Z"
-      end: "2026-09-30T23:59:59Z"
     auditor:
-      id: internal-audit-ai
-      name: "Internal Audit — Technology & AI"
+      id: internal-audit
+      name: "Internal Audit"
       type: Human
     independence-confirmed: true
-    status: Reported
-    results:
-      reference-id: apa-corrective-action
-      entry-id: nc-propose-without-approval
-      remarks: "Sampling identified the propose-without-approval near miss already in the corrective-action log."
-    findings:
-      - reference-id: apa-corrective-action
-        entry-id: nc-propose-without-approval
-    follow-up: "Verify effectiveness of corrective action in Q4 sampling"
+    status: Planned
+    follow-up: "Findings raised in corrective-action log and tracked to closure"
     reported-to:
       - reference-id: apa-party-register
         entry-id: ai-governance-office
       - reference-id: apa-party-register
         entry-id: compliance
 
-  - id: audit-authority-q4-2026
-    title: "Q4 2026 authority-control sampling"
-    scope: "Quarterly resampling of authority and approval controls"
-    method: "Session-log sampling"
-    period:
-      start: "2026-10-01T00:00:00Z"
-      end: "2026-12-31T23:59:59Z"
-    status: Planned
-    follow-up: "Raise new findings to corrective-action log"
-
 owner:
-  name: "Internal Audit"
-  affiliation: "Internal Audit"
-
-review:
-  cadence: Annual
-  next-review: "2027-01-15T00:00:00Z"
+  reference-id: apa-party-register
+  entry-id: internal-audit

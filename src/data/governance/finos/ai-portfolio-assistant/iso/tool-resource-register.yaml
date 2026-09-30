@@ -1,30 +1,39 @@
 # ToolResourceRegister — ISO/IEC 42001 Annex A.4.2–A.4.6
 # Illustrative AIMS document for the AIPA example.
 # iso-type: ToolResourceRegister
+#
+# FDC3 desktop tools and the DatasetRegister entries they provide are paired
+# 1:1 for production session data. Non-FDC3 tools (foundation model, session
+# logger) do not provide datasets on this register.
 
 title: "Tooling resources for the AIPA"
 
 metadata:
   id: apa-tool-resource-register
   type: ToolResourceRegister
-  version: "0.2.0"
+  version: "0.3.0"
   gemara-version: "1.5.0"
   standard: "ISO/IEC 42001:2023"
   draft: true
-  date: "2026-09-11T00:00:00Z"
+  date: "2026-09-30T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: |
-    Tooling and services the AIPA depends on: FDC3 portfolio,
-    risk, research and order-entry applications, stress engine, foundation model
-    API and session logging.
+    Tooling and services AIPA depends on. Each FDC3 desktop application below
+    is the provider of a matching entry in the DatasetRegister (FDC3 context
+    payloads). The foundation-model API and session logger are tooling without
+    corresponding FDC3 datasets.
   mapping-references:
     - id: apa-ai-system-register
       title: "AI systems in the scope of the AIMS"
       version: "0.1.0"
       url: file://ai-system-register.yaml
+    - id: apa-dataset-register
+      title: "Data resources for the AIPA"
+      version: "0.3.0"
+      url: file://dataset-register.yaml
     - id: apa-controls
       title: "AIPA control catalog"
       version: "0.1.0"
@@ -49,16 +58,17 @@ resources:
     name: "FDC3 portfolio application"
     kind: Tooling
     description: |
-      Desktop portfolio application exposing holdings context and intents via
-      FDC3 for entitled portfolio managers.
+      Desktop portfolio application exposing holdings and mandate metadata via
+      FDC3 (e.g. fdc3.portfolio). Provides dataset fdc3-portfolio-context.
     functions: [Deployment, Monitoring]
     external: false
     owner:
       responsible:
-        - name: "Desktop platforms"
+        - name: "Portfolio data platform"
           affiliation: "Investment Management Technology"
       accountable:
-        - name: "AIPA Product Owner"
+        - name: "Chief Data Officer"
+          affiliation: "Data"
     used-by:
       - reference-id: apa-ai-system-register
         entry-id: ai-portfolio-assistant
@@ -67,13 +77,17 @@ resources:
         entry-id: apa-ctl-007-portfolio-access-control
       - reference-id: apa-controls
         entry-id: apa-ctl-010-tool-allowlist
+    risks:
+      - reference-id: apa-risks
+        entry-id: client-confidentiality-breach
 
-  - id: risk-exposure-app
-    name: "Risk and exposure application"
+  - id: fdc3-risk-app
+    name: "FDC3 risk and exposure application"
     kind: Tooling
     description: |
       Deterministic Risk app responding to demo.GetPortfolioRisk with
-      demo.portfolioRisk; AIPA interprets results rather than inventing them.
+      demo.portfolioRisk. Provides dataset fdc3-portfolio-risk-context.
+      AIPA interprets signed results; it does not invent exposures.
     functions: [Deployment]
     external: false
     owner:
@@ -82,6 +96,7 @@ resources:
           affiliation: "Risk Technology"
       accountable:
         - name: "Head of Market Risk"
+          affiliation: "Risk"
     used-by:
       - reference-id: apa-ai-system-register
         entry-id: ai-portfolio-assistant
@@ -92,13 +107,17 @@ resources:
         entry-id: apa-ctl-010-tool-allowlist
       - reference-id: apa-controls
         entry-id: apa-ctl-016-fdc3-security-provenance
+    risks:
+      - reference-id: apa-risks
+        entry-id: operational-overreliance
 
-  - id: stress-engine
-    name: "Stress scenario engine"
+  - id: fdc3-stress-engine
+    name: "FDC3 stress scenario engine"
     kind: Tooling
     description: |
-      Deterministic stress capability (via Risk app) responding to
-      demo.RunStressScenario with demo.stressScenarioResult.
+      Deterministic stress capability (hosted with or beside the Risk app)
+      responding to demo.RunStressScenario with demo.stressScenarioResult.
+      Provides dataset fdc3-stress-scenario-context.
     functions: [Deployment, Evaluation]
     external: false
     owner:
@@ -107,6 +126,7 @@ resources:
           affiliation: "Risk Technology"
       accountable:
         - name: "Head of Market Risk"
+          affiliation: "Risk"
     used-by:
       - reference-id: apa-ai-system-register
         entry-id: ai-portfolio-assistant
@@ -114,40 +134,85 @@ resources:
       - reference-id: apa-controls
         entry-id: apa-ctl-009-deterministic-calc-only
       - reference-id: apa-controls
+        entry-id: apa-ctl-010-tool-allowlist
+      - reference-id: apa-controls
         entry-id: apa-ctl-016-fdc3-security-provenance
+    risks:
+      - reference-id: apa-risks
+        entry-id: operational-overreliance
 
-  - id: research-retrieval
-    name: "Investment research retrieval service"
-    kind: Service
+  - id: fdc3-research-app
+    name: "FDC3 investment research application"
+    kind: Tooling
     description: |
-      Research app / retrieval service responding to demo.GetResearch with
-      demo.researchBundle used for RAG grounding and explanation evidence.
+      Research application responding to demo.GetResearch with
+      demo.researchBundle for grounding and explanation evidence. Provides
+      dataset fdc3-research-context. Underlying vault/vendor corpora are not
+      queried directly by AIPA.
     functions: [Deployment, Evaluation]
     external: false
     owner:
       responsible:
-        - name: "AIPA Engineering"
+        - name: "Research operations"
+          affiliation: "Investment Management"
       accountable:
         - name: "Head of Research"
+          affiliation: "Investment Management"
     used-by:
       - reference-id: apa-ai-system-register
         entry-id: ai-portfolio-assistant
     controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-010-tool-allowlist
       - reference-id: apa-controls
         entry-id: apa-ctl-011-prompt-injection-defenses
       - reference-id: apa-controls
         entry-id: apa-ctl-012-explanation-grounding
       - reference-id: apa-controls
         entry-id: apa-ctl-016-fdc3-security-provenance
+    risks:
+      - reference-id: apa-risks
+        entry-id: unsuitable-investment-influence
 
-  - id: order-entry-app
-    name: "Order Entry application"
+  - id: fdc3-market-data-app
+    name: "FDC3 market data / instrument application"
     kind: Tooling
     description: |
-      Desktop Order Entry app that responds to demo.CreateOrderProposal with
-      demo.orderProposal for human review, and that would receive
-      demo.SubmitOrders if execution were permitted (it is not for
-      AIPA).
+      Desktop market-data application broadcasting instrument focus and quotes
+      as FDC3 contexts (e.g. fdc3.instrument, fdc3.instrumentList). Provides
+      dataset fdc3-instrument-market-context.
+    functions: [Deployment]
+    external: false
+    owner:
+      responsible:
+        - name: "Market data platform"
+          affiliation: "Investment Management Technology"
+      accountable:
+        - name: "Chief Data Officer"
+          affiliation: "Data"
+    supplier:
+      reference-id: apa-supplier-assurance
+      entry-id: market-data-assurance
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-010-tool-allowlist
+      - reference-id: apa-controls
+        entry-id: apa-ctl-016-fdc3-security-provenance
+    risks:
+      - reference-id: apa-risks
+        entry-id: model-supply-chain-exposure
+
+  - id: fdc3-order-entry-app
+    name: "FDC3 Order Entry application"
+    kind: Tooling
+    description: |
+      Desktop Order Entry app responding to demo.CreateOrderProposal with
+      demo.orderProposal for human review. Provides dataset
+      fdc3-order-proposal-context. Would also be the receiver of
+      demo.SubmitOrders if execution were permitted (it is not for AIPA).
     functions: [Deployment]
     external: false
     owner:
@@ -156,6 +221,7 @@ resources:
           affiliation: "Trading Technology"
       accountable:
         - name: "Head of Trading"
+          affiliation: "Investment Management"
     used-by:
       - reference-id: apa-ai-system-register
         entry-id: ai-portfolio-assistant
@@ -168,14 +234,18 @@ resources:
         entry-id: apa-ctl-010-tool-allowlist
       - reference-id: apa-controls
         entry-id: apa-ctl-016-fdc3-security-provenance
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
 
-  - id: execution-app
-    name: "Execution / blotter application"
+  - id: fdc3-execution-app
+    name: "FDC3 execution / blotter application"
     kind: Tooling
     description: |
       Execution path that would process fdc3.orderList via demo.SubmitOrders.
-      AIPA must not successfully invoke this path; human-authorised
-      execution remains outside autonomous AI use.
+      AIPA must not successfully invoke this path. No production dataset is
+      registered for execute contexts because unsupervised execution is
+      prohibited intended use; denials are evidenced via session logging.
     functions: [Deployment]
     external: false
     owner:
@@ -184,6 +254,7 @@ resources:
           affiliation: "Trading Technology"
       accountable:
         - name: "Head of Trading"
+          affiliation: "Investment Management"
     used-by:
       - reference-id: apa-ai-system-register
         entry-id: ai-portfolio-assistant
@@ -192,16 +263,22 @@ resources:
         entry-id: apa-ctl-006-execute-prohibit
       - reference-id: apa-controls
         entry-id: apa-ctl-010-tool-allowlist
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
 
   - id: foundation-model-api
     name: "Foundation model API"
     kind: Model
     description: |
-      Hosted foundation model used for generation and interpretation within
-      authority-bounded sessions.
+      Foundation model used for generation and interpretation within
+      authority-bounded sessions. Inference is hosted inside the banking
+      firewall so prompts and portfolio context do not egress to the model
+      supplier. Not an FDC3 data provider; prompts may include FDC3-derived
+      context governed by the DatasetRegister.
     functions: [Deployment, Evaluation]
     version: "pinned-per-release"
-    external: true
+    external: false
     supplier:
       reference-id: apa-supplier-assurance
       entry-id: foundation-model-assurance
@@ -224,13 +301,16 @@ resources:
     name: "Session logger"
     kind: Tooling
     description: |
-      Records authority level, tool calls, retrievals, model version and human
-      approval decisions for audit and incident investigation.
+      Records authority level, FDC3 tool calls, retrieved contexts, model
+      version and human approval decisions for audit and incident
+      investigation. Consumes references to DatasetRegister entries; does not
+      itself provide FDC3 session context.
     functions: [Monitoring, Governance]
     external: false
     owner:
       responsible:
         - name: "AIPA Engineering"
+          affiliation: "Investment Management Technology"
       accountable:
         - name: "AI Governance Office"
     used-by:
@@ -242,7 +322,9 @@ resources:
 
 review:
   cadence: Quarterly
-  next-review: "2026-12-01T00:00:00Z"
+  last-reviewed: "2026-09-30T00:00:00Z"
+  next-review: "2026-12-30T00:00:00Z"
   triggers:
     - "Addition of a new FDC3 intent or specialist application"
+    - "Matching DatasetRegister entry added, removed or reassigned"
     - "Change of foundation model provider or major version"

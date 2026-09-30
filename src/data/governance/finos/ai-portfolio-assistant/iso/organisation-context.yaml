@@ -113,16 +113,16 @@ issues:
     identified: "2026-09-30T00:00:00Z"
 
   - id: privacy-and-third-country-processing
-    title: "Portfolio and client data sent to hosted models engages privacy and transfer controls"
+    title: "Portfolio and client data in model prompts must not leave the banking firewall"
     origin: External
     category: Legal
     description: |
-      Prompting a hosted foundation model with portfolio context, client
-      identifiers or research can constitute processing of personal data and
-      confidential client information under UK GDPR / EU GDPR and client
-      agreements. Cross-border transfer, retention by the supplier and
-      secondary use are issues the AIMS must bound via contracts, redaction
-      and monitoring—not assume away because the model is "just a tool".
+      Prompting a foundation model with portfolio context, client identifiers or
+      research can constitute processing of personal data and confidential client
+      information under UK GDPR / EU GDPR and client agreements. The AIMS
+      therefore requires inference inside the banking firewall so prompts do not
+      egress to the model supplier; residual supplier risk is limited to model
+      artefacts and support channels, not session content.
     effect: Threat
     parties:
       - reference-id: apa-party-register

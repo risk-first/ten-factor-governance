@@ -259,7 +259,7 @@ decisions:
       reference-id: apa-controls
       entry-id: apa-ctl-014-model-provider-controls
     applicable: true
-    justification: "Manages hosted-model dependency and contractual processing limits."
+    justification: "Requires firewall-internal inference so prompts never egress to the model supplier."
     state: "Partially Implemented"
     risks:
       - reference-id: apa-risks

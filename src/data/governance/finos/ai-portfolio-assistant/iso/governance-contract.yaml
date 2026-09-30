@@ -53,8 +53,9 @@ contracts:
     allocations:
       - id: alloc-model-dev
         responsibility: |
-          Develop, evaluate and secure the foundation model service, including
-          model cards and material change notices for pinned versions.
+          Develop, evaluate and supply foundation model artefacts (including
+          model cards and material change notices for pinned versions) for
+          firm-controlled inference inside the banking firewall.
         holder: Counterparty
         lifecycle-stage: Development
         escalation: "Material undisclosed model change is grounds for suspension of use."
@@ -76,18 +77,20 @@ contracts:
 
       - id: alloc-prompt-data
         responsibility: |
-          Configure processing so portfolio context and prompts are not used to
-          train shared models; retain only as contractually permitted.
-        holder: Shared
+          Host and operate inference inside the banking firewall so prompts,
+          completions and portfolio context never egress to the model supplier;
+          no supplier-side training, logging or secondary use of session data.
+        holder: Organisation
         controls:
           - reference-id: apa-controls
             entry-id: apa-ctl-014-model-provider-controls
-        escalation: "Breach of training prohibition triggers immediate legal and AI governance review."
+        escalation: "Any prompt or portfolio-context egress to the supplier triggers immediate legal and AI governance review."
 
       - id: alloc-incident
         responsibility: |
           Notify and cooperate on security or model-integrity incidents affecting
-          the hosted service; the firm retains client and FCA notification duties.
+          supplied artefacts or support channels; the firm retains client and FCA
+          notification duties.
         holder: Shared
         controls:
           - reference-id: apa-controls

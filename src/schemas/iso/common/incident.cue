@@ -16,8 +16,9 @@ import "github.com/gemaraproj/gemara@v1:gemara"
 	#Document
 	metadata: type: "IncidentLog"
 
-	// entries are the incidents recorded
-	entries: [#Incident, ...#Incident]
+	// entries are the incidents recorded. May be empty when the log exists as
+	// an AIMS slot before any incident has been recorded.
+	entries: [...#Incident]
 
 	_uniqueEntryIds: {for i, e in entries {(e.id): i}}
 }

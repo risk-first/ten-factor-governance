@@ -54,6 +54,14 @@
   font-size: 0.85em;
 }
 
+.clauseLink {
+  text-decoration: none;
+}
+
+.clauseLink:hover .clause {
+  text-decoration: underline;
+}
+
 .group {
   display: grid;
   gap: 0.75rem;
@@ -73,6 +81,31 @@
 .itemList {
   display: grid;
   gap: 0.65rem;
+}
+
+.flatList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.flatItem {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--gf-rule, var(--ifm-color-emphasis-200));
+  border-radius: 8px;
+  background: var(--gf-surface-raised, var(--ifm-background-surface-color));
+}
+
+.flatPrimary {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: pre-line;
 }
 
 .itemId {
@@ -97,6 +130,57 @@
   grid-template-columns: 9.5rem 1fr;
   gap: 0.5rem;
   margin: 0 0 0.35rem;
+}
+
+.metaRowWide {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+
+.metaRowWide dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.85rem;
+}
+
+.metaRowWide dd {
+  margin: 0;
+}
+
+.nestedMeta {
+  margin: 0;
+}
+
+.nestedList {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.nestedCard {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 0.35rem;
+  background: var(--ifm-color-emphasis-100);
+}
+
+.nestedCardTitle {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+}
+
+.bulletList {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.approval {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--ifm-color-emphasis-700);
 }
 
 .metaRow dt {

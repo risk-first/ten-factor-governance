@@ -50,9 +50,9 @@ flowchart LR
   AIRisk -->|mitigated or accepted| AIPolicy
 
   StakeholderRequirement -->|sets| ManagementObjective["Management Objective"]
-  ManagementObjective -->|input to| ManagementReview["Management Review"]
-  AuditProgramme["Audit Programme"] -->|input to| ManagementReview
-  ManagementReview -->|raises| CorrectiveAction["Corrective Action"]
+  ManagementObjective -->|input to| ManagementReviewProgramme["Management Review Programme"]
+  AuditProgramme["Audit Programme"] -->|input to| ManagementReviewProgramme
+  ManagementReviewProgramme -->|raises| CorrectiveAction["Corrective Action"]
   Incident -->|raises| CorrectiveAction
   Incident -->|triggers| ReportingObligation["Reporting Obligation"]
 
@@ -79,7 +79,7 @@ flowchart LR
   style Incident fill:#f5ebe1,stroke:#b45309,color:#b45309
 
   %% Layer 5 — Evaluate (--gf-band-evaluate-soft)
-  style ManagementReview fill:#e2eef1,stroke:#0e7490,color:#0e7490
+  style ManagementReviewProgramme fill:#e2eef1,stroke:#0e7490,color:#0e7490
 
   %% Layer 6 — Enforce (--gf-band-enforce-soft)
   style CorrectiveAction fill:#f2e6e2,stroke:#9a3412,color:#9a3412
@@ -115,7 +115,7 @@ flowchart LR
   click AIControl "/docs/artifacts/definitions/assess/control" "AI Control"
   click AIPolicy "/docs/artifacts/definitions/decide/policy" "AI Policy"
   click ManagementObjective "/docs/artifacts/definitions/define/management-objective" "Management Objective"
-  click ManagementReview "/docs/artifacts/definitions/evaluate/management-review" "Management Review"
+  click ManagementReviewProgramme "/docs/artifacts/definitions/evaluate/management-review" "Management Review Programme"
   click AuditProgramme "/docs/artifacts/definitions/assure/audit-programme" "Audit Programme"
   click CorrectiveAction "/docs/artifacts/definitions/enforce/corrective-action" "Corrective Action"
   click Incident "/docs/artifacts/definitions/operate/incident" "Incident"

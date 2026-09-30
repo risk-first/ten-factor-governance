@@ -130,6 +130,20 @@ parties:
       name: "Model Risk Management"
       affiliation: "Risk"
 
+  - id: internal-audit
+    name: "Internal Audit"
+    kind: Team
+    internal: true
+    group: internal
+    roles: [Responsible, Accountable, Informed]
+    authority: |
+      Owns the AIMS internal audit programme and performs planned audits of
+      conformity and authority-control operation, independent of product
+      engineering and AIMS document authorship.
+    contact:
+      name: "Internal Audit"
+      affiliation: "Internal Audit"
+
   - id: foundation-model-provider
     name: "Foundation model provider"
     kind: Supplier
@@ -137,9 +151,12 @@ parties:
     group: external
     roles: [Interested, Responsible]
     description: |
-      Supplies the hosted foundation model (the Agentic Model on the deployment
-      diagram). Responsible for the model's own development governance, not for
-      how the firm deploys it on the desk.
+      Supplies the foundation model artefacts (weights / runtime package) used
+      as the Agentic Model on the deployment diagram. Inference runs inside the
+      banking firewall under firm control; the supplier does not receive
+      prompts or portfolio context. Responsible for the model's development
+      governance and artefact integrity, not for how the firm deploys it on
+      the desk.
 
   - id: market-data-vendor
     name: "Market data vendor"

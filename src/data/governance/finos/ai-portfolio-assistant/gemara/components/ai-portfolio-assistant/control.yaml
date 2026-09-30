@@ -632,23 +632,25 @@ controls:
   - id: apa-ctl-014-model-provider-controls
     title: Model Provider Data Controls
     objective: >
-      Ensure third-party model providers process assistant prompts under
-      contractual and technical controls that prevent retention or misuse of
-      client portfolio data.
+      Ensure foundation-model inference for AIPA runs inside the banking
+      firewall under firm control, so prompts and client portfolio data never
+      egress to the model supplier for training, logging or secondary use.
     group: model-supply
     state: Active
     assessment-requirements:
       - id: apa-ctl-014-model-provider-controls.ar01
         text: >
-          Prompts containing portfolio or client data MUST NOT be sent to a
-          model provider that lacks recorded contractual non-retention,
-          approved data-handling controls, and technical configuration
-          consistent with those obligations.
+          Prompts containing portfolio or client data MUST be sent only to
+          inference endpoints hosted inside the banking firewall. Use of a
+          supplier-operated multi-tenant or external hosted endpoint for those
+          prompts is prohibited.
         applicability:
           - all-authority-levels
         recommendation: >
-          Verify provider inventory, contract clauses, and runtime endpoint
-          configuration before evaluating production traffic samples.
+          Verify network path and endpoint inventory: inference hosts are
+          internal-only, egress to the model supplier is blocked for prompt
+          and completion traffic, and architecture matches supplier assurance
+          obligation fm-no-train-on-prompts.
         state: Active
     guidelines:
       - reference-id: apa-guidance

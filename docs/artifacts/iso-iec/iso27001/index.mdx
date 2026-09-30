@@ -64,8 +64,8 @@ flowchart LR
   Risk -->|mitigated or accepted| Policy
 
   Obligation -->|sets| ObjectiveMetric["Objective Metric"]
-  ObjectiveMetric -->|input to| ManagementReview["Management Review"]
-  ManagementReview -->|raises| CorrectiveAction["Corrective Action"]
+  ObjectiveMetric -->|input to| ManagementReviewProgramme["Management Review Programme"]
+  ManagementReviewProgramme -->|raises| CorrectiveAction["Corrective Action"]
   Incident -->|raises| CorrectiveAction
 
   %% Layer 1 — Define (--gf-band-define-soft)
@@ -89,7 +89,7 @@ flowchart LR
   style Incident fill:#f5ebe1,stroke:#b45309,color:#b45309
 
   %% Layer 5 — Evaluate (--gf-band-evaluate-soft)
-  style ManagementReview fill:#e2eef1,stroke:#0e7490,color:#0e7490
+  style ManagementReviewProgramme fill:#e2eef1,stroke:#0e7490,color:#0e7490
 
   %% Layer 6 — Enforce (--gf-band-enforce-soft)
   style CorrectiveAction fill:#f2e6e2,stroke:#9a3412,color:#9a3412
@@ -113,7 +113,7 @@ flowchart LR
   click Control "/docs/artifacts/definitions/assess/control" "Information Security Control"
   click Policy "/docs/artifacts/definitions/decide/policy" "Information Security Policy"
   click ObjectiveMetric "/docs/artifacts/definitions/define/management-objective" "Objective Metric"
-  click ManagementReview "/docs/artifacts/definitions/evaluate/management-review" "Management Review"
+  click ManagementReviewProgramme "/docs/artifacts/definitions/evaluate/management-review" "Management Review Programme"
   click CorrectiveAction "/docs/artifacts/definitions/enforce/corrective-action" "Corrective Action"
   click Incident "/docs/artifacts/definitions/operate/incident" "Incident"
 ```

@@ -135,7 +135,7 @@ systems:
     dependencies:
       - reference-id: apa-supplier-assurance
         entry-id: foundation-model-assurance
-        remarks: "Model consumed as a hosted service; version pinned per release."
+        remarks: "Model artefacts from supplier; inference hosted inside the banking firewall; version pinned per release."
       - reference-id: apa-supplier-assurance
         entry-id: market-data-assurance
 
