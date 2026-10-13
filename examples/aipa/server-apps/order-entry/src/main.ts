@@ -31,17 +31,52 @@ function syncEmptyState(): void {
   if (empty) empty.hidden = blotter.length > 0;
 }
 
-function syncProposalFromBlotter(): void {
-  if (!currentProposal) return;
+function ensureDraftProposal(): void {
+  if (currentProposal) return;
   currentProposal = {
-    ...currentProposal,
+    type: 'demo.orderProposal',
+    proposalId: rowId(),
+    portfolioId: 'manual',
+    asOf: new Date().toISOString(),
+    orders: [],
+  };
+}
+
+function syncProposalFromBlotter(): void {
+  if (!currentProposal && blotter.length === 0) return;
+  ensureDraftProposal();
+  currentProposal = {
+    ...currentProposal!,
     orders: blotter.map(r => ({
-      instrument: { type: 'fdc3.instrument' as const, id: { ticker: r.ticker.toUpperCase() } },
+      instrument: { type: 'fdc3.instrument' as const, id: { ticker: r.ticker.toUpperCase() || 'TICKER' } },
       side: r.side,
       quantity: r.qty,
       orderType: 'market' as const,
     })),
   };
+}
+
+function addEmptyRow(): void {
+  ensureDraftProposal();
+  blotter.push({
+    id: rowId(),
+    side: 'buy',
+    ticker: '',
+    qty: 100,
+    status: 'draft',
+  });
+  syncProposalFromBlotter();
+  renderBlotter();
+  setStatus(statusEl(), 'Added empty order row');
+}
+
+function removeRow(id: string): void {
+  const next = blotter.filter(r => r.id !== id);
+  if (next.length === blotter.length) return;
+  blotter = next;
+  syncProposalFromBlotter();
+  renderBlotter();
+  setStatus(statusEl(), blotter.length ? 'Removed order row' : 'Blotter empty');
 }
 
 function renderBlotter(): void {
@@ -101,10 +136,17 @@ function renderBlotter(): void {
     statusTd.textContent = row.status;
 
     const actionsTd = document.createElement('td');
-    actionsTd.className = 'actions';
-    const bcast = createBroadcastButton({ title: `Broadcast ${row.ticker}` });
+    actionsTd.className = 'actions actions--multi';
+    const bcast = createBroadcastButton({ title: `Broadcast ${row.ticker || 'instrument'}` });
     bcast.addEventListener('click', () => void broadcastInstrument(row.ticker));
-    actionsTd.appendChild(bcast);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'icon-btn';
+    remove.title = 'Remove row';
+    remove.setAttribute('aria-label', `Remove ${row.ticker || 'row'}`);
+    remove.textContent = '×';
+    remove.addEventListener('click', () => removeRow(row.id));
+    actionsTd.append(bcast, remove);
 
     tr.append(sideTd, tickerTd, qtyTd, statusTd, actionsTd);
     tbody.appendChild(tr);
@@ -158,10 +200,12 @@ async function createProposal(
 }
 
 async function approve(): Promise<void> {
-  if (!currentProposal || blotter.length === 0) {
-    setStatus(statusEl(), 'No proposal to approve.');
+  const ready = blotter.filter(r => r.ticker.trim());
+  if (!currentProposal || ready.length === 0) {
+    setStatus(statusEl(), 'No complete orders to approve (need ticker on each row).');
     return;
   }
+  blotter = blotter.filter(r => r.ticker.trim());
   syncProposalFromBlotter();
   blotter = blotter.map(b => ({ ...b, status: 'approved' }));
   renderBlotter();
@@ -201,5 +245,6 @@ async function setup(): Promise<void> {
 }
 
 document.getElementById('demo-propose')!.addEventListener('click', () => void createProposal());
+document.getElementById('add-row')!.addEventListener('click', () => addEmptyRow());
 document.getElementById('approve')!.addEventListener('click', () => void approve());
 void setup();

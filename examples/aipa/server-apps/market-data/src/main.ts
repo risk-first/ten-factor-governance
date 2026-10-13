@@ -1,6 +1,12 @@
 import '../../../common/src/ui/styles.css';
 import { connectAgent, setStatus } from '../../../common/src/fdc3/agent.ts';
-import { INTENTS } from '../../../common/src/contexts/types.ts';
+import { INTENTS, type PriceHistory } from '../../../common/src/contexts/types.ts';
+import {
+  DEFAULT_LOOKBACK_DAYS,
+  fetchPriceHistory,
+  lookbackDaysFromContext,
+  tickersFromContext,
+} from '../../../common/src/data/priceHistory.ts';
 import { createBroadcastButton } from '../../../common/src/ui/broadcast-icon.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { DesktopAgent } from '@finos/fdc3';
@@ -1083,6 +1089,25 @@ async function removeTicker(ticker: string): Promise<void> {
   );
 }
 
+async function handleGetPriceHistory(ctx: unknown): Promise<PriceHistory> {
+  const { tickers, instruments } = tickersFromContext(ctx);
+  const days = lookbackDaysFromContext(ctx, lookbackDays || DEFAULT_LOOKBACK_DAYS);
+  const list = tickers.length ? tickers : [activeTicker || 'SHEL'];
+  setStatus(statusEl(), `GetPriceHistory for ${list.join(', ')} (~${days}d)…`);
+  const history = await fetchPriceHistory(list, { days, instruments });
+  lookbackDays = history.lookbackDays;
+  // Mirror into the chart UI so the user sees what Risk requested.
+  for (const s of history.series) {
+    const inst = asInstrumentContext(s.instrument, s.instrument.id.ticker);
+    await addTicker(s.instrument.id.ticker, history.lookbackDays, inst);
+  }
+  setStatus(
+    statusEl(),
+    `Returned demo.priceHistory (${history.series.length} series, ~${history.lookbackDays}d)`
+  );
+  return history;
+}
+
 async function setup(): Promise<void> {
   rebuildControls();
   await addTicker((document.getElementById('ticker') as HTMLInputElement).value);
@@ -1095,6 +1120,8 @@ async function setup(): Promise<void> {
     (document.getElementById('ticker') as HTMLInputElement).value = ticker;
     await addTicker(ticker, lookbackDays, instrument);
   });
+
+  await fdc3.addIntentListener(INTENTS.GetPriceHistory, async ctx => handleGetPriceHistory(ctx));
 
   await fdc3.addContextListener('fdc3.instrument', async ctx => {
     const instrument = asInstrumentContext(ctx, '');

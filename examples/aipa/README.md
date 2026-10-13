@@ -10,9 +10,9 @@ AI Portfolio Assistant and Governance Runtime apps are **out of scope** here.
 | App | Port | Intents | Notes |
 | --- | --- | --- | --- |
 | Portfolio | 4100 | `GetPortfolio`, `ViewHoldings` | Broadcasts `fdc3.portfolio` / position / instrument |
-| Risk | 4101 | `demo.GetPortfolioRisk`, `demo.RunStressScenario`, `ViewAnalysis` | Signs risk/stress results; FRED for macro |
+| Risk | 4101 | `demo.GetPortfolioRisk`, `demo.RunStressScenario`, `ViewAnalysis` | finance-toolkit metrics; pulls OHLC via `demo.GetPriceHistory`; signs results; FRED for rf/stress |
 | Research | 4102 | `demo.GetResearch`, `ViewInstrument`, `ViewNews`, `ViewResearch` | Signs `demo.researchBundle`; EDGAR + Finnhub |
-| Market Data | 4103 | `ViewChart` | Finnhub quotes / yahoo-finance2 charts (no FDC3 signing) |
+| Market Data | 4103 | `ViewChart`, `demo.GetPriceHistory` | Finnhub quotes / yahoo-finance2 charts; returns `demo.priceHistory` (no FDC3 signing) |
 | Order Entry | 4104 | `demo.CreateOrderProposal`, `ViewOrders` | Signs `demo.orderProposal`; blotter |
 | Execution | 4105 | `demo.SubmitOrders` | Signs `fdc3.transactionResult` |
 | App Directory | 4099 | — | Combined AppD JSON |

@@ -4,7 +4,7 @@
       "appId": "aipa-market-data",
       "name": "AIPA Market Data",
       "title": "AIPA Market Data",
-      "description": "Quotes and charts for ViewChart; proxies Finnhub and yahoo-finance2.",
+      "description": "Quotes and charts for ViewChart; GetPriceHistory for peer apps; proxies Finnhub and yahoo-finance2.",
       "categories": ["AIPA", "Market Data"],
       "icons": [{ "src": "http://localhost:4103/icon.svg" }],
       "type": "web",
@@ -15,6 +15,15 @@
             "ViewChart": {
               "displayName": "View Chart",
               "contexts": ["fdc3.instrument"]
+            },
+            "demo.GetPriceHistory": {
+              "displayName": "Get Price History",
+              "contexts": [
+                "fdc3.instrument",
+                "fdc3.instrumentList",
+                "fdc3.portfolio",
+                "fdc3.chart"
+              ]
             }
           }
         }

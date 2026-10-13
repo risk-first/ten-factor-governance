@@ -11,6 +11,7 @@ export const INTENTS = {
   ViewNews: 'ViewNews',
   ViewResearch: 'ViewResearch',
   ViewChart: 'ViewChart',
+  GetPriceHistory: 'demo.GetPriceHistory',
   CreateOrderProposal: 'demo.CreateOrderProposal',
   ViewOrders: 'ViewOrders',
   SubmitOrders: 'demo.SubmitOrders',
@@ -21,6 +22,7 @@ export const CONTEXT_TYPES = {
   position: 'fdc3.position',
   instrument: 'fdc3.instrument',
   instrumentList: 'fdc3.instrumentList',
+  chart: 'fdc3.chart',
   order: 'fdc3.order',
   orderList: 'fdc3.orderList',
   transactionResult: 'fdc3.transactionResult',
@@ -30,6 +32,7 @@ export const CONTEXT_TYPES = {
   stressScenarioResult: 'demo.stressScenarioResult',
   portfolioRecommendation: 'demo.portfolioRecommendation',
   orderProposal: 'demo.orderProposal',
+  priceHistory: 'demo.priceHistory',
 } as const;
 
 export type Fdc3Instrument = {
@@ -53,14 +56,50 @@ export type Fdc3Portfolio = {
   positions: Fdc3Position[];
 };
 
+export type OhlcBar = {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+};
+
+/** Multi-ticker OHLC history returned by Market Data for Risk analytics. */
+export type PriceHistory = {
+  type: 'demo.priceHistory';
+  asOf: string;
+  lookbackDays: number;
+  series: Array<{
+    instrument: Fdc3Instrument;
+    bars: OhlcBar[];
+    source: string;
+  }>;
+};
+
 export type PortfolioRisk = {
   type: 'demo.portfolioRisk';
   portfolioId: string;
   asOf: string;
   concentration: { sector: string; weight: number }[];
   topContributors: { ticker: string; weight: number; riskContribution: number }[];
-  metrics: { herfindahl: number; energyWeight: number; largestPositionWeight: number };
-  provenance: { analysisId: string; source: string };
+  metrics: {
+    herfindahl: number;
+    energyWeight: number;
+    largestPositionWeight: number;
+    volatility: number;
+    var95: number;
+    expectedShortfall95: number;
+    sharpe: number;
+    maxDrawdown: number;
+  };
+  correlation?: { tickers: string[]; matrix: number[][] };
+  provenance: {
+    analysisId: string;
+    source: string;
+    marketDataSource?: string;
+    lookbackDays?: number;
+    riskFreeRate?: number;
+  };
 };
 
 export type ResearchFinding = {
@@ -88,6 +127,9 @@ export type StressScenarioRequest = {
     oilPriceShockPct?: number;
     rateShockBps?: number;
   };
+  /** Optional price history so stress can scale by historical vols. */
+  priceHistory?: PriceHistory;
+  portfolio?: Fdc3Portfolio;
 };
 
 export type StressScenarioResult = {
