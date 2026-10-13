@@ -416,6 +416,21 @@ adherence:
         escalated to Compliance and AI Governance Office with recorded
         disposition.
 
+    - id: ap-apa-016-fdc3-security-provenance
+      requirement-id: apa-ctl-016-fdc3-security-provenance.ar01
+      frequency: per-retrieval-and-tool-call
+      evaluation-methods:
+        - id: automated-fdc3-signature-check
+          type: Behavioral
+          mode: Automated
+          description: automated FDC3 Security signature check
+      evidence-requirements: >
+        Evidence that demo.portfolioRisk, demo.researchBundle,
+        demo.stressScenarioResult, demo.portfolioRecommendation, and
+        demo.orderProposal contexts used for explain, recommend, or propose
+        carry verifiable FDC3 Security signatures, and that unsigned instances
+        are rejected or flagged rather than treated as authoritative grounding.
+
   enforcement-methods:
     - id: em-apa-block-authority-escalation
       type: Gate

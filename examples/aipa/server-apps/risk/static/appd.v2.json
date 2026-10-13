@@ -1,0 +1,36 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-risk",
+      "name": "AIPA Risk",
+      "title": "AIPA Risk",
+      "description": "Deterministic portfolio risk and stress scenarios with signed results.",
+      "categories": ["AIPA", "Risk"],
+      "icons": [{ "src": "http://localhost:4101/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4101/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.GetPortfolioRisk": {
+              "displayName": "Get Portfolio Risk",
+              "contexts": ["fdc3.portfolio"]
+            },
+            "demo.RunStressScenario": {
+              "displayName": "Run Stress Scenario",
+              "contexts": ["demo.stressScenarioRequest"]
+            },
+            "ViewAnalysis": {
+              "displayName": "View Analysis",
+              "contexts": ["fdc3.portfolio", "fdc3.instrument"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

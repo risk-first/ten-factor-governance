@@ -1,0 +1,56 @@
+{
+  "type": "fdc3.portfolio",
+  "id": { "portfolioId": "aipa-energy-demo-1" },
+  "name": "Energy Concentration Demo Portfolio",
+  "positions": [
+    {
+      "type": "fdc3.position",
+      "instrument": { "type": "fdc3.instrument", "name": "Shell plc", "id": { "ticker": "SHEL" } },
+      "holding": 12000,
+      "weight": 0.22,
+      "sector": "Energy"
+    },
+    {
+      "type": "fdc3.position",
+      "instrument": { "type": "fdc3.instrument", "name": "Exxon Mobil", "id": { "ticker": "XOM" } },
+      "holding": 8000,
+      "weight": 0.18,
+      "sector": "Energy"
+    },
+    {
+      "type": "fdc3.position",
+      "instrument": { "type": "fdc3.instrument", "name": "Chevron", "id": { "ticker": "CVX" } },
+      "holding": 5000,
+      "weight": 0.12,
+      "sector": "Energy"
+    },
+    {
+      "type": "fdc3.position",
+      "instrument": { "type": "fdc3.instrument", "name": "NVIDIA", "id": { "ticker": "NVDA" } },
+      "holding": 1500,
+      "weight": 0.15,
+      "sector": "Technology"
+    },
+    {
+      "type": "fdc3.position",
+      "instrument": { "type": "fdc3.instrument", "name": "Microsoft", "id": { "ticker": "MSFT" } },
+      "holding": 2000,
+      "weight": 0.12,
+      "sector": "Technology"
+    },
+    {
+      "type": "fdc3.position",
+      "instrument": { "type": "fdc3.instrument", "name": "JPMorgan Chase", "id": { "ticker": "JPM" } },
+      "holding": 3000,
+      "weight": 0.11,
+      "sector": "Financials"
+    },
+    {
+      "type": "fdc3.position",
+      "instrument": { "type": "fdc3.instrument", "name": "Procter & Gamble", "id": { "ticker": "PG" } },
+      "holding": 2500,
+      "weight": 0.1,
+      "sector": "Consumer Staples"
+    }
+  ]
+}

@@ -2,138 +2,96 @@
 sidebar_label: Architecture
 title: AI Portfolio Assistant System Architecture
 sidebar_position: 2
+hide_table_of_contents: true
 ---
 
-## Diagram
+:::note
 
-```mermaid
-flowchart TB
+The machine-readable architecture is the [FINOS CALM](https://calm.finos.org)
+model at
+[`examples/aipa/calm/architecture.json`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/calm/architecture.json)
+in this repository (local path `examples/aipa/calm/`). It covers the
+FDC3 desktop, AI Portfolio Assistant (chat harness), Governance Runtime (agent-ingress and LLM-egress
+firewalling), Artifact Repository, Decisions and Evidence Record, Managed
+Kubernetes hosts, and in-firewall foundation-model inference, and attaches
+Gemara / CCC / AIGF / AIMS control references via node `controls` and
+[`decorators/`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/calm/decorators/).
 
-    %% =========================
-    %% User Layer
-    %% =========================
-    subgraph L1["User Layer"]
-        USER@{ shape: manual-input, label: "Portfolio Manager" }
-    end
-
-    %% =========================
-    %% FDC3 Application Layer
-    %% =========================
-    subgraph L2["FDC3 Applications"]
-        PORT["Portfolio App"]
-        RISK["Risk App"]
-        RES["Research App"]
-        AI["<b>AI Portfolio Assistant</b>"]
-        ORDER["Order Entry / Trade Blotter"]
-        GOVAPP["Governance Console"]
-    end
-
-    %% =========================
-    %% FDC3 Desktop Layer
-    %% =========================
-    subgraph L3["FDC3 Desktop Agent"]
-        CTX["Context Routing"]
-        INTENT["Intent Resolution"]
-        ENFORCE["Governance Enforcement Point"]
-    end
-
-    %% =========================
-    %% Governance Runtime Layer
-    %% =========================
-    subgraph L4["Governance Runtime"]
-        GW["Governance Gateway"]
-        POLICY["Deterministic Policy Evaluation"]
-        SEM["Semantic / AI Evaluation"]
-        APPROVAL["Human Approval Workflow"]
-        RECORD["Evidence Recording"]
-    end
-
-    %% =========================
-    %% Governance Model Layer
-    %% =========================
-    subgraph L5["Governance Model"]
-        GEMARA@{shape: docs, label: "Gemara Artifacts"}
-        GUIDANCE@{shape: docs, label: "AI Management System (AIMS)"}
-        ACTIVITIES["Sensitive Activities"]
-    end
-
-    %% =========================
-    %% Financial Data & Services
-    %% =========================
-    subgraph L6["Financial Data & Services"]
-        PDATA[("Portfolio / Position Data")]
-        MDATA[("Market Data")]
-        RDATA[("Research / News / Filings")]
-        EXEC["Trading / Execution Service"]
-    end
-
-    %% =========================
-    %% Styling
-    %% =========================
-    style AI stroke-width:4px,font-weight:bold
-    style USER stroke-width:2px
+```bash
+npm run calm:validate
+npm run calm:diagrams
 ```
 
-## Key
+For deployment topology see [Deployment](./deployment); for intents and
+contexts see [FDC3](./fdc3-interop).
 
-### User Layer
-
-| Component             | Purpose                                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Portfolio Manager** | Human participant in the governed workflow. Retains authority for activities requiring human judgement or approval. |
-
-### FDC3 Applications
-
-| Component                       | Purpose                                                                                                                                              |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **AI Portfolio Assistant**      | **The primary subject of governance in the demo.** Consumes FDC3 context and raises FDC3 intents to use capabilities supplied by other applications. |
-| **Portfolio App**               | Displays portfolios, positions and holdings, and shares the user's current portfolio selection through FDC3.                                         |
-| **Risk App**                    | Provides deterministic portfolio risk analysis, including exposure, concentration and stress scenarios.                                              |
-| **Research App**                | Provides research and supporting information about portfolios and instruments.                                                                       |
-| **Order Entry / Trade Blotter** | Receives proposed orders for human review and, where authorised, submission.                                                                         |
-| **Governance Console**          | Allows users to inspect governed activities, decisions and supporting evidence.                                                                      |
+:::
 
 
-### Desktop Agent
+## Why chat also goes through governance
 
-| Component                        | Purpose                                                                                                  |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Context Routing**              | Routes FDC3 contexts such as the selected portfolio or instrument between applications.                  |
-| **Intent Resolution**            | Resolves FDC3 requests for capabilities to applications capable of handling them.                        |
-| **Governance Enforcement Point** | Ensures sensitive requests are checked by the Governance Gateway before the Desktop Agent forwards them. |
+FDC3 intent enforcement alone is not enough. Chat turns are user→agent traffic
+and model prompts/completions are agent→model traffic. Both must be firewalled:
 
-### Governance Runtime
+| Control | Requirement |
+| --- | --- |
+| [AIGF AIR-PREV-003](../ai-governance/guidance-catalog) | User/App/Model Firewalling — filter at user input and model output; system prompts are not a robust control |
+| [AIGF AIR-PREV-002](../ai-governance/guidance-catalog) | Layered data filtering at ingestion, processing and output |
+| [CCC.MARefArc.CN02](https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch) | All user-facing→agent traffic via Agent Gateway guardrails; all model invocations via LLM gateway guardrails |
 
-| Component                           | Purpose                                                                                                            |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Governance Gateway**              | Evaluates proposed sensitive activities and returns decisions such as **ALLOW**, **DENY** or **REQUIRE APPROVAL**. |
-| **Deterministic Policy Evaluation** | Evaluates objective rules such as permissions, approved models, data freshness and explicit authority limits.      |
-| **Semantic / AI Evaluation**        | Evaluates requirements requiring interpretation or judgement.                                                      |
-| **Human Approval Workflow**         | Routes activities requiring explicit human authority or approval.                                                  |
-| **Evidence Recording**              | Writes evaluations, decisions and supporting evidence to the Decisions and Evidence Record (object store).         |
+The **AI Portfolio Assistant is the chat harness** (not a separate
+component). The **Governance Gateway** still firewalls chat turns
+(`agent-ingress-guardrails`) and model I/O (`llm-egress-guardrails`) in
+addition to FDC3 intents. Decorators under
+`examples/aipa/calm/decorators/` bind those catalog controls to the
+CALM elements.
 
-### Governance Model
+## Sensitive intent flow
 
-| Component                       | Purpose                                                                                                      |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Gemara Artifacts**            | Machine-readable artifacts describing governance requirements and their relationships.                       |
-| **AI Management System (AIMS)** | The organisational governance framework within which the AI is managed, aligned to ISO/IEC 42001.            |
-| **Sensitive Activities**        | Activities subject to governance, such as recommendation generation, order construction and trade execution. |
+Concrete example from the [FDC3 catalog](./fdc3-interop) / [demo steps](./demo-steps):
+**`demo.GetPortfolioRisk`** (Analyse authority).
 
-### Financial Data and Services
+1. PM asks *“What are the biggest risks in this portfolio?”*
+2. Assistant raises `demo.GetPortfolioRisk` with `fdc3.portfolio`
+3. Desktop Agent asks the Governance Gateway → deterministic eval → **ALLOW**
+4. Gateway sends the decision to Evidence Recording → persisted on the Evidence Record
+5. Agent forwards the intent to the **Risk App**
+6. Risk App returns signed **`demo.portfolioRisk`**
+7. Agent delivers that context to the Assistant
+8. Assistant explains concentrations / risk contributors back to the PM
 
-| Component                       | Purpose                                                                                      |
-| ------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Portfolio / Position Data**   | Source data containing portfolio holdings and positions.                                     |
-| **Market Data**                 | Pricing and other market information used for analysis and risk calculations.                |
-| **Research / News / Filings**   | Information sources used by the Research App and AI Assistant.                               |
-| **Trading / Execution Service** | External capability through which authorised orders can ultimately be submitted or executed. |
+Propose/execute intents (`demo.CreateOrderProposal`, `demo.SubmitOrders`) use the
+same enforcement shape with different decisions (REQUIRE APPROVAL / DENY).
 
+![CALM sensitive intent flow — demo.GetPortfolioRisk](/img/calm/ai-portfolio-assistant/sensitive-intent-flow.svg)
+
+## Governed chat flow
+
+Chat path: Portfolio Manager → AI Portfolio Assistant (harness) →
+agent-ingress → LLM-egress → model → evidence.
+The full node/relationship map (including deploy hosts) is on
+[Deployment](./deployment).
+
+![CALM governed chat flow](/img/calm/ai-portfolio-assistant/governed-chat-flow.svg)
 
 ## Architectural Separation
 
-The important architectural boundary is:
+**The AI Portfolio Assistant is the chat harness.** Desktop apps and the
+assistant make ordinary requests; the Desktop Agent and Governance Gateway
+enforce policy; the Governance Gateway makes the decision (including on chat
+turns and model I/O).
 
-**FDC3 applications make ordinary FDC3 requests; the Desktop Agent enforces governance; the Governance Gateway makes the decision.**
+That keeps policy ownership out of app-local logic while ensuring
+consequential FDC3 actions and conversational/model traffic cannot bypass
+governance.
 
-That keeps the AI Assistant and the individual business applications free from embedded governance logic, while ensuring consequential inter-application actions cannot bypass the governance layer.
+## CALM map (selected nodes)
+
+| CALM `unique-id` | Role | Governance twin / register |
+| --- | --- | --- |
+| `ai-portfolio-assistant` | Chat harness + governed AI service | [AIPA Gemara twin](./gemara/components/ai-portfolio-assistant/), [AI system register](./iso/ai-system-register); AIGF AIR-PREV-003 / CCC.MARefArc.CN02 |
+| `governance-gateway` | FDC3 + chat ingress + LLM egress | [Governance Runtime twin](./gemara/components/governance-runtime/) |
+| `artifact-repository` / `governance-model` | Gemara + AIMS | [Artifact Repository twin](./gemara/components/artifact-repository/), [AIMS](./iso/aims) |
+| `evidence-record` | Evaluation / enforcement evidence | [CCC Object Storage](../ccc-obj-stor/) |
+| `agentic-model` | In-firewall inference | Supplier `fm-no-train-on-prompts`, control `apa-ctl-014` |
+| `aipa-k8s` / `governance-runtime-k8s` | Managed Kubernetes hosts | [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) |

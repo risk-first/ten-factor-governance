@@ -1,0 +1,39 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/decorators.json#/defs/decorator",
+  "unique-id": "aigf-user-app-model-firewalling",
+  "type": "control-catalog",
+  "target": [
+    "architecture.json"
+  ],
+  "applies-to": [
+    "ai-portfolio-assistant",
+    "governance-gateway",
+    "agentic-model",
+    "aipa-chat-to-gateway",
+    "aipa-to-llm-gateway",
+    "gateway-to-model",
+    "flow-governed-chat",
+    "flow-in-firewall-inference"
+  ],
+  "data": {
+    "catalog": "src/data/governance/finos/aigf/guidance.yaml",
+    "framework": "FINOS AI Governance Framework (AIGF)",
+    "controls": [
+      {
+        "id": "AIR-PREV-003",
+        "title": "User/App/Model Firewalling",
+        "why": "Chat and model I/O must be filtered at user-input and model-output boundaries; system prompts alone are not a robust control."
+      },
+      {
+        "id": "AIR-PREV-002",
+        "title": "Data Filtering",
+        "why": "Layered filtering at ingestion, processing and output reduces prompt-injection and data-exfiltration impact."
+      }
+    ],
+    "vectors": [
+      "prompt-injection",
+      "agentic-security",
+      "output-integrity"
+    ]
+  }
+}

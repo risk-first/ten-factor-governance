@@ -10,7 +10,12 @@
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
-    "write-translations": "docusaurus write-translations"
+    "write-translations": "docusaurus write-translations",
+    "calm:validate": "calm validate -a examples/aipa/calm/architecture.json -f pretty",
+    "calm:diagrams": "node scripts/generate-calm-diagrams.mjs",
+    "calm:diagrams:mermaid": "node scripts/generate-calm-diagrams.mjs --skip-svg",
+    "aipa:dev": "npm --prefix examples/aipa start",
+    "aipa:install": "npm --prefix examples/aipa install"
   },
   "dependencies": {
     "@docusaurus/core": "^3.10.2",
@@ -25,6 +30,8 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.2",
     "@docusaurus/types": "^3.10.2",
+    "@finos/calm-cli": "^1.60.1",
+    "@mermaid-js/mermaid-cli": "^12.0.0",
     "javascript-stringify": "^2.1.0"
   },
   "engines": {

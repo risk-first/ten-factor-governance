@@ -1,40 +1,71 @@
 ---
 sidebar_label: FDC3
 sidebar_position: 4
+hide_table_of_contents: true
 ---
-
 
 # Catalog of FDC3 operations
 
 ## Intents
 
-### Raised by The AI Portfolio Assistant 
+### Raised by The AI Portfolio Assistant
 
 (for the purposes of the use case)
 
 | Intent raised by AI Assistant | Responding app          | Input context                                                | Returned context             | Use in demo                                                                                                                                       |
 | ----------------------------- | ----------------------- | ------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `demo.GetPortfolioRisk`      | Risk App                | `fdc3.portfolio`                                             | `demo.portfolioRisk`        | **Analyse:** “What are the biggest risks in this portfolio?” Gets deterministic risk/exposure calculations.                                       |
-| `demo.GetResearch`           | Research App            | `fdc3.instrument`, `fdc3.instrumentList` or `fdc3.portfolio` | `demo.researchBundle`       | **Explain:** Gets research/evidence needed to explain the identified risks.                                                                       |
-| `demo.RunStressScenario`     | Risk App                | `demo.stressScenarioRequest`                                | `demo.stressScenarioResult` | **Analyse:** Runs scenarios such as an oil-price fall or interest-rate shock.                                                                     |
-| `demo.CreateOrderProposal`   | Order Entry             | `demo.portfolioRecommendation`                              | `demo.orderProposal`        | **Propose:** “Reduce my energy exposure to 15%.” Creates a draft basket for human review.                                                         |
-| `demo.SubmitOrders`          | Execution / Order Entry | `fdc3.orderList`                                             | `fdc3.transactionResult`     | **Execute:** “Just execute those trades.” This is the critical intent that **governance prevents the AI Assistant from successfully exercising**. |
+| `demo.GetPortfolioRisk`       | Risk App                | `fdc3.portfolio`                                             | `demo.portfolioRisk`         | **Analyse:** “What are the biggest risks in this portfolio?” Gets deterministic risk/exposure calculations.                                       |
+| `demo.GetResearch`            | Research App            | `fdc3.instrument`, `fdc3.instrumentList` or `fdc3.portfolio` | `demo.researchBundle`        | **Explain:** Gets research/evidence needed to explain the identified risks.                                                                       |
+| `demo.RunStressScenario`      | Risk App                | `demo.stressScenarioRequest`                                 | `demo.stressScenarioResult`  | **Analyse:** Runs scenarios such as an oil-price fall or interest-rate shock.                                                                     |
+| `demo.CreateOrderProposal`    | Order Entry             | `demo.portfolioRecommendation`                               | `demo.orderProposal`         | **Propose:** “Reduce my energy exposure to 15%.” Creates a draft basket for human review.                                                         |
+| `demo.SubmitOrders`           | Execution / Order Entry | `fdc3.orderList`                                             | `fdc3.transactionResult`     | **Execute:** “Just execute those trades.” This is the critical intent that **governance prevents the AI Assistant from successfully exercising**. |
+
+### Raised toward / by the Governance Runtime (FDC3 app)
+
+The **Governance Runtime** (and its Governance Console surface) is itself an
+FDC3 application on the desktop — not only an out-of-band HTTPS dependency of
+the Desktop Agent. That means governance **decisions can be requested and
+returned over FDC3**, with the same identity and provenance model as any other
+interop message ([FDC3 Security & Identity](https://fdc3.finos.org/docs/next/api/security)).
+
+In this example the Desktop Agent still acts as the **enforcement point** for
+sensitive assistant intents (it will not forward `demo.SubmitOrders` from the
+assistant). The Governance Runtime app is the **decision authority** that
+participates on the bus: it receives evaluation requests, returns signed
+decisions, and can broadcast decision/evidence summaries for the Governance
+Console and other listeners.
+
+| Intent | Raising app | Responding app | Input context | Returned context | Use in demo |
+| --- | --- | --- | --- | --- | --- |
+| `governance.RequestGovernanceDecision` | Desktop Agent (enforcement point) or AI Portfolio Assistant | Governance Runtime | `governance.governanceRequest` | `governance.governanceDecision` | Ask ALLOW / DENY / REQUIRE APPROVAL for a named sensitive activity (e.g. `demo.GetPortfolioRisk`, `demo.CreateOrderProposal`, `demo.SubmitOrders`) before forward or act. |
+| `governance.GetGovernanceEvidence` | Governance Console or AI Portfolio Assistant | Governance Runtime | `governance.governanceDecisionRef` (or activity id) | `governance.governanceEvidence` | Retrieve the attributable decision trace (actor, activity, controls, outcome) for inspection / audit UI. |
+| `governance.ViewGovernanceDecision` | Governance Console / AI Assistant | Governance Runtime / Console | `governance.governanceDecision` | — | Open or focus the console on a specific decision (optional desktop affordance). |
+
+Governance responses (`governance.governanceDecision`, and where broadcast
+`governance.governanceEvidence`) **MUST** carry FDC3 Security signatures so peers can
+verify that the decision came from the Governance Runtime’s JWKS identity, not
+an impersonating app on the bus.
 
 ### Other Intent Support That Would Improve Functionality
 
-| Intent raised by AI Assistant | Responding app                    | Input context                                                | Returned context | Why it's useful                                                                                                       |
-| ----------------------------- | --------------------------------- | ------------------------------------------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `ViewInstrument`              | Research / instrument-details app | `fdc3.instrument`                                            | —                | “Show me Shell.” Opens the appropriate instrument view rather than the Assistant trying to display everything itself. |
-| `ViewChart`                   | Chart / Research app              | `fdc3.instrument`                                            | —                | “Show me how Shell has performed.” Very natural Assistant-driven desktop action.                                      |
-| `ViewNews`                    | Research app                      | `fdc3.instrument`, `fdc3.instrumentList` or `fdc3.portfolio` | —                | Lets the Assistant open relevant news for something it is discussing.                                                 |
-| `ViewResearch`                | Research app                      | `fdc3.instrument`                                            | —                | Opens the underlying human-readable research behind something the Assistant has cited.                                |
-| `ViewAnalysis`                | Risk app                          | `fdc3.portfolio` or `fdc3.instrument`                        | —                | Lets the Assistant open the Risk app on the analysis it has just been discussing.                                     |
-| `ViewHoldings`                | Portfolio app                     | `fdc3.instrument`                                            | —                | “Show me where we're exposed to Nvidia.” Opens the relevant holdings rather than just describing them.                |
-| `ViewOrders`                  | Order Entry / Blotter             | `fdc3.instrument`                                            | —                | Allows the Assistant to show existing orders relating to the current discussion.                                      |
+| Intent raised by AI Assistant | Responding app                    | Input context                                                | Returned context   | Why it's useful                                                                                                       |
+| ----------------------------- | --------------------------------- | ------------------------------------------------------------ | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `GetPortfolio`                | Portfolio app                     | — (or portfolio id)                                          | `fdc3.portfolio`   | Retrieve the active portfolio without relying only on channel broadcast (observe / sync).                             |
+| `ViewInstrument`              | Research / instrument-details app | `fdc3.instrument`                                            | —                  | “Show me Shell.” Opens the appropriate instrument view rather than the Assistant trying to display everything itself. |
+| `ViewChart`                   | Chart / Market Data app           | `fdc3.instrument`                                            | —                  | “Show me how Shell has performed.” Very natural Assistant-driven desktop action.                                      |
+| `ViewNews`                    | Research app                      | `fdc3.instrument`, `fdc3.instrumentList` or `fdc3.portfolio` | —                  | Lets the Assistant open relevant news for something it is discussing.                                                 |
+| `ViewResearch`                | Research app                      | `fdc3.instrument`                                            | —                  | Opens the underlying human-readable research behind something the Assistant has cited.                                |
+| `ViewAnalysis`                | Risk app                          | `fdc3.portfolio` or `fdc3.instrument`                        | —                  | Lets the Assistant open the Risk app on the analysis it has just been discussing.                                     |
+| `ViewHoldings`                | Portfolio app                     | `fdc3.instrument`                                            | —                  | “Show me where we're exposed to Nvidia.” Opens the relevant holdings rather than just describing them.                |
+| `ViewOrders`                  | Order Entry / Blotter             | `fdc3.instrument`                                            | —                  | Allows the Assistant to show existing orders relating to the current discussion.                                      |
+
+Runnable assisting apps for this catalog live under
+[`examples/aipa/`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/)
+(`npm run aipa:dev`).
 
 ## Contexts
 
-### Standard Ones We Should Broadcast / Receive 
+### Standard Ones We Should Broadcast / Receive
 
 | Context               | Typical broadcaster(s)                 | Typical receiver(s)                       | Why broadcast it                                                                       |
 | --------------------- | -------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -52,19 +83,73 @@ sidebar_position: 4
 
 | FINOS context                   | Description                                                                                                                                                                                                                                                                                                              |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `demo.portfolioRisk`           | **Structured risk analysis for a portfolio.** Contains calculated risk measures such as concentration, exposures, major risk contributors and other portfolio-level metrics, together with enough provenance to identify the portfolio and analysis that produced them. Returned by `demo.GetPortfolioRisk`.            |
-| `demo.researchBundle`          | **A collection of research material relevant to a portfolio or set of instruments.** Contains structured research findings and references to their underlying sources, including provenance and timestamps so the Assistant can reason about the quality and freshness of its evidence. Returned by `demo.GetResearch`. |
-| `demo.stressScenarioRequest`   | **A request to evaluate a portfolio under a specified hypothetical scenario.** Identifies the portfolio and describes the market changes or assumptions to apply, such as an oil-price fall, interest-rate increase or equity-market shock. Supplied to `demo.RunStressScenario`.                                       |
-| `demo.stressScenarioResult`    | **The calculated effect of a stress scenario on a portfolio.** Identifies the scenario and portfolio and contains the resulting changes in portfolio value, exposures or other relevant risk measures. Returned by `demo.RunStressScenario`.                                                                            |
-| `demo.portfolioRecommendation` | **A proposed change to a portfolio generated by the AI Assistant.** Describes the recommended portfolio changes, their rationale and the evidence/analysis supporting them. It is a recommendation rather than an executable order. Supplied to `demo.CreateOrderProposal`.                                             |
-| `demo.orderProposal`           | **A proposed set of orders derived from a portfolio recommendation.** Represents a draft transaction that can be presented to a human for review before becoming actual orders. Returned by `demo.CreateOrderProposal`.                                                                                                 |
+| `demo.portfolioRisk`            | **Structured risk analysis for a portfolio.** Contains calculated risk measures such as concentration, exposures, major risk contributors and other portfolio-level metrics, together with enough provenance to identify the portfolio and analysis that produced them. Returned by `demo.GetPortfolioRisk`.            |
+| `demo.researchBundle`           | **A collection of research material relevant to a portfolio or set of instruments.** Contains structured research findings and references to their underlying sources, including provenance and timestamps so the Assistant can reason about the quality and freshness of its evidence. Returned by `demo.GetResearch`. |
+| `demo.stressScenarioRequest`    | **A request to evaluate a portfolio under a specified hypothetical scenario.** Identifies the portfolio and describes the market changes or assumptions to apply, such as an oil-price fall, interest-rate increase or equity-market shock. Supplied to `demo.RunStressScenario`.                                       |
+| `demo.stressScenarioResult`     | **The calculated effect of a stress scenario on a portfolio.** Identifies the scenario and portfolio and contains the resulting changes in portfolio value, exposures or other relevant risk measures. Returned by `demo.RunStressScenario`.                                                                            |
+| `demo.portfolioRecommendation`  | **A proposed change to a portfolio generated by the AI Assistant.** Describes the recommended portfolio changes, their rationale and the evidence/analysis supporting them. It is a recommendation rather than an executable order. Supplied to `demo.CreateOrderProposal`.                                             |
+| `demo.orderProposal`            | **A proposed set of orders derived from a portfolio recommendation.** Represents a draft transaction that can be presented to a human for review before becoming actual orders. Returned by `demo.CreateOrderProposal`.                                                                                                 |
+| `governance.governanceRequest`        | **Request for a governance decision over FDC3.** Identifies the actor (e.g. AI Portfolio Assistant), the sensitive activity / intent name, and the input context being evaluated. Raised with `governance.RequestGovernanceDecision`.                                                                                          |
+| `governance.governanceDecision`       | **ALLOW / DENY / REQUIRE APPROVAL outcome** from the Governance Runtime, including applicable control/policy references and correlation ids for evidence. Returned by `governance.RequestGovernanceDecision`. **Must be FDC3 Security–signed** by the Governance Runtime.                                                      |
+| `governance.governanceDecisionRef`    | **Reference to a prior decision** (id / correlation) used to fetch the full evidence package via `governance.GetGovernanceEvidence`.                                                                                                                                                                                           |
+| `governance.governanceEvidence`       | **Attributable decision trace** (activity, actor, controls evaluated, outcome, timestamps) suitable for the Governance Console and audit export. Returned by `governance.GetGovernanceEvidence` or optionally broadcast after a decision. **Must be FDC3 Security–signed**.                                                   |
 
-### FDC3 Security
+## FDC3 Security & Identity
 
-When using the following contexts, we should broadcast signatures using FDC3 Security to ensure provenance:
+This example relies on the experimental [FDC3 Security & Identity](https://fdc3.finos.org/docs/next/api/security)
+module so that apps can establish **provenance for intent raises, intent
+results, and broadcasts** independently of the Desktop Agent (which is treated
+as an untrusted intermediary for cryptographic trust).
 
- - `demo.portfolioRisk`
- - `demo.researchBundle`
- - `demo.stressScenarioResult`
- - `demo.portfolioRecommendation`
- - `demo.orderProposal`
+### What we use
+
+| Mechanism | Role in AIPA |
+| --- | --- |
+| **Application identity (JWKS)** | Each participating app (Assistant, Risk, Research, Order Entry, **Governance Runtime**) publishes keys at a stable HTTPS JWKS URL. Receivers verify `jku` / `kid` against an allowlist. |
+| **Detached JWS on context metadata** | `signature` + `antiReplay` (`iat`, `exp`, `jti`) travel in metadata on `broadcast()` and `raiseIntent()` ([`AppProvidableContextMetadata`](https://fdc3.finos.org/docs/next/api/security#signature-metadata)), and appear on the handler’s `ContextMetadata`. |
+| **Intent raise / result provenance** | Sensitive demo intents raised by the Assistant, and **governance decisions returned by the Governance Runtime**, carry signatures so peers can verify *who* authorised or asserted the payload. |
+| **Trust allowlists** | Apps decide locally which JWKS publishers they trust (e.g. only accept `governance.governanceDecision` signed by the Governance Runtime’s `jku`). |
+| **Trusted backend** | Signing and private-key operations run in app backends; front ends hold public material only (see FDC3 trusted-backend contract). |
+
+Desktop Agents **MUST** forward context objects and security metadata without
+modification; they do not mint or strip signatures.
+
+### Contexts that MUST be signed
+
+When producing or broadcasting the following, apps **MUST** attach FDC3 Security
+signatures (provenance for grounding and for governance):
+
+- `demo.portfolioRisk`
+- `demo.researchBundle`
+- `demo.stressScenarioResult`
+- `demo.portfolioRecommendation`
+- `demo.orderProposal`
+- `governance.governanceDecision`
+- `governance.governanceEvidence`
+
+### Intents whose raises / results SHOULD be signed
+
+| Intent | Who signs the raise | Who signs the result |
+| --- | --- | --- |
+| `demo.GetPortfolioRisk` / `demo.GetResearch` / `demo.RunStressScenario` / `demo.CreateOrderProposal` / `demo.SubmitOrders` | AI Portfolio Assistant (actor provenance) | Responding specialist app (result provenance) |
+| `governance.RequestGovernanceDecision` | Desktop Agent or Assistant | **Governance Runtime** (decision authority) |
+| `governance.GetGovernanceEvidence` | Governance Console / Assistant | **Governance Runtime** |
+
+Unsigned grounding contexts or unsigned governance decisions MUST NOT be treated
+as authoritative for explain / recommend / propose paths (Gemara control
+`apa-ctl-016-fdc3-security-provenance`).
+
+### Standard security contexts (optional in this demo)
+
+Where user identity or encrypted private channels are needed, the Security &
+Identity module also defines:
+
+| Context / intent | Purpose |
+| --- | --- |
+| `fdc3.security.user` / `GetUser` | Portable user identity (JWT) from an IdP app |
+| `fdc3.security.encryptedContext` | Confidentiality over the Desktop Agent |
+| `fdc3.security.symmetricKeyRequest` / `symmetricKeyResponse` | Establish encrypted channels |
+
+These are available for hardening chat or decision payloads further; the AIPA
+minimum bar in this example is **signed provenance** on demo suite and
+governance contexts as above.

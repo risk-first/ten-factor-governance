@@ -1,0 +1,28 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-execution",
+      "name": "AIPA Execution",
+      "title": "AIPA Execution",
+      "description": "Submits order lists and returns signed fdc3.transactionResult. Governance will later deny AI-raised SubmitOrders.",
+      "categories": ["AIPA", "Trading"],
+      "icons": [{ "src": "http://localhost:4105/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4105/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.SubmitOrders": {
+              "displayName": "Submit Orders",
+              "contexts": ["fdc3.orderList"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

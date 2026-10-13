@@ -1,0 +1,40 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-research",
+      "name": "AIPA Research",
+      "title": "AIPA Research",
+      "description": "Investment research from EDGAR filings and Finnhub news; returns signed demo.researchBundle.",
+      "categories": ["AIPA", "Research"],
+      "icons": [{ "src": "http://localhost:4102/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4102/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.GetResearch": {
+              "displayName": "Get Research",
+              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
+            },
+            "ViewInstrument": {
+              "displayName": "View Instrument",
+              "contexts": ["fdc3.instrument"]
+            },
+            "ViewNews": {
+              "displayName": "View News",
+              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
+            },
+            "ViewResearch": {
+              "displayName": "View Research",
+              "contexts": ["fdc3.instrument"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

@@ -1,0 +1,28 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-market-data",
+      "name": "AIPA Market Data",
+      "title": "AIPA Market Data",
+      "description": "Quotes and charts for ViewChart; proxies Finnhub and yahoo-finance2.",
+      "categories": ["AIPA", "Market Data"],
+      "icons": [{ "src": "http://localhost:4103/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4103/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewChart": {
+              "displayName": "View Chart",
+              "contexts": ["fdc3.instrument"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

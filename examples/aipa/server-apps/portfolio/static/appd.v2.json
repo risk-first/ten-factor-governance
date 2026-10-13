@@ -1,0 +1,32 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-portfolio",
+      "name": "AIPA Portfolio",
+      "title": "AIPA Portfolio",
+      "description": "Displays portfolios and holdings; serves GetPortfolio and ViewHoldings; broadcasts fdc3.portfolio contexts.",
+      "categories": ["AIPA", "Portfolio"],
+      "icons": [{ "src": "http://localhost:4100/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4100/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "GetPortfolio": {
+              "displayName": "Get Portfolio",
+              "contexts": ["fdc3.portfolio"]
+            },
+            "ViewHoldings": {
+              "displayName": "View Holdings",
+              "contexts": ["fdc3.instrument"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

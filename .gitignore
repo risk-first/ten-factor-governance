@@ -31,3 +31,7 @@ yarn-error.log*
 *.log
 /local
 
+# Derived CALM diagrams (regenerate: npm run calm:diagrams)
+/static/img/calm/
+/examples/aipa/calm/diagrams/*
+!/examples/aipa/calm/diagrams/README.md

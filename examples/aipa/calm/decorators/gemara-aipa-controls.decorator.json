@@ -1,0 +1,39 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/decorators.json#/defs/decorator",
+  "unique-id": "gemara-aipa-controls",
+  "type": "control-catalog",
+  "target": [
+    "architecture.json"
+  ],
+  "applies-to": [
+    "ai-portfolio-assistant",
+    "fdc3-desktop-agent",
+    "governance-gateway",
+    "fdc3-to-governance-gateway",
+    "flow-sensitive-intent"
+  ],
+  "data": {
+    "catalog": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/control.yaml",
+    "framework": "AIPA Gemara twin",
+    "controls": [
+      {
+        "id": "apa-ctl-001-authority-ceiling"
+      },
+      {
+        "id": "apa-ctl-005-propose-human-approval"
+      },
+      {
+        "id": "apa-ctl-006-execute-prohibit"
+      },
+      {
+        "id": "apa-ctl-011-prompt-injection-defenses"
+      },
+      {
+        "id": "apa-ctl-014-model-provider-controls"
+      },
+      {
+        "id": "apa-ctl-016-fdc3-security-provenance"
+      }
+    ]
+  }
+}
