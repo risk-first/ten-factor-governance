@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/data.advertiseDatasets.schema.json",
+  "type": "object",
+  "title": "Advertise Datasets",
+  "description": "Broadcast (usually on a user channel) to ask joined apps to advertise shareable datasets (possible bits of data) via `fdc3.data.appOffer`. Discovers data, not apps.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.data.advertiseDatasets"
+        }
+      },
+      "required": ["type"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.data.advertiseDatasets"
+    }
+  ]
+}

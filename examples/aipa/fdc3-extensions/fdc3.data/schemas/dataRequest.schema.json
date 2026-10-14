@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/data.dataRequest.schema.json",
+  "type": "object",
+  "title": "Data Request",
+  "description": "Intent context for `GetAppData`. Requests a single advertised dataset — FDC3 IntentResults are one context, so this type addresses exactly one offer. Targeting is via the Desktop Agent (`raiseIntent` target); this context carries `id.dataId`. `id.dataId` MUST match `id.dataId` from a prior `fdc3.data.appOffer`. The IntentResult type is that offer’s `contextType`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.data.dataRequest"
+        },
+        "id": {
+          "title": "Request identifier",
+          "description": "FDC3 context `id` map. `dataId` is required and selects which advertised dataset to return.",
+          "type": "object",
+          "properties": {
+            "dataId": {
+              "type": "string",
+              "title": "dataId",
+              "description": "Offer handle copied from `fdc3.data.appOffer.id.dataId`."
+            }
+          },
+          "required": ["dataId"],
+          "unevaluatedProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["type", "id"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.data.dataRequest",
+      "id": {
+        "dataId": "offer-portfolio-greeks-1"
+      }
+    }
+  ]
+}

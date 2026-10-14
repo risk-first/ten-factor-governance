@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/mcp.toolCall.schema.json",
+  "type": "object",
+  "title": "MCP Tool Call",
+  "description": "Intent context for `CallMcpTool`. Invokes one MCP tool via the bridge app. Optional `decorations` carry agent-specific metadata (e.g. conversation id) without leaking MCP wire format into the harness.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.mcp.toolCall"
+        },
+        "serverId": {
+          "type": "string",
+          "title": "Server ID"
+        },
+        "toolName": {
+          "type": "string",
+          "title": "Tool name"
+        },
+        "arguments": {
+          "type": "object",
+          "title": "Arguments",
+          "description": "Tool arguments matching the tool's inputSchema.",
+          "additionalProperties": true
+        },
+        "decorations": {
+          "type": "object",
+          "title": "Decorations",
+          "description": "Optional agent/harness metadata forwarded by the bridge.",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "required": ["type", "serverId", "toolName"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.mcp.toolCall",
+      "serverId": "rita-mcp",
+      "toolName": "web_search",
+      "arguments": { "query": "NVDA delta hedging" },
+      "decorations": {
+        "x-agentrita-conversation-id": "chat-42"
+      }
+    }
+  ]
+}

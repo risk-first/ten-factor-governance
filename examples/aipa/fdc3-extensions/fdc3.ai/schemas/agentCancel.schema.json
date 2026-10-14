@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/ai.agentCancel.schema.json",
+  "type": "object",
+  "title": "Agent Cancel",
+  "description": "Sent by the Agent UI on the turn PrivateChannel to abort the harness LLM loop for the current turn.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.ai.agentCancel"
+        },
+        "reason": {
+          "type": "string",
+          "title": "Reason",
+          "description": "Why the turn was cancelled (e.g. user_stopped)."
+        }
+      },
+      "required": ["type"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.ai.agentCancel",
+      "reason": "user_stopped"
+    }
+  ]
+}

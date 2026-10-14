@@ -1,7 +1,6 @@
 import type { Fdc3Instrument, Fdc3Portfolio, OhlcBar, PriceHistory } from '../contexts/types.js';
 
 export const DEFAULT_LOOKBACK_DAYS = 60;
-export const MARKET_DATA_ORIGIN = 'http://localhost:4103';
 
 type ChartApiBody = {
   symbol: string;
@@ -58,19 +57,17 @@ export function tickersFromPortfolio(portfolio?: Fdc3Portfolio | null): string[]
 }
 
 /**
- * Fetch OHLC for each ticker via Market Data `/api/chart/:symbol` and assemble demo.priceHistory.
- * `baseUrl` defaults to same-origin (Market Data app) or pass MARKET_DATA_ORIGIN from Risk.
+ * Fetch OHLC for each ticker via same-origin Market Data `/api/chart/:symbol`
+ * and assemble `demo.priceHistory` (used by the Market Data GetPriceHistory handler).
  */
 export async function fetchPriceHistory(
   tickers: string[],
   opts?: {
     days?: number;
-    baseUrl?: string;
     instruments?: Map<string, Fdc3Instrument>;
   }
 ): Promise<PriceHistory> {
   const days = opts?.days ?? DEFAULT_LOOKBACK_DAYS;
-  const base = (opts?.baseUrl ?? '').replace(/\/$/, '');
   const unique = [...new Set(tickers.map(t => t.toUpperCase()).filter(Boolean))];
   if (unique.length === 0) {
     return {
@@ -83,7 +80,7 @@ export async function fetchPriceHistory(
 
   const results = await Promise.all(
     unique.map(async ticker => {
-      const url = `${base}/api/chart/${encodeURIComponent(ticker)}?days=${encodeURIComponent(String(days))}`;
+      const url = `/api/chart/${encodeURIComponent(ticker)}?days=${encodeURIComponent(String(days))}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`chart ${ticker}: HTTP ${res.status}`);
       const body = (await res.json()) as ChartApiBody;

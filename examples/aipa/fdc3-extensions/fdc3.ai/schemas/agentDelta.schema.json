@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/ai.agentDelta.schema.json",
+  "type": "object",
+  "title": "Agent Delta",
+  "description": "Streaming update from the agent harness to the Agent UI on the turn PrivateChannel. Covers text chunks, status, artifacts, and citations before the final `fdc3.ai.agentAnswer`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.ai.agentDelta"
+        },
+        "kind": {
+          "type": "string",
+          "title": "Kind",
+          "description": "Delta category.",
+          "enum": ["text", "status", "artifact", "citation", "suggestion"]
+        },
+        "payload": {
+          "type": "object",
+          "title": "Payload",
+          "description": "Kind-specific body (e.g. `{ delta }` for text, `{ message, group }` for status).",
+          "additionalProperties": true
+        }
+      },
+      "required": ["type", "kind", "payload"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.ai.agentDelta",
+      "kind": "text",
+      "payload": {
+        "delta": "AAPL grew revenue "
+      }
+    },
+    {
+      "type": "fdc3.ai.agentDelta",
+      "kind": "status",
+      "payload": {
+        "message": "Fetching income statement…",
+        "group": "reasoning"
+      }
+    }
+  ]
+}

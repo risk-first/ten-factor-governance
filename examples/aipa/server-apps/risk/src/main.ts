@@ -9,12 +9,7 @@ import {
   type StressScenarioRequest,
   type StressScenarioResult,
 } from '../../../common/src/contexts/types.ts';
-import {
-  DEFAULT_LOOKBACK_DAYS,
-  MARKET_DATA_ORIGIN,
-  fetchPriceHistory,
-  tickersFromPortfolio,
-} from '../../../common/src/data/priceHistory.ts';
+import { tickersFromPortfolio } from '../../../common/src/data/priceHistory.ts';
 import { toResultContext, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { DesktopAgent } from '@finos/fdc3';
@@ -139,7 +134,6 @@ const METRIC_DEFS: MetricDef[] = [
 let fdc3: DesktopAgent | null = null;
 let lastAnalysis: unknown = null;
 let currentPortfolio: Fdc3Portfolio | null = null;
-let lastPriceSource: 'intent' | 'http' | 'none' = 'none';
 let sectorChart: EChartsType | null = null;
 let corrChart: EChartsType | null = null;
 let contribGrid: GridApi | null = null;
@@ -495,39 +489,29 @@ async function resolvePortfolio(portfolio?: Fdc3Portfolio | null): Promise<Fdc3P
 async function obtainPriceHistory(portfolio: Fdc3Portfolio): Promise<PriceHistory> {
   const tickers = tickersFromPortfolio(portfolio);
   if (!tickers.length) throw new Error('Portfolio has no tickers');
-
-  if (fdc3) {
-    try {
-      const resolution = await fdc3.raiseIntent(
-        INTENTS.GetPriceHistory,
-        portfolio as Parameters<DesktopAgent['raiseIntent']>[1],
-        { appId: 'aipa-market-data' }
-      );
-      const result = await resolution.getResult();
-      if (result && typeof result === 'object' && (result as PriceHistory).type === CONTEXT_TYPES.priceHistory) {
-        lastPriceSource = 'intent';
-        return result as PriceHistory;
-      }
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      setStatus(statusEl(), `GetPriceHistory intent failed (${msg}); falling back to HTTP…`);
-    }
+  if (!fdc3) {
+    throw new Error('Desktop Agent required — raise demo.GetPriceHistory on Market Data');
   }
 
-  lastPriceSource = 'http';
-  return fetchPriceHistory(tickers, {
-    days: DEFAULT_LOOKBACK_DAYS,
-    baseUrl: MARKET_DATA_ORIGIN,
-  });
+  const resolution = await fdc3.raiseIntent(
+    INTENTS.GetPriceHistory,
+    portfolio as Parameters<DesktopAgent['raiseIntent']>[1],
+    { appId: 'aipa-market-data' }
+  );
+  const result = await resolution.getResult();
+  if (result && typeof result === 'object' && (result as PriceHistory).type === CONTEXT_TYPES.priceHistory) {
+    return result as PriceHistory;
+  }
+  throw new Error('demo.GetPriceHistory did not return demo.priceHistory');
 }
 
 async function analyseApi(portfolio?: Fdc3Portfolio): Promise<Record<string, unknown>> {
   const pf = await resolvePortfolio(portfolio);
-  setStatus(statusEl(), 'Fetching price history from Market Data…');
+  setStatus(statusEl(), 'Raising demo.GetPriceHistory on Market Data…');
   const priceHistory = await obtainPriceHistory(pf);
   setStatus(
     statusEl(),
-    `Price history via ${lastPriceSource} (${priceHistory.series.length} series, ~${priceHistory.lookbackDays}d). Analysing…`
+    `Got price history (${priceHistory.series.length} series, ~${priceHistory.lookbackDays}d). Analysing…`
   );
 
   const res = await fetch('/api/analyse', {
@@ -544,16 +528,13 @@ async function analyseApi(portfolio?: Fdc3Portfolio): Promise<Record<string, unk
   const envelope = body as SignedEnvelope;
   const result = toResultContext(envelope);
   show(result);
-  setStatus(
-    statusEl(),
-    `Signed ${CONTEXT_TYPES.portfolioRisk} (prices=${lastPriceSource}, jku=${envelope.jku})`
-  );
+  setStatus(statusEl(), `Signed ${CONTEXT_TYPES.portfolioRisk} (jku=${envelope.jku})`);
   return result;
 }
 
 async function stressApi(req: StressScenarioRequest): Promise<Record<string, unknown>> {
   const pf = await resolvePortfolio(req.portfolio ?? currentPortfolio);
-  setStatus(statusEl(), 'Fetching price history for stress…');
+  setStatus(statusEl(), 'Raising demo.GetPriceHistory for stress…');
   const priceHistory = await obtainPriceHistory(pf);
 
   const res = await fetch('/api/stress', {
@@ -570,7 +551,7 @@ async function stressApi(req: StressScenarioRequest): Promise<Record<string, unk
   const envelope = body as SignedEnvelope;
   const result = toResultContext(envelope);
   show(result);
-  setStatus(statusEl(), `Signed ${CONTEXT_TYPES.stressScenarioResult} (prices=${lastPriceSource})`);
+  setStatus(statusEl(), `Signed ${CONTEXT_TYPES.stressScenarioResult}`);
   return result;
 }
 
@@ -580,7 +561,7 @@ async function setup(): Promise<void> {
   if (!fdc3) {
     setStatus(
       statusEl(),
-      'No Desktop Agent — Analyse will pull charts via HTTP from Market Data (localhost:4103).'
+      'No Desktop Agent — Analyse needs FDC3 to raise demo.GetPriceHistory on Market Data.'
     );
     return;
   }

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/mcp.listQuery.schema.json",
+  "type": "object",
+  "title": "MCP List Query",
+  "description": "Intent context for `ListMcpTools`. Optionally filters by MCP `serverId`. Result is `fdc3.mcp.toolList`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.mcp.listQuery"
+        },
+        "serverId": {
+          "type": ["string", "null"],
+          "title": "Server ID",
+          "description": "When set, list tools only from this MCP server. Null/omitted lists all connected servers."
+        }
+      },
+      "required": ["type"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.mcp.listQuery",
+      "serverId": null
+    }
+  ]
+}
