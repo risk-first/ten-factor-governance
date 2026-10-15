@@ -1,6 +1,6 @@
 import '../../../common/src/ui/styles.css';
 import { connectAgent, setStatus } from '../../../common/src/fdc3/agent.ts';
-import { INTENTS, type PriceHistory } from '../../../common/src/contexts/types.ts';
+import { INTENTS, type Fdc3Instrument, type PriceHistory } from '../../../common/src/contexts/types.ts';
 import {
   DEFAULT_LOOKBACK_DAYS,
   fetchPriceHistory,
@@ -10,6 +10,10 @@ import {
 import { createBroadcastButton } from '../../../common/src/ui/broadcast-icon.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { DesktopAgent } from '@finos/fdc3';
+import {
+  setupFdc3DataExtension,
+  type PriceSeriesSnapshot,
+} from './fdc3Data.ts';
 import {
   AllCommunityModule,
   ModuleRegistry,
@@ -1108,6 +1112,64 @@ async function handleGetPriceHistory(ctx: unknown): Promise<PriceHistory> {
   return history;
 }
 
+function snapshotSeries(): PriceSeriesSnapshot[] {
+  return [...seriesByTicker.values()].map(entry => ({
+    ticker: entry.ticker,
+    name: entry.name,
+    instrument: entry.instrument as Fdc3Instrument,
+    bars: entry.bars,
+  }));
+}
+
+async function applyExternalSeries(
+  series: PriceSeriesSnapshot[],
+  title?: string
+): Promise<void> {
+  // Replace in place from ViewData — drop existing overlays first.
+  for (const entry of seriesByTicker.values()) {
+    if (entry.lineSeries && chart) {
+      chart.removeSeries(entry.lineSeries);
+      entry.lineSeries = null;
+    }
+  }
+  seriesByTicker.clear();
+  changeBaselineDate = null;
+  pendingVisibleRange = null;
+
+  for (const s of series) {
+    const instrument = asInstrumentContext(s.instrument, s.ticker) ?? {
+      type: 'fdc3.instrument' as const,
+      id: { ticker: s.ticker },
+      ...(s.name ? { name: s.name } : {}),
+    };
+    seriesByTicker.set(s.ticker, {
+      ticker: s.ticker,
+      name: s.name || s.ticker,
+      instrument,
+      color: nextColor(),
+      muted: false,
+      bars: s.bars,
+      quote: s.bars.at(-1)?.close ?? 0,
+      quoteSource: 'ViewData',
+      chartSource: 'fdc3.data.tabularData',
+      lineSeries: null,
+    });
+  }
+
+  activeTicker = [...seriesByTicker.keys()][0] ?? '';
+  viewMode = 'table';
+  updateMeta();
+  renderChips();
+  rebuildControls();
+  redrawAll();
+  setStatus(
+    statusEl(),
+    title
+      ? `Loaded ViewData “${title}” (${series.map(s => s.ticker).join(', ') || 'empty'})`
+      : `Loaded ViewData (${series.map(s => s.ticker).join(', ') || 'empty'})`
+  );
+}
+
 async function setup(): Promise<void> {
   rebuildControls();
   await addTicker((document.getElementById('ticker') as HTMLInputElement).value);
@@ -1130,6 +1192,13 @@ async function setup(): Promise<void> {
       (document.getElementById('ticker') as HTMLInputElement).value = ticker;
       await addTicker(ticker, lookbackDays, instrument);
     }
+  });
+
+  await setupFdc3DataExtension({
+    fdc3,
+    statusEl: statusEl(),
+    getSeries: snapshotSeries,
+    applySeries: applyExternalSeries,
   });
 }
 

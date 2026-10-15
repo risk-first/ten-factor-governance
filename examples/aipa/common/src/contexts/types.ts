@@ -1,5 +1,7 @@
 /** Suite context types and intent names for AIPA assisting apps. */
 
+import type { Chart } from '@finos/fdc3-context';
+
 export const INTENTS = {
   GetPortfolio: 'GetPortfolio',
   ViewHoldings: 'ViewHoldings',
@@ -15,6 +17,10 @@ export const INTENTS = {
   CreateOrderProposal: 'demo.CreateOrderProposal',
   ViewOrders: 'ViewOrders',
   SubmitOrders: 'demo.SubmitOrders',
+  /** fdc3.data — pull one advertised dataset from a data app */
+  GetAppData: 'GetAppData',
+  /** Standard FDC3 — seed / replace-in-place display context */
+  ViewData: 'ViewData',
 } as const;
 
 export const CONTEXT_TYPES = {
@@ -33,12 +39,39 @@ export const CONTEXT_TYPES = {
   portfolioRecommendation: 'demo.portfolioRecommendation',
   orderProposal: 'demo.orderProposal',
   priceHistory: 'demo.priceHistory',
+  /** fdc3.data extension */
+  advertiseDatasets: 'fdc3.data.advertiseDatasets',
+  appOffer: 'fdc3.data.appOffer',
+  dataRequest: 'fdc3.data.dataRequest',
+  tabularData: 'fdc3.data.tabularData',
 } as const;
 
 export type Fdc3Instrument = {
   type: 'fdc3.instrument';
   name?: string;
   id: { ticker: string; ISIN?: string };
+};
+
+/** Tabular payload from `fdc3.data.tabularData`. */
+export type TabularData = {
+  type: 'fdc3.data.tabularData';
+  instanceId?: string;
+  title?: string;
+  columns: string[];
+  rows: unknown[][];
+  /** Optional embedded standard FDC3 chart context for chart presentation. */
+  chart?: Chart;
+};
+
+/** Metadata-only advertisement from `fdc3.data.appOffer`. */
+export type AppOffer = {
+  type: 'fdc3.data.appOffer';
+  id: { dataId: string };
+  source: { appId: string; instanceId: string };
+  contextType: string;
+  schemaUrl: string;
+  displayMetadata: { name: string; color?: string; glyph?: string };
+  metadata?: Record<string, string>;
 };
 
 export type Fdc3Position = {
