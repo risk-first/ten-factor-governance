@@ -90,6 +90,15 @@ export function AgentUiApp() {
         async ctx => {
           if (ctx.type === CONTEXT_TYPES.agentDelta) {
             const delta = ctx as AgentDelta;
+            console.log(
+              'fdc3.ai:',
+              'context received on PrivateChannel',
+              CONTEXT_TYPES.agentDelta,
+              delta.kind,
+              delta.kind === 'text'
+                ? String(delta.payload?.delta ?? '').slice(0, 40)
+                : delta.payload?.message
+            );
             if (delta.kind === 'text') {
               const piece = String(delta.payload?.delta ?? '');
               setMessages(prev =>
@@ -109,6 +118,12 @@ export function AgentUiApp() {
 
           if (ctx.type === CONTEXT_TYPES.agentAnswer) {
             const answer = ctx as AgentAnswer;
+            console.log(
+              'fdc3.ai:',
+              'context received on PrivateChannel',
+              CONTEXT_TYPES.agentAnswer,
+              `${answer.markdown.length} chars`
+            );
             clearTurnTimeout();
             patchAssistant(assistantId, {
               text: answer.markdown,
@@ -122,6 +137,11 @@ export function AgentUiApp() {
             await clearChannel();
           }
         }
+      );
+      console.log(
+        'fdc3.ai:',
+        'handler added: PrivateChannel.addContextListener',
+        [CONTEXT_TYPES.agentDelta, CONTEXT_TYPES.agentAnswer]
       );
 
       channelListeners.current = [onChannel];
@@ -170,8 +190,21 @@ export function AgentUiApp() {
         );
         // Target a running instance when findInstances returns one; otherwise
         // appId alone lets the Desktop Agent launch (or resolve) the harness.
+        console.log('fdc3.ai:', 'intent raised', INTENTS.AskAgent, {
+          appId: target.appId,
+          instanceId: target.instanceId,
+          text: userText.slice(0, 80),
+        });
         const resolution = await fdc3.raiseIntent(INTENTS.AskAgent, query as never, target);
         const result = await resolution.getResult();
+        console.log(
+          'fdc3.ai:',
+          'intent result retrieved',
+          INTENTS.AskAgent,
+          result && typeof result === 'object' && 'broadcast' in result
+            ? `PrivateChannel id=${(result as Channel).id}`
+            : result
+        );
         if (result && typeof result === 'object' && 'broadcast' in result) {
           await bindChannel(result as Channel, assistantId);
           setStatus(drawer.current.statusEl, 'PrivateChannel connected');
@@ -197,10 +230,12 @@ export function AgentUiApp() {
     const channel = channelRef.current;
     if (!channel) return;
     clearTurnTimeout();
-    await channel.broadcast({
+    const cancelCtx = {
       type: CONTEXT_TYPES.agentCancel,
       reason: 'user_stopped',
-    } as never);
+    } as never;
+    console.log('fdc3.ai:', 'context sent on PrivateChannel', CONTEXT_TYPES.agentCancel, 'user_stopped');
+    await channel.broadcast(cancelCtx);
     setBusy(false);
     if (assistantIdRef.current) {
       patchAssistant(assistantIdRef.current, { streaming: false });

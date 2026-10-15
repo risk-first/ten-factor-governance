@@ -72,47 +72,6 @@ function isUiChannelListener(types: string[]): boolean {
   return types.includes(CONTEXT_TYPES.agentDelta) || types.includes(CONTEXT_TYPES.agentAnswer);
 }
 
-/**
- * Arm a waiter for the UI's multi-type PrivateChannel subscription
- * (FDC3 QuoteStream pattern). Must be registered before returning the channel.
- */
-async function armRemoteListenerWait(
-  channel: PrivateChannel,
-  log: (msg: string) => void,
-  timeoutMs = 8000
-): Promise<Promise<void>> {
-  let settled = false;
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  let eventListener: Listener | null = null;
-  let resolveReady!: () => void;
-  const ready = new Promise<void>(resolve => {
-    resolveReady = resolve;
-  });
-
-  const finish = () => {
-    if (settled) return;
-    settled = true;
-    if (timer) clearTimeout(timer);
-    void eventListener?.unsubscribe();
-    resolveReady();
-  };
-
-  timer = setTimeout(() => {
-    log('Timed out waiting for UI PrivateChannel listeners — streaming anyway');
-    finish();
-  }, timeoutMs);
-
-  eventListener = await channel.addEventListener('addContextListener', event => {
-    const types = eventContextTypes(event);
-    // Ignore our own cancel/query multi-type listener; wait for the UI's.
-    if (types.length > 0 && !isUiChannelListener(types)) return;
-    log(`UI attached PrivateChannel listener (${types.join(', ') || 'any'})`);
-    finish();
-  });
-
-  return ready;
-}
-
 async function streamQueryToChannel(
   query: AgentQuery,
   signal: AbortSignal,
@@ -249,6 +208,25 @@ export function AgentHarnessApp() {
   const broadcastForSession = useCallback(
     (id: string, channel: PrivateChannel) =>
       async (ctx: AgentDelta | AgentAnswer) => {
+        if (ctx.type === CONTEXT_TYPES.agentDelta) {
+          const delta = ctx as AgentDelta;
+          console.log(
+            'fdc3.ai:',
+            'context sent on PrivateChannel',
+            CONTEXT_TYPES.agentDelta,
+            delta.kind,
+            delta.kind === 'text'
+              ? String(delta.payload?.delta ?? '').slice(0, 40)
+              : delta.payload?.message
+          );
+        } else {
+          console.log(
+            'fdc3.ai:',
+            'context sent on PrivateChannel',
+            CONTEXT_TYPES.agentAnswer,
+            `${(ctx as AgentAnswer).markdown.length} chars`
+          );
+        }
         await channel.broadcast(ctx as Parameters<PrivateChannel['broadcast']>[0]);
         updateSession(id, s => ({ ...s, contextsSent: s.contextsSent + 1 }));
       },
@@ -266,11 +244,16 @@ export function AgentHarnessApp() {
 
       intentListener = await fdc3.addIntentListener(INTENTS.AskAgent, async (ctx, metadata) => {
         const query = (ctx ?? { type: CONTEXT_TYPES.agentQuery }) as AgentQuery;
+        console.log('fdc3.ai:', 'intent received', INTENTS.AskAgent, {
+          source: metadata?.source,
+          text: query.text?.slice(0, 80) || '(session open)',
+        });
         const channel = await fdc3.createPrivateChannel();
         const id = `ch-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
         const color = COLORS[colorIdx.current % COLORS.length]!;
         colorIdx.current += 1;
         const label = sourceLabel(metadata);
+        console.log('fdc3.ai:', 'PrivateChannel created', channel.id, 'session', id);
 
         const session: ChannelSession = {
           id,
@@ -298,6 +281,12 @@ export function AgentHarnessApp() {
           async c => {
             if (c.type === CONTEXT_TYPES.agentCancel) {
               const cancel = c as AgentCancel;
+              console.log(
+                'fdc3.ai:',
+                'context received on PrivateChannel',
+                CONTEXT_TYPES.agentCancel,
+                cancel.reason ?? 'unspecified'
+              );
               log(`agentCancel (${cancel.reason ?? 'unspecified'})`);
               const current = sessionsRef.current.find(s => s.id === id);
               current?.abort?.abort();
@@ -305,6 +294,12 @@ export function AgentHarnessApp() {
             }
             if (c.type === CONTEXT_TYPES.agentQuery) {
               const followUp = c as AgentQuery;
+              console.log(
+                'fdc3.ai:',
+                'context received on PrivateChannel',
+                CONTEXT_TYPES.agentQuery,
+                followUp.text?.slice(0, 80)
+              );
               if (!followUp.text) return;
               log(`follow-up agentQuery`);
               const current = sessionsRef.current.find(s => s.id === id);
@@ -321,14 +316,53 @@ export function AgentHarnessApp() {
             }
           }
         );
+        console.log(
+          'fdc3.ai:',
+          'handler added: PrivateChannel.addContextListener',
+          [...HARNESS_LISTENER_TYPES],
+          'channel',
+          channel.id
+        );
 
-        // Remote listener / disconnect tracking for the chip (after local add).
+        // Start the LLM stream once (when UI binds, or after a short fallback).
+        // Must not await this before returning the channel — UI getResult() has to
+        // resolve so the UI can addContextListener (FDC3 QuoteStream pattern).
+        let streamStarted = false;
+        const startStream = (reason: string) => {
+          if (streamStarted || !query.text) return;
+          streamStarted = true;
+          console.log('fdc3.ai:', 'starting stream', reason);
+          log(`Starting stream (${reason})`);
+          const ac = new AbortController();
+          updateSession(id, { abort: ac });
+          void (async () => {
+            try {
+              await broadcast({
+                type: CONTEXT_TYPES.agentDelta,
+                kind: 'status',
+                payload: { message: 'Harness received AskAgent', group: 'reasoning' },
+              } as AgentDelta);
+              await streamQueryToChannel(query, ac.signal, log, broadcast);
+            } catch (e) {
+              if (!ac.signal.aborted) log(e instanceof Error ? e.message : String(e));
+            }
+          })();
+        };
+
         const onAdd = await channel.addEventListener('addContextListener', event => {
           const types = eventContextTypes(event);
           if (types.length > 0 && !isUiChannelListener(types)) return;
           updateSession(id, s => ({ ...s, remoteListeners: s.remoteListeners + 1 }));
           log(`Remote listener added (${types.join(', ') || 'multi/any'})`);
+          startStream('UI addContextListener');
         });
+        console.log(
+          'fdc3.ai:',
+          'handler added: PrivateChannel.addEventListener',
+          'addContextListener',
+          'channel',
+          channel.id
+        );
         const onUnsub = await channel.addEventListener('unsubscribe', () => {
           updateSession(id, s => ({
             ...s,
@@ -347,35 +381,31 @@ export function AgentHarnessApp() {
           setActiveSessionId(prev => (prev !== id ? prev : next[next.length - 1]?.id ?? null));
         });
 
-        // Wait for the UI's multi-type listener before streaming.
-        const listenersReady = await armRemoteListenerWait(channel, log);
+        // Fallback if Sail never delivers addContextListener events to the harness.
+        const fallbackTimer = window.setTimeout(() => {
+          startStream('fallback timeout (no addContextListener event)');
+        }, 500);
 
         updateSession(id, s => ({
           ...s,
-          cleanup: [channelListener, onAdd, onUnsub, onDisconnect],
+          cleanup: [
+            channelListener,
+            onAdd,
+            onUnsub,
+            onDisconnect,
+            {
+              unsubscribe: async () => {
+                window.clearTimeout(fallbackTimer);
+              },
+            },
+          ],
         }));
 
-        if (query.text) {
-          const ac = new AbortController();
-          updateSession(id, { abort: ac });
-          void (async () => {
-            try {
-              await listenersReady;
-              if (ac.signal.aborted) return;
-              await broadcast({
-                type: CONTEXT_TYPES.agentDelta,
-                kind: 'status',
-                payload: { message: 'Harness received AskAgent', group: 'reasoning' },
-              } as AgentDelta);
-              await streamQueryToChannel(query, ac.signal, log, broadcast);
-            } catch (e) {
-              if (!ac.signal.aborted) log(e instanceof Error ? e.message : String(e));
-            }
-          })();
-        }
-
+        // Return the PrivateChannel immediately so UI getResult() can resolve and bind.
+        console.log('fdc3.ai:', 'intent result returned', INTENTS.AskAgent, `PrivateChannel id=${channel.id}`);
         return channel;
       });
+      console.log('fdc3.ai:', 'handler added: DesktopAgent.addIntentListener', INTENTS.AskAgent);
 
       setReady(true);
       setStatus(drawer.current.statusEl, 'Listening for AskAgent (fdc3.ai)');
