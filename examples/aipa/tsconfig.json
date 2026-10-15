@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
@@ -11,5 +12,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": ["main.ts", "common/**/*.ts", "server-apps/**/*.ts", "directory/**/*.ts"]
+  "include": [
+    "main.ts",
+    "common/**/*.ts",
+    "common/**/*.tsx",
+    "server-apps/**/*.ts",
+    "server-apps/**/*.tsx",
+    "directory/**/*.ts",
+    "directory/**/*.tsx"
+  ],
+  "exclude": ["server-apps/**/vendor/**", "server-apps/**/.vite/**"]
 }

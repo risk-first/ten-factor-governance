@@ -1,0 +1,46 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-agent-harness",
+      "name": "AIPA Agent Harness",
+      "title": "AIPA Agent Harness",
+      "description": "Agent runtime derived from OpenBB agent-rita. Handles AskAgent, returns a PrivateChannel, and streams fdc3.ai.agentDelta / agentAnswer. LLM via /api/query.",
+      "categories": ["AIPA", "Agent"],
+      "icons": [{ "src": "http://localhost:4107/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4107/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "AskAgent": {
+              "displayName": "Ask Agent",
+              "contexts": ["fdc3.ai.agentQuery"]
+            }
+          },
+          "raises": {
+            "demo.GetPortfolioRisk": {
+              "displayName": "Get Portfolio Risk",
+              "contexts": ["fdc3.portfolio"]
+            },
+            "demo.GetResearch": {
+              "displayName": "Get Research",
+              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
+            },
+            "demo.CreateOrderProposal": {
+              "displayName": "Create Order Proposal",
+              "contexts": ["demo.portfolioRecommendation"]
+            },
+            "demo.SubmitOrders": {
+              "displayName": "Submit Orders",
+              "contexts": ["fdc3.orderList"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

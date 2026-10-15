@@ -1,0 +1,28 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-agent-ui",
+      "name": "AIPA Agent UI",
+      "title": "AIPA Agent UI",
+      "description": "Chat front end for the AI Portfolio Assistant. Raises AskAgent and streams replies over an fdc3.ai PrivateChannel from the Agent harness.",
+      "categories": ["AIPA", "Agent"],
+      "icons": [{ "src": "http://localhost:4106/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4106/" },
+      "interop": {
+        "intents": {
+          "raises": {
+            "AskAgent": {
+              "displayName": "Ask Agent",
+              "contexts": ["fdc3.ai.agentQuery"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

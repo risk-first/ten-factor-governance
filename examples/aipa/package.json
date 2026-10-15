@@ -17,11 +17,15 @@
     "start": "tsx main.ts"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.75",
+    "@ai-sdk/openai": "^3.0.128",
     "@finos/fdc3": "3.0.0-beta.1",
     "@finos/fdc3-context": "3.0.0-beta.1",
     "@finos/fdc3-security": "3.0.0-beta.1",
+    "@openrouter/ai-sdk-provider": "^2.10.0",
     "@railpath/finance-toolkit": "^0.5.4",
     "ag-grid-community": "^36.2.0",
+    "ai": "^6.0.307",
     "dotenv": "^17.4.2",
     "echarts": "^6.1.0",
     "express": "^5.2.1",
@@ -29,6 +33,7 @@
     "jose": "^6.2.10",
     "json-canonicalize": "2.0.0",
     "lightweight-charts": "^5.2.1",
+    "ollama-ai-provider-v2": "^3.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tsx": "^4.23.13",

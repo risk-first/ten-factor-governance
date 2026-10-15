@@ -21,6 +21,8 @@ export const INTENTS = {
   GetAppData: 'GetAppData',
   /** Standard FDC3 — seed / replace-in-place display context */
   ViewData: 'ViewData',
+  /** fdc3.ai — Agent UI → Agent harness; IntentResult is a PrivateChannel */
+  AskAgent: 'AskAgent',
 } as const;
 
 export const CONTEXT_TYPES = {
@@ -44,7 +46,37 @@ export const CONTEXT_TYPES = {
   appOffer: 'fdc3.data.appOffer',
   dataRequest: 'fdc3.data.dataRequest',
   tabularData: 'fdc3.data.tabularData',
+  /** fdc3.ai extension — UI ↔ harness PrivateChannel */
+  agentQuery: 'fdc3.ai.agentQuery',
+  agentDelta: 'fdc3.ai.agentDelta',
+  agentAnswer: 'fdc3.ai.agentAnswer',
+  agentCancel: 'fdc3.ai.agentCancel',
 } as const;
+
+export type AgentQuery = {
+  type: 'fdc3.ai.agentQuery';
+  text?: string | null;
+  model?: string;
+};
+
+export type AgentDelta = {
+  type: 'fdc3.ai.agentDelta';
+  kind: 'text' | 'status' | 'artifact' | 'citation' | 'suggestion';
+  payload: Record<string, unknown>;
+};
+
+export type AgentAnswer = {
+  type: 'fdc3.ai.agentAnswer';
+  markdown: string;
+  citations?: Array<Record<string, unknown>>;
+  artifacts?: Array<Record<string, unknown>>;
+  suggestions?: string[];
+};
+
+export type AgentCancel = {
+  type: 'fdc3.ai.agentCancel';
+  reason?: string;
+};
 
 export type Fdc3Instrument = {
   type: 'fdc3.instrument';

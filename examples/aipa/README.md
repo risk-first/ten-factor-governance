@@ -3,7 +3,8 @@
 Runnable FDC3 specialist apps for the [AI Portfolio Assistant](../../docs/artifacts/finos/ai-portfolio-assistant/)
 example. Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
 
-AI Portfolio Assistant and Governance Runtime apps are **out of scope** here.
+Governance Runtime is **out of scope** here. The Agent UI + harness cover the
+assistant chat path via [`fdc3.ai`](./fdc3-extensions/fdc3.ai/).
 
 ## Apps
 
@@ -12,9 +13,11 @@ AI Portfolio Assistant and Governance Runtime apps are **out of scope** here.
 | Portfolio | 4100 | `GetPortfolio`, `ViewHoldings` | Broadcasts `fdc3.portfolio` / position / instrument |
 | Risk | 4101 | `demo.GetPortfolioRisk`, `demo.RunStressScenario`, `ViewAnalysis` | finance-toolkit metrics; pulls OHLC via `demo.GetPriceHistory`; signs results; FRED for rf/stress |
 | Research | 4102 | `demo.GetResearch`, `ViewInstrument`, `ViewNews`, `ViewResearch` | Signs `demo.researchBundle`; EDGAR + Finnhub |
-| Market Data | 4103 | `ViewChart`, `demo.GetPriceHistory` | Finnhub quotes / yahoo-finance2 charts; returns `demo.priceHistory` (no FDC3 signing) |
+| Market Data | 4103 | `ViewChart`, `demo.GetPriceHistory`, `GetAppData`, `ViewData` | Finnhub / yahoo-finance2; `fdc3.data` data app |
 | Order Entry | 4104 | `demo.CreateOrderProposal`, `ViewOrders` | Signs `demo.orderProposal`; blotter |
 | Execution | 4105 | `demo.SubmitOrders` | Signs `fdc3.transactionResult` |
+| Agent UI | 4106 | raises `AskAgent` | Chat front end; `fdc3.ai` PrivateChannel consumer |
+| Agent harness | 4107 | listens `AskAgent` | Derived from OpenBB agent-rita; streams `fdc3.ai.*`; LLM via `/api/query` |
 | App Directory | 4099 | — | Combined AppD JSON |
 
 ## Quick start
