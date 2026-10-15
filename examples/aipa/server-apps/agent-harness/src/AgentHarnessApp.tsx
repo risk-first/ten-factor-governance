@@ -13,6 +13,8 @@ import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 
 type LogLine = { t: number; msg: string };
 
+type ChatTurn = { role: 'user' | 'assistant'; content: string };
+
 type ChannelSession = {
   id: string;
   channel: PrivateChannel;
@@ -20,6 +22,8 @@ type ChannelSession = {
   color: string;
   contextsSent: number;
   remoteListeners: number;
+  /** Prior turns for this PrivateChannel (sent to the LLM on follow-ups). */
+  history: ChatTurn[];
   lines: LogLine[];
   abort: AbortController | null;
   /** Local FDC3 listeners to unsubscribe on disconnect. */
@@ -74,14 +78,22 @@ function isUiChannelListener(types: string[]): boolean {
 
 async function streamQueryToChannel(
   query: AgentQuery,
+  priorHistory: ChatTurn[],
   signal: AbortSignal,
   log: (msg: string) => void,
   broadcast: (ctx: AgentDelta | AgentAnswer) => Promise<void>
-): Promise<void> {
+): Promise<ChatTurn[] | null> {
+  const userText = (query.text ?? '').trim();
+  const messages: ChatTurn[] = [
+    ...priorHistory,
+    ...(userText ? [{ role: 'user' as const, content: userText }] : []),
+  ];
+  log(`LLM turn (${messages.length} msg${messages.length === 1 ? '' : 's'})`);
+
   const res = await fetch('/api/query', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: query.text ?? '', model: query.model }),
+    body: JSON.stringify({ messages, text: userText, model: query.model }),
     signal,
   });
   if (!res.ok || !res.body) {
@@ -141,13 +153,19 @@ async function streamQueryToChannel(
   }
   await flushEvents(decoder.decode());
 
+  if (signal.aborted) return null;
+
+  const answerMarkdown = markdown.trim() || '_No response._';
   const answer: AgentAnswer = {
     type: CONTEXT_TYPES.agentAnswer,
-    markdown: markdown.trim() || '_No response._',
+    markdown: answerMarkdown,
     ...(suggestions ? { suggestions } : {}),
   };
   await broadcast(answer);
   log('agentAnswer sent');
+
+  if (!userText) return priorHistory;
+  return [...messages, { role: 'assistant', content: answerMarkdown }];
 }
 
 export function AgentHarnessApp() {
@@ -262,6 +280,7 @@ export function AgentHarnessApp() {
           color,
           contextsSent: 0,
           remoteListeners: 0,
+          history: [],
           lines: [],
           abort: null,
           cleanup: [],
@@ -304,10 +323,18 @@ export function AgentHarnessApp() {
               log(`follow-up agentQuery`);
               const current = sessionsRef.current.find(s => s.id === id);
               current?.abort?.abort();
+              const prior = current?.history ?? [];
               const ac = new AbortController();
               updateSession(id, { abort: ac });
               try {
-                await streamQueryToChannel(followUp, ac.signal, log, broadcast);
+                const nextHistory = await streamQueryToChannel(
+                  followUp,
+                  prior,
+                  ac.signal,
+                  log,
+                  broadcast
+                );
+                if (nextHistory) updateSession(id, { history: nextHistory });
               } catch (e) {
                 if (!ac.signal.aborted) {
                   log(e instanceof Error ? e.message : String(e));
@@ -333,6 +360,7 @@ export function AgentHarnessApp() {
           streamStarted = true;
           console.log('fdc3.ai:', 'starting stream', reason);
           log(`Starting stream (${reason})`);
+          const prior = sessionsRef.current.find(s => s.id === id)?.history ?? [];
           const ac = new AbortController();
           updateSession(id, { abort: ac });
           void (async () => {
@@ -342,7 +370,14 @@ export function AgentHarnessApp() {
                 kind: 'status',
                 payload: { message: 'Harness received AskAgent', group: 'reasoning' },
               } as AgentDelta);
-              await streamQueryToChannel(query, ac.signal, log, broadcast);
+              const nextHistory = await streamQueryToChannel(
+                query,
+                prior,
+                ac.signal,
+                log,
+                broadcast
+              );
+              if (nextHistory) updateSession(id, { history: nextHistory });
             } catch (e) {
               if (!ac.signal.aborted) log(e instanceof Error ? e.message : String(e));
             }

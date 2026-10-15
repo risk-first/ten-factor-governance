@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { AppIdentifier, Channel, DesktopAgent, Listener } from '@finos/fdc3';
+import type { AppIdentifier, DesktopAgent, Listener, PrivateChannel } from '@finos/fdc3';
 import { connectAgent, setStatus } from '../../../common/src/fdc3/agent.ts';
 import {
   CONTEXT_TYPES,
@@ -38,13 +38,13 @@ export function AgentUiApp() {
     {
       id: 'welcome',
       role: 'assistant',
-      text: 'AI Portfolio Assistant — ask about portfolio risk, research, or recommendations. Turns go to the Agent harness over `fdc3.ai` (AskAgent → PrivateChannel).',
+      text: 'AI Portfolio Assistant — ask about portfolio risk, research, or recommendations. First turn opens AskAgent → PrivateChannel; follow-ups reuse that channel.',
     },
   ]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const fdc3Ref = useRef<DesktopAgent | null>(null);
-  const channelRef = useRef<Channel | null>(null);
+  const channelRef = useRef<PrivateChannel | null>(null);
   const channelListeners = useRef<Listener[]>([]);
   const assistantIdRef = useRef<string | null>(null);
   const turnTimeoutRef = useRef<number | null>(null);
@@ -81,13 +81,14 @@ export function AgentUiApp() {
   }, []);
 
   const bindChannel = useCallback(
-    async (channel: Channel, assistantId: string) => {
+    async (channel: PrivateChannel) => {
       await clearChannel();
       channelRef.current = channel;
 
       const onChannel = await channel.addContextListener(
         [CONTEXT_TYPES.agentDelta, CONTEXT_TYPES.agentAnswer],
         async ctx => {
+          const assistantId = assistantIdRef.current;
           if (ctx.type === CONTEXT_TYPES.agentDelta) {
             const delta = ctx as AgentDelta;
             console.log(
@@ -100,6 +101,7 @@ export function AgentUiApp() {
                 : delta.payload?.message
             );
             if (delta.kind === 'text') {
+              if (!assistantId) return;
               const piece = String(delta.payload?.delta ?? '');
               setMessages(prev =>
                 prev.map(m =>
@@ -125,16 +127,17 @@ export function AgentUiApp() {
               `${answer.markdown.length} chars`
             );
             clearTurnTimeout();
-            patchAssistant(assistantId, {
-              text: answer.markdown,
-              streaming: false,
-              suggestions: answer.suggestions,
-            });
+            if (assistantId) {
+              patchAssistant(assistantId, {
+                text: answer.markdown,
+                streaming: false,
+                suggestions: answer.suggestions,
+              });
+            }
             setBusy(false);
             setStatus(drawer.current.statusEl, 'Turn complete');
             assistantIdRef.current = null;
-            // One AskAgent → one PrivateChannel per turn (next send raises again).
-            await clearChannel();
+            // Keep the PrivateChannel for follow-up turns (broadcast agentQuery).
           }
         }
       );
@@ -144,7 +147,13 @@ export function AgentUiApp() {
         [CONTEXT_TYPES.agentDelta, CONTEXT_TYPES.agentAnswer]
       );
 
-      channelListeners.current = [onChannel];
+      const onDisconnect = await channel.addEventListener('disconnect', () => {
+        console.log('fdc3.ai:', 'PrivateChannel disconnected');
+        setStatus(drawer.current.statusEl, 'PrivateChannel disconnected');
+        void clearChannel();
+      });
+
+      channelListeners.current = [onChannel, onDisconnect];
     },
     [append, clearChannel, clearTurnTimeout, patchAssistant]
   );
@@ -161,7 +170,11 @@ export function AgentUiApp() {
       assistantIdRef.current = assistantId;
       append({ id: assistantId, role: 'assistant', text: '', streaming: true });
       setBusy(true);
-      setStatus(drawer.current.statusEl, 'Raising AskAgent…');
+
+      const query: AgentQuery = {
+        type: CONTEXT_TYPES.agentQuery,
+        text: userText,
+      };
 
       clearTurnTimeout();
       turnTimeoutRef.current = window.setTimeout(() => {
@@ -171,16 +184,26 @@ export function AgentUiApp() {
           streaming: false,
         });
         setBusy(false);
-        setStatus(drawer.current.statusEl, 'AskAgent timed out');
-        void clearChannel();
+        setStatus(drawer.current.statusEl, 'Turn timed out');
+        assistantIdRef.current = null;
       }, 60_000);
 
       try {
-        const query: AgentQuery = {
-          type: CONTEXT_TYPES.agentQuery,
-          text: userText,
-        };
+        // Reuse the open PrivateChannel for follow-ups; AskAgent only opens the session.
+        const existing = channelRef.current;
+        if (existing) {
+          setStatus(drawer.current.statusEl, 'Follow-up on PrivateChannel…');
+          console.log(
+            'fdc3.ai:',
+            'context sent on PrivateChannel',
+            CONTEXT_TYPES.agentQuery,
+            userText.slice(0, 80)
+          );
+          await existing.broadcast(query as never);
+          return;
+        }
 
+        setStatus(drawer.current.statusEl, 'Raising AskAgent…');
         const target = await resolveHarnessTarget(fdc3);
         setStatus(
           drawer.current.statusEl,
@@ -202,11 +225,11 @@ export function AgentUiApp() {
           'intent result retrieved',
           INTENTS.AskAgent,
           result && typeof result === 'object' && 'broadcast' in result
-            ? `PrivateChannel id=${(result as Channel).id}`
+            ? `PrivateChannel id=${(result as PrivateChannel).id}`
             : result
         );
         if (result && typeof result === 'object' && 'broadcast' in result) {
-          await bindChannel(result as Channel, assistantId);
+          await bindChannel(result as PrivateChannel);
           setStatus(drawer.current.statusEl, 'PrivateChannel connected');
         } else {
           throw new Error('AskAgent did not return a PrivateChannel');
@@ -220,6 +243,7 @@ export function AgentUiApp() {
         });
         setBusy(false);
         setStatus(drawer.current.statusEl, msg);
+        assistantIdRef.current = null;
         await clearChannel();
       }
     },
@@ -239,10 +263,11 @@ export function AgentUiApp() {
     setBusy(false);
     if (assistantIdRef.current) {
       patchAssistant(assistantIdRef.current, { streaming: false });
+      assistantIdRef.current = null;
     }
+    // Keep the PrivateChannel so the next message is a follow-up, not a new AskAgent.
     setStatus(drawer.current.statusEl, 'Cancelled');
-    await clearChannel();
-  }, [clearChannel, clearTurnTimeout, patchAssistant]);
+  }, [clearTurnTimeout, patchAssistant]);
 
   useEffect(() => {
     let portfolioListener: Listener | null = null;

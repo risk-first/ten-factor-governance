@@ -1,6 +1,26 @@
 import type { Application } from 'express';
 import type { Server } from 'http';
-import { runHarnessTurn } from './llm.js';
+import { runHarnessTurn, type ChatMessage } from './llm.js';
+
+function parseMessages(body: {
+  text?: string;
+  messages?: unknown;
+}): ChatMessage[] {
+  if (Array.isArray(body.messages)) {
+    const out: ChatMessage[] = [];
+    for (const m of body.messages) {
+      if (!m || typeof m !== 'object') continue;
+      const role = (m as { role?: unknown }).role;
+      const content = (m as { content?: unknown }).content;
+      if ((role === 'user' || role === 'assistant') && typeof content === 'string') {
+        out.push({ role, content });
+      }
+    }
+    if (out.length) return out;
+  }
+  const text = typeof body.text === 'string' ? body.text : '';
+  return [{ role: 'user', content: text }];
+}
 
 /**
  * HTTP surface for the FDC3 Agent harness browser app.
@@ -13,8 +33,8 @@ export default function backend(
   _opts: { port: number; appRoot: string; packageRoot: string }
 ): void {
   app.post('/api/query', async (req, res) => {
-    const body = (req.body ?? {}) as { text?: string; model?: string };
-    const text = typeof body.text === 'string' ? body.text : '';
+    const body = (req.body ?? {}) as { text?: string; model?: string; messages?: unknown };
+    const messages = parseMessages(body);
     const model = typeof body.model === 'string' ? body.model : undefined;
 
     res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
@@ -35,7 +55,7 @@ export default function backend(
     };
 
     try {
-      await runHarnessTurn(text, model, {
+      await runHarnessTurn(messages, model, {
         signal: ac.signal,
         onStatus: message => send('status', { message }),
         onText: delta => send('text', { delta }),

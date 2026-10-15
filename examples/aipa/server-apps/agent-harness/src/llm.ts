@@ -13,7 +13,10 @@ const SYSTEM_PROMPT =
   'You help analyse portfolios, explain risk and research, and draft recommendations. ' +
   'Be concise and precise with numbers. Never claim to have executed trades. ' +
   'If portfolio or market data is not in the prompt, say what FDC3 intent you would raise ' +
-  '(e.g. demo.GetPortfolioRisk, demo.GetResearch) rather than inventing figures.';
+  '(e.g. demo.GetPortfolioRisk, demo.GetResearch) rather than inventing figures. ' +
+  'This is a multi-turn chat: use earlier messages in the conversation when the user refers to them.';
+
+export type ChatMessage = { role: 'user' | 'assistant'; content: string };
 
 function resolveModel(modelHint?: string): LanguageModel | null {
   const preferred = (modelHint || process.env.DEFAULT_MODEL || '').trim();
@@ -71,19 +74,27 @@ export type QueryStreamHandlers = {
   signal?: AbortSignal;
 };
 
-/** Stream an assistant reply for one user utterance. */
+function lastUserText(messages: ChatMessage[]): string {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i]?.role === 'user') return messages[i]!.content.trim();
+  }
+  return '';
+}
+
+/** Stream an assistant reply for one turn, given full conversation messages. */
 export async function runHarnessTurn(
-  text: string,
+  messages: ChatMessage[],
   modelHint: string | undefined,
   handlers: QueryStreamHandlers
 ): Promise<void> {
   const model = resolveModel(modelHint);
+  const latest = lastUserText(messages) || 'Hello';
   if (!model) {
     const fallback =
       'No LLM provider is configured on the Agent harness.\n\n' +
       'Set `OPENAI_API_KEY`, `OPENROUTER_API_KEY`, `GROQ_API_KEY`, or `OLLAMA_BASE_URL` ' +
       'in the AIPA `.env` (see `server-apps/agent-harness/.env.example`).\n\n' +
-      `You asked: “${text.trim() || '(empty)'}”.`;
+      `You asked: “${latest}”.`;
     handlers.onStatus('Using offline fallback (no provider keys)');
     for (const chunk of fallback.match(/.{1,24}/gs) ?? [fallback]) {
       if (handlers.signal?.aborted) break;
@@ -103,7 +114,10 @@ export async function runHarnessTurn(
     const result = streamText({
       model,
       system: SYSTEM_PROMPT,
-      prompt: text.trim() || 'Hello',
+      messages:
+        messages.length > 0
+          ? messages.map(m => ({ role: m.role, content: m.content }))
+          : [{ role: 'user' as const, content: latest }],
       abortSignal: handlers.signal,
     });
     for await (const delta of result.textStream) {

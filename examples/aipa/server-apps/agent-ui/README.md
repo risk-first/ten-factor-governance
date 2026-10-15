@@ -2,9 +2,10 @@
 
 FDC3 **Agent UI** for the AI Portfolio Assistant demo.
 
-Raises `AskAgent` with `fdc3.ai.agentQuery` at `aipa-agent-harness`, receives a
-**PrivateChannel**, and renders streaming `fdc3.ai.agentDelta` / final
-`fdc3.ai.agentAnswer`. Sends `fdc3.ai.agentCancel` on Stop.
+Raises `AskAgent` with `fdc3.ai.agentQuery` at `aipa-agent-harness` once to open a
+**PrivateChannel**, then reuses that channel for follow-up turns (broadcast
+`fdc3.ai.agentQuery`). Renders streaming `fdc3.ai.agentDelta` / final
+`fdc3.ai.agentAnswer`. Sends `fdc3.ai.agentCancel` on Stop (channel stays open).
 
 Also listens for user-channel `fdc3.portfolio` so the chat can align with the
 Portfolio app (demo step 1 — observe).

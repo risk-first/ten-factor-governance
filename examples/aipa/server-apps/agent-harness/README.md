@@ -7,7 +7,10 @@ FDC3 **Agent harness** for the AI Portfolio Assistant.
 | `src/llm.ts` + `src/backend.ts` | Node LLM proxy (`POST /api/query` SSE). |
 | `src/AgentHarnessApp.tsx` | FDC3 app: `AskAgent` → `createPrivateChannel()`, stream `fdc3.ai.*` to the Agent UI. |
 
-UI ↔ harness conversation is only `fdc3.ai` on a per-turn PrivateChannel. Tool /
+UI ↔ harness conversation is only `fdc3.ai` on a session PrivateChannel (one
+`AskAgent` open; follow-up `agentQuery` on the same channel). The harness keeps
+per-channel chat history and sends the full message list to `/api/query` so the
+LLM sees prior turns. Tool /
 data-app calls (risk, research, …) are raised separately by the harness via the
 Desktop Agent when wired for the demo.
 
