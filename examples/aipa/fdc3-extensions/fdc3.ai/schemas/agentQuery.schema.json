@@ -20,6 +20,12 @@
           "type": "string",
           "title": "Model",
           "description": "Optional model id hint (e.g. openai:gpt-4o)."
+        },
+        "fileIds": {
+          "type": "array",
+          "title": "File IDs",
+          "description": "References to `fdc3.data.file` ids already delivered on this session (PrivateChannel). Omit to use all staged session files. Do not embed file bytes here.",
+          "items": { "type": "string" }
         }
       },
       "required": ["type"]
@@ -31,6 +37,11 @@
       "type": "fdc3.ai.agentQuery",
       "text": "Compare AAPL vs MSFT revenue",
       "model": "openai:gpt-4o"
+    },
+    {
+      "type": "fdc3.ai.agentQuery",
+      "text": "Summarise the attached memo",
+      "fileIds": ["file-1"]
     }
   ]
 }

@@ -16,8 +16,10 @@ assistant chat path via [`fdc3.ai`](./fdc3-extensions/fdc3.ai/).
 | Market Data | 4103 | `ViewChart`, `demo.GetPriceHistory`, `GetAppData`, `ViewData` | Finnhub / yahoo-finance2; `fdc3.data` data app |
 | Order Entry | 4104 | `demo.CreateOrderProposal`, `ViewOrders` | Signs `demo.orderProposal`; blotter |
 | Execution | 4105 | `demo.SubmitOrders` | Signs `fdc3.transactionResult` |
-| Agent UI | 4106 | raises `AskAgent` | Chat front end; `fdc3.ai` PrivateChannel consumer |
-| Agent harness | 4107 | listens `AskAgent` | Derived from OpenBB agent-rita; streams `fdc3.ai.*`; LLM via `/api/query` |
+| Agent UI | 4106 | raises `AskAgent` | Chat front end; `fdc3.ai` PrivateChannel; file attach (`fdc3.data.file`) |
+| Agent harness | 4107 | listens `AskAgent` | Rita-derived agent loop; generic FDC3 tools; streams `fdc3.ai.*`; LLM via `/api/query` |
+| Markdown Viewer | 4108 | `ViewData` | Renders `fdc3.data.markdown` (open / replace-in-place) |
+| Discoverability | 4109 | — | Responder on `fdc3.discoverability` (apps / intents / context types) |
 | App Directory | 4099 | — | Combined AppD JSON |
 
 ## Quick start

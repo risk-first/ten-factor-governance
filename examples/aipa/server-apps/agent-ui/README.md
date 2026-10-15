@@ -2,20 +2,13 @@
 
 FDC3 **Agent UI** for the AI Portfolio Assistant demo.
 
-Raises `AskAgent` with `fdc3.ai.agentQuery` at `aipa-agent-harness` once to open a
-**PrivateChannel**, then reuses that channel for follow-up turns (broadcast
-`fdc3.ai.agentQuery`). Renders streaming `fdc3.ai.agentDelta` / final
-`fdc3.ai.agentAnswer`. Sends `fdc3.ai.agentCancel` on Stop (channel stays open).
-
-Also listens for user-channel `fdc3.portfolio` so the chat can align with the
-Portfolio app (demo step 1 — observe).
+- Opens `AskAgent` → session **PrivateChannel**; follow-ups reuse the channel.
+- Attach files → broadcast `fdc3.data.file`, then `fdc3.ai.agentQuery` with `fileIds`.
+- Renders streaming markdown, status, citations, HTML artifacts, and suggestion chips.
+- Observes user-channel `fdc3.portfolio`.
 
 ## Provenance
 
-Chat UX and turn flow were inspired by
-[OpenBB Agent Rita](https://github.com/OpenBB-finance/agents)
-(`repos/agents/agent-rita`). The implementation here is AIPA-specific: FDC3
-`fdc3.ai` over a PrivateChannel to the Agent harness (no OpenBB Workspace SSE /
-widget bridge). Rita itself is not vendored in this tree.
+Chat UX inspired by [OpenBB Agent Rita](https://github.com/OpenBB-finance/agents). Wire protocol is AIPA `fdc3.ai` / `fdc3.data`.
 
 See [`../../fdc3-extensions/fdc3.ai/README.md`](../../fdc3-extensions/fdc3.ai/README.md).

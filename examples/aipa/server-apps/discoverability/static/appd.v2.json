@@ -1,0 +1,18 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-discoverability",
+      "name": "AIPA Discoverability",
+      "title": "AIPA Discoverability",
+      "description": "Responds on app channel fdc3.discoverability with App Directory, intent, and context-type catalogs.",
+      "categories": ["AIPA", "Discovery"],
+      "icons": [{ "src": "http://localhost:4109/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4109/" },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

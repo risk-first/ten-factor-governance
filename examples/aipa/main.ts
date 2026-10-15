@@ -143,7 +143,7 @@ function writeGeneratedAppDirectory(combined: { applications: unknown[]; message
 async function startApp(appName: string, appRoot: string, port: number) {
   const normalizedAppRoot = fs.realpathSync(appRoot);
   const app = express();
-  app.use(express.json({ limit: '2mb' }));
+  app.use(express.json({ limit: '32mb' }));
 
   const backendPath = resolveWithinRoot(normalizedAppRoot, 'src', 'backend.ts');
   const server = http.createServer(app);

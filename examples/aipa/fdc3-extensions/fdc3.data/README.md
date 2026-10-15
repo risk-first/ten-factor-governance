@@ -17,7 +17,7 @@ A minimal data app implements four behaviours:
 
 ## Discovering shareable datasets (user channel)
 
-A consumer broadcasts `fdc3.data.advertiseDatasets` on the **user channel**. Joined apps that have shareable datasets each reply with one or more `fdc3.data.appOffer` messages (metadata only). The consumer then raises a targeted `GetAppData` for a chosen offer. Discovery is about **bits of data**, not apps.
+A consumer broadcasts `fdc3.data.advertiseDatasets` on the **user channel**. Joined apps that have shareable datasets each reply with one or more `fdc3.data.appOffer` messages (metadata only). The consumer then raises a targeted `GetAppData` for a chosen offer. Discovery is about **bits of data**, not apps. For App Directory / intent / context-type catalogs, see [`fdc3.discoverability`](../fdc3.discoverability/).
 
 ```mermaid
 sequenceDiagram
@@ -54,6 +54,8 @@ sequenceDiagram
 | [`fdc3.data.appOffer`](schemas/appOffer.schema.json) | Data app | User channel | `id.dataId`, `source` (`appId` + `instanceId`), `contextType`, `schemaUrl`, `displayMetadata`, optional Dublin Core `metadata`. |
 | [`fdc3.data.dataRequest`](schemas/dataRequest.schema.json) | Consumer | Data app | `{ type, id: { dataId } }` — one dataset per raise (IntentResult is a single context). Instance targeting is the `raiseIntent` target, not fields on this context. |
 | [`fdc3.data.tabularData`](schemas/tabularData.schema.json) | Data app / host | Consumer / data app | Optional helper type: `columns` + `rows`, optional embedded `fdc3.chart`. Used when an offer’s `contextType` is tabular — not required for every `GetAppData` / `ViewData`. |
+| [`fdc3.data.markdown`](schemas/markdown.schema.json) | Host / agent | Markdown viewer / data app | Helper type: `markdown` body + optional `title`. Used with `fdc3.open` / `ViewData` (distinct from chat `fdc3.ai.agentAnswer.markdown`). |
+| [`fdc3.data.file`](schemas/file.schema.json) | Agent UI / host | Harness / data apps | File bytes (`content_b64` or `url`) identified by `id.fileId`; referenced from `fdc3.ai.agentQuery.fileIds`. |
 
 Example offer → request pairing:
 
@@ -127,3 +129,5 @@ JSON Schema definitions (draft-07), same composition pattern as [`@finos/fdc3` c
 | [`schemas/appOffer.schema.json`](schemas/appOffer.schema.json) | `fdc3.data.appOffer` | Requires `id.dataId`, `source`, `contextType`, `schemaUrl`, `displayMetadata` |
 | [`schemas/dataRequest.schema.json`](schemas/dataRequest.schema.json) | `fdc3.data.dataRequest` | Requires `id.dataId` only |
 | [`schemas/tabularData.schema.json`](schemas/tabularData.schema.json) | `fdc3.data.tabularData` | Helper payload: `columns` / `rows`, optional `chart` (`fdc3.chart`) |
+| [`schemas/markdown.schema.json`](schemas/markdown.schema.json) | `fdc3.data.markdown` | Helper payload: `markdown` + optional `title` / `instanceId` |
+| [`schemas/file.schema.json`](schemas/file.schema.json) | `fdc3.data.file` | Helper payload: `id.fileId`, filename, format, `content_b64` \| `url` |

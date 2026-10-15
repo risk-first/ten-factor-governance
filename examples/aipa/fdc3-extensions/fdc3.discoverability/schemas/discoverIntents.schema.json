@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.discoverIntents.schema.json",
+  "type": "object",
+  "title": "Discover Intents",
+  "description": "Broadcast on app channel `fdc3.discoverability` to ask which intents the caller may raise. Reply is `fdc3.discoverability.intentList`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.discoverIntents"
+        }
+      },
+      "required": ["type"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.discoverIntents"
+    }
+  ]
+}

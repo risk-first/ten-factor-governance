@@ -1,20 +1,16 @@
 /**
- * Node-side LLM helpers adapted from OpenBB agent-rita (`src/rita/lib/providers.ts`).
- * Provider selection mirrors Rita; the Workspace SSE / widget bridge is not used here.
+ * Node-side LLM helpers adapted from OpenBB agent-rita (`lib/providers.ts`, MIT).
+ * Agent loop + FDC3 deferred tools; Workspace SSE / widget bridge not used.
  */
 import { createGroq } from '@ai-sdk/groq';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { streamText, type LanguageModel } from 'ai';
+import { type LanguageModel, type ModelMessage } from 'ai';
 import { createOllama } from 'ollama-ai-provider-v2';
-
-const SYSTEM_PROMPT =
-  'You are the AI Portfolio Assistant (AIPA) harness, derived from OpenBB Agent Rita. ' +
-  'You help analyse portfolios, explain risk and research, and draft recommendations. ' +
-  'Be concise and precise with numbers. Never claim to have executed trades. ' +
-  'If portfolio or market data is not in the prompt, say what FDC3 intent you would raise ' +
-  '(e.g. demo.GetPortfolioRisk, demo.GetResearch) rather than inventing figures. ' +
-  'This is a multi-turn chat: use earlier messages in the conversation when the user refers to them.';
+import { runAgentLoop } from './agent/loop.js';
+import { stageFile, type FileInput } from './agent/documents.js';
+import { getSession, saveSession } from './agent/session-store.js';
+import type { Artifact, Citation, StagedFile, ToolCallRequest, ToolResultPayload } from './agent/types.js';
 
 export type ChatMessage = { role: 'user' | 'assistant'; content: string };
 
@@ -34,8 +30,6 @@ function resolveModel(modelHint?: string): LanguageModel | null {
         ? preferred
         : process.env.LM_STUDIO_MODEL || 'gpt-4o-mini';
     if (!preferred || preferred.startsWith('openai:') || !preferred.includes(':')) {
-      // Custom baseURL (LM Studio, etc.) only implements Chat Completions;
-      // openai(id) defaults to the Responses API and yields an empty stream.
       return openaiBaseURL ? openai.chat(id) : openai(id);
     }
   }
@@ -69,26 +63,41 @@ function resolveModel(modelHint?: string): LanguageModel | null {
 export type QueryStreamHandlers = {
   onStatus: (message: string) => void;
   onText: (delta: string) => void;
-  onDone: (markdown: string, suggestions?: string[]) => void;
+  onArtifact?: (artifact: Artifact) => void;
+  onCitation?: (citation: Citation) => void;
+  onFunctionCall?: (call: ToolCallRequest) => void;
+  onDone: (
+    markdown: string,
+    meta?: { suggestions?: string[]; citations?: Citation[]; artifacts?: Artifact[] }
+  ) => void;
   onError: (message: string) => void;
   signal?: AbortSignal;
 };
 
-function lastUserText(messages: ChatMessage[]): string {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i]?.role === 'user') return messages[i]!.content.trim();
-  }
-  return '';
+export type RunHarnessTurnOpts = {
+  sessionId: string;
+  messages: ChatMessage[];
+  modelHint?: string;
+  /** New files to stage (fdc3.data.file payloads). */
+  files?: FileInput[];
+  /** Tool results from browser FDC3 execution (re-POST). */
+  toolResults?: ToolResultPayload[];
+  handlers: QueryStreamHandlers;
+};
+
+function toModelMessages(chat: ChatMessage[]): ModelMessage[] {
+  return chat.map(m => ({
+    role: m.role,
+    content: m.content,
+  }));
 }
 
-/** Stream an assistant reply for one turn, given full conversation messages. */
-export async function runHarnessTurn(
-  messages: ChatMessage[],
-  modelHint: string | undefined,
-  handlers: QueryStreamHandlers
-): Promise<void> {
+/** Stream an assistant reply (agent loop with optional FDC3 re-POST continuation). */
+export async function runHarnessTurn(opts: RunHarnessTurnOpts): Promise<void> {
+  const { sessionId, messages, modelHint, files: fileInputs, toolResults, handlers } = opts;
   const model = resolveModel(modelHint);
-  const latest = lastUserText(messages) || 'Hello';
+  const latest = [...messages].reverse().find(m => m.role === 'user')?.content?.trim() || 'Hello';
+
   if (!model) {
     const fallback =
       'No LLM provider is configured on the Agent harness.\n\n' +
@@ -101,44 +110,59 @@ export async function runHarnessTurn(
       handlers.onText(chunk);
       await new Promise(r => setTimeout(r, 12));
     }
-    handlers.onDone(fallback, [
-      'What are the biggest risks in this portfolio?',
-      'Gather research on the top holdings',
-    ]);
+    handlers.onDone(fallback, {
+      suggestions: [
+        'What are the biggest risks in this portfolio?',
+        'Gather research on the top holdings',
+      ],
+    });
     return;
   }
 
-  handlers.onStatus('Calling model…');
-  let full = '';
-  try {
-    const result = streamText({
-      model,
-      system: SYSTEM_PROMPT,
-      messages:
-        messages.length > 0
-          ? messages.map(m => ({ role: m.role, content: m.content }))
-          : [{ role: 'user' as const, content: latest }],
-      abortSignal: handlers.signal,
-    });
-    for await (const delta of result.textStream) {
-      if (handlers.signal?.aborted) break;
-      full += delta;
-      handlers.onText(delta);
+  let session = getSession(sessionId);
+  const stagedFiles: Map<string, StagedFile> = session?.files ?? new Map();
+
+  if (fileInputs?.length) {
+    for (const f of fileInputs) {
+      const staged = await stageFile(f);
+      if (staged) stagedFiles.set(staged.id, staged);
     }
-    if (!full.trim()) {
-      full = (await result.text) || '';
-    }
-    const markdown = full.trim() || '_No response._';
-    handlers.onDone(markdown, [
-      'What are the biggest risks in this portfolio?',
-      'Show supporting research',
-      'What should I do about concentration risk?',
-    ]);
-  } catch (e) {
-    if (handlers.signal?.aborted) {
-      handlers.onError('Cancelled');
-      return;
-    }
-    handlers.onError(e instanceof Error ? e.message : String(e));
   }
+
+  let modelMessages: ModelMessage[];
+  if (toolResults?.length && session?.messages?.length) {
+    modelMessages = session.messages;
+  } else {
+    modelMessages = toModelMessages(messages);
+  }
+
+  await runAgentLoop(
+    {
+      model,
+      modelMessages,
+      files: stagedFiles,
+      toolResults,
+    },
+    {
+      signal: handlers.signal,
+      onStatus: handlers.onStatus,
+      onText: handlers.onText,
+      onArtifact: a => handlers.onArtifact?.(a),
+      onCitation: c => handlers.onCitation?.(c),
+      onFunctionCall: (call, continueMessages) => {
+        saveSession(sessionId, { messages: continueMessages, files: stagedFiles });
+        handlers.onFunctionCall?.(call);
+      },
+      onDone: (markdown, meta, continueMessages) => {
+        saveSession(sessionId, {
+          messages: [...continueMessages, { role: 'assistant', content: markdown }],
+          files: stagedFiles,
+        });
+        handlers.onDone(markdown, meta);
+      },
+      onError: handlers.onError,
+    }
+  );
 }
+
+export { resolveModel };

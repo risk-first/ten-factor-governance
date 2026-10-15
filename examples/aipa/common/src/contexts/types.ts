@@ -46,17 +46,83 @@ export const CONTEXT_TYPES = {
   appOffer: 'fdc3.data.appOffer',
   dataRequest: 'fdc3.data.dataRequest',
   tabularData: 'fdc3.data.tabularData',
+  markdown: 'fdc3.data.markdown',
+  file: 'fdc3.data.file',
   /** fdc3.ai extension — UI ↔ harness PrivateChannel */
   agentQuery: 'fdc3.ai.agentQuery',
   agentDelta: 'fdc3.ai.agentDelta',
   agentAnswer: 'fdc3.ai.agentAnswer',
   agentCancel: 'fdc3.ai.agentCancel',
+  /** fdc3.discoverability extension — app channel catalog discovery */
+  discoverApps: 'fdc3.discoverability.discoverApps',
+  appDirectory: 'fdc3.discoverability.appDirectory',
+  discoverIntents: 'fdc3.discoverability.discoverIntents',
+  intentList: 'fdc3.discoverability.intentList',
+  discoverContextTypes: 'fdc3.discoverability.discoverContextTypes',
+  contextTypeList: 'fdc3.discoverability.contextTypeList',
 } as const;
+
+/** Dedicated app channel for fdc3.discoverability request/reply. */
+export const DISCOVERABILITY_CHANNEL = 'fdc3.discoverability';
+
+export type DiscoverabilityIntentEntry = {
+  name: string;
+  displayName?: string;
+  contexts?: string[];
+  resultType?: string;
+};
+
+export type DiscoverabilityContextTypeEntry = {
+  contextType: string;
+  schemaUrl?: string;
+  name?: string;
+};
+
+export type DiscoverApps = { type: 'fdc3.discoverability.discoverApps' };
+export type DiscoverIntents = { type: 'fdc3.discoverability.discoverIntents' };
+export type DiscoverContextTypes = { type: 'fdc3.discoverability.discoverContextTypes' };
+
+export type AppDirectoryReply = {
+  type: 'fdc3.discoverability.appDirectory';
+  apps: Record<string, unknown>[];
+};
+
+export type IntentListReply = {
+  type: 'fdc3.discoverability.intentList';
+  intents: DiscoverabilityIntentEntry[];
+};
+
+export type ContextTypeListReply = {
+  type: 'fdc3.discoverability.contextTypeList';
+  contextTypes: DiscoverabilityContextTypeEntry[];
+};
+
+export type FileFormat = 'pdf' | 'docx' | 'txt' | 'md' | 'html';
+
+/** Shareable file payload — referenced by id from agentQuery.fileIds. */
+export type Fdc3DataFile = {
+  type: 'fdc3.data.file';
+  id: { fileId: string };
+  name: string;
+  format: FileFormat;
+  content_b64?: string;
+  url?: string;
+};
+
+/** Markdown payload for open / ViewData (distinct from agentAnswer.markdown). */
+export type Fdc3DataMarkdown = {
+  type: 'fdc3.data.markdown';
+  markdown: string;
+  title?: string;
+  instanceId?: string;
+};
 
 export type AgentQuery = {
   type: 'fdc3.ai.agentQuery';
   text?: string | null;
   model?: string;
+  /** Refs to fdc3.data.file ids already on the session channel. */
+  fileIds?: string[];
 };
 
 export type AgentDelta = {

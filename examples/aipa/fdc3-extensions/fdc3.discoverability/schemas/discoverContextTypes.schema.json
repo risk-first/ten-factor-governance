@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.discoverContextTypes.schema.json",
+  "type": "object",
+  "title": "Discover Context Types",
+  "description": "Broadcast on app channel `fdc3.discoverability` to ask which context types the environment understands. Reply is `fdc3.discoverability.contextTypeList`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.discoverContextTypes"
+        }
+      },
+      "required": ["type"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.discoverContextTypes"
+    }
+  ]
+}

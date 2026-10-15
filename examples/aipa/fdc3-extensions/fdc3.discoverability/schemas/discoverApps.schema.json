@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.discoverApps.schema.json",
+  "type": "object",
+  "title": "Discover Apps",
+  "description": "Broadcast on app channel `fdc3.discoverability` to ask for available App Directory records. Reply is `fdc3.discoverability.appDirectory`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.discoverApps"
+        }
+      },
+      "required": ["type"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.discoverApps"
+    }
+  ]
+}

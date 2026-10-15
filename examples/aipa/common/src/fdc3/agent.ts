@@ -13,7 +13,7 @@ function wsUrlForPage(): string {
 
 export async function connectAgent(statusEl: HTMLElement | null): Promise<DesktopAgent | null> {
   try {
-    const fdc3 = await getAgent();
+    const fdc3 = await getAgent({ logLevels: { proxy: 'WARN' } });
     statusEl && (statusEl.textContent = 'FDC3 agent connected.');
     return fdc3;
   } catch (e) {

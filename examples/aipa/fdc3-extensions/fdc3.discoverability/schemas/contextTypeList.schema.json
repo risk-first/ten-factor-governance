@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.contextTypeList.schema.json",
+  "type": "object",
+  "title": "Context Type List",
+  "description": "Reply to `fdc3.discoverability.discoverContextTypes` on app channel `fdc3.discoverability`. Catalog of context `type` strings (and optional schema URLs) known in this environment.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.contextTypeList"
+        },
+        "contextTypes": {
+          "type": "array",
+          "title": "Context types",
+          "items": {
+            "type": "object",
+            "properties": {
+              "contextType": {
+                "type": "string",
+                "title": "Context type",
+                "description": "FDC3 context `type` string, e.g. `fdc3.instrument` or `fdc3.data.markdown`."
+              },
+              "schemaUrl": {
+                "type": "string",
+                "format": "uri",
+                "title": "Schema URL",
+                "description": "Optional absolute URI of the JSON Schema that defines this type."
+              },
+              "name": {
+                "type": "string",
+                "title": "Name",
+                "description": "Optional user-visible label."
+              }
+            },
+            "required": ["contextType"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["type", "contextTypes"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.contextTypeList",
+      "contextTypes": [
+        {
+          "contextType": "fdc3.instrument",
+          "schemaUrl": "https://fdc3.finos.org/schemas/next/context/instrument.schema.json"
+        },
+        {
+          "contextType": "fdc3.data.markdown",
+          "name": "Markdown"
+        },
+        {
+          "contextType": "fdc3.ai.agentQuery"
+        }
+      ]
+    }
+  ]
+}
