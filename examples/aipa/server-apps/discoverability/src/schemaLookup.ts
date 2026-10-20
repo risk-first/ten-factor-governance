@@ -1,9 +1,13 @@
 /**
- * Resolve JSON Schema documents for FDC3 context types from local
- * fdc3-extensions schemas, with a CDN fallback for published standard types.
+ * Resolve JSON Schema documents for FDC3 context types:
+ * 1. Local fdc3-extensions (demo.*, fdc3.data, fdc3.ai, …)
+ * 2. Published standard context schemas from `@finos/fdc3-context`
+ *    (JSON Schema files live there; `@finos/fdc3-schema` is DACP/API, not context types)
+ * 3. FDC3 CDN fallback for other `fdc3.*` types
  */
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'node:module';
 import type { ContextSchemaReply } from '../../../common/src/contexts/types.ts';
 import { CONTEXT_TYPES } from '../../../common/src/contexts/types.ts';
 
@@ -33,29 +37,57 @@ function extractContextType(schema: Record<string, unknown>): string | null {
   return null;
 }
 
+function indexSchemaFile(
+  index: Map<string, SchemaIndexEntry>,
+  filePath: string,
+  overwrite: boolean
+): void {
+  try {
+    const schema = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Record<string, unknown>;
+    const contextType = extractContextType(schema);
+    if (!contextType) return;
+    if (!overwrite && index.has(contextType)) return;
+    const schemaUrl =
+      typeof schema.$id === 'string' && schema.$id.startsWith('http') ? schema.$id : undefined;
+    index.set(contextType, { schema, schemaUrl, filePath });
+  } catch {
+    /* skip unreadable schema */
+  }
+}
+
+function indexSchemaDir(
+  index: Map<string, SchemaIndexEntry>,
+  schemasDir: string,
+  overwrite: boolean
+): void {
+  if (!fs.existsSync(schemasDir)) return;
+  for (const file of fs.readdirSync(schemasDir)) {
+    if (!file.endsWith('.schema.json') || file === 'context.schema.json') continue;
+    indexSchemaFile(index, path.join(schemasDir, file), overwrite);
+  }
+}
+
+/** `dist/schemas/context` next to `@finos/fdc3-context` package entry. */
+function standardContextSchemasDir(): string | null {
+  try {
+    const require = createRequire(import.meta.url);
+    const entry = require.resolve('@finos/fdc3-context');
+    const dir = path.resolve(path.dirname(entry), '../schemas/context');
+    return fs.existsSync(dir) ? dir : null;
+  } catch {
+    return null;
+  }
+}
+
 function buildIndex(extensionsRoot: string): Map<string, SchemaIndexEntry> {
   const index = new Map<string, SchemaIndexEntry>();
-  if (!fs.existsSync(extensionsRoot)) return index;
+  const standardDir = standardContextSchemasDir();
+  if (standardDir) indexSchemaDir(index, standardDir, false);
 
-  for (const extDir of fs.readdirSync(extensionsRoot, { withFileTypes: true })) {
-    if (!extDir.isDirectory()) continue;
-    const schemasDir = path.join(extensionsRoot, extDir.name, 'schemas');
-    if (!fs.existsSync(schemasDir)) continue;
-    for (const file of fs.readdirSync(schemasDir)) {
-      if (!file.endsWith('.schema.json') || file === 'context.schema.json') continue;
-      const filePath = path.join(schemasDir, file);
-      try {
-        const schema = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Record<string, unknown>;
-        const contextType = extractContextType(schema);
-        if (!contextType) continue;
-        const schemaUrl =
-          typeof schema.$id === 'string' && schema.$id.startsWith('http')
-            ? schema.$id
-            : undefined;
-        index.set(contextType, { schema, schemaUrl, filePath });
-      } catch {
-        /* skip unreadable schema */
-      }
+  if (fs.existsSync(extensionsRoot)) {
+    for (const extDir of fs.readdirSync(extensionsRoot, { withFileTypes: true })) {
+      if (!extDir.isDirectory()) continue;
+      indexSchemaDir(index, path.join(extensionsRoot, extDir.name, 'schemas'), true);
     }
   }
   return index;
@@ -121,6 +153,31 @@ export async function resolveContextSchema(
     schemaUrl: canonicalSchemaUrl(trimmed),
     error: `No JSON Schema registered for context type ${trimmed}`,
   };
+}
+
+export type ContextTypeCatalogMeta = {
+  name?: string;
+  description?: string;
+  schemaUrl?: string;
+};
+
+/** Title, description, and schemaUrl from locally indexed JSON Schemas. */
+export function indexedContextTypeMeta(
+  extensionsRoot: string
+): Map<string, ContextTypeCatalogMeta> {
+  const out = new Map<string, ContextTypeCatalogMeta>();
+  for (const [contextType, entry] of getIndex(extensionsRoot)) {
+    const name = typeof entry.schema.title === 'string' ? entry.schema.title : undefined;
+    const description =
+      typeof entry.schema.description === 'string' ? entry.schema.description : undefined;
+    const schemaUrl = entry.schemaUrl ?? canonicalSchemaUrl(contextType);
+    const meta: ContextTypeCatalogMeta = {};
+    if (name) meta.name = name;
+    if (description) meta.description = description;
+    if (schemaUrl) meta.schemaUrl = schemaUrl;
+    if (name || description || schemaUrl) out.set(contextType, meta);
+  }
+  return out;
 }
 
 /** Types we always know about for the Schema preview UI. */

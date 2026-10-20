@@ -7,7 +7,11 @@ import fs from 'fs';
 import path from 'path';
 import { CONTEXT_TYPES } from '../../../common/src/contexts/types.ts';
 import { buildCatalog, type AppDirectoryApplication } from './catalog.ts';
-import { knownSchemaContextTypes, resolveContextSchema } from './schemaLookup.ts';
+import {
+  indexedContextTypeMeta,
+  knownSchemaContextTypes,
+  resolveContextSchema,
+} from './schemaLookup.ts';
 
 type BackendOpts = { port: number; appRoot: string; packageRoot: string };
 
@@ -30,7 +34,10 @@ export default function backend(app: Express, _server: Server, opts: BackendOpts
       const raw = JSON.parse(fs.readFileSync(appdPath, 'utf-8')) as {
         applications?: AppDirectoryApplication[];
       };
-      const catalog = buildCatalog(Array.isArray(raw.applications) ? raw.applications : []);
+      const catalog = buildCatalog(
+        Array.isArray(raw.applications) ? raw.applications : [],
+        indexedContextTypeMeta(extensionsRoot)
+      );
       res.json(catalog);
     } catch (e) {
       res.status(500).json({ error: e instanceof Error ? e.message : String(e) });

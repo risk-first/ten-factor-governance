@@ -7,6 +7,7 @@ import {
   type DiscoverabilityContextTypeEntry,
   type DiscoverabilityIntentEntry,
 } from '../../../common/src/contexts/types.ts';
+import type { ContextTypeCatalogMeta } from './schemaLookup.ts';
 
 export type AppDirectoryApplication = Record<string, unknown> & {
   appId?: string;
@@ -52,6 +53,13 @@ const KNOWN_CONTEXT_LABELS: Record<string, string> = {
   [CONTEXT_TYPES.file]: 'File',
   [CONTEXT_TYPES.agentQuery]: 'Agent query',
   [CONTEXT_TYPES.agentAnswer]: 'Agent answer',
+  [CONTEXT_TYPES.portfolioRecommendation]: 'Portfolio recommendation',
+  [CONTEXT_TYPES.orderProposal]: 'Order proposal',
+  [CONTEXT_TYPES.portfolioRisk]: 'Portfolio risk',
+  [CONTEXT_TYPES.researchBundle]: 'Research bundle',
+  [CONTEXT_TYPES.stressScenarioRequest]: 'Stress scenario request',
+  [CONTEXT_TYPES.stressScenarioResult]: 'Stress scenario result',
+  [CONTEXT_TYPES.priceHistory]: 'Price history',
 };
 
 function intentEntriesFromApp(app: AppDirectoryApplication): DiscoverabilityIntentEntry[] {
@@ -89,7 +97,10 @@ function appEntryFromApp(app: AppDirectoryApplication): DiscoverabilityAppEntry 
   return entry;
 }
 
-export function buildCatalog(applications: AppDirectoryApplication[]): DiscoveryCatalog {
+export function buildCatalog(
+  applications: AppDirectoryApplication[],
+  schemaMeta: Map<string, ContextTypeCatalogMeta> = new Map()
+): DiscoveryCatalog {
   const sourceApps = applications.filter(a => typeof a.appId === 'string' && a.appId);
   const apps = sourceApps
     .map(appEntryFromApp)
@@ -128,9 +139,12 @@ export function buildCatalog(applications: AppDirectoryApplication[]): Discovery
   const contextTypes: DiscoverabilityContextTypeEntry[] = [...contextSet]
     .sort()
     .map(contextType => {
+      const meta = schemaMeta.get(contextType);
       const entry: DiscoverabilityContextTypeEntry = { contextType };
-      const name = KNOWN_CONTEXT_LABELS[contextType];
+      const name = meta?.name ?? KNOWN_CONTEXT_LABELS[contextType];
       if (name) entry.name = name;
+      if (meta?.description) entry.description = meta.description;
+      if (meta?.schemaUrl) entry.schemaUrl = meta.schemaUrl;
       return entry;
     });
 

@@ -232,7 +232,7 @@ export function makeFdc3Tools(): ToolSet {
 
     fdc3_discover_context_types: tool({
       description:
-        'Catalog: list known context type strings used across the applications available.',
+        'Catalog: list known context types (contextType, name, description, optional schemaUrl) used across the applications available.',
       inputSchema: z.object({
         timeoutMs: z
           .number()

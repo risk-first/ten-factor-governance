@@ -51,8 +51,8 @@
     },
     {
       "type": "fdc3.discoverability.contextSchema",
-      "contextType": "demo.portfolioRisk",
-      "error": "No JSON Schema registered for context type demo.portfolioRisk"
+      "contextType": "org.example.unknown",
+      "error": "No JSON Schema registered for context type org.example.unknown"
     }
   ]
 }

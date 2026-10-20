@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/demo.priceHistory.schema.json",
+  "type": "object",
+  "title": "Price History",
+  "description": "Multi-ticker OHLC history. IntentResult of `demo.GetPriceHistory`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "demo.priceHistory" },
+        "asOf": { "type": "string" },
+        "lookbackDays": { "type": "number" },
+        "series": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "instrument": {
+                "type": "object",
+                "properties": {
+                  "type": { "const": "fdc3.instrument" },
+                  "name": { "type": "string" },
+                  "id": {
+                    "type": "object",
+                    "properties": {
+                      "ticker": { "type": "string" },
+                      "ISIN": { "type": "string" }
+                    },
+                    "required": ["ticker"]
+                  }
+                },
+                "required": ["type", "id"]
+              },
+              "bars": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "date": { "type": "string" },
+                    "open": { "type": "number" },
+                    "high": { "type": "number" },
+                    "low": { "type": "number" },
+                    "close": { "type": "number" }
+                  },
+                  "required": ["date", "open", "high", "low", "close"]
+                }
+              },
+              "source": { "type": "string" }
+            },
+            "required": ["instrument", "bars", "source"]
+          }
+        }
+      },
+      "required": ["type", "asOf", "lookbackDays", "series"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ]
+}

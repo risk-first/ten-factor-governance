@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/demo.portfolioRisk.schema.json",
+  "type": "object",
+  "title": "Portfolio Risk",
+  "description": "Signed risk metrics for a portfolio. IntentResult of `demo.GetPortfolioRisk`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "demo.portfolioRisk" },
+        "portfolioId": { "type": "string" },
+        "asOf": { "type": "string" },
+        "concentration": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sector": { "type": "string" },
+              "weight": { "type": "number" }
+            },
+            "required": ["sector", "weight"]
+          }
+        },
+        "topContributors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ticker": { "type": "string" },
+              "weight": { "type": "number" },
+              "riskContribution": { "type": "number" }
+            },
+            "required": ["ticker", "weight", "riskContribution"]
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "herfindahl": { "type": "number" },
+            "energyWeight": { "type": "number" },
+            "largestPositionWeight": { "type": "number" },
+            "volatility": { "type": "number" },
+            "var95": { "type": "number" },
+            "expectedShortfall95": { "type": "number" },
+            "sharpe": { "type": "number" },
+            "maxDrawdown": { "type": "number" }
+          },
+          "required": [
+            "herfindahl",
+            "energyWeight",
+            "largestPositionWeight",
+            "volatility",
+            "var95",
+            "expectedShortfall95",
+            "sharpe",
+            "maxDrawdown"
+          ]
+        },
+        "correlation": {
+          "type": "object",
+          "properties": {
+            "tickers": { "type": "array", "items": { "type": "string" } },
+            "matrix": {
+              "type": "array",
+              "items": { "type": "array", "items": { "type": "number" } }
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "properties": {
+            "analysisId": { "type": "string" },
+            "source": { "type": "string" },
+            "marketDataSource": { "type": "string" },
+            "lookbackDays": { "type": "number" },
+            "riskFreeRate": { "type": "number" }
+          },
+          "required": ["analysisId", "source"]
+        }
+      },
+      "required": ["type", "portfolioId", "asOf", "concentration", "topContributors", "metrics", "provenance"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ]
+}

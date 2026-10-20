@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/demo.orderProposal.schema.json",
+  "type": "object",
+  "title": "Order Proposal",
+  "description": "Signed draft orders for human review. IntentResult of `demo.CreateOrderProposal`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "demo.orderProposal"
+        },
+        "proposalId": {
+          "type": "string",
+          "title": "Proposal ID"
+        },
+        "portfolioId": {
+          "type": "string",
+          "title": "Portfolio ID"
+        },
+        "asOf": {
+          "type": "string",
+          "title": "As of",
+          "description": "ISO-8601 timestamp when the proposal was created."
+        },
+        "orders": {
+          "type": "array",
+          "title": "Orders",
+          "items": {
+            "type": "object",
+            "properties": {
+              "instrument": {
+                "type": "object",
+                "title": "Instrument",
+                "properties": {
+                  "type": { "const": "fdc3.instrument" },
+                  "name": { "type": "string" },
+                  "id": {
+                    "type": "object",
+                    "properties": {
+                      "ticker": { "type": "string" },
+                      "ISIN": { "type": "string" }
+                    },
+                    "required": ["ticker"]
+                  }
+                },
+                "required": ["type", "id"]
+              },
+              "side": { "type": "string", "enum": ["buy", "sell"] },
+              "quantity": { "type": "number", "exclusiveMinimum": 0 },
+              "orderType": { "type": "string", "const": "market" }
+            },
+            "required": ["instrument", "side", "quantity", "orderType"]
+          }
+        }
+      },
+      "required": ["type", "proposalId", "portfolioId", "orders", "asOf"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ]
+}

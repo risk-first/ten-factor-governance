@@ -70,6 +70,8 @@ export function DiscoverabilityApp() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [lines, setLines] = useState<LogLine[]>([]);
   const catalogRef = useRef<DiscoveryCatalog | null>(null);
+  const schemaContextTypeRef = useRef(schemaContextType);
+  schemaContextTypeRef.current = schemaContextType;
   const previewSeq = useRef(0);
 
   const log = (msg: string) => {
@@ -77,34 +79,31 @@ export function DiscoverabilityApp() {
     setStatus(drawer.current.statusEl, msg);
   };
 
-  const refreshPreview = useCallback(
-    async (tab: CatalogTab, contextType = schemaContextType) => {
-      const seq = ++previewSeq.current;
-      setPreviewLoading(true);
-      try {
-        if (tab === 'schema') {
-          const payload = await loadContextSchema(contextType);
-          if (seq !== previewSeq.current) return;
-          setPreviewJson(JSON.stringify(payload, null, 2));
-          return;
-        }
-        const loaded = await loadCatalog();
+  const refreshPreview = useCallback(async (tab: CatalogTab, contextType?: string) => {
+    const seq = ++previewSeq.current;
+    setPreviewLoading(true);
+    try {
+      if (tab === 'schema') {
+        const payload = await loadContextSchema(contextType ?? schemaContextTypeRef.current);
         if (seq !== previewSeq.current) return;
-        catalogRef.current = loaded;
-        setCatalog(loaded);
-        const payload = replyPayloadForTab(tab, loaded);
         setPreviewJson(JSON.stringify(payload, null, 2));
-      } catch (e) {
-        if (seq !== previewSeq.current) return;
-        const msg = e instanceof Error ? e.message : String(e);
-        setPreviewJson('');
-        log(`Preview refresh failed: ${msg}`);
-      } finally {
-        if (seq === previewSeq.current) setPreviewLoading(false);
+        return;
       }
-    },
-    [schemaContextType]
-  );
+      const loaded = await loadCatalog();
+      if (seq !== previewSeq.current) return;
+      catalogRef.current = loaded;
+      setCatalog(loaded);
+      const payload = replyPayloadForTab(tab, loaded);
+      setPreviewJson(JSON.stringify(payload, null, 2));
+    } catch (e) {
+      if (seq !== previewSeq.current) return;
+      const msg = e instanceof Error ? e.message : String(e);
+      setPreviewJson('');
+      log(`Preview refresh failed: ${msg}`);
+    } finally {
+      if (seq === previewSeq.current) setPreviewLoading(false);
+    }
+  }, []);
 
   const selectTab = (tab: CatalogTab) => {
     setActiveTab(tab);

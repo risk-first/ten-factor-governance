@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.contextTypeList.schema.json",
   "type": "object",
   "title": "Context Type List",
-  "description": "Reply to `fdc3.discoverability.discoverContextTypes` on app channel `fdc3.discoverability`. Catalog of context `type` strings (and optional schema URLs) known in this environment.",
+  "description": "Reply to `fdc3.discoverability.discoverContextTypes` on app channel `fdc3.discoverability`. Catalog of context types (`contextType`, optional `name` / `description` / schema URL) known in this environment.",
   "allOf": [
     {
       "type": "object",
@@ -31,7 +31,12 @@
               "name": {
                 "type": "string",
                 "title": "Name",
-                "description": "Optional user-visible label."
+                "description": "Optional user-visible label (typically the JSON Schema title)."
+              },
+              "description": {
+                "type": "string",
+                "title": "Description",
+                "description": "Optional short explanation of the type (typically the JSON Schema description)."
               }
             },
             "required": ["contextType"],
@@ -53,7 +58,8 @@
         },
         {
           "contextType": "fdc3.data.markdown",
-          "name": "Markdown"
+          "name": "Markdown",
+          "description": "Markdown payload for a data app. Used as the context for fdc3.open / ViewData."
         },
         {
           "contextType": "fdc3.ai.agentQuery"

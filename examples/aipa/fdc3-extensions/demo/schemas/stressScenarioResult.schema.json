@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/demo.stressScenarioResult.schema.json",
+  "type": "object",
+  "title": "Stress Scenario Result",
+  "description": "Signed stress outcome. IntentResult of `demo.RunStressScenario`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "demo.stressScenarioResult" },
+        "portfolioId": { "type": "string" },
+        "scenarioName": { "type": "string" },
+        "asOf": { "type": "string" },
+        "portfolioValueChangePct": { "type": "number" },
+        "sectorImpacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sector": { "type": "string" },
+              "changePct": { "type": "number" }
+            },
+            "required": ["sector", "changePct"]
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "properties": {
+            "resultId": { "type": "string" },
+            "macroSource": { "type": "string" }
+          },
+          "required": ["resultId", "macroSource"]
+        }
+      },
+      "required": [
+        "type",
+        "portfolioId",
+        "scenarioName",
+        "asOf",
+        "portfolioValueChangePct",
+        "sectorImpacts",
+        "provenance"
+      ]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ]
+}

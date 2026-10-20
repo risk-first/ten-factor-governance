@@ -86,6 +86,7 @@ export type DiscoverabilityContextTypeEntry = {
   contextType: string;
   schemaUrl?: string;
   name?: string;
+  description?: string;
 };
 
 export type DiscoverApps = { type: 'fdc3.discoverability.discoverApps' };

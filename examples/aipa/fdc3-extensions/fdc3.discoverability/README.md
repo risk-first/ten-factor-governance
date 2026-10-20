@@ -48,7 +48,7 @@ sequenceDiagram
 | --- | --- | --- |
 | Apps | [`fdc3.discoverability.discoverApps`](schemas/discoverApps.schema.json) | [`fdc3.discoverability.appDirectory`](schemas/appDirectory.schema.json) — slim app entries (`appId`, `title`, `description`) |
 | Intents | [`fdc3.discoverability.discoverIntents`](schemas/discoverIntents.schema.json) | [`fdc3.discoverability.intentList`](schemas/intentList.schema.json) — intent names + `purpose` (+ optional metadata) |
-| Context types | [`fdc3.discoverability.discoverContextTypes`](schemas/discoverContextTypes.schema.json) | [`fdc3.discoverability.contextTypeList`](schemas/contextTypeList.schema.json) — context `type` strings (+ optional schema URLs) |
+| Context types | [`fdc3.discoverability.discoverContextTypes`](schemas/discoverContextTypes.schema.json) | [`fdc3.discoverability.contextTypeList`](schemas/contextTypeList.schema.json) — `contextType` + optional `name` / `description` / schema URL |
 | Context schema | [`fdc3.discoverability.discoverContextSchema`](schemas/discoverContextSchema.schema.json) | [`fdc3.discoverability.contextSchema`](schemas/contextSchema.schema.json) — JSON Schema for one `contextType` |
 
 | Concept | Role |
@@ -59,7 +59,7 @@ sequenceDiagram
 | `discoverIntents` | Caller → channel. “Which intents can I raise?” |
 | `intentList` | Responder → channel. Intent catalog entries (`name`, required `purpose`, optional display/contexts/resultType). |
 | `discoverContextTypes` | Caller → channel. “Which context types are in play?” |
-| `contextTypeList` | Responder → channel. Context type catalog entries. |
+| `contextTypeList` | Responder → channel. Context type catalog entries (`contextType`, optional `name` / `description` / `schemaUrl`). |
 | `discoverContextSchema` | Caller → channel. “What is the JSON Schema for this `contextType`?” |
 | `contextSchema` | Responder → channel. Schema document (`schema` + optional `schemaUrl`), or `error` when unknown. |
 
@@ -92,7 +92,13 @@ Request / reply example:
 }
 ```
 
-In AIPA, the discoverability responder resolves schemas from local [`fdc3-extensions/*/schemas`](../) first, then falls back to the published FDC3 CDN URL pattern `https://fdc3.finos.org/schemas/next/context/<type-without-fdc3-prefix>.schema.json` for standard `fdc3.*` types. Suite `demo.*` types without a registered schema return `error`.
+In AIPA, the discoverability responder resolves schemas in this order:
+
+1. Local [`fdc3-extensions/*/schemas`](../) (including suite [`demo.*` types](../demo/))
+2. Published standard context JSON Schemas from [`@finos/fdc3-context`](https://www.npmjs.com/package/@finos/fdc3-context) (`dist/schemas/context`) — `title`, `description`, and `$id` populate `name` / `description` / `schemaUrl` on `contextTypeList`
+3. FDC3 CDN `https://fdc3.finos.org/schemas/next/context/<type-without-fdc3-prefix>.schema.json` for other `fdc3.*` types
+
+Unknown types return `error`. (`@finos/fdc3-schema` is the DACP/API package and is not used for context-type catalogs.)
 
 Agents should use this when building a context payload (after discovering the type name), not as a substitute for `discoverContextTypes`.
 
