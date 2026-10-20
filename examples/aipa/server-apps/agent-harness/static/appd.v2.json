@@ -17,24 +17,6 @@
               "purpose": "Start an AI agent session that plans and calls FDC3 tools for a natural-language query; result is a PrivateChannel of fdc3.ai deltas/answers.",
               "contexts": ["fdc3.ai.agentQuery"]
             }
-          },
-          "raises": {
-            "demo.GetPortfolioRisk": {
-              "displayName": "Get Portfolio Risk",
-              "contexts": ["fdc3.portfolio"]
-            },
-            "demo.GetResearch": {
-              "displayName": "Get Research",
-              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
-            },
-            "demo.CreateOrderProposal": {
-              "displayName": "Create Order Proposal",
-              "contexts": ["demo.portfolioRecommendation"]
-            },
-            "demo.SubmitOrders": {
-              "displayName": "Submit Orders",
-              "contexts": ["fdc3.orderList"]
-            }
           }
         }
       },

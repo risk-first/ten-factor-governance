@@ -22,8 +22,14 @@
               "purpose": "Show portfolio holdings related to a selected instrument.",
               "contexts": ["fdc3.instrument"]
             }
-          }
-        }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument", "fdc3.portfolio"],
+          "listensFor": []
+        },
+        "appChannels": []
       },
       "hostManifests": {
         "sail": { "injectApi": "2.0" }

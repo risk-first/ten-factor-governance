@@ -182,7 +182,7 @@
       "unique-id": "order-entry-app",
       "node-type": "webclient",
       "name": "Order Entry / Trade Blotter",
-      "description": "Receives proposed orders for human review (demo.CreateOrderProposal \u2192 demo.orderProposal). Does not grant the assistant execute authority.",
+      "description": "Receives proposed orders for human review (demo.CreateOrder \u2192 signed demo.order). Does not grant the assistant execute authority.",
       "metadata": {
         "tool-resource-id": "fdc3-order-entry-app"
       }
@@ -191,7 +191,7 @@
       "unique-id": "execution-app",
       "node-type": "webclient",
       "name": "Execution App",
-      "description": "Capable of submitting orders (demo.SubmitOrders). Governance prohibits the assistant from successfully exercising execute intents.",
+      "description": "Capable of submitting orders (demo.SubmitOrder). Governance prohibits the assistant from successfully exercising execute intents.",
       "metadata": {
         "tool-resource-id": "fdc3-execution-app"
       }
@@ -594,8 +594,8 @@
           "demo.GetPortfolioRisk",
           "demo.GetResearch",
           "demo.RunStressScenario",
-          "demo.CreateOrderProposal",
-          "demo.SubmitOrders"
+          "demo.CreateOrder",
+          "demo.SubmitOrder"
         ],
         "example-intent": "demo.GetPortfolioRisk",
         "example-input-context": "fdc3.portfolio",
@@ -1094,7 +1094,7 @@
     {
       "unique-id": "flow-sensitive-intent",
       "name": "demo.GetPortfolioRisk under governance (closed loop)",
-      "description": "Concrete Analyse-authority example from the FDC3 catalog and demo steps. Portfolio manager asks what the biggest risks are; the assistant raises demo.GetPortfolioRisk with fdc3.portfolio; the Desktop Agent consults the Governance Gateway; on ALLOW the Risk App returns signed demo.portfolioRisk; the assistant explains the result back to the portfolio manager. (Propose/execute intents such as demo.CreateOrderProposal and demo.SubmitOrders follow the same enforcement shape with different decisions.)",
+      "description": "Concrete Analyse-authority example from the FDC3 catalog and demo steps. Portfolio manager asks what the biggest risks are; the assistant raises demo.GetPortfolioRisk with fdc3.portfolio; the Desktop Agent consults the Governance Gateway; on ALLOW the Risk App returns signed demo.portfolioRisk; the assistant explains the result back to the portfolio manager. (Propose/execute intents such as demo.CreateOrder and demo.SubmitOrder follow the same enforcement shape with different decisions.)",
       "transitions": [
         {
           "relationship-unique-id": "pm-uses-aipa",
@@ -1256,7 +1256,7 @@
           "config": {
             "control-id": "apa-ctl-006-execute-prohibit",
             "name": "Execute Prohibit",
-            "description": "Gemara twin control apa-ctl-006-execute-prohibit. demo.SubmitOrders must be denied for ai-portfolio-assistant."
+            "description": "Gemara twin control apa-ctl-006-execute-prohibit. demo.SubmitOrder must be denied for ai-portfolio-assistant."
           }
         }
       ]

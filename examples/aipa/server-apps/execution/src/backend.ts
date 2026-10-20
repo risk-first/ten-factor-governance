@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { createAppSigner, mountSigningRoutes } from '../../../common/src/security/signing.js';
 import {
   applyFillsToPortfolio,
-  fillsFromOrderList,
+  fillsFromOrders,
   loadLivePortfolio,
   saveLivePortfolio,
 } from '../../../common/src/data/portfolio.js';
@@ -18,13 +18,13 @@ export default async function backend(
   mountSigningRoutes(app, signer, server);
 
   app.post('/api/submit', async (req, res) => {
-    const orderList = req.body?.orderList ?? req.body;
+    const order = req.body?.order ?? req.body;
     const meta = req.body?.__appMeta as { signature?: string } | undefined;
     let verify: { ok: boolean; warning?: string } = { ok: true };
     if (!meta?.signature) {
       verify = {
         ok: false,
-        warning: 'Inbound SubmitOrders raise unsigned (acceptable until AI Assistant signs).',
+        warning: 'Inbound SubmitOrder raise unsigned (acceptable until AI Assistant signs).',
       };
     } else {
       verify = {
@@ -33,7 +33,7 @@ export default async function backend(
       };
     }
 
-    const fills = fillsFromOrderList(orderList);
+    const fills = fillsFromOrders(order);
     const { portfolio, applied } = applyFillsToPortfolio(loadLivePortfolio(), fills);
     saveLivePortfolio(portfolio);
     const summary = applied
@@ -43,7 +43,7 @@ export default async function backend(
     const result = {
       type: 'fdc3.transactionResult',
       status: 'Created',
-      context: orderList,
+      context: order,
       message: applied.length
         ? `Filled ${applied.length} order(s); live portfolio updated (${summary}).`
         : 'No fillable orders; live portfolio unchanged.',

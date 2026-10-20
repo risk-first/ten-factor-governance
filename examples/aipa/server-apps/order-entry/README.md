@@ -1,5 +1,4 @@
-# Order Entry / Blotter
+# AIPA Order Entry
 
-Responds to `demo.CreateOrderProposal` with a signed `demo.orderProposal`.
-Verifies inbound `demo.portfolioRecommendation` signatures when present.
-Human approve broadcasts `fdc3.orderList`.
+Responds to `demo.CreateOrder` with a signed `demo.order` or `demo.orderList`.
+After human review, raises `demo.SubmitOrder` to Execution.

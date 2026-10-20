@@ -14,8 +14,8 @@ assistant chat path via [`fdc3.ai`](./fdc3-extensions/fdc3.ai/).
 | Risk | 4101 | `demo.GetPortfolioRisk`, `demo.RunStressScenario`, `ViewAnalysis` | finance-toolkit metrics; pulls OHLC via `demo.GetPriceHistory`; signs results; FRED for rf/stress |
 | Research | 4102 | `demo.GetResearch`, `ViewInstrument`, `ViewNews`, `ViewResearch` | Signs `demo.researchBundle`; EDGAR + Finnhub |
 | Market Data | 4103 | `ViewChart`, `demo.GetPriceHistory`, `GetAppData`, `ViewData` | Finnhub / yahoo-finance2; `fdc3.data` data app |
-| Order Entry | 4104 | `demo.CreateOrderProposal`, `ViewOrders` | Signs `demo.orderProposal`; blotter |
-| Execution | 4105 | `demo.SubmitOrders` | Signs `fdc3.transactionResult` |
+| Order Entry | 4104 | `demo.CreateOrder`, `ViewOrders` | Signs `demo.order` / `demo.orderList`; blotter |
+| Execution | 4105 | `demo.SubmitOrder` | Signs `fdc3.transactionResult` |
 | Agent UI | 4106 | raises `AskAgent` | Front-end chat; `fdc3.ai` PrivateChannel; file attach (`fdc3.data.file`) |
 | Agent harness | 4107 | listens `AskAgent` | Rita-derived agent loop; generic FDC3 tools; streams `fdc3.ai.*`; LLM via `/api/query` |
 | Markdown Viewer | 4108 | `ViewData` | Front-end; renders `fdc3.data.markdown` (open / replace-in-place) |
@@ -81,8 +81,8 @@ intent results. Contexts that **MUST** be signed:
 - `demo.portfolioRisk`
 - `demo.researchBundle`
 - `demo.stressScenarioResult`
-- `demo.portfolioRecommendation` (producer: Assistant — later)
-- `demo.orderProposal`
+- `demo.order`
+- `demo.orderList`
 
 ## Layout
 

@@ -2,41 +2,70 @@ import type { Application } from 'express';
 import type { Server } from 'http';
 import { randomUUID } from 'node:crypto';
 import { createAppSigner, mountSigningRoutes } from '../../../common/src/security/signing.js';
-import type { OrderProposal, PortfolioRecommendation } from '../../../common/src/contexts/types.js';
+import {
+  CONTEXT_TYPES,
+  isDemoOrderList,
+  ordersFromContext,
+  type DemoOrder,
+  type DemoOrderList,
+  type DemoOrderOrList,
+} from '../../../common/src/contexts/types.js';
 
-function proposalFromRecommendation(rec: PortfolioRecommendation): OrderProposal {
-  const orders = (rec.targetChanges ?? [])
-    .filter(c => c.action !== 'hold')
-    .map(c => ({
-      instrument: { type: 'fdc3.instrument' as const, id: { ticker: c.ticker } },
-      side: c.action === 'buy' ? ('buy' as const) : ('sell' as const),
-      quantity: Math.max(1, Math.round(Math.abs(c.targetWeight) * 10000)),
-      orderType: 'market' as const,
-    }));
+function defaultOrders(): DemoOrder[] {
+  return [
+    {
+      type: 'demo.order',
+      id: { orderId: randomUUID() },
+      instrument: { type: 'fdc3.instrument', id: { ticker: 'SHEL' }, name: 'Shell' },
+      side: 'sell',
+      quantity: 1000,
+      orderType: 'market',
+    },
+    {
+      type: 'demo.order',
+      id: { orderId: randomUUID() },
+      instrument: { type: 'fdc3.instrument', id: { ticker: 'NVDA' }, name: 'NVIDIA' },
+      side: 'buy',
+      quantity: 200,
+      orderType: 'market',
+    },
+  ];
+}
 
+function normalizeOrder(incoming: Partial<DemoOrder> | undefined): DemoOrder {
+  const ticker = incoming?.instrument?.id?.ticker?.trim().toUpperCase();
+  const qty = Number(incoming?.quantity);
   return {
-    type: 'demo.orderProposal',
-    proposalId: randomUUID(),
-    portfolioId: rec.portfolioId,
-    orders:
-      orders.length > 0
-        ? orders
-        : [
-            {
-              instrument: { type: 'fdc3.instrument', id: { ticker: 'SHEL' } },
-              side: 'sell',
-              quantity: 1000,
-              orderType: 'market',
-            },
-            {
-              instrument: { type: 'fdc3.instrument', id: { ticker: 'NVDA' } },
-              side: 'buy',
-              quantity: 200,
-              orderType: 'market',
-            },
-          ],
-    asOf: new Date().toISOString(),
+    type: 'demo.order',
+    id: incoming?.id?.orderId ? incoming.id : { orderId: randomUUID() },
+    name: incoming?.name ?? incoming?.instrument?.name,
+    instrument: {
+      type: 'fdc3.instrument',
+      id: { ticker: ticker || 'NVDA' },
+      name: incoming?.instrument?.name,
+    },
+    side: incoming?.side === 'sell' ? 'sell' : 'buy',
+    quantity: Number.isFinite(qty) && qty > 0 ? Math.round(qty) : 200,
+    orderType: incoming?.orderType ?? 'market',
   };
+}
+
+function inboundVerify(meta: { signature?: string } | undefined): { ok: boolean; warning?: string } {
+  if (meta?.signature) {
+    return {
+      ok: false,
+      warning:
+        'Inbound signature present but not verifiable with local JWKS (expected until the raiser JWKS is trusted).',
+    };
+  }
+  return { ok: true };
+}
+
+function incomingContext(body: { order?: unknown; __appMeta?: unknown }): unknown {
+  const wrapped = body?.order;
+  if (wrapped && typeof wrapped === 'object') return wrapped;
+  const { order: _order, __appMeta: _meta, ...rest } = body ?? {};
+  return rest;
 }
 
 export default async function backend(
@@ -47,37 +76,22 @@ export default async function backend(
   const signer = await createAppSigner('aipa-order-entry', `http://localhost:${opts.port}`);
   mountSigningRoutes(app, signer, server);
 
-  app.post('/api/propose', async (req, res) => {
-    const incoming = (req.body?.recommendation ?? req.body ?? {}) as Partial<PortfolioRecommendation>;
+  app.post('/api/create', async (req, res) => {
+    const incoming = incomingContext(req.body ?? {});
     const meta = req.body?.__appMeta as { signature?: string } | undefined;
-    let verify: { ok: boolean; warning?: string };
-    if (meta?.signature) {
-      verify = {
-        ok: false,
-        warning:
-          'Inbound signature present but not verifiable with local JWKS (expected until Assistant JWKS is trusted).',
-      };
-    } else {
-      verify = {
-        ok: false,
-        warning: 'Inbound recommendation unsigned (acceptable until AI Assistant signs raises).',
-      };
-    }
-
-    const rec: PortfolioRecommendation = {
-      type: 'demo.portfolioRecommendation',
-      portfolioId: incoming.portfolioId ?? 'aipa-energy-demo-1',
-      rationale: incoming.rationale ?? 'Reduce energy concentration toward 15%.',
-      targetChanges: incoming.targetChanges ?? [
-        { ticker: 'SHEL', targetWeight: 0.1, action: 'sell' },
-        { ticker: 'XOM', targetWeight: 0.05, action: 'sell' },
-        { ticker: 'NVDA', targetWeight: 0.2, action: 'buy' },
-      ],
-      evidenceRefs: incoming.evidenceRefs,
-    };
-
-    const proposal = proposalFromRecommendation(rec);
-    const envelope = await signer.signContext(proposal as unknown as Record<string, unknown>);
-    res.json({ envelope, verify });
+    const listIn = isDemoOrderList(incoming) ? incoming : undefined;
+    const legs = ordersFromContext(incoming).map(normalizeOrder);
+    const orders = legs.length > 0 ? legs : defaultOrders();
+    const result: DemoOrderOrList =
+      listIn || orders.length !== 1
+        ? ({
+            type: CONTEXT_TYPES.demoOrderList,
+            id: listIn?.id ?? { listId: randomUUID() },
+            name: listIn?.name,
+            orders,
+          } satisfies DemoOrderList)
+        : orders[0];
+    const envelope = await signer.signContext(result as unknown as Record<string, unknown>);
+    res.json({ envelope, verify: inboundVerify(meta) });
   });
 }

@@ -6,4 +6,4 @@ and `ViewHoldings`.
 
 The live book is `temp/portfolio.json` (gitignored). It is created from
 `common/fixtures/portfolio.json` on first read; Execution updates the same file
-when `demo.SubmitOrders` fills.
+when `demo.SubmitOrder` fills.

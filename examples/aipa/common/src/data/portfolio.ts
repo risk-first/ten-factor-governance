@@ -35,29 +35,35 @@ export function saveLivePortfolio(portfolio: FixturePortfolio): void {
   fs.writeFileSync(livePortfolioPath(), `${JSON.stringify(portfolio, null, 2)}\n`, 'utf-8');
 }
 
-export function fillsFromOrderList(orderList: unknown): PortfolioFill[] {
-  const orders = (orderList as { orders?: unknown } | null)?.orders;
-  if (!Array.isArray(orders)) return [];
-  const fills: PortfolioFill[] = [];
-  for (const raw of orders) {
-    if (!raw || typeof raw !== 'object') continue;
-    const order = raw as {
-      instrument?: { name?: string; id?: { ticker?: string } };
-      side?: string;
-      quantity?: unknown;
-    };
-    const ticker = order.instrument?.id?.ticker?.trim().toUpperCase();
-    const side = order.side === 'buy' || order.side === 'sell' ? order.side : null;
-    const quantity = Number(order.quantity);
-    if (!ticker || !side || !Number.isFinite(quantity) || quantity <= 0) continue;
-    fills.push({
-      ticker,
-      side,
-      quantity,
-      name: order.instrument?.name,
-    });
-  }
-  return fills;
+function fillFromOrder(raw: unknown): PortfolioFill | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const order = raw as {
+    instrument?: { name?: string; id?: { ticker?: string } };
+    side?: string;
+    quantity?: unknown;
+  };
+  const ticker = order.instrument?.id?.ticker?.trim().toUpperCase();
+  const side = order.side === 'buy' || order.side === 'sell' ? order.side : null;
+  const quantity = Number(order.quantity);
+  if (!ticker || !side || !Number.isFinite(quantity) || quantity <= 0) return null;
+  return {
+    ticker,
+    side,
+    quantity,
+    name: order.instrument?.name,
+  };
+}
+
+/** Accept a `demo.order` or `demo.orderList`. */
+export function fillsFromOrders(input: unknown): PortfolioFill[] {
+  if (!input || typeof input !== 'object') return [];
+  const raw = input as { type?: string; orders?: unknown };
+  const list = Array.isArray(raw.orders)
+    ? raw.orders
+    : raw.type === 'demo.order' || (raw as { quantity?: unknown }).quantity != null
+      ? [raw]
+      : [];
+  return list.map(fillFromOrder).filter((f): f is PortfolioFill => f != null);
 }
 
 function tickerOf(pos: FixturePosition): string {

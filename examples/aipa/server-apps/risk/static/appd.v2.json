@@ -27,8 +27,20 @@
               "purpose": "Open risk analysis UI for a portfolio or instrument.",
               "contexts": ["fdc3.portfolio", "fdc3.instrument"]
             }
+          },
+          "raises": {
+            "demo.GetPriceHistory": {
+              "displayName": "Get Price History",
+              "purpose": "Pull OHLC history from Market Data before computing risk.",
+              "contexts": ["fdc3.portfolio"]
+            }
           }
-        }
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": ["fdc3.portfolio"]
+        },
+        "appChannels": []
       },
       "hostManifests": {
         "sail": { "injectApi": "2.0" }

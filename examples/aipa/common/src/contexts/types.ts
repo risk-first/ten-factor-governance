@@ -14,9 +14,9 @@ export const INTENTS = {
   ViewResearch: 'ViewResearch',
   ViewChart: 'ViewChart',
   GetPriceHistory: 'demo.GetPriceHistory',
-  CreateOrderProposal: 'demo.CreateOrderProposal',
+  CreateOrder: 'demo.CreateOrder',
   ViewOrders: 'ViewOrders',
-  SubmitOrders: 'demo.SubmitOrders',
+  SubmitOrder: 'demo.SubmitOrder',
   /** fdc3.data — pull one advertised dataset from a data app */
   GetAppData: 'GetAppData',
   /** Standard FDC3 — seed / replace-in-place display context */
@@ -31,15 +31,13 @@ export const CONTEXT_TYPES = {
   instrument: 'fdc3.instrument',
   instrumentList: 'fdc3.instrumentList',
   chart: 'fdc3.chart',
-  order: 'fdc3.order',
-  orderList: 'fdc3.orderList',
   transactionResult: 'fdc3.transactionResult',
   portfolioRisk: 'demo.portfolioRisk',
   researchBundle: 'demo.researchBundle',
   stressScenarioRequest: 'demo.stressScenarioRequest',
   stressScenarioResult: 'demo.stressScenarioResult',
-  portfolioRecommendation: 'demo.portfolioRecommendation',
-  orderProposal: 'demo.orderProposal',
+  demoOrder: 'demo.order',
+  demoOrderList: 'demo.orderList',
   priceHistory: 'demo.priceHistory',
   /** fdc3.data extension */
   advertiseDatasets: 'fdc3.data.advertiseDatasets',
@@ -321,32 +319,55 @@ export type StressScenarioResult = {
   provenance: { resultId: string; macroSource: string };
 };
 
-export type PortfolioRecommendation = {
-  type: 'demo.portfolioRecommendation';
-  portfolioId: string;
-  rationale: string;
-  targetChanges: { ticker: string; targetWeight: number; action: 'buy' | 'sell' | 'hold' }[];
-  evidenceRefs?: string[];
+export type DemoOrder = {
+  type: 'demo.order';
+  id: Record<string, string>;
+  name?: string;
+  instrument: Fdc3Instrument;
+  side: 'buy' | 'sell';
+  quantity: number;
+  orderType?: 'market';
 };
 
-export type OrderProposal = {
-  type: 'demo.orderProposal';
-  proposalId: string;
-  portfolioId: string;
-  orders: {
-    instrument: Fdc3Instrument;
-    side: 'buy' | 'sell';
-    quantity: number;
-    orderType: 'market';
-  }[];
-  asOf: string;
+export type DemoOrderList = {
+  type: 'demo.orderList';
+  id?: Record<string, string>;
+  name?: string;
+  orders: DemoOrder[];
 };
+
+export type DemoOrderOrList = DemoOrder | DemoOrderList;
+
+export function isDemoOrderList(ctx: unknown): ctx is DemoOrderList {
+  return Boolean(ctx && typeof ctx === 'object' && (ctx as DemoOrderList).type === CONTEXT_TYPES.demoOrderList);
+}
+
+export function isDemoOrder(ctx: unknown): ctx is DemoOrder {
+  return Boolean(ctx && typeof ctx === 'object' && (ctx as DemoOrder).type === CONTEXT_TYPES.demoOrder);
+}
+
+/** Expand a `demo.order` or `demo.orderList` (or `{ orders }`) into legs. */
+export function ordersFromContext(ctx: unknown): DemoOrder[] {
+  if (!ctx || typeof ctx !== 'object') return [];
+  const raw = ctx as { type?: string; orders?: unknown };
+  if (raw.type === CONTEXT_TYPES.demoOrderList || Array.isArray(raw.orders)) {
+    return Array.isArray(raw.orders) ? (raw.orders as DemoOrder[]) : [];
+  }
+  if (raw.type === CONTEXT_TYPES.demoOrder) return [raw as DemoOrder];
+  return [];
+}
+
+/** One leg stays `demo.order`; two or more become `demo.orderList`. */
+export function asOrderOrList(orders: DemoOrder[]): DemoOrderOrList {
+  if (orders.length === 1) return orders[0];
+  return { type: 'demo.orderList', orders };
+}
 
 /** Contexts that MUST carry FDC3 Security signatures when produced. */
 export const MUST_SIGN_CONTEXT_TYPES: string[] = [
   CONTEXT_TYPES.portfolioRisk,
   CONTEXT_TYPES.researchBundle,
   CONTEXT_TYPES.stressScenarioResult,
-  CONTEXT_TYPES.portfolioRecommendation,
-  CONTEXT_TYPES.orderProposal,
+  CONTEXT_TYPES.demoOrder,
+  CONTEXT_TYPES.demoOrderList,
 ];

@@ -1,6 +1,12 @@
 import '../../../common/src/ui/styles.css';
 import { connectAppSession, setStatus } from '../../../common/src/fdc3/agent.ts';
-import { CONTEXT_TYPES, INTENTS, type OrderProposal, type PortfolioRecommendation } from '../../../common/src/contexts/types.ts';
+import {
+  INTENTS,
+  asOrderOrList,
+  ordersFromContext,
+  type DemoOrder,
+  type DemoOrderOrList,
+} from '../../../common/src/contexts/types.ts';
 import { toResultContext, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { createBroadcastButton } from '../../../common/src/ui/broadcast-icon.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
@@ -15,7 +21,6 @@ type BlotterRow = {
 };
 
 let fdc3: DesktopAgent | null = null;
-let currentProposal: OrderProposal | null = null;
 let blotter: BlotterRow[] = [];
 let filterTicker: string | undefined;
 
@@ -31,33 +36,20 @@ function syncEmptyState(): void {
   if (empty) empty.hidden = blotter.length > 0;
 }
 
-function ensureDraftProposal(): void {
-  if (currentProposal) return;
-  currentProposal = {
-    type: 'demo.orderProposal',
-    proposalId: rowId(),
-    portfolioId: 'manual',
-    asOf: new Date().toISOString(),
-    orders: [],
-  };
-}
-
-function syncProposalFromBlotter(): void {
-  if (!currentProposal && blotter.length === 0) return;
-  ensureDraftProposal();
-  currentProposal = {
-    ...currentProposal!,
-    orders: blotter.map(r => ({
-      instrument: { type: 'fdc3.instrument' as const, id: { ticker: r.ticker.toUpperCase() || 'TICKER' } },
+function toOrders(): DemoOrder[] {
+  return blotter
+    .filter(r => r.ticker.trim())
+    .map(r => ({
+      type: 'demo.order' as const,
+      id: { orderId: r.id },
+      instrument: { type: 'fdc3.instrument' as const, id: { ticker: r.ticker.toUpperCase() } },
       side: r.side,
       quantity: r.qty,
       orderType: 'market' as const,
-    })),
-  };
+    }));
 }
 
 function addEmptyRow(): void {
-  ensureDraftProposal();
   blotter.push({
     id: rowId(),
     side: 'buy',
@@ -65,7 +57,6 @@ function addEmptyRow(): void {
     qty: 100,
     status: 'draft',
   });
-  syncProposalFromBlotter();
   renderBlotter();
   setStatus(statusEl(), 'Added empty order row');
 }
@@ -74,7 +65,6 @@ function removeRow(id: string): void {
   const next = blotter.filter(r => r.id !== id);
   if (next.length === blotter.length) return;
   blotter = next;
-  syncProposalFromBlotter();
   renderBlotter();
   setStatus(statusEl(), blotter.length ? 'Removed order row' : 'Blotter empty');
 }
@@ -99,7 +89,6 @@ function renderBlotter(): void {
     }
     sideSel.addEventListener('change', () => {
       row.side = sideSel.value as 'buy' | 'sell';
-      syncProposalFromBlotter();
     });
     sideTd.appendChild(sideSel);
 
@@ -112,7 +101,6 @@ function renderBlotter(): void {
     tickerInput.addEventListener('change', () => {
       row.ticker = tickerInput.value.trim().toUpperCase() || row.ticker;
       tickerInput.value = row.ticker;
-      syncProposalFromBlotter();
     });
     tickerTd.appendChild(tickerInput);
 
@@ -128,7 +116,6 @@ function renderBlotter(): void {
       const n = Number(qtyInput.value);
       row.qty = Number.isFinite(n) && n > 0 ? Math.round(n) : row.qty;
       qtyInput.value = String(row.qty);
-      syncProposalFromBlotter();
     });
     qtyTd.appendChild(qtyInput);
 
@@ -165,65 +152,68 @@ async function broadcastInstrument(ticker: string): Promise<void> {
   setStatus(statusEl(), `Broadcast fdc3.instrument ${t}`);
 }
 
-function showProposal(p: OrderProposal): void {
-  currentProposal = p;
-  blotter = p.orders.map(o => ({
-    id: rowId(),
-    side: o.side,
-    ticker: o.instrument.id.ticker,
-    qty: o.quantity,
-    status: 'draft',
-  }));
+function showOrders(orders: DemoOrder[]): void {
+  for (const order of orders) {
+    blotter.push({
+      id: order.id?.orderId ?? rowId(),
+      side: order.side,
+      ticker: order.instrument.id.ticker,
+      qty: order.quantity,
+      status: 'draft',
+    });
+  }
   renderBlotter();
 }
 
-async function createProposal(
-  recommendation?: PortfolioRecommendation,
+async function createOrder(
+  incoming?: DemoOrderOrList,
   meta?: unknown
 ): Promise<Record<string, unknown>> {
-  const res = await fetch('/api/propose', {
+  const res = await fetch('/api/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recommendation, __appMeta: meta }),
+    body: JSON.stringify({ order: incoming, __appMeta: meta }),
   });
   const body = (await res.json()) as {
     envelope: SignedEnvelope;
     verify: { ok: boolean; warning?: string };
   };
-  const result = toResultContext(body.envelope) as OrderProposal;
-  showProposal(result);
+  const result = toResultContext(body.envelope) as DemoOrderOrList;
+  showOrders(ordersFromContext(result));
   const verifyEl = document.getElementById('verify')!;
   verifyEl.textContent = body.verify.warning ?? 'Inbound signature ok / not required';
   verifyEl.className = body.verify.ok ? 'badge' : 'badge warn';
-  setStatus(statusEl(), `Signed ${CONTEXT_TYPES.orderProposal}`);
+  setStatus(statusEl(), `Signed ${result.type}`);
   return result as unknown as Record<string, unknown>;
 }
 
 async function approve(): Promise<void> {
-  const ready = blotter.filter(r => r.ticker.trim());
-  if (!currentProposal || ready.length === 0) {
+  const orders = toOrders();
+  if (orders.length === 0) {
     setStatus(statusEl(), 'No complete orders to approve (need ticker on each row).');
     return;
   }
-  blotter = blotter.filter(r => r.ticker.trim());
-  syncProposalFromBlotter();
-  blotter = blotter.map(b => ({ ...b, status: 'approved' }));
+  blotter = blotter.filter(r => r.ticker.trim()).map(b => ({ ...b, status: 'approved' }));
   renderBlotter();
-  const orderList = {
-    type: CONTEXT_TYPES.orderList,
-    orders: blotter.map(r => ({
-      type: CONTEXT_TYPES.order,
-      instrument: { type: 'fdc3.instrument', id: { ticker: r.ticker } },
-      side: r.side,
-      quantity: r.qty,
-    })),
-  };
-  if (fdc3) {
-    await fdc3.broadcast(orderList);
-    setStatus(statusEl(), 'Broadcast fdc3.orderList');
-  } else {
-    setStatus(statusEl(), 'Approved locally (no agent to broadcast).');
+  const payload = asOrderOrList(orders);
+  if (!fdc3) {
+    setStatus(statusEl(), 'Approved locally (no agent to raise demo.SubmitOrder).');
+    return;
   }
+  const resolution = await fdc3.raiseIntent(
+    INTENTS.SubmitOrder,
+    payload as Parameters<DesktopAgent['raiseIntent']>[1],
+    { appId: 'aipa-execution' }
+  );
+  const result = await resolution.getResult();
+  const resultType =
+    result && typeof result === 'object' ? (result as { type?: string }).type : undefined;
+  setStatus(
+    statusEl(),
+    resultType
+      ? `demo.SubmitOrder → ${resultType}`
+      : `Raised demo.SubmitOrder (${payload.type})`
+  );
 }
 
 async function setup(): Promise<void> {
@@ -232,9 +222,9 @@ async function setup(): Promise<void> {
   fdc3 = session.fdc3;
   if (!fdc3) return;
 
-  await fdc3.addIntentListener(INTENTS.CreateOrderProposal, async ctx => {
-    const rec = ctx as PortfolioRecommendation & { __appMeta?: unknown };
-    return createProposal(rec, rec.__appMeta);
+  await fdc3.addIntentListener(INTENTS.CreateOrder, async ctx => {
+    const incoming = ctx as DemoOrderOrList & { __appMeta?: unknown };
+    return createOrder(incoming, incoming.__appMeta);
   });
 
   await fdc3.addIntentListener(INTENTS.ViewOrders, async ctx => {
@@ -244,7 +234,7 @@ async function setup(): Promise<void> {
   });
 }
 
-document.getElementById('demo-propose')!.addEventListener('click', () => void createProposal());
+document.getElementById('demo-create')!.addEventListener('click', () => void createOrder());
 document.getElementById('add-row')!.addEventListener('click', () => addEmptyRow());
 document.getElementById('approve')!.addEventListener('click', () => void approve());
 void setup();

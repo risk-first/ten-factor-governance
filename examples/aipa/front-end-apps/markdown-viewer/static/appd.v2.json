@@ -17,8 +17,14 @@
               "purpose": "Render fdc3.data.markdown content in the markdown viewer.",
               "contexts": ["fdc3.data.markdown"]
             }
-          }
-        }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": ["fdc3.data.markdown"]
+        },
+        "appChannels": []
       },
       "hostManifests": {
         "sail": { "injectApi": "2.0" }

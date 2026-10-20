@@ -11,9 +11,11 @@
       "details": { "url": "http://localhost:4106/" },
       "interop": {
         "intents": {
+          "listensFor": {},
           "raises": {
             "AskAgent": {
               "displayName": "Ask Agent",
+              "purpose": "Open an agent session; IntentResult is a PrivateChannel of fdc3.ai deltas/answers.",
               "contexts": ["fdc3.ai.agentQuery"]
             }
           }

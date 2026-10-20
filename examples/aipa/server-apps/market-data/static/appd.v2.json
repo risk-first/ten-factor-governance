@@ -37,8 +37,14 @@
               "purpose": "Display or apply tabular market series (fdc3.data.tabularData) in the market-data app.",
               "contexts": ["fdc3.data.tabularData"]
             }
-          }
-        }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument", "fdc3.data.appOffer"],
+          "listensFor": ["fdc3.instrument", "fdc3.data.advertiseDatasets"]
+        },
+        "appChannels": []
       },
       "hostManifests": {
         "sail": { "injectApi": "2.0" }
