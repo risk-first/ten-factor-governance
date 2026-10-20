@@ -60,13 +60,23 @@ export const CONTEXT_TYPES = {
   intentList: 'fdc3.discoverability.intentList',
   discoverContextTypes: 'fdc3.discoverability.discoverContextTypes',
   contextTypeList: 'fdc3.discoverability.contextTypeList',
+  discoverContextSchema: 'fdc3.discoverability.discoverContextSchema',
+  contextSchema: 'fdc3.discoverability.contextSchema',
 } as const;
 
 /** Dedicated app channel for fdc3.discoverability request/reply. */
 export const DISCOVERABILITY_CHANNEL = 'fdc3.discoverability';
 
+export type DiscoverabilityAppEntry = {
+  appId: string;
+  title?: string;
+  description?: string;
+};
+
 export type DiscoverabilityIntentEntry = {
   name: string;
+  /** When / why to raise this intent (from AppD `listensFor.*.purpose`). */
+  purpose: string;
   displayName?: string;
   contexts?: string[];
   resultType?: string;
@@ -81,10 +91,14 @@ export type DiscoverabilityContextTypeEntry = {
 export type DiscoverApps = { type: 'fdc3.discoverability.discoverApps' };
 export type DiscoverIntents = { type: 'fdc3.discoverability.discoverIntents' };
 export type DiscoverContextTypes = { type: 'fdc3.discoverability.discoverContextTypes' };
+export type DiscoverContextSchema = {
+  type: 'fdc3.discoverability.discoverContextSchema';
+  contextType: string;
+};
 
 export type AppDirectoryReply = {
   type: 'fdc3.discoverability.appDirectory';
-  apps: Record<string, unknown>[];
+  apps: DiscoverabilityAppEntry[];
 };
 
 export type IntentListReply = {
@@ -95,6 +109,16 @@ export type IntentListReply = {
 export type ContextTypeListReply = {
   type: 'fdc3.discoverability.contextTypeList';
   contextTypes: DiscoverabilityContextTypeEntry[];
+};
+
+export type ContextSchemaReply = {
+  type: 'fdc3.discoverability.contextSchema';
+  contextType: string;
+  schemaUrl?: string;
+  /** JSON Schema document when resolved. */
+  schema?: Record<string, unknown>;
+  /** Set when no schema is available for `contextType`. */
+  error?: string;
 };
 
 export type FileFormat = 'pdf' | 'docx' | 'txt' | 'md' | 'html';

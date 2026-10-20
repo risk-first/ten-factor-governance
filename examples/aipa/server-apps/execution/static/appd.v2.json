@@ -14,6 +14,7 @@
           "listensFor": {
             "demo.SubmitOrders": {
               "displayName": "Submit Orders",
+              "purpose": "Submit a list of orders for execution and return a signed fdc3.transactionResult.",
               "contexts": ["fdc3.orderList"]
             }
           }

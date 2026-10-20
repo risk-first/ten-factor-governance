@@ -14,14 +14,17 @@
           "listensFor": {
             "demo.GetPortfolioRisk": {
               "displayName": "Get Portfolio Risk",
+              "purpose": "Compute deterministic portfolio risk metrics and return a signed demo.portfolioRisk result.",
               "contexts": ["fdc3.portfolio"]
             },
             "demo.RunStressScenario": {
               "displayName": "Run Stress Scenario",
+              "purpose": "Run a portfolio stress scenario and return a signed demo.stressScenarioResult.",
               "contexts": ["demo.stressScenarioRequest"]
             },
             "ViewAnalysis": {
               "displayName": "View Analysis",
+              "purpose": "Open risk analysis UI for a portfolio or instrument.",
               "contexts": ["fdc3.portfolio", "fdc3.instrument"]
             }
           }

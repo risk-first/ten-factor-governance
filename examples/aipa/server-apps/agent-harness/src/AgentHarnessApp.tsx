@@ -15,6 +15,14 @@ import { executeFdc3Tool, type ContextCache } from './fdc3Executor.ts';
 
 type LogLine = { t: number; msg: string };
 
+type HarnessTab = 'sessions' | 'tools';
+
+type ToolCatalogEntry = {
+  name: string;
+  description: string;
+  category: 'native' | 'documents' | 'fdc3';
+};
+
 type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
 type PendingFile = {
@@ -297,10 +305,20 @@ async function streamQueryToChannel(
   throw new Error('Exceeded FDC3 tool re-POST rounds');
 }
 
+const TOOL_CATEGORY_LABEL: Record<ToolCatalogEntry['category'], string> = {
+  native: 'Native',
+  documents: 'Documents',
+  fdc3: 'FDC3',
+};
+
 export function AgentHarnessApp() {
   const [sessions, setSessions] = useState<ChannelSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [tab, setTab] = useState<HarnessTab>('sessions');
+  const [tools, setTools] = useState<ToolCatalogEntry[]>([]);
+  const [toolsError, setToolsError] = useState<string | null>(null);
+  const [toolsLoading, setToolsLoading] = useState(false);
   const fdc3Ref = useRef<DesktopAgent | null>(null);
   const sessionsRef = useRef<ChannelSession[]>([]);
   const colorIdx = useRef(0);
@@ -644,67 +662,186 @@ export function AgentHarnessApp() {
   const active = sessions.find(s => s.id === activeSessionId) ?? null;
   const lines = active?.lines ?? [];
 
+  const loadTools = useCallback(async () => {
+    setToolsLoading(true);
+    setToolsError(null);
+    try {
+      const res = await fetch('/api/tools');
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error || `tools HTTP ${res.status}`);
+      }
+      const body = (await res.json()) as { tools?: ToolCatalogEntry[] };
+      setTools(Array.isArray(body.tools) ? body.tools : []);
+    } catch (e) {
+      setTools([]);
+      setToolsError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setToolsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tab !== 'tools') return;
+    void loadTools();
+  }, [tab, loadTools]);
+
+  const toolsByCategory = (['fdc3', 'native', 'documents'] as const).map(category => ({
+    category,
+    items: tools.filter(t => t.category === category),
+  }));
+
   return (
     <div className="container">
       <div className="box" style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }}>
-        <div className="toolbar ticker-bar" style={{ marginBottom: 8 }}>
-          <div className="ticker-chips" aria-label="Active PrivateChannels">
-            {sessions.map(s => {
-              const isActive = s.id === activeSessionId;
-              return (
-                <div
-                  key={s.id}
-                  className={`ticker-chip${isActive ? '' : ' ticker-chip--dimmed'}`}
-                  style={{ color: isActive ? s.color : undefined }}
-                  data-active={isActive ? 'true' : 'false'}
-                  title={`${s.label} — ${s.contextsSent} contexts sent, ${s.remoteListeners} listeners`}
-                >
-                  <button
-                    type="button"
-                    className="ticker-chip__focus"
-                    onClick={() => setActiveSessionId(s.id)}
-                  >
-                    <span className="ticker-chip__swatch" style={{ background: s.color }} />
-                    <span>{s.label}</span>
-                    <span className="ticker-chip__name">
-                      {s.contextsSent} ctx · {s.remoteListeners} ls
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="ticker-chip__remove"
-                    aria-label={`Disconnect ${s.label}`}
-                    onClick={() => removeSession(s.id)}
-                  >
-                    ×
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-          <span className="note" style={{ margin: 0 }}>
-            {ready ? (sessions.length ? `${sessions.length} channel${sessions.length === 1 ? '' : 's'}` : 'ready') : 'connecting…'}
-          </span>
+        <div
+          role="tablist"
+          aria-label="Agent harness views"
+          style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'sessions'}
+            className={tab === 'sessions' ? 'primary' : undefined}
+            onClick={() => setTab('sessions')}
+          >
+            Sessions{sessions.length ? ` (${sessions.length})` : ''}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'tools'}
+            className={tab === 'tools' ? 'primary' : undefined}
+            onClick={() => setTab('tools')}
+          >
+            Tools{tools.length ? ` (${tools.length})` : ''}
+          </button>
         </div>
 
-        <pre
-          className="ex"
-          style={{
-            flex: 1,
-            minHeight: 240,
-            overflow: 'auto',
-            background: '#f8fafc',
-            padding: 12,
-            borderRadius: 8,
-            margin: 0,
-          }}
-        >
-          {!active
-            ? 'Waiting for Agent UI…'
-            : lines.length === 0
-              ? `Session ${active.label} — no log yet`
-              : lines.map(l => `${new Date(l.t).toISOString().slice(11, 19)}  ${l.msg}`).join('\n')}
-        </pre>
+        {tab === 'sessions' ? (
+          <>
+            <div className="toolbar ticker-bar" style={{ marginBottom: 8 }}>
+              <div className="ticker-chips" aria-label="Active PrivateChannels">
+                {sessions.map(s => {
+                  const isActive = s.id === activeSessionId;
+                  return (
+                    <div
+                      key={s.id}
+                      className={`ticker-chip${isActive ? '' : ' ticker-chip--dimmed'}`}
+                      style={{ color: isActive ? s.color : undefined }}
+                      data-active={isActive ? 'true' : 'false'}
+                      title={`${s.label} — ${s.contextsSent} contexts sent, ${s.remoteListeners} listeners`}
+                    >
+                      <button
+                        type="button"
+                        className="ticker-chip__focus"
+                        onClick={() => setActiveSessionId(s.id)}
+                      >
+                        <span className="ticker-chip__swatch" style={{ background: s.color }} />
+                        <span>{s.label}</span>
+                        <span className="ticker-chip__name">
+                          {s.contextsSent} ctx · {s.remoteListeners} ls
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className="ticker-chip__remove"
+                        aria-label={`Disconnect ${s.label}`}
+                        onClick={() => removeSession(s.id)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              <span className="note" style={{ margin: 0 }}>
+                {ready
+                  ? sessions.length
+                    ? `${sessions.length} channel${sessions.length === 1 ? '' : 's'}`
+                    : 'ready'
+                  : 'connecting…'}
+              </span>
+            </div>
+
+            <pre
+              className="ex"
+              style={{
+                flex: 1,
+                minHeight: 240,
+                overflow: 'auto',
+                background: '#f8fafc',
+                padding: 12,
+                borderRadius: 8,
+                margin: 0,
+              }}
+            >
+              {!active
+                ? 'Waiting for Agent UI…'
+                : lines.length === 0
+                  ? `Session ${active.label} — no log yet`
+                  : lines.map(l => `${new Date(l.t).toISOString().slice(11, 19)}  ${l.msg}`).join('\n')}
+            </pre>
+          </>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1, gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <p className="note" style={{ margin: 0, flex: 1 }}>
+                Tools registered for the agent loop (native, documents, FDC3).
+              </p>
+              <button type="button" onClick={() => void loadTools()} disabled={toolsLoading}>
+                {toolsLoading ? 'Loading…' : 'Refresh'}
+              </button>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                minHeight: 240,
+                overflow: 'auto',
+                background: '#f8fafc',
+                borderRadius: 8,
+                padding: 12,
+              }}
+            >
+              {toolsError ? (
+                <span style={{ color: '#b42318' }}>{toolsError}</span>
+              ) : toolsLoading && !tools.length ? (
+                <span className="note">Loading tools…</span>
+              ) : !tools.length ? (
+                <span className="note">No tools registered.</span>
+              ) : (
+                toolsByCategory.map(
+                  group =>
+                    group.items.length ? (
+                      <div key={group.category} style={{ marginBottom: 16 }}>
+                        <h3 style={{ margin: '0 0 8px', fontSize: 13 }}>
+                          {TOOL_CATEGORY_LABEL[group.category]} ({group.items.length})
+                        </h3>
+                        <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                          {group.items.map(t => (
+                            <li
+                              key={t.name}
+                              style={{
+                                marginBottom: 10,
+                                paddingBottom: 10,
+                                borderBottom: '1px solid #e4e7ec',
+                              }}
+                            >
+                              <code style={{ fontSize: 12 }}>{t.name}</code>
+                              <div className="note" style={{ margin: '4px 0 0' }}>
+                                {t.description || '(no description)'}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null
+                )
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 # `fdc3.discoverability` — capability discovery
 
-Proposed FDC3 extension for **catalog-style discovery** of apps, intents, and context types on a Desktop Agent.
+Proposed FDC3 extension for **catalog-style discovery** of apps, intents, context types, and **JSON Schemas for a given context type** on a Desktop Agent.
 
 An app joins (or creates) the dedicated **app channel** `fdc3.discoverability`, broadcasts a discovery request, and listeners that own a catalog reply with a single context carrying the answer. Typical responder is an agent harness or another platform app that knows the App Directory / capability set.
 
@@ -34,6 +34,11 @@ sequenceDiagram
     Ch-->>R: discoverContextTypes
     R->>Ch: broadcast contextTypeList
     Ch-->>App: contextTypeList
+  else Context schema
+    App->>Ch: broadcast discoverContextSchema (contextType)
+    Ch-->>R: discoverContextSchema
+    R->>Ch: broadcast contextSchema
+    Ch-->>App: contextSchema
   end
 ```
 
@@ -41,36 +46,113 @@ sequenceDiagram
 
 | Ask for | Broadcast (request) | Reply (response) |
 | --- | --- | --- |
-| Apps | [`fdc3.discoverability.discoverApps`](schemas/discoverApps.schema.json) | [`fdc3.discoverability.appDirectory`](schemas/appDirectory.schema.json) — App Directory records |
-| Intents | [`fdc3.discoverability.discoverIntents`](schemas/discoverIntents.schema.json) | [`fdc3.discoverability.intentList`](schemas/intentList.schema.json) — intent names (+ optional metadata) |
+| Apps | [`fdc3.discoverability.discoverApps`](schemas/discoverApps.schema.json) | [`fdc3.discoverability.appDirectory`](schemas/appDirectory.schema.json) — slim app entries (`appId`, `title`, `description`) |
+| Intents | [`fdc3.discoverability.discoverIntents`](schemas/discoverIntents.schema.json) | [`fdc3.discoverability.intentList`](schemas/intentList.schema.json) — intent names + `purpose` (+ optional metadata) |
 | Context types | [`fdc3.discoverability.discoverContextTypes`](schemas/discoverContextTypes.schema.json) | [`fdc3.discoverability.contextTypeList`](schemas/contextTypeList.schema.json) — context `type` strings (+ optional schema URLs) |
+| Context schema | [`fdc3.discoverability.discoverContextSchema`](schemas/discoverContextSchema.schema.json) | [`fdc3.discoverability.contextSchema`](schemas/contextSchema.schema.json) — JSON Schema for one `contextType` |
 
 | Concept | Role |
 | --- | --- |
 | App channel `fdc3.discoverability` | Shared discovery bus. Distinct from session PrivateChannels and from user-channel data offers. |
-| `discoverApps` | Caller → channel. “Which apps (AppD records) are available?” |
-| `appDirectory` | Responder → channel. Set of App Directory [`Application`](https://fdc3.finos.org/schemas/next/appd.schema.json#/components/schemas/Application) records. |
+| `discoverApps` | Caller → channel. “Which apps are available?” |
+| `appDirectory` | Responder → channel. Slim app catalog (`appId`, optional `title` / `description`). |
 | `discoverIntents` | Caller → channel. “Which intents can I raise?” |
-| `intentList` | Responder → channel. Intent catalog entries. |
+| `intentList` | Responder → channel. Intent catalog entries (`name`, required `purpose`, optional display/contexts/resultType). |
 | `discoverContextTypes` | Caller → channel. “Which context types are in play?” |
 | `contextTypeList` | Responder → channel. Context type catalog entries. |
+| `discoverContextSchema` | Caller → channel. “What is the JSON Schema for this `contextType`?” |
+| `contextSchema` | Responder → channel. Schema document (`schema` + optional `schemaUrl`), or `error` when unknown. |
+
+## Context schema lookup
+
+`fdc3.discoverability.discoverContextSchema` asks for the **JSON Schema** that defines a single context type. The request must include `contextType` (exact FDC3 `type` string). The reply echoes that type and, when found, includes:
+
+| Field | Meaning |
+| --- | --- |
+| `contextType` | Echo of the request. |
+| `schema` | The JSON Schema object (draft-07) for that context. |
+| `schemaUrl` | Canonical `$id` / published URI when known. |
+| `error` | Present when no schema is registered; `schema` is omitted. |
+
+Request / reply example:
+
+```json
+{
+  "type": "fdc3.discoverability.discoverContextSchema",
+  "contextType": "fdc3.data.markdown"
+}
+```
+
+```json
+{
+  "type": "fdc3.discoverability.contextSchema",
+  "contextType": "fdc3.data.markdown",
+  "schemaUrl": "https://fdc3.finos.org/schemas/next/context/data.markdown.schema.json",
+  "schema": { "$schema": "http://json-schema.org/draft-07/schema#", "type": "object" }
+}
+```
+
+In AIPA, the discoverability responder resolves schemas from local [`fdc3-extensions/*/schemas`](../) first, then falls back to the published FDC3 CDN URL pattern `https://fdc3.finos.org/schemas/next/context/<type-without-fdc3-prefix>.schema.json` for standard `fdc3.*` types. Suite `demo.*` types without a registered schema return `error`.
+
+Agents should use this when building a context payload (after discovering the type name), not as a substitute for `discoverContextTypes`.
+
+## Intent `purpose` (App Directory extension)
+
+`fdc3.discoverability.intentList` requires a **`purpose`** string on every intent entry: a short explanation of *when / why* a caller should raise that intent. Agents and planners use it to choose among catalog intents without inventing names or guessing semantics from `displayName` alone.
+
+`purpose` is **not** part of the standard FDC3 App Directory `Application` schema. AIPA carries it as an extra property on each intent under `interop.intents.listensFor` in the app’s AppD record. The discoverability responder copies it into the channel reply; intents without a non-empty `purpose` are omitted from the catalog.
+
+```json
+{
+  "appId": "aipa-market-data",
+  "interop": {
+    "intents": {
+      "listensFor": {
+        "ViewChart": {
+          "displayName": "View Chart",
+          "purpose": "Open a price chart for an instrument in the market-data UI.",
+          "contexts": ["fdc3.instrument"]
+        }
+      }
+    }
+  }
+}
+```
+
+Reply shape (see [`intentList.schema.json`](schemas/intentList.schema.json)):
+
+```json
+{
+  "type": "fdc3.discoverability.intentList",
+  "intents": [
+    {
+      "name": "ViewChart",
+      "purpose": "Open a price chart for an instrument in the market-data UI.",
+      "displayName": "View Chart",
+      "contexts": ["fdc3.instrument"]
+    }
+  ]
+}
+```
+
+When the same intent name is declared by multiple apps, the catalog merges `contexts` and keeps a single `purpose` (joining distinct purpose strings with ` | ` if they differ).
 
 ## How this relates to other discovery
 
 | Mechanism | Discovers | Channel / API |
 | --- | --- | --- |
-| `fdc3.discoverability` (this package) | Apps / intents / context types for planning | App channel `fdc3.discoverability` |
+| `fdc3.discoverability` (this package) | Apps / intents / context types / context schemas for planning | App channel `fdc3.discoverability` |
 | [`fdc3.data` advertiseDatasets](../fdc3.data/) | Shareable **datasets** (not apps) | User channel |
 | Desktop Agent `findIntent` / `findIntentsByContext` | Runtime handlers for a specific intent or context | Direct API |
 
-Discovery here is catalog-oriented (what exists / what can I call). `findIntent` remains the right tool when you already know an intent or context and need a live resolution.
+Discovery here is catalog-oriented (what exists / what can I call / what shape does a context have). `findIntent` remains the right tool when you already know an intent or context and need a live resolution.
 
 ## AIPA implementation
 
 | Piece | Role |
 | --- | --- |
-| [`server-apps/discoverability`](../../server-apps/discoverability/) | Responder app (port **4109**). Listens on the channel and replies from the combined App Directory (`GET /api/catalog`). |
-| Agent harness tools | `fdc3_discover_apps` / `fdc3_discover_intents` / `fdc3_discover_context_types` — browser-executed request/reply loop on channel `fdc3.discoverability`. |
+| [`server-apps/discoverability`](../../server-apps/discoverability/) | Responder app (port **4109**). Listens on the channel and replies from the combined App Directory (`GET /api/catalog`) and schema lookup (`GET /api/context-schema?contextType=`). |
+| Agent harness tools | `fdc3_discover_apps` / `fdc3_discover_intents` / `fdc3_discover_context_types` / `fdc3_discover_context_schema` — browser-executed request/reply loop on channel `fdc3.discoverability`. |
 
 ## Schemas
 
@@ -84,3 +166,5 @@ JSON Schema definitions (draft-07), same composition pattern as [`@finos/fdc3` c
 | [`schemas/intentList.schema.json`](schemas/intentList.schema.json) | `fdc3.discoverability.intentList` |
 | [`schemas/discoverContextTypes.schema.json`](schemas/discoverContextTypes.schema.json) | `fdc3.discoverability.discoverContextTypes` |
 | [`schemas/contextTypeList.schema.json`](schemas/contextTypeList.schema.json) | `fdc3.discoverability.contextTypeList` |
+| [`schemas/discoverContextSchema.schema.json`](schemas/discoverContextSchema.schema.json) | `fdc3.discoverability.discoverContextSchema` |
+| [`schemas/contextSchema.schema.json`](schemas/contextSchema.schema.json) | `fdc3.discoverability.contextSchema` |

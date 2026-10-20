@@ -14,10 +14,12 @@
           "listensFor": {
             "ViewChart": {
               "displayName": "View Chart",
-              "contexts": ["fdc3.instrument"]
+              "purpose": "Open the market-data chart UI for one instrument, an instrument list, or a portfolio’s holdings.",
+              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
             },
             "demo.GetPriceHistory": {
               "displayName": "Get Price History",
+              "purpose": "Fetch historical OHLC/price series for instruments, lists, portfolios, or chart contexts.",
               "contexts": [
                 "fdc3.instrument",
                 "fdc3.instrumentList",
@@ -27,10 +29,12 @@
             },
             "GetAppData": {
               "displayName": "Get App Data",
+              "purpose": "Pull an advertised market-data dataset as fdc3.data.tabularData.",
               "contexts": ["fdc3.data.dataRequest"]
             },
             "ViewData": {
               "displayName": "View Data",
+              "purpose": "Display or apply tabular market series (fdc3.data.tabularData) in the market-data app.",
               "contexts": ["fdc3.data.tabularData"]
             }
           }

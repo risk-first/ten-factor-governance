@@ -16,6 +16,8 @@ FDC3 **Agent harness** for the AI Portfolio Assistant.
 3. Browser runs `DesktopAgent` / `Channel` APIs and re-POSTs `toolResults` until `done`.
 4. Results stream to the UI as `agentDelta` / `agentAnswer` (markdown, citations, artifacts).
 
+`fdc3_discover_apps` still uses the full App Directory reply on channel `fdc3.discoverability`. Before that result is re-POSTed to the LLM, the browser executor summarizes each app to `{ appId, title?, description?, listensFor?, raises? }` so the model is not flooded with AppD payload. Intent and context-type catalogs are already compact and pass through unchanged.
+
 No SQL in Phase 1. No MCP bridge yet — document extract is local (text/md/html; pdf/docx stub).
 
 ## Provenance

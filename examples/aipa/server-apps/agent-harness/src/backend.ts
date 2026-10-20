@@ -3,6 +3,7 @@ import type { Server } from 'http';
 import { runHarnessTurn, type ChatMessage } from './llm.js';
 import type { FileInput } from './agent/documents.js';
 import type { ToolResultPayload } from './agent/types.js';
+import { listToolCatalog } from './agent/tools/catalog.js';
 
 function parseMessages(body: { text?: string; messages?: unknown }): ChatMessage[] {
   if (Array.isArray(body.messages)) {
@@ -73,6 +74,14 @@ export default function backend(
   _server: Server,
   _opts: { port: number; appRoot: string; packageRoot: string }
 ): void {
+  app.get('/api/tools', (_req, res) => {
+    try {
+      res.json({ tools: listToolCatalog() });
+    } catch (e) {
+      res.status(500).json({ error: e instanceof Error ? e.message : String(e) });
+    }
+  });
+
   app.post('/api/query', async (req, res) => {
     const body = (req.body ?? {}) as {
       text?: string;

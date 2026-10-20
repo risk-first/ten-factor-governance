@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AppIdentifier, DesktopAgent, Listener, PrivateChannel } from '@finos/fdc3';
-import { connectAgent, setStatus } from '../../../common/src/fdc3/agent.ts';
+import { connectAgent } from '../../../common/src/fdc3/agent.ts';
 import {
   CONTEXT_TYPES,
   INTENTS,
@@ -33,8 +33,9 @@ type ChatMsg =
       suggestions?: string[];
       citations?: Array<Record<string, unknown>>;
       artifacts?: Array<Record<string, unknown>>;
-    }
-  | { id: string; role: 'status'; text: string };
+    };
+
+const STATUS_LOG_CAP = 80;
 
 function uid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -94,8 +95,22 @@ export function AgentUiApp() {
   const turnTimeoutRef = useRef<number | null>(null);
   const sessionFilesRef = useRef<AttachedFile[]>([]);
   const drawer = useRef(mountStatusDrawer());
+  const statusLog = useRef<string[]>([]);
   const scroller = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const pushStatus = useCallback((msg: string) => {
+    const line = msg.trim();
+    if (!line) return;
+    statusLog.current = [...statusLog.current.slice(-(STATUS_LOG_CAP - 1)), line];
+    const text = statusLog.current.join('\n');
+    const { statusEl, root } = drawer.current;
+    statusEl.textContent = text;
+    const summary = root.querySelector<HTMLElement>('.status-drawer__summary');
+    if (summary) summary.textContent = line;
+    const panel = root.querySelector<HTMLElement>('.status-drawer__panel');
+    if (panel) panel.scrollTop = panel.scrollHeight;
+  }, []);
 
   const clearTurnTimeout = useCallback(() => {
     if (turnTimeoutRef.current != null) {
@@ -165,9 +180,7 @@ export function AgentUiApp() {
                 )
               );
             } else if (delta.kind === 'status') {
-              const message = String(delta.payload?.message ?? '…');
-              setStatus(drawer.current.statusEl, message);
-              append({ id: uid(), role: 'status', text: message });
+              pushStatus(String(delta.payload?.message ?? '…'));
             } else if (delta.kind === 'citation') {
               const citation = delta.payload?.citation as Record<string, unknown> | undefined;
               if (assistantId && citation) {
@@ -207,20 +220,20 @@ export function AgentUiApp() {
               });
             }
             setBusy(false);
-            setStatus(drawer.current.statusEl, 'Turn complete');
+            pushStatus('Turn complete');
             assistantIdRef.current = null;
           }
         }
       );
 
       const onDisconnect = await channel.addEventListener('disconnect', () => {
-        setStatus(drawer.current.statusEl, 'PrivateChannel disconnected');
+        pushStatus('PrivateChannel disconnected');
         void clearChannel();
       });
 
       channelListeners.current = [onChannel, onDisconnect];
     },
-    [append, clearChannel, clearTurnTimeout, patchAssistant]
+    [clearChannel, clearTurnTimeout, patchAssistant, pushStatus]
   );
 
   const sendTurn = useCallback(
@@ -257,7 +270,7 @@ export function AgentUiApp() {
           streaming: false,
         });
         setBusy(false);
-        setStatus(drawer.current.statusEl, 'Turn timed out');
+        pushStatus('Turn timed out');
         assistantIdRef.current = null;
       }, 120_000);
 
@@ -265,12 +278,12 @@ export function AgentUiApp() {
         const existing = channelRef.current;
         if (existing) {
           if (turnFiles.length) await deliverFiles(existing, turnFiles);
-          setStatus(drawer.current.statusEl, 'Follow-up on PrivateChannel…');
+          pushStatus('Follow-up on PrivateChannel…');
           await existing.broadcast(query as never);
           return;
         }
 
-        setStatus(drawer.current.statusEl, 'Raising AskAgent…');
+        pushStatus('Raising AskAgent…');
         const target = await resolveHarnessTarget(fdc3);
         // Open session without text so the harness waits; then send files + query on the channel.
         const openQuery: AgentQuery = { type: CONTEXT_TYPES.agentQuery, text: null };
@@ -281,7 +294,7 @@ export function AgentUiApp() {
           await bindChannel(channel);
           if (turnFiles.length) await deliverFiles(channel, turnFiles);
           await channel.broadcast(query as never);
-          setStatus(drawer.current.statusEl, 'PrivateChannel connected');
+          pushStatus('PrivateChannel connected');
         } else {
           throw new Error('AskAgent did not return a PrivateChannel');
         }
@@ -293,12 +306,22 @@ export function AgentUiApp() {
           streaming: false,
         });
         setBusy(false);
-        setStatus(drawer.current.statusEl, msg);
+        pushStatus(msg);
         assistantIdRef.current = null;
         await clearChannel();
       }
     },
-    [append, attachments, bindChannel, busy, clearChannel, clearTurnTimeout, deliverFiles, patchAssistant]
+    [
+      append,
+      attachments,
+      bindChannel,
+      busy,
+      clearChannel,
+      clearTurnTimeout,
+      deliverFiles,
+      patchAssistant,
+      pushStatus,
+    ]
   );
 
   const cancelTurn = useCallback(async () => {
@@ -314,8 +337,8 @@ export function AgentUiApp() {
       patchAssistant(assistantIdRef.current, { streaming: false });
       assistantIdRef.current = null;
     }
-    setStatus(drawer.current.statusEl, 'Cancelled');
-  }, [clearTurnTimeout, patchAssistant]);
+    pushStatus('Cancelled');
+  }, [clearTurnTimeout, patchAssistant, pushStatus]);
 
   const onPickFiles = useCallback(async (list: FileList | null) => {
     if (!list?.length) return;
@@ -323,7 +346,7 @@ export function AgentUiApp() {
     for (const file of Array.from(list)) {
       const format = formatFromName(file.name);
       if (!format) {
-        setStatus(drawer.current.statusEl, `Unsupported type: ${file.name}`);
+        pushStatus(`Unsupported type: ${file.name}`);
         continue;
       }
       const content_b64 = await readFileAsBase64(file);
@@ -335,7 +358,7 @@ export function AgentUiApp() {
       });
     }
     setAttachments(prev => [...prev, ...next]);
-  }, []);
+  }, [pushStatus]);
 
   useEffect(() => {
     let portfolioListener: Listener | null = null;
@@ -344,24 +367,22 @@ export function AgentUiApp() {
       const fdc3 = await connectAgent(drawer.current.statusEl);
       if (cancelled || !fdc3) return;
       fdc3Ref.current = fdc3;
+      // Seed the drawer log with whatever connectAgent wrote.
+      const seed = drawer.current.statusEl.textContent?.trim();
+      if (seed) statusLog.current = [seed];
       portfolioListener = await fdc3.addContextListener(CONTEXT_TYPES.portfolio, ctx => {
         const p = ctx as Fdc3Portfolio;
         const label = p.name || p.id?.portfolioId || 'portfolio';
-        setStatus(drawer.current.statusEl, `Aligned with portfolio: ${label}`);
-        append({
-          id: uid(),
-          role: 'status',
-          text: `Observed fdc3.portfolio — ${label}`,
-        });
+        pushStatus(`Aligned with portfolio: ${label}`);
       });
-      setStatus(drawer.current.statusEl, 'Agent UI ready');
+      pushStatus('Agent UI ready');
     })();
     return () => {
       cancelled = true;
       void portfolioListener?.unsubscribe();
       void clearChannel();
     };
-  }, [append, clearChannel]);
+  }, [clearChannel, pushStatus]);
 
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
@@ -382,19 +403,13 @@ export function AgentUiApp() {
           <div
             key={m.id}
             className={
-              m.role === 'user'
-                ? 'agent-ui__msg agent-ui__msg--user'
-                : m.role === 'status'
-                  ? 'agent-ui__msg agent-ui__msg--status'
-                  : 'agent-ui__msg agent-ui__msg--assistant'
+              m.role === 'user' ? 'agent-ui__msg agent-ui__msg--user' : 'agent-ui__msg agent-ui__msg--assistant'
             }
           >
-            {m.role !== 'status' ? (
-              <div className="agent-ui__msg-role">
-                {m.role === 'user' ? 'You' : 'Assistant'}
-                {m.role === 'assistant' && m.streaming ? ' · streaming' : ''}
-              </div>
-            ) : null}
+            <div className="agent-ui__msg-role">
+              {m.role === 'user' ? 'You' : 'Assistant'}
+              {m.role === 'assistant' && m.streaming ? ' · streaming' : ''}
+            </div>
             {m.role === 'assistant' ? (
               <MarkdownView markdown={m.text || (m.streaming ? '…' : '')} />
             ) : (

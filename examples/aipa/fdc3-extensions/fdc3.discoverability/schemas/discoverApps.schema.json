@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.discoverApps.schema.json",
   "type": "object",
   "title": "Discover Apps",
-  "description": "Broadcast on app channel `fdc3.discoverability` to ask for available App Directory records. Reply is `fdc3.discoverability.appDirectory`.",
+  "description": "Broadcast on app channel `fdc3.discoverability` to ask for available apps (`appId`, `title`, `description`). Reply is `fdc3.discoverability.appDirectory`.",
   "allOf": [
     {
       "type": "object",

@@ -14,10 +14,12 @@
           "listensFor": {
             "GetPortfolio": {
               "displayName": "Get Portfolio",
+              "purpose": "Retrieve the current portfolio holdings as an fdc3.portfolio context.",
               "contexts": ["fdc3.portfolio"]
             },
             "ViewHoldings": {
               "displayName": "View Holdings",
+              "purpose": "Show portfolio holdings related to a selected instrument.",
               "contexts": ["fdc3.instrument"]
             }
           }

@@ -3,6 +3,7 @@
  */
 import {
   CONTEXT_TYPES,
+  type DiscoverabilityAppEntry,
   type DiscoverabilityContextTypeEntry,
   type DiscoverabilityIntentEntry,
 } from '../../../common/src/contexts/types.ts';
@@ -11,19 +12,34 @@ export type AppDirectoryApplication = Record<string, unknown> & {
   appId?: string;
   title?: string;
   name?: string;
+  description?: string;
   interop?: {
     intents?: {
       listensFor?: Record<
         string,
-        { displayName?: string; contexts?: string[]; resultType?: string }
+        {
+          displayName?: string;
+          /** Non-standard AppD extension used by fdc3.discoverability. */
+          purpose?: string;
+          contexts?: string[];
+          resultType?: string;
+        }
       >;
-      raises?: Record<string, { displayName?: string; contexts?: string[]; resultType?: string }>;
+      raises?: Record<
+        string,
+        {
+          displayName?: string;
+          purpose?: string;
+          contexts?: string[];
+          resultType?: string;
+        }
+      >;
     };
   };
 };
 
 export type DiscoveryCatalog = {
-  apps: AppDirectoryApplication[];
+  apps: DiscoverabilityAppEntry[];
   intents: DiscoverabilityIntentEntry[];
   contextTypes: DiscoverabilityContextTypeEntry[];
 };
@@ -40,12 +56,14 @@ const KNOWN_CONTEXT_LABELS: Record<string, string> = {
 
 function intentEntriesFromApp(app: AppDirectoryApplication): DiscoverabilityIntentEntry[] {
   const listens = app.interop?.intents?.listensFor ?? {};
-  return Object.entries(listens).map(([name, meta]) => {
-    const entry: DiscoverabilityIntentEntry = { name };
+  return Object.entries(listens).flatMap(([name, meta]) => {
+    const purpose = typeof meta?.purpose === 'string' ? meta.purpose.trim() : '';
+    if (!purpose) return [];
+    const entry: DiscoverabilityIntentEntry = { name, purpose };
     if (meta?.displayName) entry.displayName = meta.displayName;
     if (meta?.contexts?.length) entry.contexts = [...meta.contexts];
     if (meta?.resultType) entry.resultType = meta.resultType;
-    return entry;
+    return [entry];
   });
 }
 
@@ -61,10 +79,24 @@ function contextsFromApp(app: AppDirectoryApplication): string[] {
   return out;
 }
 
+function appEntryFromApp(app: AppDirectoryApplication): DiscoverabilityAppEntry | null {
+  if (typeof app.appId !== 'string' || !app.appId) return null;
+  const entry: DiscoverabilityAppEntry = { appId: app.appId };
+  const title =
+    typeof app.title === 'string' ? app.title : typeof app.name === 'string' ? app.name : undefined;
+  if (title) entry.title = title;
+  if (typeof app.description === 'string' && app.description) entry.description = app.description;
+  return entry;
+}
+
 export function buildCatalog(applications: AppDirectoryApplication[]): DiscoveryCatalog {
-  const apps = applications.filter(a => typeof a.appId === 'string' && a.appId);
+  const sourceApps = applications.filter(a => typeof a.appId === 'string' && a.appId);
+  const apps = sourceApps
+    .map(appEntryFromApp)
+    .filter((a): a is DiscoverabilityAppEntry => a != null)
+    .sort((a, b) => a.appId.localeCompare(b.appId));
   const intentByName = new Map<string, DiscoverabilityIntentEntry>();
-  for (const app of apps) {
+  for (const app of sourceApps) {
     for (const entry of intentEntriesFromApp(app)) {
       const prev = intentByName.get(entry.name);
       if (!prev) {
@@ -72,8 +104,13 @@ export function buildCatalog(applications: AppDirectoryApplication[]): Discovery
         continue;
       }
       const contexts = new Set([...(prev.contexts ?? []), ...(entry.contexts ?? [])]);
+      const purpose =
+        prev.purpose === entry.purpose
+          ? prev.purpose
+          : [prev.purpose, entry.purpose].filter(Boolean).join(' | ');
       intentByName.set(entry.name, {
         name: entry.name,
+        purpose,
         displayName: prev.displayName ?? entry.displayName,
         ...(contexts.size ? { contexts: [...contexts].sort() } : {}),
         resultType: prev.resultType ?? entry.resultType,
@@ -82,7 +119,7 @@ export function buildCatalog(applications: AppDirectoryApplication[]): Discovery
   }
 
   const contextSet = new Set<string>();
-  for (const app of apps) {
+  for (const app of sourceApps) {
     for (const c of contextsFromApp(app)) contextSet.add(c);
   }
   // Always include suite context types (including discoverability itself).

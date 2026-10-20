@@ -14,10 +14,12 @@
           "listensFor": {
             "demo.CreateOrderProposal": {
               "displayName": "Create Order Proposal",
+              "purpose": "Turn a portfolio recommendation into a signed demo.orderProposal draft for human review.",
               "contexts": ["demo.portfolioRecommendation"]
             },
             "ViewOrders": {
               "displayName": "View Orders",
+              "purpose": "Show the order blotter filtered to a selected instrument.",
               "contexts": ["fdc3.instrument"]
             }
           }

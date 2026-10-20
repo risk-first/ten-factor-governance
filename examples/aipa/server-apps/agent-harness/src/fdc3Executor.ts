@@ -6,6 +6,7 @@ import {
   CONTEXT_TYPES,
   DISCOVERABILITY_CHANNEL,
 } from '../../../common/src/contexts/types.ts';
+import { summarizeDiscoverApps } from './agent/discover-summary.ts';
 
 export type ContextCache = Map<string, Context>;
 
@@ -18,6 +19,10 @@ async function discoverabilityRequest(
     requestType: string;
     replyType: string;
     timeoutMs?: number;
+    /** Extra fields on the request context (e.g. contextType). */
+    request?: Record<string, unknown>;
+    /** Accept only matching replies (e.g. same contextType). */
+    matchReply?: (ctx: Context) => boolean;
   }
 ): Promise<Context> {
   const timeoutMs =
@@ -46,12 +51,13 @@ async function discoverabilityRequest(
       }, timeoutMs);
       void ch!
         .addContextListener(opts.replyType, (ctx: Context) => {
+          if (opts.matchReply && !opts.matchReply(ctx)) return;
           if (hold.timer) clearTimeout(hold.timer);
           resolve(ctx);
         })
         .then(async l => {
           hold.listener = l;
-          await ch!.broadcast({ type: opts.requestType } as Context);
+          await ch!.broadcast({ type: opts.requestType, ...(opts.request ?? {}) } as Context);
         })
         .catch(err => {
           if (hold.timer) clearTimeout(hold.timer);
@@ -220,12 +226,15 @@ export async function executeFdc3Tool(
       return out;
     }
 
-    case 'fdc3_discover_apps':
-      return discoverabilityRequest(fdc3, channelCache, {
+    case 'fdc3_discover_apps': {
+      const reply = await discoverabilityRequest(fdc3, channelCache, {
         requestType: CONTEXT_TYPES.discoverApps,
         replyType: CONTEXT_TYPES.appDirectory,
         timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
       });
+      // Full AppD stays on the wire; LLM gets a compact catalog.
+      return summarizeDiscoverApps(reply);
+    }
 
     case 'fdc3_discover_intents':
       return discoverabilityRequest(fdc3, channelCache, {
@@ -240,6 +249,20 @@ export async function executeFdc3Tool(
         replyType: CONTEXT_TYPES.contextTypeList,
         timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
       });
+
+    case 'fdc3_discover_context_schema': {
+      const contextType = String(args.contextType ?? '').trim();
+      if (!contextType) throw new Error('contextType required');
+      return discoverabilityRequest(fdc3, channelCache, {
+        requestType: CONTEXT_TYPES.discoverContextSchema,
+        replyType: CONTEXT_TYPES.contextSchema,
+        request: { contextType },
+        matchReply: ctx =>
+          typeof (ctx as { contextType?: unknown }).contextType === 'string' &&
+          (ctx as { contextType: string }).contextType === contextType,
+        timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
+      });
+    }
 
     default:
       throw new Error(`Unknown FDC3 tool: ${toolName}`);

@@ -1177,10 +1177,17 @@ async function setup(): Promise<void> {
 
   if (!fdc3) return;
   await fdc3.addIntentListener(INTENTS.ViewChart, async ctx => {
-    const instrument = asInstrumentContext(ctx, 'SHEL');
-    const ticker = instrument?.id.ticker ?? 'SHEL';
-    (document.getElementById('ticker') as HTMLInputElement).value = ticker;
-    await addTicker(ticker, lookbackDays, instrument);
+    const { tickers, instruments } = tickersFromContext(ctx);
+    const list = tickers.length ? tickers : ['SHEL'];
+    setStatus(statusEl(), `ViewChart for ${list.join(', ')}…`);
+    for (const ticker of list) {
+      const instrument =
+        instruments.get(ticker) ??
+        asInstrumentContext({ type: 'fdc3.instrument', id: { ticker } }, ticker);
+      (document.getElementById('ticker') as HTMLInputElement).value = ticker;
+      await addTicker(ticker, lookbackDays, instrument);
+    }
+    setStatus(statusEl(), `ViewChart loaded (${list.join(', ')})`);
   });
 
   await fdc3.addIntentListener(INTENTS.GetPriceHistory, async ctx => handleGetPriceHistory(ctx));

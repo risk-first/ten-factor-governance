@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.appDirectory.schema.json",
   "type": "object",
   "title": "App Directory",
-  "description": "Reply to `fdc3.discoverability.discoverApps` on app channel `fdc3.discoverability`. Carries a set of FDC3 App Directory `Application` records the caller may open or raise intents against. Each item conforms to the published App Directory OpenAPI `Application` schema.",
+  "description": "Reply to `fdc3.discoverability.discoverApps` on app channel `fdc3.discoverability`. Carries a slim catalog of available apps (appId, title, description) the caller may open or raise intents against.",
   "allOf": [
     {
       "type": "object",
@@ -14,9 +14,28 @@
         "apps": {
           "type": "array",
           "title": "Apps",
-          "description": "App Directory Application records ([FDC3 AppD `Application`](https://fdc3.finos.org/schemas/next/appd.schema.json#/components/schemas/Application)).",
+          "description": "Slim app catalog entries derived from App Directory records.",
           "items": {
-            "$ref": "https://fdc3.finos.org/schemas/next/appd.schema.json#/components/schemas/Application"
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "title": "App id",
+                "description": "FDC3 App Directory `appId`."
+              },
+              "title": {
+                "type": "string",
+                "title": "Title",
+                "description": "Optional user-visible app title."
+              },
+              "description": {
+                "type": "string",
+                "title": "Description",
+                "description": "Optional short description of the app."
+              }
+            },
+            "required": ["appId"],
+            "additionalProperties": false
           }
         }
       },
@@ -31,15 +50,12 @@
         {
           "appId": "aipa.agent-harness",
           "title": "Agent Harness",
-          "description": "LLM loop and FDC3 tool planning",
-          "type": "web",
-          "details": { "url": "http://localhost:4107/" }
+          "description": "LLM loop and FDC3 tool planning"
         },
         {
           "appId": "aipa.markdown-viewer",
           "title": "Markdown Viewer",
-          "type": "web",
-          "details": { "url": "http://localhost:4108/" }
+          "description": "Renders fdc3.data.markdown"
         }
       ]
     }

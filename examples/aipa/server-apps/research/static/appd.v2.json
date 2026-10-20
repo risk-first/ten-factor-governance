@@ -14,18 +14,22 @@
           "listensFor": {
             "demo.GetResearch": {
               "displayName": "Get Research",
+              "purpose": "Fetch investment research (filings/news) and return a signed demo.researchBundle.",
               "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
             },
             "ViewInstrument": {
               "displayName": "View Instrument",
+              "purpose": "Open the research UI focused on a single instrument.",
               "contexts": ["fdc3.instrument"]
             },
             "ViewNews": {
               "displayName": "View News",
+              "purpose": "Show news coverage for instruments, lists, or a portfolio.",
               "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
             },
             "ViewResearch": {
               "displayName": "View Research",
+              "purpose": "Display research content for a selected instrument.",
               "contexts": ["fdc3.instrument"]
             }
           }

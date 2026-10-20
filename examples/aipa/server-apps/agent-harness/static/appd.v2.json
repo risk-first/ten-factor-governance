@@ -14,6 +14,7 @@
           "listensFor": {
             "AskAgent": {
               "displayName": "Ask Agent",
+              "purpose": "Start an AI agent session that plans and calls FDC3 tools for a natural-language query; result is a PrivateChannel of fdc3.ai deltas/answers.",
               "contexts": ["fdc3.ai.agentQuery"]
             }
           },
@@ -38,7 +39,13 @@
         }
       },
       "hostManifests": {
-        "sail": { "injectApi": "2.0" }
+        "sail": {
+          "injectApi": "2.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": true,
+          "searchable": false
+        }
       }
     }
   ],

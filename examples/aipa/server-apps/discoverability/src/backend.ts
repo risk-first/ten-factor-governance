@@ -1,11 +1,13 @@
 /**
- * Serve discovery catalogs derived from the generated AIPA App Directory.
+ * Serve discovery catalogs and context JSON Schema lookup from fdc3-extensions.
  */
 import type { Express } from 'express';
 import type { Server } from 'http';
 import fs from 'fs';
 import path from 'path';
+import { CONTEXT_TYPES } from '../../../common/src/contexts/types.ts';
 import { buildCatalog, type AppDirectoryApplication } from './catalog.ts';
+import { knownSchemaContextTypes, resolveContextSchema } from './schemaLookup.ts';
 
 type BackendOpts = { port: number; appRoot: string; packageRoot: string };
 
@@ -17,6 +19,7 @@ export default function backend(app: Express, _server: Server, opts: BackendOpts
     'generated',
     'aipa-fdc3-apps.json'
   );
+  const extensionsRoot = path.join(opts.packageRoot, 'fdc3-extensions');
 
   app.get('/api/catalog', (_req, res) => {
     try {
@@ -29,6 +32,28 @@ export default function backend(app: Express, _server: Server, opts: BackendOpts
       };
       const catalog = buildCatalog(Array.isArray(raw.applications) ? raw.applications : []);
       res.json(catalog);
+    } catch (e) {
+      res.status(500).json({ error: e instanceof Error ? e.message : String(e) });
+    }
+  });
+
+  app.get('/api/context-schema-types', (_req, res) => {
+    try {
+      res.json({ contextTypes: knownSchemaContextTypes(extensionsRoot) });
+    } catch (e) {
+      res.status(500).json({ error: e instanceof Error ? e.message : String(e) });
+    }
+  });
+
+  app.get('/api/context-schema', async (req, res) => {
+    try {
+      const contextType =
+        typeof req.query.contextType === 'string' ? req.query.contextType : '';
+      const resolved = await resolveContextSchema(contextType, extensionsRoot);
+      res.json({
+        type: CONTEXT_TYPES.contextSchema,
+        ...resolved,
+      });
     } catch (e) {
       res.status(500).json({ error: e instanceof Error ? e.message : String(e) });
     }
