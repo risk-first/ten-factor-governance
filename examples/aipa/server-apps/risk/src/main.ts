@@ -495,8 +495,7 @@ async function obtainPriceHistory(portfolio: Fdc3Portfolio): Promise<PriceHistor
 
   const resolution = await fdc3.raiseIntent(
     INTENTS.GetPriceHistory,
-    portfolio as Parameters<DesktopAgent['raiseIntent']>[1],
-    { appId: 'aipa-market-data' }
+    portfolio as Parameters<DesktopAgent['raiseIntent']>[1]
   );
   const result = await resolution.getResult();
   if (result && typeof result === 'object' && (result as PriceHistory).type === CONTEXT_TYPES.priceHistory) {
