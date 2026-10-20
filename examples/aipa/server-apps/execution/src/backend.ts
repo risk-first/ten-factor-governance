@@ -2,6 +2,12 @@ import type { Application } from 'express';
 import type { Server } from 'http';
 import { randomUUID } from 'node:crypto';
 import { createAppSigner, mountSigningRoutes } from '../../../common/src/security/signing.js';
+import {
+  applyFillsToPortfolio,
+  fillsFromOrderList,
+  loadLivePortfolio,
+  saveLivePortfolio,
+} from '../../../common/src/data/portfolio.js';
 
 export default async function backend(
   app: Application,
@@ -27,12 +33,20 @@ export default async function backend(
       };
     }
 
-    const orders = Array.isArray(orderList?.orders) ? orderList.orders : [];
+    const fills = fillsFromOrderList(orderList);
+    const { portfolio, applied } = applyFillsToPortfolio(loadLivePortfolio(), fills);
+    saveLivePortfolio(portfolio);
+    const summary = applied
+      .map(f => `${f.side} ${f.quantity} ${f.ticker}`)
+      .join(', ');
+
     const result = {
       type: 'fdc3.transactionResult',
       status: 'Created',
       context: orderList,
-      message: `Accepted ${orders.length || 1} order(s) (demo stub).`,
+      message: applied.length
+        ? `Filled ${applied.length} order(s); live portfolio updated (${summary}).`
+        : 'No fillable orders; live portfolio unchanged.',
       id: { transactionId: randomUUID() },
     };
 

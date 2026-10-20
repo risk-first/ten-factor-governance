@@ -17,6 +17,7 @@ let portfolio: Fdc3Portfolio | null = null;
 let rows: Row[] = [];
 let selectedTicker: string | null = null;
 let fdc3: DesktopAgent | null = null;
+let lastSnapshot = '';
 
 const drawer = mountStatusDrawer();
 const statusEl = () => drawer.statusEl;
@@ -32,6 +33,9 @@ async function loadPortfolio(): Promise<void> {
       sector?: string;
     }>;
   };
+  const snapshot = JSON.stringify(body.portfolio);
+  if (snapshot === lastSnapshot) return;
+  lastSnapshot = snapshot;
   portfolio = body.portfolio;
   rows = body.positions.map(p => ({
     ticker: p.instrument.id.ticker,
@@ -92,7 +96,7 @@ async function broadcastPortfolio(): Promise<void> {
 async function setupIntents(): Promise<void> {
   if (!fdc3) return;
   await fdc3.addIntentListener(INTENTS.GetPortfolio, async () => {
-    if (!portfolio) await loadPortfolio();
+    await loadPortfolio();
     setStatus(statusEl(), 'Handled GetPortfolio');
     return portfolio!;
   });
@@ -111,6 +115,7 @@ async function setupIntents(): Promise<void> {
 
 async function main(): Promise<void> {
   await loadPortfolio();
+  window.setInterval(() => void loadPortfolio(), 3000);
   fdc3 = await connectAgent(statusEl());
   await setupIntents();
   document

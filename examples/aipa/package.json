@@ -12,7 +12,7 @@
     "aipa-fdc3-apps": "./bin/run.mjs"
   },
   "scripts": {
-    "clean": "rimraf --glob \"directory/static/generated\" \"server-apps/*/.vite\" \"directory/.vite\"",
+    "clean": "rimraf --glob \"directory/static/generated\" \"server-apps/*/.vite\" \"front-end-apps/*/.vite\" \"directory/.vite\"",
     "dev": "tsx main.ts",
     "start": "tsx main.ts"
   },

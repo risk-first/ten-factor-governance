@@ -1,6 +1,6 @@
 # Markdown Viewer
 
-FDC3 **data app** that renders [`fdc3.data.markdown`](../../fdc3-extensions/fdc3.data/schemas/markdown.schema.json).
+Front-end FDC3 **data app** (no backend) that renders [`fdc3.data.markdown`](../../fdc3-extensions/fdc3.data/schemas/markdown.schema.json).
 
 | Mechanism | Behaviour |
 | --- | --- |

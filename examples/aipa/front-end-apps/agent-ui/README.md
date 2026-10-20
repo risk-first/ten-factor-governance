@@ -1,6 +1,6 @@
 # Agent UI
 
-FDC3 **Agent UI** for the AI Portfolio Assistant demo.
+Front-end FDC3 **Agent UI** (no backend) for the AI Portfolio Assistant demo.
 
 - Opens `AskAgent` → session **PrivateChannel**; follow-ups reuse the channel.
 - Attach files → broadcast `fdc3.data.file`, then `fdc3.ai.agentQuery` with `fileIds`.

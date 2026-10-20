@@ -1,6 +1,6 @@
 import type { Application } from 'express';
 import type { Server } from 'http';
-import { loadPortfolioFixture, toFdc3Portfolio } from '../../../common/src/data/portfolio.js';
+import { loadLivePortfolio, toFdc3Portfolio } from '../../../common/src/data/portfolio.js';
 
 export default function backend(
   app: Application,
@@ -8,10 +8,10 @@ export default function backend(
   _opts: { port: number; appRoot: string; packageRoot: string }
 ): void {
   app.get('/api/portfolio', (_req, res) => {
-    const fixture = loadPortfolioFixture();
+    const live = loadLivePortfolio();
     res.json({
-      portfolio: toFdc3Portfolio(fixture),
-      positions: fixture.positions,
+      portfolio: toFdc3Portfolio(live),
+      positions: live.positions,
     });
   });
 }

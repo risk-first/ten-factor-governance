@@ -133,7 +133,7 @@ export function makeFdc3Tools(): ToolSet {
 
     fdc3_open: tool({
       description:
-        'Launch or focus an app by appId with optional seed context. Use to show UI (e.g. open aipa-markdown-viewer with fdc3.data.markdown). Prefer fdc3_raise_intent when you need an IntentResult from a handler.',
+        'Launch or focus an app by appId with optional seed context. Last resort only — prefer fdc3_raise_intent whenever a matching intent exists (e.g. ViewData, ViewChart). Fetch field names via fdc3_discover_context_schema before building context.',
       inputSchema: z.object({
         app: appIdentifierSchema,
         context: contextSchema.nullable().optional(),
@@ -245,7 +245,7 @@ export function makeFdc3Tools(): ToolSet {
 
     fdc3_discover_context_schema: tool({
       description:
-        'Catalog: fetch the JSON Schema for one context type (fdc3.discoverability). Use after fdc3_discover_context_types or when building a context payload and you need field shapes. Pass an exact contextType string (e.g. fdc3.instrument, fdc3.data.markdown).',
+        'Catalog: fetch the JSON Schema for one context type (fdc3.discoverability). Call this before building a context payload (e.g. fdc3.data.markdown) and copy property names from the schema — do not guess fields. Also use after fdc3_discover_context_types. Pass an exact contextType string (e.g. fdc3.instrument, fdc3.data.markdown).',
       inputSchema: z.object({
         contextType: z
           .string()

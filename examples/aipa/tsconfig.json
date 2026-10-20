@@ -18,8 +18,14 @@
     "common/**/*.tsx",
     "server-apps/**/*.ts",
     "server-apps/**/*.tsx",
+    "front-end-apps/**/*.ts",
+    "front-end-apps/**/*.tsx",
     "directory/**/*.ts",
     "directory/**/*.tsx"
   ],
-  "exclude": ["server-apps/**/vendor/**", "server-apps/**/.vite/**"]
+  "exclude": [
+    "server-apps/**/vendor/**",
+    "server-apps/**/.vite/**",
+    "front-end-apps/**/.vite/**"
+  ]
 }
