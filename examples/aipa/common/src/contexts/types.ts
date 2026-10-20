@@ -62,6 +62,8 @@ export const CONTEXT_TYPES = {
   contextTypeList: 'fdc3.discoverability.contextTypeList',
   discoverContextSchema: 'fdc3.discoverability.discoverContextSchema',
   contextSchema: 'fdc3.discoverability.contextSchema',
+  discoverAppDirectoryRecord: 'fdc3.discoverability.discoverAppDirectoryRecord',
+  appDirectoryRecord: 'fdc3.discoverability.appDirectoryRecord',
 } as const;
 
 /** Dedicated app channel for fdc3.discoverability request/reply. */
@@ -97,6 +99,11 @@ export type DiscoverContextSchema = {
   contextType: string;
 };
 
+export type DiscoverAppDirectoryRecord = {
+  type: 'fdc3.discoverability.discoverAppDirectoryRecord';
+  appId: string;
+};
+
 export type AppDirectoryReply = {
   type: 'fdc3.discoverability.appDirectory';
   apps: DiscoverabilityAppEntry[];
@@ -119,6 +126,22 @@ export type ContextSchemaReply = {
   /** JSON Schema document when resolved. */
   schema?: Record<string, unknown>;
   /** Set when no schema is available for `contextType`. */
+  error?: string;
+};
+
+/** Full FDC3 App Directory `Application` record (see appd.schema.json). */
+export type AppDirectoryApplicationRecord = Record<string, unknown> & {
+  appId: string;
+  title?: string;
+  type?: string;
+};
+
+export type AppDirectoryRecordReply = {
+  type: 'fdc3.discoverability.appDirectoryRecord';
+  appId: string;
+  /** Full App Directory Application when found. */
+  record?: AppDirectoryApplicationRecord;
+  /** Set when no record is available for `appId`. */
   error?: string;
 };
 

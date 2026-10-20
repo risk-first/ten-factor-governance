@@ -59,6 +59,7 @@ export const FDC3_TOOL_NAMES = [
   'fdc3_discover_intents',
   'fdc3_discover_context_types',
   'fdc3_discover_context_schema',
+  'fdc3_discover_app_directory_record',
 ] as const;
 
 export type Fdc3ToolName = (typeof FDC3_TOOL_NAMES)[number];
@@ -251,6 +252,20 @@ export function makeFdc3Tools(): ToolSet {
           .string()
           .min(1)
           .describe('Exact FDC3 context type string, e.g. fdc3.portfolio or fdc3.data.markdown.'),
+        timeoutMs: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .describe('Max wait for reply (default 8000).'),
+      }),
+    }),
+
+    fdc3_discover_app_directory_record: tool({
+      description:
+        'Catalog: fetch the full FDC3 App Directory Application record for one appId (fdc3.discoverability). Use after fdc3_discover_apps when you need launch details, declared intents, or hostManifests. Not the slim {appId,title,description} list, and not runtime getAppMetadata.',
+      inputSchema: z.object({
+        appId: z.string().min(1).describe('Exact App Directory appId from fdc3_discover_apps.'),
         timeoutMs: z
           .number()
           .int()

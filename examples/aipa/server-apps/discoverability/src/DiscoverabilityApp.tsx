@@ -4,6 +4,7 @@ import { connectAgent, setStatus } from '../../../common/src/fdc3/agent.ts';
 import {
   CONTEXT_TYPES,
   DISCOVERABILITY_CHANNEL,
+  type AppDirectoryRecordReply,
   type AppDirectoryReply,
   type ContextSchemaReply,
   type ContextTypeListReply,
@@ -14,13 +15,14 @@ import type { DiscoveryCatalog } from './catalog.ts';
 
 type LogLine = { t: number; msg: string };
 
-type CatalogTab = 'apps' | 'intents' | 'contextTypes' | 'schema';
+type CatalogTab = 'apps' | 'intents' | 'contextTypes' | 'schema' | 'appd';
 
 const TABS: { id: CatalogTab; label: string }[] = [
   { id: 'apps', label: 'Apps' },
   { id: 'intents', label: 'Intents' },
   { id: 'contextTypes', label: 'Context types' },
   { id: 'schema', label: 'Schema' },
+  { id: 'appd', label: 'AppD record' },
 ];
 
 async function loadCatalog(): Promise<DiscoveryCatalog> {
@@ -41,8 +43,17 @@ async function loadContextSchema(contextType: string): Promise<ContextSchemaRepl
   return res.json() as Promise<ContextSchemaReply>;
 }
 
+async function loadAppDirectoryRecord(appId: string): Promise<AppDirectoryRecordReply> {
+  const res = await fetch(`/api/app-directory-record?appId=${encodeURIComponent(appId)}`);
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error || `app-directory-record HTTP ${res.status}`);
+  }
+  return res.json() as Promise<AppDirectoryRecordReply>;
+}
+
 function replyPayloadForTab(
-  tab: Exclude<CatalogTab, 'schema'>,
+  tab: Exclude<CatalogTab, 'schema' | 'appd'>,
   catalog: DiscoveryCatalog
 ): AppDirectoryReply | IntentListReply | ContextTypeListReply {
   if (tab === 'apps') {
@@ -66,12 +77,15 @@ export function DiscoverabilityApp() {
   const [catalog, setCatalog] = useState<DiscoveryCatalog | null>(null);
   const [activeTab, setActiveTab] = useState<CatalogTab>('apps');
   const [schemaContextType, setSchemaContextType] = useState('fdc3.instrument');
+  const [appdAppId, setAppdAppId] = useState('');
   const [previewJson, setPreviewJson] = useState<string>('');
   const [previewLoading, setPreviewLoading] = useState(false);
   const [lines, setLines] = useState<LogLine[]>([]);
   const catalogRef = useRef<DiscoveryCatalog | null>(null);
   const schemaContextTypeRef = useRef(schemaContextType);
   schemaContextTypeRef.current = schemaContextType;
+  const appdAppIdRef = useRef(appdAppId);
+  appdAppIdRef.current = appdAppId;
   const previewSeq = useRef(0);
 
   const log = (msg: string) => {
@@ -79,12 +93,26 @@ export function DiscoverabilityApp() {
     setStatus(drawer.current.statusEl, msg);
   };
 
-  const refreshPreview = useCallback(async (tab: CatalogTab, contextType?: string) => {
+  const refreshPreview = useCallback(async (tab: CatalogTab, lookupKey?: string) => {
     const seq = ++previewSeq.current;
     setPreviewLoading(true);
     try {
       if (tab === 'schema') {
-        const payload = await loadContextSchema(contextType ?? schemaContextTypeRef.current);
+        const payload = await loadContextSchema(lookupKey ?? schemaContextTypeRef.current);
+        if (seq !== previewSeq.current) return;
+        setPreviewJson(JSON.stringify(payload, null, 2));
+        return;
+      }
+      if (tab === 'appd') {
+        const loaded = catalogRef.current ?? (await loadCatalog());
+        if (seq !== previewSeq.current) return;
+        catalogRef.current = loaded;
+        setCatalog(loaded);
+        const selected = lookupKey || appdAppIdRef.current || loaded.apps[0]?.appId || '';
+        if (selected && selected !== appdAppIdRef.current) {
+          setAppdAppId(selected);
+        }
+        const payload = await loadAppDirectoryRecord(selected);
         if (seq !== previewSeq.current) return;
         setPreviewJson(JSON.stringify(payload, null, 2));
         return;
@@ -93,6 +121,9 @@ export function DiscoverabilityApp() {
       if (seq !== previewSeq.current) return;
       catalogRef.current = loaded;
       setCatalog(loaded);
+      if (!appdAppIdRef.current && loaded.apps[0]?.appId) {
+        setAppdAppId(loaded.apps[0].appId);
+      }
       const payload = replyPayloadForTab(tab, loaded);
       setPreviewJson(JSON.stringify(payload, null, 2));
     } catch (e) {
@@ -204,6 +235,32 @@ export function DiscoverabilityApp() {
             await channel.broadcast(payload as Context);
             log(`Replied contextSchema error for ${contextType}: ${error}`);
           }
+          return;
+        }
+
+        if (ctx.type === CONTEXT_TYPES.discoverAppDirectoryRecord) {
+          const appId =
+            typeof (ctx as { appId?: unknown }).appId === 'string'
+              ? (ctx as { appId: string }).appId
+              : '';
+          try {
+            const payload = await loadAppDirectoryRecord(appId);
+            await channel.broadcast(payload as Context);
+            log(
+              payload.error
+                ? `Replied appDirectoryRecord error for ${appId}: ${payload.error}`
+                : `Replied appDirectoryRecord for ${appId}`
+            );
+          } catch (e) {
+            const error = e instanceof Error ? e.message : String(e);
+            const payload: AppDirectoryRecordReply = {
+              type: CONTEXT_TYPES.appDirectoryRecord,
+              appId,
+              error,
+            };
+            await channel.broadcast(payload as Context);
+            log(`Replied appDirectoryRecord error for ${appId}: ${error}`);
+          }
         }
       };
 
@@ -212,6 +269,7 @@ export function DiscoverabilityApp() {
         CONTEXT_TYPES.discoverIntents,
         CONTEXT_TYPES.discoverContextTypes,
         CONTEXT_TYPES.discoverContextSchema,
+        CONTEXT_TYPES.discoverAppDirectoryRecord,
       ]) {
         listeners.push(await channel.addContextListener(type, ctx => void reply(ctx)));
       }
@@ -239,6 +297,7 @@ export function DiscoverabilityApp() {
   const schemaOptions =
     catalog?.contextTypes.map(c => c.contextType) ??
     ['fdc3.instrument', 'fdc3.data.markdown', 'fdc3.ai.agentQuery'];
+  const appdOptions = catalog?.apps.map(a => a.appId) ?? [];
 
   return (
     <div className="container">
@@ -247,7 +306,8 @@ export function DiscoverabilityApp() {
         <p className="note" style={{ marginTop: 0 }}>
           Responder on app channel <code>{DISCOVERABILITY_CHANNEL}</code>. Catalog from combined App
           Directory. Tab to preview reply JSON (refetched on every tab). Schema tab looks up the
-          JSON Schema for one context type.
+          JSON Schema for one context type. AppD record tab looks up the full Application record
+          for one appId.
         </p>
 
         <div
@@ -302,6 +362,41 @@ export function DiscoverabilityApp() {
               onClick={() => {
                 setPreviewJson('');
                 void refreshPreview('schema');
+              }}
+              disabled={previewLoading}
+            >
+              Refresh
+            </button>
+          </div>
+        ) : null}
+
+        {activeTab === 'appd' ? (
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+            <label htmlFor="appd-app-id" className="note" style={{ margin: 0 }}>
+              appId
+            </label>
+            <select
+              id="appd-app-id"
+              value={appdAppId}
+              onChange={e => {
+                const next = e.target.value;
+                setAppdAppId(next);
+                setPreviewJson('');
+                void refreshPreview('appd', next);
+              }}
+              style={{ flex: 1, minWidth: 0 }}
+            >
+              {[...new Set([appdAppId, ...appdOptions].filter(Boolean))].sort().map(id => (
+                <option key={id} value={id}>
+                  {id}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => {
+                setPreviewJson('');
+                void refreshPreview('appd');
               }}
               disabled={previewLoading}
             >

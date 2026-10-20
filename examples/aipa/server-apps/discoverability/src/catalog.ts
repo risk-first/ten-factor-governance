@@ -97,6 +97,15 @@ function appEntryFromApp(app: AppDirectoryApplication): DiscoverabilityAppEntry 
   return entry;
 }
 
+export function findApplicationById(
+  applications: AppDirectoryApplication[],
+  appId: string
+): AppDirectoryApplication | undefined {
+  const trimmed = appId.trim();
+  if (!trimmed) return undefined;
+  return applications.find(a => a.appId === trimmed);
+}
+
 export function buildCatalog(
   applications: AppDirectoryApplication[],
   schemaMeta: Map<string, ContextTypeCatalogMeta> = new Map()

@@ -4,7 +4,7 @@
       "appId": "aipa-discoverability",
       "name": "AIPA Discoverability",
       "title": "AIPA Discoverability",
-      "description": "Responds on app channel fdc3.discoverability with App Directory, intent, and context-type catalogs.",
+      "description": "Responds on app channel fdc3.discoverability with App Directory, intent, context-type, schema, and AppD-record catalogs.",
       "categories": ["AIPA", "Discovery"],
       "icons": [{ "src": "http://localhost:4109/icon.svg" }],
       "type": "web",

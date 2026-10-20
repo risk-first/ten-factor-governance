@@ -264,6 +264,20 @@ export async function executeFdc3Tool(
       });
     }
 
+    case 'fdc3_discover_app_directory_record': {
+      const appId = String(args.appId ?? '').trim();
+      if (!appId) throw new Error('appId required');
+      return discoverabilityRequest(fdc3, channelCache, {
+        requestType: CONTEXT_TYPES.discoverAppDirectoryRecord,
+        replyType: CONTEXT_TYPES.appDirectoryRecord,
+        request: { appId },
+        matchReply: ctx =>
+          typeof (ctx as { appId?: unknown }).appId === 'string' &&
+          (ctx as { appId: string }).appId === appId,
+        timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
+      });
+    }
+
     default:
       throw new Error(`Unknown FDC3 tool: ${toolName}`);
   }

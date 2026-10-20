@@ -10,7 +10,8 @@ Listens on app channel `fdc3.discoverability` and replies to catalog requests:
 | `fdc3.discoverability.discoverIntents` | `fdc3.discoverability.intentList` |
 | `fdc3.discoverability.discoverContextTypes` | `fdc3.discoverability.contextTypeList` |
 | `fdc3.discoverability.discoverContextSchema` | `fdc3.discoverability.contextSchema` |
+| `fdc3.discoverability.discoverAppDirectoryRecord` | `fdc3.discoverability.appDirectoryRecord` |
 
-Catalog is derived from the combined AIPA App Directory (`GET /api/catalog`). Context schemas are resolved via `GET /api/context-schema?contextType=` (local `fdc3-extensions` schemas, then FDC3 CDN fallback).
+Catalog is derived from the combined AIPA App Directory (`GET /api/catalog`). Context schemas are resolved via `GET /api/context-schema?contextType=` (local `fdc3-extensions` schemas, then FDC3 CDN fallback). Full App Directory records are resolved via `GET /api/app-directory-record?appId=`.
 
-Port **4109** (`aipa-discoverability`). Agent harness callers use `fdc3_discover_apps` / `fdc3_discover_intents` / `fdc3_discover_context_types` / `fdc3_discover_context_schema`.
+Port **4109** (`aipa-discoverability`). Agent harness callers use `fdc3_discover_apps` / `fdc3_discover_intents` / `fdc3_discover_context_types` / `fdc3_discover_context_schema` / `fdc3_discover_app_directory_record`.
