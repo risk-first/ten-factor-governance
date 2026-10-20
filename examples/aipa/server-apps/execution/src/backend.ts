@@ -8,6 +8,8 @@ import {
   loadLivePortfolio,
   saveLivePortfolio,
 } from '../../../common/src/data/portfolio.js';
+import { appendExecutionLog, loadExecutionLog } from '../../../common/src/data/execution-log.js';
+import { toResultContext } from '../../../common/src/security/envelope.js';
 
 export default async function backend(
   app: Application,
@@ -16,6 +18,10 @@ export default async function backend(
 ): Promise<void> {
   const signer = await createAppSigner('aipa-execution', `http://localhost:${opts.port}`);
   mountSigningRoutes(app, signer, server);
+
+  app.get('/api/log', (_req, res) => {
+    res.json(loadExecutionLog());
+  });
 
   app.post('/api/submit', async (req, res) => {
     const order = req.body?.order ?? req.body;
@@ -40,17 +46,25 @@ export default async function backend(
       .map(f => `${f.side} ${f.quantity} ${f.ticker}`)
       .join(', ');
 
+    const ok = applied.length > 0;
     const result = {
       type: 'fdc3.transactionResult',
-      status: 'Created',
+      status: ok ? 'Created' : 'Failed',
       context: order,
-      message: applied.length
+      message: ok
         ? `Filled ${applied.length} order(s); live portfolio updated (${summary}).`
         : 'No fillable orders; live portfolio unchanged.',
       id: { transactionId: randomUUID() },
     };
 
     const envelope = await signer.signContext(result as unknown as Record<string, unknown>);
-    res.json({ envelope, verify });
+    const entry = {
+      id: result.id.transactionId,
+      at: new Date().toISOString(),
+      order,
+      result: toResultContext(envelope),
+    };
+    appendExecutionLog(entry);
+    res.json({ envelope, verify, entry });
   });
 }

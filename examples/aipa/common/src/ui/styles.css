@@ -40,6 +40,52 @@ body {
   margin-bottom: 0;
 }
 
+.box.execution-log {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-scroll {
+  overflow: auto;
+  min-height: 8rem;
+  max-height: min(50vh, 22rem);
+  border: 1px solid #e4e7ec;
+  border-radius: 6px;
+}
+
+.table-scroll table {
+  margin: 0;
+}
+
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  box-shadow: 0 1px 0 #eee;
+}
+
+.num-col {
+  width: 3rem;
+  color: #667085;
+  font-variant-numeric: tabular-nums;
+}
+
+.outcome {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.outcome--ok {
+  color: #027a48;
+}
+
+.outcome--fail {
+  color: #b42318;
+}
+
 .box:has(.chart-host),
 .box.research-panel {
   flex: 1 1 auto;
@@ -291,6 +337,28 @@ td.actions--multi {
 
 td.actions--multi .icon-btn {
   vertical-align: middle;
+}
+
+td.context-cell {
+  padding: 4px 8px;
+}
+
+td.context-cell.selected {
+  background: #eff8ff;
+}
+
+button.link-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #175cd3;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font: inherit;
+}
+
+button.link-btn:hover {
+  color: #1849a9;
 }
 
 button,

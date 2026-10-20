@@ -7,12 +7,22 @@
   </head>
   <body>
     <div class="container">
-      <div class="box">
-        <div class="toolbar">
-          <button id="demo-submit" class="primary">Submit demo.order</button>
-          <span id="verify" class="badge warn">Inbound raise signature: n/a</span>
+      <div class="box execution-log">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th class="num-col">#</th>
+                <th>Order</th>
+                <th>Outcome</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="log"></tbody>
+          </table>
         </div>
-        <pre id="result" class="code">No submissions yet.</pre>
+        <p id="log-empty" class="meta-row">No submissions yet.</p>
+        <pre id="detail" class="code" hidden></pre>
       </div>
     </div>
   </body>
