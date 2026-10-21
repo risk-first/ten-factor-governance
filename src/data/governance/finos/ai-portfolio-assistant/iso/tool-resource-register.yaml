@@ -209,7 +209,7 @@ resources:
     name: "FDC3 Order Entry application"
     kind: Tooling
     description: |
-      Desktop Order Entry app responding to demo.CreateOrderProposal with
+      Desktop Order Entry app responding to demo.CreateOrder with
       demo.orderProposal for human review. Provides dataset
       fdc3-order-proposal-context. Would also be the receiver of
       demo.SubmitOrders if execution were permitted (it is not for AIPA).

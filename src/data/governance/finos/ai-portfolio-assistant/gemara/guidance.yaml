@@ -584,7 +584,7 @@ guidelines:
         text: >
           The assistant may raise demo.GetPortfolioRisk and
           demo.RunStressScenario at analyse, demo.GetResearch at explain,
-          and demo.CreateOrderProposal at propose when the session
+          and demo.CreateOrder at propose when the session
           entitlement and related controls are satisfied.
       - id: apa-guidance-demo-intents.2
         title: Execute ban
@@ -596,7 +596,7 @@ guidelines:
         title: Responders
         text: >
           Risk App responds to GetPortfolioRisk and RunStressScenario;
-          Research App to GetResearch; Order Entry to CreateOrderProposal;
+          Research App to GetResearch; Order Entry to CreateOrder;
           Execution / Order Entry would respond to SubmitOrders if it were
           permitted.
       - id: apa-guidance-demo-intents.4

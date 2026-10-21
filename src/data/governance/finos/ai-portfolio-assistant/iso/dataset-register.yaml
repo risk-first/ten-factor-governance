@@ -327,7 +327,7 @@ datasets:
   - id: fdc3-order-proposal-context
     name: "FDC3 order proposal context"
     description: |
-      Structured proposals (demo.orderProposal) from demo.CreateOrderProposal
+      Structured proposals (demo.orderProposal) from demo.CreateOrder
       for human review. Provided by tool fdc3-order-entry-app. Not execution
       instructions and must not be treated as fdc3.orderList submission.
     version: "2026.09"

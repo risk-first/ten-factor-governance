@@ -338,14 +338,14 @@ controls:
     assessment-requirements:
       - id: apa-ctl-005-propose-human-approval.ar01
         text: >
-          Order proposals produced via demo.CreateOrderProposal MUST NOT leave
+          Order proposals produced via demo.CreateOrder MUST NOT leave
           draft state or be handed to execution workflows without a recorded
           human approval identifying the approver and approval time.
         applicability:
           - propose
           - human-approval-required
         recommendation: >
-          Correlate demo.CreateOrderProposal events with approval workflow
+          Correlate demo.CreateOrder events with approval workflow
           records; treat missing or self-approved AI identities as failures.
         state: Active
     guidelines:
@@ -501,7 +501,7 @@ controls:
           members of the approved allowlist for the session's maximum
           authority level. The core demo allowlist is demo.GetPortfolioRisk,
           demo.GetResearch, demo.RunStressScenario, and
-          demo.CreateOrderProposal (authority-scoped). demo.SubmitOrders and
+          demo.CreateOrder (authority-scoped). demo.SubmitOrders and
           other execution-capable intents MUST NOT appear on any assistant
           allowlist.
         applicability:

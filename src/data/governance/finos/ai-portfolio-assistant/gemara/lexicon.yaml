@@ -184,10 +184,10 @@ terms:
       demo.stressScenarioRequest. The Risk app responds with
       demo.stressScenarioResult.
 
-  - id: demo-create-order-proposal
-    title: demo.CreateOrderProposal
+  - id: demo-create-order
+    title: demo.CreateOrder
     synonyms:
-      - CreateOrderProposal
+      - CreateOrder
     definition: >
       Propose-authority FDC3 intent raised by the assistant with a
       demo.portfolioRecommendation. Order Entry responds with
@@ -234,13 +234,13 @@ terms:
     definition: >
       Assistant-produced recommendation describing proposed portfolio
       changes, rationale, and supporting evidence. Input to
-      demo.CreateOrderProposal. Must carry an FDC3 Security signature when
+      demo.CreateOrder. Must carry an FDC3 Security signature when
       broadcast.
 
   - id: demo-order-proposal
     title: demo.orderProposal
     definition: >
-      Draft order basket returned by demo.CreateOrderProposal for human
+      Draft order basket returned by demo.CreateOrder for human
       review before becoming an fdc3.orderList. Must carry an FDC3 Security
       signature when broadcast.
 
