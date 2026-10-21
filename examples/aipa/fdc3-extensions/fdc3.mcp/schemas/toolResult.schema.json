@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/mcp.toolResult.schema.json",
+  "type": "object",
+  "title": "MCP Tool Result",
+  "description": "IntentResult of `CallMcpTool`. Normalized MCP `content[]` (and optional citations) so the harness never speaks MCP wire format.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.mcp.toolResult"
+        },
+        "serverId": {
+          "type": "string",
+          "title": "Server ID"
+        },
+        "toolName": {
+          "type": "string",
+          "title": "Tool name"
+        },
+        "isError": {
+          "type": "boolean",
+          "title": "Is error",
+          "description": "True when the MCP call failed or returned an error content block."
+        },
+        "content": {
+          "type": "array",
+          "title": "Content",
+          "description": "MCP-style content blocks (text, image, resource, …).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "text": { "type": "string" }
+            },
+            "required": ["type"],
+            "additionalProperties": true
+          }
+        },
+        "citations": {
+          "type": "array",
+          "title": "Citations",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "url": { "type": "string" },
+              "title": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": ["type", "serverId", "toolName", "content"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.mcp.toolResult",
+      "serverId": "rita-mcp",
+      "toolName": "web_search",
+      "isError": false,
+      "content": [
+        {
+          "type": "text",
+          "text": "…"
+        }
+      ],
+      "citations": [
+        {
+          "type": "web",
+          "url": "https://example.com",
+          "title": "Example"
+        }
+      ]
+    }
+  ]
+}

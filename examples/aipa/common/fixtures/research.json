@@ -1,0 +1,20 @@
+{
+  "findings": [
+    {
+      "title": "Shell Q2 energy margin commentary (fixture)",
+      "summary": "Energy majors remain sensitive to oil-price moves; concentration in SHEL/XOM/CVX elevates portfolio oil beta.",
+      "sourceUrl": "https://www.sec.gov/",
+      "sourceType": "fixture",
+      "publishedAt": "2025-06-15T12:00:00.000Z",
+      "tickers": ["SHEL", "XOM", "CVX"]
+    },
+    {
+      "title": "Technology leaders continue to dominate equity risk (fixture)",
+      "summary": "NVDA and MSFT remain large absolute contributors; portfolio diversification benefits are limited while energy weight stays above 40%.",
+      "sourceUrl": "https://finnhub.io/",
+      "sourceType": "fixture",
+      "publishedAt": "2025-07-01T09:00:00.000Z",
+      "tickers": ["NVDA", "MSFT"]
+    }
+  ]
+}

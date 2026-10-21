@@ -1,0 +1,18 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/decorators.json#/defs/decorator",
+  "unique-id": "ccc-k8s-host-controls",
+  "type": "control-catalog",
+  "target": [
+    "architecture.json"
+  ],
+  "applies-to": [
+    "aipa-k8s",
+    "governance-runtime-k8s"
+  ],
+  "data": {
+    "catalog": "src/data/governance/finos/ccc-k8s/controls.yaml",
+    "framework": "CCC Managed Kubernetes",
+    "url": "https://ccc.finos.org/catalogs/orchestration/k8s",
+    "notes": "Shared host controls assumed by AIMS SoA soa-host-ccc-k8s-*"
+  }
+}

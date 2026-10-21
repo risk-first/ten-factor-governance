@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.intentList.schema.json",
+  "type": "object",
+  "title": "Intent List",
+  "description": "Reply to `fdc3.discoverability.discoverIntents` on app channel `fdc3.discoverability`. Catalog of intent names the caller may raise, with purpose, display, and result-type hints.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.intentList"
+        },
+        "intents": {
+          "type": "array",
+          "title": "Intents",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Intent name",
+                "description": "FDC3 intent name, e.g. `ViewChart` or `AskAgent`."
+              },
+              "purpose": {
+                "type": "string",
+                "title": "Purpose",
+                "description": "Short explanation of when to raise this intent. Sourced from a non-standard `purpose` field on each App Directory `interop.intents.listensFor` entry."
+              },
+              "displayName": {
+                "type": "string",
+                "title": "Display name",
+                "description": "Optional user-visible label."
+              },
+              "contexts": {
+                "type": "array",
+                "title": "Contexts",
+                "description": "Optional context `type` strings this intent accepts.",
+                "items": { "type": "string" }
+              },
+              "resultType": {
+                "type": "string",
+                "title": "Result type",
+                "description": "Optional IntentResult context `type`, or `channel` when the result is a PrivateChannel."
+              }
+            },
+            "required": ["name", "purpose"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["type", "intents"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.intentList",
+      "intents": [
+        {
+          "name": "AskAgent",
+          "purpose": "Start an AI agent session that can plan and call FDC3 tools for a natural-language query.",
+          "displayName": "Ask agent",
+          "contexts": ["fdc3.ai.agentQuery"],
+          "resultType": "channel"
+        },
+        {
+          "name": "ViewChart",
+          "purpose": "Show a price chart for an instrument.",
+          "contexts": ["fdc3.instrument"]
+        }
+      ]
+    }
+  ]
+}

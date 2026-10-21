@@ -1,0 +1,61 @@
+{
+  "name": "@finos/aipa-fdc3-apps",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FDC3 assisting apps for the AI Portfolio Assistant (AIPA) example",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "aipa-fdc3-apps": "./bin/run.mjs"
+  },
+  "scripts": {
+    "clean": "rimraf --glob \"directory/static/generated\" \"server-apps/*/.vite\" \"front-end-apps/*/.vite\" \"directory/.vite\"",
+    "dev": "tsx main.ts",
+    "start": "tsx main.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/groq": "^3.0.75",
+    "@ai-sdk/openai": "^3.0.128",
+    "@finos/fdc3": "3.0.0-beta.1",
+    "@finos/fdc3-context": "3.0.0-beta.1",
+    "@finos/fdc3-security": "3.0.0-beta.1",
+    "@openrouter/ai-sdk-provider": "^2.10.0",
+    "@railpath/finance-toolkit": "^0.5.4",
+    "ag-grid-community": "^36.2.0",
+    "ai": "^6.0.307",
+    "dotenv": "^17.4.2",
+    "echarts": "^6.1.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "jose": "^6.2.10",
+    "json-canonicalize": "2.0.0",
+    "lightweight-charts": "^5.2.1",
+    "ollama-ai-provider-v2": "^3.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "tsx": "^4.23.13",
+    "typescript": "^5.8.2",
+    "uuid": "^11.1.0",
+    "ws": "^8.21.3",
+    "yahoo-finance2": "^3.15.4",
+    "zod": "^4.6.7"
+  },
+  "overrides": {
+    "json-canonicalize": "2.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.13.10",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "rimraf": "^6.0.1",
+    "vite": "^6.2.2"
+  }
+}

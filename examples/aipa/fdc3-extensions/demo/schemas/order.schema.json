@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/demo.order.schema.json",
+  "type": "object",
+  "title": "Order",
+  "description": "Executable order for a single name. Extends experimental `fdc3.order` (which only requires `id` and has no size) with `instrument`, `side`, and `quantity`. Context for `demo.CreateOrder` and `demo.SubmitOrder`. Use `demo.orderList` when more than one stock is involved.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "demo.order"
+        },
+        "id": {
+          "type": "object",
+          "title": "Order identifiers",
+          "description": "Same role as `fdc3.order.id` — one or more identifiers for this order.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Optional human-readable summary of the order."
+        },
+        "instrument": {
+          "type": "object",
+          "title": "Instrument",
+          "properties": {
+            "type": { "const": "fdc3.instrument" },
+            "name": { "type": "string" },
+            "id": {
+              "type": "object",
+              "properties": {
+                "ticker": { "type": "string" },
+                "ISIN": { "type": "string" }
+              },
+              "required": ["ticker"]
+            }
+          },
+          "required": ["type", "id"]
+        },
+        "side": {
+          "type": "string",
+          "title": "Side",
+          "enum": ["buy", "sell"]
+        },
+        "quantity": {
+          "type": "number",
+          "title": "Quantity",
+          "description": "Executable size. Not present on standard `fdc3.order`.",
+          "exclusiveMinimum": 0
+        },
+        "orderType": {
+          "type": "string",
+          "title": "Order type",
+          "const": "market"
+        }
+      },
+      "required": ["type", "id", "instrument", "side", "quantity"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ]
+}

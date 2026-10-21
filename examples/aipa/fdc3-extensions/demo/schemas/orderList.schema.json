@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/demo.orderList.schema.json",
+  "type": "object",
+  "title": "OrderList",
+  "description": "A list of `demo.order` legs. Mirrors experimental `fdc3.orderList` (which only wraps `fdc3.order` identifiers) so multi-name blotters and baskets keep instrument, side, and quantity. Context for `demo.CreateOrder` and `demo.SubmitOrder` when more than one stock is involved.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "demo.orderList"
+        },
+        "id": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Order List Identifiers",
+          "description": "Same role as `fdc3.orderList.id` — optional identifiers for the list in an OMS, EMS, or related system."
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "An optional human-readable summary of the order list."
+        },
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "order.schema.json#"
+          },
+          "title": "List of Orders",
+          "description": "An array of `demo.order` contexts that forms the list."
+        }
+      },
+      "required": ["type", "orders"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "demo.orderList",
+      "orders": [
+        {
+          "type": "demo.order",
+          "id": { "orderId": "sell-shel-1" },
+          "instrument": { "type": "fdc3.instrument", "id": { "ticker": "SHEL" } },
+          "side": "sell",
+          "quantity": 1000,
+          "orderType": "market"
+        },
+        {
+          "type": "demo.order",
+          "id": { "orderId": "buy-nvda-1" },
+          "instrument": { "type": "fdc3.instrument", "id": { "ticker": "NVDA" } },
+          "side": "buy",
+          "quantity": 200,
+          "orderType": "market"
+        }
+      ]
+    }
+  ]
+}

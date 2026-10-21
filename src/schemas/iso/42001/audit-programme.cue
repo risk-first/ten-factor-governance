@@ -8,8 +8,8 @@ import (
 	"github.com/finos/ten-factor-governance/schemas/iso/common:iso"
 )
 
-// AuditProgramme is the plan for internal audit: what will be audited, when,
-// by whom, against what, and how independence is assured.
+// AuditProgramme is the plan for internal audit: what will be audited, how
+// often, by whom, against what, and how independence is assured.
 //
 // ISO/IEC 42001 Clause 9.2. Gemara's audit log records the result of an audit
 // very well. What has nowhere to live is the governance of auditing itself —
@@ -21,9 +21,9 @@ import (
 	iso.#Document
 	metadata: type: "AuditProgramme"
 
-	// cycle is the period the programme covers, over which coverage must be
-	// complete
-	cycle: iso.#Period
+	// coverage-cycle is how often the programme must achieve the coverage
+	// stated below (for example Annual full AIMS coverage)
+	"coverage-cycle": iso.#Cadence
 
 	// objectives state what the programme is for
 	objectives: [string, ...string]
@@ -32,8 +32,8 @@ import (
 	// organisation's own requirements, or both
 	criteria: [#AuditCriterion, ...#AuditCriterion]
 
-	// coverage states what the cycle must cover, so a gap in the schedule is
-	// visible against an intention rather than only in hindsight
+	// coverage states what each coverage-cycle must cover, so a gap in the
+	// schedule is visible against an intention rather than only in hindsight
 	coverage?: [iso.#Reference, ...iso.#Reference]
 
 	// independence states how auditor impartiality is assured
@@ -42,14 +42,11 @@ import (
 	// competence are the competence requirements auditors must meet
 	competence?: [iso.#Reference, ...iso.#Reference]
 
-	// audits are the audits planned and performed in the cycle
+	// audits are the recurring audit types in the programme
 	audits: [#PlannedAudit, ...#PlannedAudit]
 
-	// owner is accountable for the programme
-	owner: gemara.#Contact
-
-	// review states how often the programme itself is revisited
-	review?: iso.#Review
+	// owner is accountable for the programme; reference a party register entry
+	owner: iso.#Reference
 
 	_uniqueAuditIds: {for i, a in audits {(a.id): i}}
 }
@@ -73,10 +70,10 @@ import (
 	verification?: string
 }
 
-// AuditStatus is where a planned audit has got to
+// AuditStatus is where a planned audit has got to for its latest occurrence
 #AuditStatus: "Planned" | "Scheduled" | "In Progress" | "Reported" | "Closed" | "Deferred"
 
-// PlannedAudit is one audit in the programme
+// PlannedAudit is one recurring audit in the programme, defined by frequency
 #PlannedAudit: {
 	// id allows this audit to be referenced by other elements
 	id: string
@@ -87,6 +84,9 @@ import (
 	// scope states what is being audited
 	scope: string
 
+	// frequency is how often this audit runs
+	frequency: iso.#Cadence
+
 	// subject references the artifacts, systems or activities in scope
 	subject?: [iso.#Reference, ...iso.#Reference]
 
@@ -96,20 +96,18 @@ import (
 	// method is how the audit is conducted
 	method?: string
 
-	// period is when it is scheduled for
-	period?: iso.#Period
-
 	// auditor is who performs it
 	auditor?: gemara.#Actor
 
 	// independence-confirmed records that the auditor's impartiality was
-	// checked for this audit, not merely required by the programme
+	// checked for the latest occurrence, not merely required by the programme
 	"independence-confirmed"?: bool
 
-	// status is where the audit has got to
+	// status is where the latest occurrence has got to
 	status: #AuditStatus
 
-	// results references the Gemara audit log the audit produced
+	// results references the Gemara audit log (or corrective-action entry)
+	// the latest occurrence produced
 	results?: iso.#Reference
 
 	// findings are the nonconformities raised, in the corrective action log

@@ -1,8 +1,8 @@
 # GovernanceContractRegister — ISO/IEC 42001 Annex A.10.2, A.10.4
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: GovernanceContractRegister
 
-title: "Governance contracts for the AI Portfolio Assistant"
+title: "Governance contracts for the AIPA"
 
 metadata:
   id: apa-governance-contract
@@ -18,10 +18,10 @@ metadata:
     type: Human
   description: |
     Allocation of governance responsibility between the firm and the foundation
-    model provider for the AI Portfolio Assistant deployment.
+    model provider for the AIPA deployment.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-ai-system-register
@@ -29,11 +29,11 @@ metadata:
       version: "0.1.0"
       url: file://ai-system-register.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-stakeholder-requirements
-      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      title: "Stakeholder requirements for the AIPA"
       version: "0.1.0"
       url: file://stakeholder-requirements.yaml
 
@@ -53,8 +53,9 @@ contracts:
     allocations:
       - id: alloc-model-dev
         responsibility: |
-          Develop, evaluate and secure the foundation model service, including
-          model cards and material change notices for pinned versions.
+          Develop, evaluate and supply foundation model artefacts (including
+          model cards and material change notices for pinned versions) for
+          firm-controlled inference inside the banking firewall.
         holder: Counterparty
         lifecycle-stage: Development
         escalation: "Material undisclosed model change is grounds for suspension of use."
@@ -62,7 +63,7 @@ contracts:
       - id: alloc-intended-use
         responsibility: |
           Define intended use, authority ceiling, human oversight and prohibited
-          uses for the AI Portfolio Assistant on the firm's desks.
+          uses for the AIPA on the firm's desks.
         holder: Organisation
         lifecycle-stage: Operation
         controls:
@@ -76,18 +77,20 @@ contracts:
 
       - id: alloc-prompt-data
         responsibility: |
-          Configure processing so portfolio context and prompts are not used to
-          train shared models; retain only as contractually permitted.
-        holder: Shared
+          Host and operate inference inside the banking firewall so prompts,
+          completions and portfolio context never egress to the model supplier;
+          no supplier-side training, logging or secondary use of session data.
+        holder: Organisation
         controls:
           - reference-id: apa-controls
             entry-id: apa-ctl-014-model-provider-controls
-        escalation: "Breach of training prohibition triggers immediate legal and AI governance review."
+        escalation: "Any prompt or portfolio-context egress to the supplier triggers immediate legal and AI governance review."
 
       - id: alloc-incident
         responsibility: |
           Notify and cooperate on security or model-integrity incidents affecting
-          the hosted service; the firm retains client and FCA notification duties.
+          supplied artefacts or support channels; the firm retains client and FCA
+          notification duties.
         holder: Shared
         controls:
           - reference-id: apa-controls

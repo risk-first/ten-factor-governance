@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/approval.request.schema.json",
+  "type": "object",
+  "title": "Approval Request",
+  "description": "Intent context for `GetApproval`. Describes a proposed action that needs human approval. `subject` is a nested context identifying the object and the exact version to be reviewed. The provider fetches authoritative details rather than trusting values supplied here. Repeated requests with the same authenticated caller and `id.requestId` return the same approval.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.approval.request"
+        },
+        "id": {
+          "type": "object",
+          "title": "Request identifiers",
+          "description": "FDC3 context `id` map. `requestId` is required and is the caller-generated correlation and retry identifier, scoped by the provider to the authenticated caller.",
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "title": "requestId",
+              "description": "Caller-generated correlation and retry identifier. Reusing this identifier with a different subject or request content is an error. Identical request IDs from different callers must not collide."
+            }
+          },
+          "required": ["requestId"],
+          "unevaluatedProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Optional short display label."
+        },
+        "subject": {
+          "title": "Subject",
+          "description": "Domain context identifying the proposed action or object and the exact version to be reviewed. Each supported subject type must define how to identify and resolve an immutable version or snapshot.",
+          "$ref": "context.schema.json#"
+        },
+        "reason": {
+          "type": "string",
+          "title": "Reason",
+          "description": "Explanation of why approval is being requested. Informational; the provider validates the applicable policy."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Expires at",
+          "description": "Requested expiry as an RFC 3339 timestamp. The provider may enforce a different deadline and returns the effective value on `fdc3.approval`."
+        }
+      },
+      "required": ["type", "id", "subject", "reason"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.approval.request",
+      "id": {
+        "requestId": "req-123"
+      },
+      "name": "Approve order above trading limit",
+      "subject": {
+        "type": "demo.order",
+        "id": {
+          "orderId": "ORD-123",
+          "version": "3"
+        },
+        "name": "Buy 200 NVDA",
+        "instrument": {
+          "type": "fdc3.instrument",
+          "name": "NVIDIA",
+          "id": {
+            "ticker": "NVDA"
+          }
+        },
+        "side": "buy",
+        "quantity": 200,
+        "orderType": "market"
+      },
+      "reason": "Order exceeds the GBP 100,000 approval threshold",
+      "expiresAt": "2026-11-03T20:00:00Z"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-market-data",
+      "name": "AIPA Market Data",
+      "title": "AIPA Market Data",
+      "description": "Quotes and charts for ViewChart; GetPriceHistory for peer apps; fdc3.data data app (advertiseDatasets / GetAppData / ViewData with tabularData); proxies Finnhub and yahoo-finance2.",
+      "categories": ["AIPA", "Market Data"],
+      "icons": [{ "src": "http://localhost:4103/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4103/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewChart": {
+              "displayName": "View Chart",
+              "purpose": "Open the market-data chart UI for one instrument, an instrument list, or a portfolio’s holdings.",
+              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
+            },
+            "demo.GetPriceHistory": {
+              "displayName": "Get Price History",
+              "purpose": "Fetch historical OHLC/price series for instruments, lists, portfolios, or chart contexts.",
+              "contexts": [
+                "fdc3.instrument",
+                "fdc3.instrumentList",
+                "fdc3.portfolio",
+                "fdc3.chart"
+              ]
+            },
+            "GetAppData": {
+              "displayName": "Get App Data",
+              "purpose": "Pull an advertised market-data dataset as fdc3.data.tabularData.",
+              "contexts": ["fdc3.data.dataRequest"]
+            },
+            "ViewData": {
+              "displayName": "View Data",
+              "purpose": "Display or apply tabular market series (fdc3.data.tabularData) in the market-data app.",
+              "contexts": ["fdc3.data.tabularData"]
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument", "fdc3.data.appOffer"],
+          "listensFor": ["fdc3.instrument", "fdc3.data.advertiseDatasets"]
+        },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

@@ -1,0 +1,35 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-agent-harness",
+      "name": "AIPA Agent Harness",
+      "title": "AIPA Agent Harness",
+      "description": "Agent runtime derived from OpenBB agent-rita. Handles AskAgent, stages fdc3.data.file, runs a tool loop with generic FDC3 Desktop Agent tools (including fdc3_discover_*), and streams fdc3.ai.agentDelta / agentAnswer. LLM via /api/query.",
+      "categories": ["AIPA", "Agent"],
+      "icons": [{ "src": "http://localhost:4107/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4107/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "AskAgent": {
+              "displayName": "Ask Agent",
+              "purpose": "Start an AI agent session that plans and calls FDC3 tools for a natural-language query; result is a PrivateChannel of fdc3.ai deltas/answers.",
+              "contexts": ["fdc3.ai.agentQuery"]
+            }
+          }
+        }
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "2.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": true,
+          "searchable": false
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

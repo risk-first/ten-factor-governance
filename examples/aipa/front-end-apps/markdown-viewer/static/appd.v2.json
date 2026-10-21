@@ -1,0 +1,35 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-markdown-viewer",
+      "name": "AIPA Markdown Viewer",
+      "title": "AIPA Markdown Viewer",
+      "description": "Data app that renders fdc3.data.markdown via fdc3.open / ViewData.",
+      "categories": ["AIPA", "Data"],
+      "icons": [{ "src": "http://localhost:4108/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4108/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewData": {
+              "displayName": "View Markdown",
+              "purpose": "Render fdc3.data.markdown content in the markdown viewer.",
+              "contexts": ["fdc3.data.markdown"]
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": ["fdc3.data.markdown"]
+        },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

@@ -17,8 +17,9 @@ import "github.com/gemaraproj/gemara@v1:gemara"
 	#Document
 	metadata: type: "CorrectiveActionLog"
 
-	// entries are the nonconformities raised
-	entries: [#Nonconformity, ...#Nonconformity]
+	// entries are the nonconformities raised. May be empty when the log exists
+	// as an AIMS slot before any nonconformity has been recorded.
+	entries: [...#Nonconformity]
 
 	_uniqueEntryIds: {for i, e in entries {(e.id): i}}
 }

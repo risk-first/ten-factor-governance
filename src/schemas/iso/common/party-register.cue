@@ -43,6 +43,7 @@ import (
 	"Group" |
 	"Team" |
 	"Organisation" |
+	"System" |
 	"Regulator" |
 	"Customer" |
 	"Supplier" |

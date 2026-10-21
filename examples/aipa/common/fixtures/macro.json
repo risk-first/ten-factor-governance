@@ -1,0 +1,5 @@
+{
+  "oil": { "seriesId": "DCOILWTICO", "value": 78.5, "unit": "USD/bbl", "date": "2025-09-30" },
+  "fedFunds": { "seriesId": "DFF", "value": 5.33, "unit": "percent", "date": "2025-09-30" },
+  "tenYear": { "seriesId": "DGS10", "value": 4.2, "unit": "percent", "date": "2025-09-30" }
+}

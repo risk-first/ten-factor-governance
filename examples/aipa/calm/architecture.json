@@ -1,0 +1,1392 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/calm.json",
+  "metadata": {
+    "name": "ai-portfolio-assistant",
+    "version": "0.1.0",
+    "created": "2026-09-30",
+    "status": "draft",
+    "owner": "AI Governance Office",
+    "description": "CALM architecture for the AI Portfolio Assistant (AIPA) example: FDC3 desktop interoperability, AIPA as chat harness, Governance Runtime evaluation/enforcement (agent-ingress and LLM-egress firewalling), Artifact Repository (Gemara + AIMS), Decisions and Evidence Record, and in-firewall foundation-model inference. Chat turns and model traffic pass through the Governance Gateway per AIGF AIR-PREV-003 and CCC.MARefArc.CN02, in addition to FDC3 intent enforcement.",
+    "tags": [
+      "aipa",
+      "fdc3",
+      "gemara",
+      "aims",
+      "iso-42001",
+      "ten-factor-governance"
+    ],
+    "gemara-root": "src/data/governance/finos/ai-portfolio-assistant/gemara",
+    "aims-profile": "src/data/governance/finos/ai-portfolio-assistant/iso/aims.yaml"
+  },
+  "nodes": [
+    {
+      "unique-id": "banking-firewall",
+      "node-type": "network",
+      "name": "Inside Banking Firewall",
+      "description": "Trust boundary for portfolio data, FDC3 desktop applications, AIPA and Governance Runtime workloads, Artifact Repository, evidence store, and foundation-model inference. Prompts and portfolio context do not egress to the model supplier."
+    },
+    {
+      "unique-id": "portfolio-manager",
+      "node-type": "actor",
+      "name": "Portfolio Manager",
+      "description": "Human user of the FDC3 desktop. Retains authority for recommendations that require approval and for any path toward order proposal or execution.",
+      "metadata": {
+        "party-id": "portfolio-managers"
+      }
+    },
+    {
+      "unique-id": "fdc3-desktop",
+      "node-type": "system",
+      "name": "FDC3 Desktop",
+      "description": "Interoperability workspace in which specialist apps and the AI Portfolio Assistant share context and raise intents via the Desktop Agent."
+    },
+    {
+      "unique-id": "fdc3-desktop-agent",
+      "node-type": "service",
+      "name": "FDC3 Desktop Agent",
+      "description": "Routes FDC3 contexts and resolves intents. Contains the governance enforcement point that consults the Governance Runtime before forwarding sensitive requests.",
+      "interfaces": [
+        {
+          "unique-id": "fdc3-context-bus",
+          "definition-url": "https://fdc3.finos.org",
+          "description": "FDC3 context broadcast and listen"
+        },
+        {
+          "unique-id": "fdc3-intent-resolver",
+          "definition-url": "https://fdc3.finos.org",
+          "description": "FDC3 intent raise and resolution"
+        },
+        {
+          "unique-id": "governance-enforcement-point",
+          "description": "Calls Governance Gateway before forwarding sensitive intents"
+        }
+      ],
+      "metadata": {
+        "party-id": "fdc3-desktop-agent"
+      }
+    },
+    {
+      "unique-id": "ai-portfolio-assistant",
+      "node-type": "service",
+      "name": "AI Portfolio Assistant",
+      "description": "Governed AI service and chat harness for the portfolio manager: conversational UI, FDC3 context/intents to deterministic specialist apps, and in-firewall model inference for explanation and recommendation. Does not perform financial calculations itself. There is no separate chat-harness node \u2014 this service is the harness. Inbound chat is subject to Governance Gateway agent-ingress evaluation; model prompts/completions leave only via LLM-egress guardrails (AIGF AIR-PREV-003, CCC.MARefArc.CN02). Primary subject of the AIPA Gemara twin and AIMS AI-system register.",
+      "interfaces": [
+        {
+          "unique-id": "aipa-chat-ui",
+          "description": "Conversational chat harness UI for the portfolio manager (this service is the harness)"
+        },
+        {
+          "unique-id": "aipa-fdc3",
+          "description": "Raises demo intents and receives/broadcasts FDC3 and demo contexts"
+        },
+        {
+          "unique-id": "aipa-model-client",
+          "description": "Issues prompts/completions via Governance Gateway LLM-egress guardrails (not a direct path to the foundation model)"
+        },
+        {
+          "unique-id": "aipa-to-gateway-chat",
+          "description": "Submits chat turns to Governance Gateway agent-ingress guardrails before tool/model action"
+        }
+      ],
+      "metadata": {
+        "gemara-twin": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant",
+        "ai-system-id": "ai-portfolio-assistant",
+        "deployment-type": "container",
+        "roles": [
+          "chat-harness",
+          "governed-ai-service"
+        ],
+        "aigf": [
+          "AIR-PREV-003",
+          "AIR-PREV-002"
+        ],
+        "ccc-capability": "agent-ingress-zero-trust-guardrails;model-interaction-zero-trust-guardrails"
+      },
+      "controls": {
+        "authority-ceiling": {
+          "description": "Session authority must not exceed the granted observe\u2192execute ladder level.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "apa-ctl-001-authority-ceiling",
+                "catalog": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/control.yaml",
+                "name": "Authority Ceiling",
+                "description": "Session authority must not exceed the granted observe\u2192execute ladder level."
+              }
+            }
+          ]
+        },
+        "prompt-injection-defenses": {
+          "description": "Detect and contain prompt-injection on chat and tool paths (Gemara apa-ctl-011).",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "apa-ctl-011-prompt-injection-defenses",
+                "catalog": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/control.yaml",
+                "name": "Prompt Injection Defenses",
+                "description": "Detect and contain prompt-injection and tool-argument manipulation."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "portfolio-app",
+      "node-type": "webclient",
+      "name": "Portfolio App",
+      "description": "Displays portfolios, positions and holdings; broadcasts fdc3.portfolio / position / instrument contexts.",
+      "metadata": {
+        "tool-resource-id": "fdc3-portfolio-app"
+      }
+    },
+    {
+      "unique-id": "risk-app",
+      "node-type": "webclient",
+      "name": "Risk App",
+      "description": "Deterministic portfolio risk analysis: exposure, concentration and stress scenarios (demo.GetPortfolioRisk, demo.RunStressScenario).",
+      "metadata": {
+        "tool-resource-id": "fdc3-risk-app"
+      }
+    },
+    {
+      "unique-id": "stress-engine",
+      "node-type": "service",
+      "name": "Stress Engine",
+      "description": "Deterministic stress-scenario calculator backing the Risk App.",
+      "metadata": {
+        "tool-resource-id": "fdc3-stress-engine"
+      }
+    },
+    {
+      "unique-id": "research-app",
+      "node-type": "webclient",
+      "name": "Research App",
+      "description": "Investment research and supporting information (demo.GetResearch \u2192 demo.researchBundle).",
+      "metadata": {
+        "tool-resource-id": "fdc3-research-app"
+      }
+    },
+    {
+      "unique-id": "market-data-app",
+      "node-type": "webclient",
+      "name": "Market Data App",
+      "description": "Pricing and market information shared via FDC3 instrument/market contexts.",
+      "metadata": {
+        "tool-resource-id": "fdc3-market-data-app"
+      }
+    },
+    {
+      "unique-id": "order-entry-app",
+      "node-type": "webclient",
+      "name": "Order Entry / Trade Blotter",
+      "description": "Receives proposed orders for human review (demo.CreateOrder \u2192 signed demo.order). Does not grant the assistant execute authority.",
+      "metadata": {
+        "tool-resource-id": "fdc3-order-entry-app"
+      }
+    },
+    {
+      "unique-id": "execution-app",
+      "node-type": "webclient",
+      "name": "Execution App",
+      "description": "Capable of submitting orders (demo.SubmitOrder). Governance prohibits the assistant from successfully exercising execute intents.",
+      "metadata": {
+        "tool-resource-id": "fdc3-execution-app"
+      }
+    },
+    {
+      "unique-id": "governance-console",
+      "node-type": "webclient",
+      "name": "Governance Console",
+      "description": "Lets users inspect governed activities, decisions and supporting evidence."
+    },
+    {
+      "unique-id": "aipa-k8s",
+      "node-type": "system",
+      "name": "Portfolio Assistant Deployment (Managed Kubernetes)",
+      "description": "Managed Kubernetes host for the AI Portfolio Assistant workload inside the banking firewall.",
+      "metadata": {
+        "ccc-catalog": "https://ccc.finos.org/catalogs/orchestration/k8s",
+        "deployment-type": "managed-kubernetes"
+      },
+      "controls": {
+        "ccc-k8s-host": {
+          "description": "CCC Managed Kubernetes host controls.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "ccc-k8s-host",
+                "catalog": "src/data/governance/finos/ccc-k8s/controls.yaml",
+                "name": "CCC Managed Kubernetes Host",
+                "description": "Shared CCC Managed Kubernetes host controls for AIPA and Governance Runtime deployments."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "governance-runtime-k8s",
+      "node-type": "system",
+      "name": "Governance Runtime Deployment (Managed Kubernetes)",
+      "description": "Managed Kubernetes host for the Portfolio Assistant Governance Runtime, separate from the AIPA workload.",
+      "metadata": {
+        "ccc-catalog": "https://ccc.finos.org/catalogs/orchestration/k8s",
+        "deployment-type": "managed-kubernetes"
+      },
+      "controls": {
+        "ccc-k8s-host": {
+          "description": "CCC Managed Kubernetes host controls.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "ccc-k8s-host",
+                "catalog": "src/data/governance/finos/ccc-k8s/controls.yaml",
+                "name": "CCC Managed Kubernetes Host",
+                "description": "Shared CCC Managed Kubernetes host controls for AIPA and Governance Runtime deployments."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "governance-runtime",
+      "node-type": "system",
+      "name": "Portfolio Assistant Governance Runtime",
+      "description": "Evaluates proposed sensitive activities (ALLOW / DENY / REQUIRE APPROVAL), records evidence, and is informed by the Governance Model.",
+      "metadata": {
+        "gemara-twin": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/governance-runtime",
+        "party-id": "governance-runtime"
+      }
+    },
+    {
+      "unique-id": "governance-gateway",
+      "node-type": "service",
+      "name": "Governance Gateway",
+      "description": "Unified enforcement point for (1) sensitive FDC3 intents from the Desktop Agent, (2) AI Portfolio Assistant chat-turn agent-ingress evaluation (the assistant is the chat harness), and (3) LLM-egress prompt/completion traffic to the in-firewall agentic model. Returns ALLOW, DENY or REQUIRE APPROVAL. Implements AIGF AIR-PREV-003 user/app/model firewalling and CCC.MARefArc.CN02 gateway guardrails.",
+      "interfaces": [
+        {
+          "unique-id": "gateway-api",
+          "description": "HTTPS API for Desktop Agent FDC3 governance enforcement"
+        },
+        {
+          "unique-id": "agent-ingress-guardrails",
+          "description": "Inspects AI Portfolio Assistant chat turns (CCC.MARefArc.CN02.AR01 / AIR-PREV-003 user-input filtering); assistant is the chat harness"
+        },
+        {
+          "unique-id": "llm-egress-guardrails",
+          "description": "Inspects agent \u2192 model prompts and model \u2192 agent completions (CCC.MARefArc.CN02.AR02 / AIR-PREV-003 model I/O filtering)"
+        }
+      ],
+      "controls": {
+        "user-app-model-firewalling": {
+          "description": "All user\u2194agent and agent\u2194model traffic must traverse gateway guardrails.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "AIR-PREV-003",
+                "name": "User/App/Model Firewalling",
+                "catalog": "src/data/governance/finos/aigf/guidance.yaml",
+                "description": "Filter at user-input and model-output boundaries; route chat and model I/O through gateway guardrails."
+              }
+            },
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "CCC.MARefArc.CN02",
+                "name": "User, Application, and Model Firewalling",
+                "catalog": "src/data/governance/finos/ccc-ma-refarch/controls.yaml",
+                "description": "All user\u2194agent and agent\u2194model traffic must traverse gateway guardrails."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "deterministic-policy-evaluation",
+      "node-type": "service",
+      "name": "Deterministic Policy Evaluation",
+      "description": "Evaluates objective Gemara policy rules: authority ceiling, allowlists, approval gates, execute prohibit."
+    },
+    {
+      "unique-id": "semantic-evaluation",
+      "node-type": "service",
+      "name": "Semantic / AI Evaluation",
+      "description": "Evaluates requirements needing interpretation or judgement beyond deterministic rules."
+    },
+    {
+      "unique-id": "human-approval-workflow",
+      "node-type": "service",
+      "name": "Human Approval Workflow",
+      "description": "Routes activities that require explicit human authority before propose progresses."
+    },
+    {
+      "unique-id": "evidence-recording",
+      "node-type": "service",
+      "name": "Evidence Recording",
+      "description": "Writes evaluation, enforcement and decision evidence to the Decisions and Evidence Record."
+    },
+    {
+      "unique-id": "artifact-repository",
+      "node-type": "system",
+      "name": "Artifact Repository (Governance Model)",
+      "description": "Hosts and serves versioned Governance Model releases (lexicon \u2192 policy) and the AIMS envelope for Gemara components.",
+      "metadata": {
+        "gemara-twin": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/artifact-repository",
+        "party-id": "artifact-repository"
+      }
+    },
+    {
+      "unique-id": "governance-model",
+      "node-type": "data-asset",
+      "name": "Governance Model (Gemara + AIMS)",
+      "description": "Machine-readable Gemara catalogs and ISO/IEC 42001 AIMS documents that inform runtime evaluation.",
+      "metadata": {
+        "gemara-root": "src/data/governance/finos/ai-portfolio-assistant/gemara",
+        "aims-root": "src/data/governance/finos/ai-portfolio-assistant/iso"
+      }
+    },
+    {
+      "unique-id": "records-object-storage",
+      "node-type": "system",
+      "name": "Records Deployment (Object Storage)",
+      "description": "Object-storage bucket hosting the Decisions and Evidence Record. Store posture from CCC Object Storage.",
+      "metadata": {
+        "ccc-catalog": "https://ccc.finos.org/catalogs/storage/objstor"
+      }
+    },
+    {
+      "unique-id": "evidence-record",
+      "node-type": "database",
+      "name": "Decisions and Evidence Record",
+      "description": "Persisted evaluation and enforcement evidence written by the Governance Runtime.",
+      "metadata": {
+        "party-id": "evidence-record"
+      },
+      "controls": {
+        "ccc-object-storage": {
+          "description": "CCC Object Storage posture for the evidence bucket.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "ccc-objstor",
+                "catalog": "src/data/governance/finos/ccc-object-storage/controls.yaml",
+                "name": "CCC Object Storage",
+                "description": "CCC Object Storage posture for the Decisions and Evidence Record bucket."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "agentic-model",
+      "node-type": "service",
+      "name": "Agentic Model (Foundation Model)",
+      "description": "Foundation-model inference hosted inside the banking firewall under firm control. Used by AIPA for language and reasoning; prompts and portfolio context do not leave the firewall.",
+      "interfaces": [
+        {
+          "unique-id": "model-inference-api",
+          "description": "Internal-only prompt/completion endpoint"
+        }
+      ],
+      "metadata": {
+        "tool-resource-id": "foundation-model-api",
+        "supplier-assurance": "fm-no-train-on-prompts"
+      },
+      "controls": {
+        "model-provider-in-firewall": {
+          "description": "Inference stays inside the banking firewall; no prompt egress to supplier.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "apa-ctl-014-model-provider-controls",
+                "catalog": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/control.yaml",
+                "supplier-obligation": "fm-no-train-on-prompts",
+                "name": "Model Provider Data Controls",
+                "description": "Foundation-model inference runs inside the banking firewall; prompts must not egress to the supplier."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "portfolio-position-data",
+      "node-type": "data-asset",
+      "name": "Portfolio / Position Data",
+      "description": "Source data containing portfolio holdings and positions consumed via the Portfolio App / FDC3 contexts."
+    },
+    {
+      "unique-id": "market-data",
+      "node-type": "data-asset",
+      "name": "Market Data",
+      "description": "Pricing and other market information used for analysis and risk calculations."
+    },
+    {
+      "unique-id": "research-data",
+      "node-type": "data-asset",
+      "name": "Research / News / Filings",
+      "description": "Information sources used by the Research App and cited by the Assistant."
+    },
+    {
+      "unique-id": "trading-execution-service",
+      "node-type": "service",
+      "name": "Trading / Execution Service",
+      "description": "External capability through which authorised humans can ultimately submit or execute orders. Not available to the assistant as an autonomous path."
+    }
+  ],
+  "relationships": [
+    {
+      "unique-id": "firewall-contains-workloads",
+      "description": "All AIPA-related runtime components operate inside the banking firewall.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "banking-firewall",
+          "nodes": [
+            "portfolio-manager",
+            "fdc3-desktop",
+            "aipa-k8s",
+            "governance-runtime-k8s",
+            "artifact-repository",
+            "records-object-storage",
+            "agentic-model",
+            "portfolio-position-data",
+            "market-data",
+            "research-data",
+            "trading-execution-service"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "fdc3-desktop-composition",
+      "description": "FDC3 desktop composed of the agent, AI Portfolio Assistant (chat harness), specialist apps and governance console.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "fdc3-desktop",
+          "nodes": [
+            "fdc3-desktop-agent",
+            "ai-portfolio-assistant",
+            "portfolio-app",
+            "risk-app",
+            "stress-engine",
+            "research-app",
+            "market-data-app",
+            "order-entry-app",
+            "execution-app",
+            "governance-console"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "governance-runtime-composition",
+      "description": "Governance Runtime composed of gateway, evaluators, approval workflow and evidence recording.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "governance-runtime",
+          "nodes": [
+            "governance-gateway",
+            "deterministic-policy-evaluation",
+            "semantic-evaluation",
+            "human-approval-workflow",
+            "evidence-recording"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "artifact-repository-hosts-model",
+      "description": "Artifact Repository hosts the Governance Model (Gemara + AIMS).",
+      "relationship-type": {
+        "composed-of": {
+          "container": "artifact-repository",
+          "nodes": [
+            "governance-model"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "records-host-evidence",
+      "description": "Object-storage records deployment hosts the Decisions and Evidence Record.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "records-object-storage",
+          "nodes": [
+            "evidence-record"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "aipa-deployed-in-k8s",
+      "description": "AI Portfolio Assistant workload runs on Managed Kubernetes.",
+      "relationship-type": {
+        "deployed-in": {
+          "container": "aipa-k8s",
+          "nodes": [
+            "ai-portfolio-assistant"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "governance-runtime-deployed-in-k8s",
+      "description": "Governance Runtime runs on a separate Managed Kubernetes deployment.",
+      "relationship-type": {
+        "deployed-in": {
+          "container": "governance-runtime-k8s",
+          "nodes": [
+            "governance-runtime"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "pm-uses-aipa",
+      "description": "Portfolio manager uses the AI Portfolio Assistant as the chat harness, plus other desktop apps.",
+      "relationship-type": {
+        "interacts": {
+          "actor": "portfolio-manager",
+          "nodes": [
+            "ai-portfolio-assistant",
+            "portfolio-app",
+            "order-entry-app",
+            "governance-console"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "aipa-fdc3-interop",
+      "description": "Assistant raises intents and receives returned contexts via the Desktop Agent (e.g. raises demo.GetPortfolioRisk with fdc3.portfolio; later receives demo.portfolioRisk).",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "ai-portfolio-assistant",
+            "interfaces": [
+              "aipa-fdc3"
+            ]
+          },
+          "destination": {
+            "node": "fdc3-desktop-agent",
+            "interfaces": [
+              "fdc3-context-bus",
+              "fdc3-intent-resolver"
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "intents": [
+          "demo.GetPortfolioRisk",
+          "demo.GetResearch",
+          "demo.RunStressScenario",
+          "demo.CreateOrder",
+          "demo.SubmitOrder"
+        ],
+        "example-intent": "demo.GetPortfolioRisk",
+        "example-input-context": "fdc3.portfolio",
+        "example-returned-context": "demo.portfolioRisk"
+      }
+    },
+    {
+      "unique-id": "apps-fdc3-interop",
+      "description": "Specialist FDC3 apps connect to the Desktop Agent for context and intents.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "portfolio-app"
+          },
+          "destination": {
+            "node": "fdc3-desktop-agent",
+            "interfaces": [
+              "fdc3-context-bus",
+              "fdc3-intent-resolver"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "risk-app-fdc3",
+      "description": "Risk App serves deterministic risk intents via the Desktop Agent (demo.GetPortfolioRisk \u2192 demo.portfolioRisk; demo.RunStressScenario \u2192 demo.stressScenarioResult).",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "risk-app"
+          },
+          "destination": {
+            "node": "fdc3-desktop-agent"
+          }
+        }
+      },
+      "metadata": {
+        "example-intent": "demo.GetPortfolioRisk",
+        "example-returned-context": "demo.portfolioRisk"
+      }
+    },
+    {
+      "unique-id": "fdc3-agent-to-risk",
+      "description": "After ALLOW, the Desktop Agent forwards demo.GetPortfolioRisk (fdc3.portfolio) to the Risk App for deterministic analysis.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "fdc3-desktop-agent",
+            "interfaces": [
+              "fdc3-intent-resolver"
+            ]
+          },
+          "destination": {
+            "node": "risk-app"
+          }
+        }
+      },
+      "metadata": {
+        "example-intent": "demo.GetPortfolioRisk",
+        "example-input-context": "fdc3.portfolio"
+      }
+    },
+    {
+      "unique-id": "fdc3-agent-to-aipa",
+      "description": "Desktop Agent delivers intent results to the AI Portfolio Assistant (e.g. demo.portfolioRisk with FDC3 Security provenance after demo.GetPortfolioRisk).",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "fdc3-desktop-agent",
+            "interfaces": [
+              "fdc3-context-bus",
+              "fdc3-intent-resolver"
+            ]
+          },
+          "destination": {
+            "node": "ai-portfolio-assistant",
+            "interfaces": [
+              "aipa-fdc3"
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "example-intent": "demo.GetPortfolioRisk",
+        "example-returned-context": "demo.portfolioRisk"
+      }
+    },
+    {
+      "unique-id": "aipa-explains-to-pm",
+      "description": "Assistant presents governed analysis to the portfolio manager (explains concentrations and risk contributors from demo.portfolioRisk).",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "ai-portfolio-assistant",
+            "interfaces": [
+              "aipa-chat-ui"
+            ]
+          },
+          "destination": {
+            "node": "portfolio-manager"
+          }
+        }
+      },
+      "metadata": {
+        "example-returned-context": "demo.portfolioRisk",
+        "channel": "chat-harness-ui"
+      }
+    },
+    {
+      "unique-id": "risk-app-to-stress-engine",
+      "description": "Risk App invokes the stress engine for scenario calculation.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "risk-app"
+          },
+          "destination": {
+            "node": "stress-engine"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "research-app-fdc3",
+      "description": "Research App serves research intents via the Desktop Agent.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "research-app"
+          },
+          "destination": {
+            "node": "fdc3-desktop-agent"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "order-entry-fdc3",
+      "description": "Order Entry receives proposal intents via the Desktop Agent.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "order-entry-app"
+          },
+          "destination": {
+            "node": "fdc3-desktop-agent"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "execution-app-fdc3",
+      "description": "Execution App is reachable for submit intents that governance denies to the assistant.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "execution-app"
+          },
+          "destination": {
+            "node": "fdc3-desktop-agent"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "fdc3-to-governance-gateway",
+      "description": "Desktop Agent governance enforcement point requests decisions from the Governance Gateway before forwarding sensitive intents.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "fdc3-desktop-agent",
+            "interfaces": [
+              "governance-enforcement-point"
+            ]
+          },
+          "destination": {
+            "node": "governance-gateway",
+            "interfaces": [
+              "gateway-api"
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "architectural-rule": "FDC3 applications make ordinary FDC3 requests; the Desktop Agent enforces governance; the Governance Gateway makes the decision."
+      },
+      "controls": {
+        "fdc3-intent-enforcement": {
+          "description": "Sensitive FDC3 intents are evaluated before forwarding.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "apa-ctl-001-authority-ceiling",
+                "catalog": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/control.yaml",
+                "name": "Authority Ceiling",
+                "description": "Session authority must not exceed the granted observe\u2192execute ladder level."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "gateway-to-deterministic-eval",
+      "description": "Gateway invokes deterministic policy evaluation.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "governance-gateway"
+          },
+          "destination": {
+            "node": "deterministic-policy-evaluation"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "gateway-to-evidence-recording",
+      "description": "Governance Gateway hands the evaluation/enforcement outcome to Evidence Recording for persistence against the Decisions and Evidence Record.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "governance-gateway"
+          },
+          "destination": {
+            "node": "evidence-recording"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "gateway-to-semantic-eval",
+      "description": "Gateway may invoke semantic evaluation for judgement-bearing requirements.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "governance-gateway"
+          },
+          "destination": {
+            "node": "semantic-evaluation"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "gateway-to-approval",
+      "description": "Gateway routes REQUIRE APPROVAL outcomes to the human approval workflow.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "governance-gateway"
+          },
+          "destination": {
+            "node": "human-approval-workflow"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "runtime-informed-by-model",
+      "description": "Governance Runtime is informed by the Governance Model served from the Artifact Repository.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "governance-runtime"
+          },
+          "destination": {
+            "node": "artifact-repository"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "evidence-recording-to-store",
+      "description": "Evidence Recording writes evaluation and enforcement records to the Decisions and Evidence Record.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "evidence-recording"
+          },
+          "destination": {
+            "node": "evidence-record"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "aipa-chat-to-gateway",
+      "description": "AI Portfolio Assistant (chat harness) submits each chat turn to Governance Gateway agent-ingress guardrails before acting; there is no ungated path from user chat to tools or model (AIGF AIR-PREV-003, CCC.MARefArc.CN02.AR01).",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "ai-portfolio-assistant",
+            "interfaces": [
+              "aipa-to-gateway-chat"
+            ]
+          },
+          "destination": {
+            "node": "governance-gateway",
+            "interfaces": [
+              "agent-ingress-guardrails"
+            ]
+          }
+        }
+      },
+      "controls": {
+        "agent-ingress-firewalling": {
+          "description": "Chat ingress must be inspected at the gateway.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "CCC.MARefArc.CN02.AR01",
+                "name": "Agent Gateway Ingress",
+                "description": "All traffic between the user-facing application and the agent layer MUST traverse Agent Gateway guardrails.",
+                "catalog": "src/data/governance/finos/ccc-ma-refarch/controls.yaml"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "aipa-to-llm-gateway",
+      "description": "Assistant issues prompts via Governance Gateway LLM-egress guardrails; there is no direct assistant-to-model path (CCC.MARefArc.CN02.AR02, AIR-PREV-003).",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "ai-portfolio-assistant",
+            "interfaces": [
+              "aipa-model-client"
+            ]
+          },
+          "destination": {
+            "node": "governance-gateway",
+            "interfaces": [
+              "llm-egress-guardrails"
+            ]
+          }
+        }
+      },
+      "controls": {
+        "llm-egress-firewalling": {
+          "description": "Model invocations must traverse LLM gateway guardrails.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "CCC.MARefArc.CN02.AR02",
+                "catalog": "src/data/governance/finos/ccc-ma-refarch/controls.yaml",
+                "name": "LLM Gateway Egress",
+                "description": "All model invocations MUST traverse LLM gateway guardrails with inputs and outputs inspected."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "gateway-to-model",
+      "description": "Gateway forwards inspected prompts to the in-firewall agentic model and returns inspected completions; prompts do not egress to the supplier (apa-ctl-014 / fm-no-train-on-prompts).",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "governance-gateway",
+            "interfaces": [
+              "llm-egress-guardrails"
+            ]
+          },
+          "destination": {
+            "node": "agentic-model",
+            "interfaces": [
+              "model-inference-api"
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "data-egress": "none-to-supplier",
+        "supplier-obligation": "fm-no-train-on-prompts"
+      },
+      "controls": {
+        "model-provider-in-firewall": {
+          "description": "No prompt egress outside the banking firewall.",
+          "requirements": [
+            {
+              "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+              "config": {
+                "control-id": "apa-ctl-014-model-provider-controls",
+                "catalog": "src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/control.yaml",
+                "name": "Model Provider Data Controls",
+                "description": "Foundation-model inference runs inside the banking firewall; prompts must not egress to the supplier."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "portfolio-app-to-portfolio-data",
+      "description": "Portfolio App reads portfolio and position data.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "portfolio-app"
+          },
+          "destination": {
+            "node": "portfolio-position-data"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "market-data-app-to-feed",
+      "description": "Market Data App consumes market data feeds.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "market-data-app"
+          },
+          "destination": {
+            "node": "market-data"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "research-app-to-corpus",
+      "description": "Research App retrieves research, news and filings.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "research-app"
+          },
+          "destination": {
+            "node": "research-data"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "execution-to-trading-service",
+      "description": "Execution App submits authorised orders to the trading service (human path only).",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "execution-app"
+          },
+          "destination": {
+            "node": "trading-execution-service"
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "console-to-evidence",
+      "description": "Governance Console reads decisions and evidence for inspection.",
+      "protocol": "HTTPS",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "governance-console"
+          },
+          "destination": {
+            "node": "evidence-record"
+          }
+        }
+      }
+    }
+  ],
+  "flows": [
+    {
+      "unique-id": "flow-sensitive-intent",
+      "name": "demo.GetPortfolioRisk under governance (closed loop)",
+      "description": "Concrete Analyse-authority example from the FDC3 catalog and demo steps. Portfolio manager asks what the biggest risks are; the assistant raises demo.GetPortfolioRisk with fdc3.portfolio; the Desktop Agent consults the Governance Gateway; on ALLOW the Risk App returns signed demo.portfolioRisk; the assistant explains the result back to the portfolio manager. (Propose/execute intents such as demo.CreateOrder and demo.SubmitOrder follow the same enforcement shape with different decisions.)",
+      "transitions": [
+        {
+          "relationship-unique-id": "pm-uses-aipa",
+          "sequence-number": 1,
+          "description": "PM asks: \"What are the biggest risks in this portfolio?\""
+        },
+        {
+          "relationship-unique-id": "aipa-fdc3-interop",
+          "sequence-number": 2,
+          "description": "Assistant raises demo.GetPortfolioRisk with fdc3.portfolio"
+        },
+        {
+          "relationship-unique-id": "fdc3-to-governance-gateway",
+          "sequence-number": 3,
+          "description": "Desktop Agent asks Gateway: ALLOW / DENY / REQUIRE APPROVAL?"
+        },
+        {
+          "relationship-unique-id": "gateway-to-deterministic-eval",
+          "sequence-number": 4,
+          "description": "Deterministic eval: Analyse authority + apa-ctl-001 \u2192 ALLOW"
+        },
+        {
+          "relationship-unique-id": "gateway-to-evidence-recording",
+          "sequence-number": 5,
+          "description": "Gateway sends ALLOW decision to Evidence Recording"
+        },
+        {
+          "relationship-unique-id": "evidence-recording-to-store",
+          "sequence-number": 6,
+          "description": "Evidence Recording persists the decision to the Evidence Record"
+        },
+        {
+          "relationship-unique-id": "fdc3-agent-to-risk",
+          "sequence-number": 7,
+          "description": "Agent forwards demo.GetPortfolioRisk to Risk App"
+        },
+        {
+          "relationship-unique-id": "risk-app-fdc3",
+          "sequence-number": 8,
+          "description": "Risk App returns signed demo.portfolioRisk"
+        },
+        {
+          "relationship-unique-id": "fdc3-agent-to-aipa",
+          "sequence-number": 9,
+          "description": "Agent delivers demo.portfolioRisk to the Assistant"
+        },
+        {
+          "relationship-unique-id": "aipa-explains-to-pm",
+          "sequence-number": 10,
+          "description": "Assistant explains concentrations / contributors to the PM"
+        }
+      ],
+      "metadata": {
+        "example-intent": "demo.GetPortfolioRisk",
+        "authority-level": "analyse",
+        "responding-app": "risk-app",
+        "input-context": "fdc3.portfolio",
+        "returned-context": "demo.portfolioRisk",
+        "governance-decision": "ALLOW"
+      }
+    },
+    {
+      "unique-id": "flow-in-firewall-inference",
+      "name": "Governed in-firewall model inference",
+      "description": "Assistant obtains language/reasoning completions from the foundation model only via Governance Gateway LLM-egress guardrails; prompts never egress outside the banking firewall (AIR-PREV-003, CCC.MARefArc.CN02.AR02, apa-ctl-014).",
+      "transitions": [
+        {
+          "relationship-unique-id": "aipa-to-llm-gateway",
+          "sequence-number": 1,
+          "description": "Assistant submits prompt to LLM-egress guardrails"
+        },
+        {
+          "relationship-unique-id": "gateway-to-model",
+          "sequence-number": 2,
+          "description": "Gateway forwards inspected prompt to in-firewall model"
+        },
+        {
+          "relationship-unique-id": "gateway-to-evidence-recording",
+          "sequence-number": 3,
+          "description": "Gateway sends decision to Evidence Recording"
+        },
+        {
+          "relationship-unique-id": "evidence-recording-to-store",
+          "sequence-number": 4,
+          "description": "Evaluation/enforcement evidence recorded when policy requires"
+        }
+      ]
+    },
+    {
+      "unique-id": "flow-governed-chat",
+      "name": "Governed chat (AIPA is the harness)",
+      "description": "Portfolio manager chats with the AI Portfolio Assistant (the chat harness). Each turn is evaluated by Governance Gateway agent-ingress guardrails; model calls go only via LLM-egress guardrails (AIGF AIR-PREV-003; CCC.MARefArc.CN02).",
+      "transitions": [
+        {
+          "relationship-unique-id": "pm-uses-aipa",
+          "sequence-number": 1,
+          "description": "Portfolio manager sends a chat turn to the AI Portfolio Assistant (harness)"
+        },
+        {
+          "relationship-unique-id": "aipa-chat-to-gateway",
+          "sequence-number": 2,
+          "description": "Assistant submits the turn to agent-ingress guardrails"
+        },
+        {
+          "relationship-unique-id": "aipa-to-llm-gateway",
+          "sequence-number": 3,
+          "description": "Assistant requests model inference via LLM-egress guardrails"
+        },
+        {
+          "relationship-unique-id": "gateway-to-model",
+          "sequence-number": 4,
+          "description": "Gateway invokes in-firewall model and inspects completion"
+        },
+        {
+          "relationship-unique-id": "gateway-to-evidence-recording",
+          "sequence-number": 5,
+          "description": "Gateway sends decision to Evidence Recording"
+        },
+        {
+          "relationship-unique-id": "evidence-recording-to-store",
+          "sequence-number": 6,
+          "description": "Decision and evidence persisted"
+        }
+      ]
+    }
+  ],
+  "controls": {
+    "authority-ceiling": {
+      "description": "Session authority must not exceed the granted observe\u2192execute ladder level (Gemara apa-ctl-001).",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "apa-ctl-001-authority-ceiling",
+            "name": "Authority Ceiling",
+            "description": "Gemara twin: gemara/components/ai-portfolio-assistant/control.yaml#apa-ctl-001-authority-ceiling. Applied on ai-portfolio-assistant and fdc3-to-governance-gateway."
+          }
+        }
+      ]
+    },
+    "propose-human-approval": {
+      "description": "Order proposals require recorded human approval (Gemara apa-ctl-005).",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "apa-ctl-005-propose-human-approval",
+            "name": "Propose Human Approval",
+            "description": "Gemara twin control apa-ctl-005-propose-human-approval; enforced via Governance Gateway and human-approval-workflow."
+          }
+        }
+      ]
+    },
+    "execute-prohibit": {
+      "description": "Autonomous execute is prohibited for the assistant (Gemara apa-ctl-006).",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "apa-ctl-006-execute-prohibit",
+            "name": "Execute Prohibit",
+            "description": "Gemara twin control apa-ctl-006-execute-prohibit. demo.SubmitOrder must be denied for ai-portfolio-assistant."
+          }
+        }
+      ]
+    },
+    "model-provider-in-firewall": {
+      "description": "Foundation-model inference runs inside the banking firewall; prompts must not egress to the supplier (Gemara apa-ctl-014, supplier fm-no-train-on-prompts).",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "apa-ctl-014-model-provider-controls",
+            "name": "Model Provider Data Controls",
+            "description": "Applies to aipa-to-model / agentic-model. See iso/supplier-assurance.yaml#fm-no-train-on-prompts."
+          }
+        }
+      ]
+    },
+    "fdc3-security-provenance": {
+      "description": "Demo suite contexts used as grounding must carry FDC3 Security signatures (Gemara apa-ctl-016).",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "apa-ctl-016-fdc3-security-provenance",
+            "name": "FDC3 Security Provenance",
+            "description": "Applies to FDC3 context returns used by explain/recommend/propose paths."
+          }
+        }
+      ]
+    },
+    "governance-runtime-evidence": {
+      "description": "Governance Runtime must record evaluation and enforcement evidence to the Decisions and Evidence Record.",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "governance-runtime-evidence",
+            "name": "Runtime Evidence Recording",
+            "description": "Gemara twin: gemara/components/governance-runtime. Relationship evidence-recording-to-store."
+          }
+        }
+      ]
+    },
+    "ccc-k8s-host": {
+      "description": "Shared CCC Managed Kubernetes host controls assumed for AIPA and Governance Runtime deployments (AIMS SoA soa-host-ccc-k8s-*).",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "ccc-k8s-host",
+            "name": "CCC Managed Kubernetes Host",
+            "description": "Applies to aipa-k8s and governance-runtime-k8s. Catalog: https://ccc.finos.org/catalogs/orchestration/k8s"
+          }
+        }
+      ]
+    },
+    "ccc-object-storage": {
+      "description": "CCC Object Storage posture for the Decisions and Evidence Record bucket.",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "ccc-objstor",
+            "name": "CCC Object Storage",
+            "description": "Applies to records-object-storage / evidence-record. Catalog: https://ccc.finos.org/catalogs/storage/objstor"
+          }
+        }
+      ]
+    },
+    "aims-profile": {
+      "description": "ISO/IEC 42001 AIMS completeness profile wraps Gemara governance for AIPA.",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "apa-aims",
+            "name": "AIPA AIMS Profile",
+            "description": "iso/aims.yaml metadata.id apa-aims; standard ISO/IEC 42001:2023."
+          }
+        }
+      ]
+    },
+    "user-app-model-firewalling": {
+      "description": "Chat and model traffic MUST traverse Governance Gateway guardrails (AIGF AIR-PREV-003; CCC.MARefArc.CN02). Applies alongside FDC3 intent enforcement on fdc3-to-governance-gateway.",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "AIR-PREV-003",
+            "name": "User/App/Model Firewalling",
+            "catalog": "src/data/governance/finos/aigf/guidance.yaml",
+            "applies-to": [
+              "ai-portfolio-assistant",
+              "governance-gateway",
+              "aipa-to-llm-gateway",
+              "gateway-to-model",
+              "aipa-chat-to-gateway"
+            ],
+            "description": "Filter at user-input and model-output boundaries; route chat and model I/O through gateway guardrails."
+          }
+        },
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "CCC.MARefArc.CN02",
+            "name": "User, Application, and Model Firewalling",
+            "catalog": "src/data/governance/finos/ccc-ma-refarch/controls.yaml",
+            "description": "All user\u2194agent and agent\u2194model traffic must traverse gateway guardrails."
+          }
+        }
+      ]
+    },
+    "data-filtering": {
+      "description": "Layered filtering at ingestion, processing and output (AIGF AIR-PREV-002).",
+      "requirements": [
+        {
+          "requirement-url": "https://calm.finos.org/release/1.2/meta/control-requirement.json",
+          "config": {
+            "control-id": "AIR-PREV-002",
+            "name": "Data Filtering",
+            "catalog": "src/data/governance/finos/aigf/guidance.yaml",
+            "description": "Layered filtering at ingestion, processing and output."
+          }
+        }
+      ]
+    }
+  },
+  "adrs": [
+    "docs/artifacts/finos/ai-portfolio-assistant/architecture.mdx",
+    "docs/artifacts/finos/ai-portfolio-assistant/deployment.mdx",
+    "docs/artifacts/finos/ai-portfolio-assistant/fdc3-interop.mdx"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-discoverability",
+      "name": "AIPA Discoverability",
+      "title": "AIPA Discoverability",
+      "description": "Responds on app channel fdc3.discoverability with App Directory, intent, context-type, schema, and AppD-record catalogs.",
+      "categories": ["AIPA", "Discovery"],
+      "icons": [{ "src": "http://localhost:4109/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4109/" },
+      "interop": {
+        "intents": {
+          "listensFor": {},
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        },
+        "appChannels": [
+          {
+            "id": "fdc3.discoverability",
+            "description": "Catalog request/reply bus. Listens for discover* requests and broadcasts the matching catalog reply.",
+            "broadcasts": [
+              "fdc3.discoverability.appDirectory",
+              "fdc3.discoverability.intentList",
+              "fdc3.discoverability.contextTypeList",
+              "fdc3.discoverability.contextSchema",
+              "fdc3.discoverability.appDirectoryRecord"
+            ],
+            "listensFor": [
+              "fdc3.discoverability.discoverApps",
+              "fdc3.discoverability.discoverIntents",
+              "fdc3.discoverability.discoverContextTypes",
+              "fdc3.discoverability.discoverContextSchema",
+              "fdc3.discoverability.discoverAppDirectoryRecord"
+            ]
+          }
+        ]
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "2.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": true,
+          "searchable": false
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

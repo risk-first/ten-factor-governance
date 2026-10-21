@@ -1,0 +1,47 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-order-entry",
+      "name": "AIPA Order Entry",
+      "title": "AIPA Order Entry / Blotter",
+      "description": "Signs demo.order / demo.orderList drafts for human review; blotter for ViewOrders.",
+      "categories": ["AIPA", "Trading"],
+      "icons": [{ "src": "http://localhost:4104/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4104/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.CreateOrder": {
+              "displayName": "Create Order",
+              "purpose": "Accept a demo.order or demo.orderList, sign it, and add it to the blotter for human review.",
+              "contexts": ["demo.order", "demo.orderList"]
+            },
+            "ViewOrders": {
+              "displayName": "View Orders",
+              "purpose": "Show the order blotter filtered to a selected instrument.",
+              "contexts": ["fdc3.instrument"]
+            }
+          },
+          "raises": {
+            "demo.SubmitOrder": {
+              "displayName": "Submit Order",
+              "purpose": "After human review, submit the blotter as a demo.order or demo.orderList to Execution.",
+              "contexts": ["demo.order", "demo.orderList"],
+              "resultType": "fdc3.transactionResult"
+            }
+          }
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument"],
+          "listensFor": []
+        },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

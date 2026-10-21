@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.contextSchema.schema.json",
+  "type": "object",
+  "title": "Context Schema",
+  "description": "Reply to `fdc3.discoverability.discoverContextSchema` on app channel `fdc3.discoverability`. Carries the JSON Schema for one context type, or an error when no schema is available.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.contextSchema"
+        },
+        "contextType": {
+          "type": "string",
+          "title": "Context type",
+          "description": "Echo of the requested context `type`."
+        },
+        "schemaUrl": {
+          "type": "string",
+          "format": "uri",
+          "title": "Schema URL",
+          "description": "Canonical URI of the schema when known (`$id` or published AppD/CDN location)."
+        },
+        "schema": {
+          "type": "object",
+          "title": "JSON Schema",
+          "description": "The JSON Schema document for this context type (draft-07)."
+        },
+        "error": {
+          "type": "string",
+          "title": "Error",
+          "description": "Present when the schema could not be resolved; `schema` is omitted."
+        }
+      },
+      "required": ["type", "contextType"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.contextSchema",
+      "contextType": "fdc3.data.markdown",
+      "schemaUrl": "https://fdc3.finos.org/schemas/next/context/data.markdown.schema.json",
+      "schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "https://fdc3.finos.org/schemas/next/context/data.markdown.schema.json",
+        "type": "object",
+        "title": "Markdown"
+      }
+    },
+    {
+      "type": "fdc3.discoverability.contextSchema",
+      "contextType": "org.example.unknown",
+      "error": "No JSON Schema registered for context type org.example.unknown"
+    }
+  ]
+}

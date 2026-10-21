@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/data.tabularData.schema.json",
+  "type": "object",
+  "title": "Tabular Data",
+  "description": "Tabular payload (columns + rows) for a data app. A common IntentResult of `GetAppData` when the offer’s `contextType` is `fdc3.data.tabularData` (other offers may return other FDC3 context types). Also used as the context for `fdc3.open` / `ViewData` (seed or replace-in-place). Optionally embeds a standard `fdc3.chart` when the consumer should display the same data as a chart. Prefer targeted intents over user-channel broadcast.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.data.tabularData"
+        },
+        "instanceId": {
+          "type": "string",
+          "title": "Instance ID",
+          "description": "Optional instance this payload came from or should replace."
+        },
+        "title": {
+          "type": "string",
+          "title": "Title",
+          "description": "Human-readable title for the surface."
+        },
+        "columns": {
+          "type": "array",
+          "title": "Columns",
+          "description": "Column names for the table.",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "rows": {
+          "type": "array",
+          "title": "Rows",
+          "description": "Row values. Each row is an array of cell values aligned with `columns`.",
+          "items": {
+            "type": "array",
+            "items": {}
+          }
+        },
+        "chart": {
+          "title": "Chart",
+          "description": "Optional embedded [`fdc3.chart`](https://fdc3.finos.org/docs/next/context/Chart) context. When present, the consumer MAY render this tabular payload as a chart using the chart’s style / range / instruments (and `otherConfig`) rather than as a plain table. The authoritative cell data remains in `columns` / `rows`.",
+          "allOf": [
+            {
+              "$ref": "https://fdc3.finos.org/schemas/next/context/chart.schema.json#"
+            }
+          ]
+        }
+      },
+      "required": ["type", "columns", "rows"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.data.tabularData",
+      "instanceId": "wid-prices-1",
+      "title": "Closing prices",
+      "columns": ["date", "AAPL", "MSFT", "NVDA"],
+      "rows": [
+        ["2026-10-12", 178.42, 416.15, 132.80],
+        ["2026-10-13", 179.10, 418.02, 134.25],
+        ["2026-10-14", 180.55, 419.70, 135.90]
+      ]
+    },
+    {
+      "type": "fdc3.data.tabularData",
+      "title": "Closing prices (chart)",
+      "columns": ["date", "AAPL", "MSFT", "NVDA"],
+      "rows": [
+        ["2026-10-12", 178.42, 416.15, 132.80],
+        ["2026-10-13", 179.10, 418.02, 134.25],
+        ["2026-10-14", 180.55, 419.70, 135.90]
+      ],
+      "chart": {
+        "type": "fdc3.chart",
+        "instruments": [
+          { "type": "fdc3.instrument", "id": { "ticker": "AAPL" } },
+          { "type": "fdc3.instrument", "id": { "ticker": "MSFT" } },
+          { "type": "fdc3.instrument", "id": { "ticker": "NVDA" } }
+        ],
+        "range": {
+          "type": "fdc3.timeRange",
+          "startTime": "2026-10-12T00:00:00.000Z",
+          "endTime": "2026-10-14T23:59:59.000Z"
+        },
+        "style": "line"
+      }
+    }
+  ]
+}

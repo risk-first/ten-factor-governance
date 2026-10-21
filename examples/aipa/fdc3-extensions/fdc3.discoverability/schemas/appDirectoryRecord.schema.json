@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.appDirectoryRecord.schema.json",
+  "type": "object",
+  "title": "App Directory Record",
+  "description": "Reply to `fdc3.discoverability.discoverAppDirectoryRecord` on app channel `fdc3.discoverability`. Embeds one FDC3 App Directory `Application` record (imported from the App Directory specification), or an error when `appId` is unknown.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.appDirectoryRecord"
+        },
+        "appId": {
+          "type": "string",
+          "title": "App id",
+          "description": "Echo of the requested App Directory `appId`."
+        },
+        "record": {
+          "title": "Application",
+          "description": "Full FDC3 App Directory `Application` record (`appId`, `title`, `type`, `details`, optional `interop`, `hostManifests`, …).",
+          "allOf": [
+            {
+              "$ref": "https://fdc3.finos.org/schemas/next/appd.schema.json#/components/schemas/Application"
+            }
+          ]
+        },
+        "error": {
+          "type": "string",
+          "title": "Error",
+          "description": "Present when no App Directory record was found; `record` is omitted."
+        }
+      },
+      "required": ["type", "appId"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.appDirectoryRecord",
+      "appId": "aipa-discoverability",
+      "record": {
+        "appId": "aipa-discoverability",
+        "name": "AIPA Discoverability",
+        "title": "AIPA Discoverability",
+        "description": "Responds on app channel fdc3.discoverability.",
+        "type": "web",
+        "details": { "url": "http://localhost:4109/" }
+      }
+    },
+    {
+      "type": "fdc3.discoverability.appDirectoryRecord",
+      "appId": "unknown.app",
+      "error": "No App Directory record for appId unknown.app"
+    }
+  ]
+}

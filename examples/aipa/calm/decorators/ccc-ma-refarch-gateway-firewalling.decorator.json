@@ -1,0 +1,39 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/decorators.json#/defs/decorator",
+  "unique-id": "ccc-ma-refarch-gateway-firewalling",
+  "type": "control-catalog",
+  "target": [
+    "architecture.json"
+  ],
+  "applies-to": [
+    "ai-portfolio-assistant",
+    "governance-gateway",
+    "agentic-model",
+    "aipa-chat-to-gateway",
+    "aipa-to-llm-gateway",
+    "gateway-to-model"
+  ],
+  "data": {
+    "catalog": "src/data/governance/finos/ccc-ma-refarch/controls.yaml",
+    "framework": "CCC Multi-Agent Reference Architecture",
+    "controls": [
+      {
+        "id": "CCC.MARefArc.CN02",
+        "title": "User, Application, and Model Firewalling",
+        "assessment-requirements": [
+          "CCC.MARefArc.CN02.AR01 \u2014 all user-facing \u2192 agent traffic via Agent Gateway guardrails",
+          "CCC.MARefArc.CN02.AR02 \u2014 all model invocations via LLM gateway guardrails"
+        ]
+      },
+      {
+        "id": "CCC.MARefArc.CN01",
+        "title": "Data Filtering From External Knowledge Bases"
+      }
+    ],
+    "capabilities": [
+      "agent-ingress-zero-trust-guardrails",
+      "model-interaction-zero-trust-guardrails",
+      "llm-inference-gateway-routing"
+    ]
+  }
+}

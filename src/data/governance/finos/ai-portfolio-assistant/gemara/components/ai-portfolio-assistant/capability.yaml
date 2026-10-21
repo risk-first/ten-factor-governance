@@ -156,7 +156,7 @@ capabilities:
   - id: order-proposal-construction
     title: Order Proposal Construction
     description: >
-      Ability to raise demo.CreateOrderProposal with a
+      Ability to raise demo.CreateOrder with a
       demo.portfolioRecommendation and receive a demo.orderProposal draft
       basket from Order Entry for human review.
     group: authority-actions
@@ -187,6 +187,6 @@ capabilities:
     description: >
       Ability to call registered tools and APIs, including the demo intent
       allowlist (demo.GetPortfolioRisk, demo.GetResearch,
-      demo.RunStressScenario, demo.CreateOrderProposal) and model-invoked
+      demo.RunStressScenario, demo.CreateOrder) and model-invoked
       functions. demo.SubmitOrders must not appear on any assistant allowlist.
     group: session-and-context

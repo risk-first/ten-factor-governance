@@ -1,0 +1,51 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-risk",
+      "name": "AIPA Risk",
+      "title": "AIPA Risk",
+      "description": "Deterministic portfolio risk and stress scenarios with signed results.",
+      "categories": ["AIPA", "Risk"],
+      "icons": [{ "src": "http://localhost:4101/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4101/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.GetPortfolioRisk": {
+              "displayName": "Get Portfolio Risk",
+              "purpose": "Compute deterministic portfolio risk metrics and return a signed demo.portfolioRisk result.",
+              "contexts": ["fdc3.portfolio"]
+            },
+            "demo.RunStressScenario": {
+              "displayName": "Run Stress Scenario",
+              "purpose": "Run a portfolio stress scenario and return a signed demo.stressScenarioResult.",
+              "contexts": ["demo.stressScenarioRequest"]
+            },
+            "ViewAnalysis": {
+              "displayName": "View Analysis",
+              "purpose": "Open risk analysis UI for a portfolio or instrument.",
+              "contexts": ["fdc3.portfolio", "fdc3.instrument"]
+            }
+          },
+          "raises": {
+            "demo.GetPriceHistory": {
+              "displayName": "Get Price History",
+              "purpose": "Pull OHLC history from Market Data before computing risk.",
+              "contexts": ["fdc3.portfolio"]
+            }
+          }
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": ["fdc3.portfolio"]
+        },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

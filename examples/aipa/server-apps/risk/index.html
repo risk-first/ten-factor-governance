@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Risk</title>
+    <script type="module" src="./src/main.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box risk-panel">
+        <div class="toolbar">
+          <button id="run-local" class="primary">Analyse portfolio</button>
+          <button id="stress-local">Oil −20% stress</button>
+        </div>
+
+        <div id="risk-dashboard" class="risk-dashboard" hidden>
+          <section class="risk-section">
+            <h3 class="risk-section__title">Risk metrics</h3>
+            <div id="metrics-table" class="risk-metrics-table"></div>
+          </section>
+
+          <div class="risk-row">
+            <section class="risk-section risk-section--chart">
+              <h3 class="risk-section__title">Sector diversification</h3>
+              <div id="sector-donut" class="risk-chart"></div>
+            </section>
+            <section class="risk-section risk-section--table">
+              <h3 class="risk-section__title">Top risk contributors</h3>
+              <div id="contributors-grid" class="risk-ag-grid"></div>
+            </section>
+          </div>
+
+          <section class="risk-section">
+            <h3 class="risk-section__title">Return correlation</h3>
+            <div id="corr-heatmap" class="risk-chart risk-chart--heatmap"></div>
+          </section>
+        </div>
+
+        <details id="raw-details" class="risk-raw" hidden>
+          <summary>Signed context (JSON)</summary>
+          <pre id="analysis" class="code"></pre>
+        </details>
+
+        <pre id="placeholder" class="code">Waiting for intent or channel portfolio…</pre>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/decorators.json#/defs/decorator",
+  "unique-id": "ccc-object-storage-controls",
+  "type": "control-catalog",
+  "target": [
+    "architecture.json"
+  ],
+  "applies-to": [
+    "records-object-storage",
+    "evidence-record",
+    "evidence-recording-to-store"
+  ],
+  "data": {
+    "catalog": "src/data/governance/finos/ccc-object-storage/controls.yaml",
+    "framework": "CCC Object Storage",
+    "url": "https://ccc.finos.org/catalogs/storage/objstor"
+  }
+}

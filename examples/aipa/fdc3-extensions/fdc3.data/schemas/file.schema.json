@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/data.file.schema.json",
+  "type": "object",
+  "title": "File",
+  "description": "A file payload for data apps and agent sessions. Identified by `id.fileId` so other contexts (e.g. `fdc3.ai.agentQuery.fileIds`) can reference it without embedding bytes. Carry content via `content_b64` or `url` (mutually exclusive). Prefer targeted intents / PrivateChannel delivery over user-channel broadcast for large payloads.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.data.file"
+        },
+        "id": {
+          "type": "object",
+          "title": "ID",
+          "description": "Stable identifiers. `fileId` is required for session references.",
+          "properties": {
+            "fileId": {
+              "type": "string",
+              "title": "File ID",
+              "description": "Conversation-scoped id referenced by agentQuery.fileIds and tools."
+            }
+          },
+          "required": ["fileId"],
+          "additionalProperties": { "type": "string" }
+        },
+        "name": {
+          "type": "string",
+          "title": "Filename",
+          "description": "Display name (e.g. memo.pdf)."
+        },
+        "format": {
+          "type": "string",
+          "title": "Format",
+          "description": "File format hint.",
+          "enum": ["pdf", "docx", "txt", "md", "html"]
+        },
+        "content_b64": {
+          "type": "string",
+          "title": "Content (base64)",
+          "description": "Base64-encoded file bytes. Mutually exclusive with `url`."
+        },
+        "url": {
+          "type": "string",
+          "title": "URL",
+          "description": "Fetchable URL for the file body. Mutually exclusive with `content_b64`."
+        }
+      },
+      "required": ["type", "id", "name", "format"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.data.file",
+      "id": { "fileId": "file-1" },
+      "name": "memo.md",
+      "format": "md",
+      "content_b64": "IyBIZWxsbw=="
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 # StakeholderRequirementCatalog — ISO/IEC 42001 Clause 4.2
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: StakeholderRequirementCatalog
 
-title: "Stakeholder requirements for the AI Portfolio Assistant"
+title: "Stakeholder requirements for the AIPA"
 
 metadata:
   id: apa-stakeholder-requirements
@@ -22,19 +22,19 @@ metadata:
     authority and suitability.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-controls
-      title: "AI Portfolio Assistant control catalog"
+      title: "AIPA control catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/control.yaml
     - id: apa-risks
-      title: "AI Portfolio Assistant risk catalog"
+      title: "AIPA risk catalog"
       version: "0.1.0"
       url: file://../gemara/components/ai-portfolio-assistant/risk.yaml
     - id: apa-policy
-      title: "AI Portfolio Assistant policy"
+      title: "AIPA policy"
       version: "0.1.0"
       url: file://../gemara/policy.yaml
     - id: apa-management-objectives
@@ -59,7 +59,7 @@ requirements:
     authority: "FCA Principles for Businesses; Senior Managers and Certification Regime"
     jurisdiction: "United Kingdom"
     in-scope: true
-    rationale: "Core to the Investment Management deployment of the assistant."
+    rationale: "Core to the Investment Management deployment of AIPA."
     controls:
       - reference-id: apa-controls
         entry-id: apa-ctl-013-session-logging
@@ -78,7 +78,7 @@ requirements:
   - id: req-client-confidentiality
     title: "Confidentiality of client portfolio information"
     statement: |
-      Client holdings, orders and research context exposed to the assistant must
+      Client holdings, orders and research context exposed to AIPA must
       not leak across portfolios, sessions or suppliers beyond licensed use.
     source: Contractual
     level: Mandatory
@@ -101,7 +101,7 @@ requirements:
   - id: req-no-autonomous-trading
     title: "No autonomous trading or unsupervised order submission"
     statement: |
-      The assistant must not submit orders or otherwise effect portfolio changes
+      AIPA must not submit orders or otherwise effect portfolio changes
       without an authorised human approving execution. Propose-level outputs
       require human approval before any path toward execution.
     source: Organisational
@@ -182,7 +182,7 @@ requirements:
   - id: req-impact-assessment-currency
     title: "Current AI system impact assessment before material change"
     statement: |
-      Impact assessment for the assistant must be current before deployment and
+      Impact assessment for the AIPA must be current before deployment and
       before material changes to intended use, model or tool integrations.
     source: Standard
     level: Expected

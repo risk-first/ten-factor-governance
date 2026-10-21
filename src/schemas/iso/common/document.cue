@@ -33,7 +33,7 @@ import "github.com/gemaraproj/gemara@v1:gemara"
 	"RiskAssessment" |
 	"CompetenceRegister" |
 	"CommunicationPlan" |
-	"ManagementReview" |
+	"ManagementReviewProgramme" |
 	"CorrectiveActionLog" |
 	"IncidentLog" |
 	"AISystemRegister" |

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/data.markdown.schema.json",
+  "type": "object",
+  "title": "Markdown",
+  "description": "Markdown payload for a data app. Used as the context for `fdc3.open` / `ViewData` (seed or replace-in-place), parallel to `fdc3.data.tabularData`. Distinct from `fdc3.ai.agentAnswer.markdown`, which is chat-turn transcript.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.data.markdown"
+        },
+        "instanceId": {
+          "type": "string",
+          "title": "Instance ID",
+          "description": "Optional instance this payload came from or should replace."
+        },
+        "title": {
+          "type": "string",
+          "title": "Title",
+          "description": "Human-readable title for the surface."
+        },
+        "markdown": {
+          "type": "string",
+          "title": "Markdown",
+          "description": "Document body as CommonMark / GFM markdown."
+        }
+      },
+      "required": ["type", "markdown"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.data.markdown",
+      "title": "Risk summary",
+      "markdown": "## Concentration\n\nEnergy is **42%** of portfolio MV."
+    }
+  ]
+}

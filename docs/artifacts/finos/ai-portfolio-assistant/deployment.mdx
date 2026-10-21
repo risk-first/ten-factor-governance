@@ -2,76 +2,57 @@
 sidebar_position: 3
 sidebar_label: Deployment
 title: AI Portfolio Assistant Deployment
-description: "C4 context view of where the AI Portfolio Assistant, FDC3 desktop agent, and agentic model sit relative to the banking firewall."
+description: "Deployment view of the AI Portfolio Assistant, FDC3 desktop agent, and in-firewall agentic model — sourced from the CALM architecture."
+hide_table_of_contents: true
 ---
 
 # AI Portfolio Assistant Deployment
 
-High-level deployment context for the AI Portfolio Assistant: what runs inside
-the banking firewall, and how the portfolio manager, FDC3 desktop agent and
-agentic model relate to the assistant.
+Deployment topology for the AI Portfolio Assistant. The authoritative
+machine-readable model is
+[`examples/aipa/calm/architecture.json`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/calm/architecture.json)
+(`deployed-in` / `composed-of` relationships under the banking-firewall
+boundary). Diagrams below are generated from that model
+(`npm run calm:diagrams`).
+
+Logical interaction flows (FDC3 intents and governed chat) live on
+[Architecture](./architecture).
+
+## Why chat also goes through governance
+
+The AI Portfolio Assistant **is** the chat harness. Chat turns and model
+prompts/completions are still firewalled at the Governance Gateway
+([AIGF AIR-PREV-003](../ai-governance/guidance-catalog),
+[CCC.MARefArc.CN02](https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch)) —
+see [Architecture](./architecture).
 
 ## Diagram
 
-```mermaid
-C4Context
-  Enterprise_Boundary(b0, "Inside Banking Firewall") {
-    Person(portfolioManager, "Portfolio Manager", "Uses the FDC3 desktop to analyse portfolios and manage risk.")
+CALM block architecture with Managed Kubernetes hosts, Artifact Repository,
+object-storage records, FDC3 desktop (AIPA is the chat harness), Governance
+Runtime, and the in-firewall agentic model.
 
-    Container_Boundary(b1, "Portfolio Assistant Deployment - Managed Kubernetes") {
-      System(AIPA, "AI Portfolio Assistant", "Interprets portfolio, risk and research results and raises governed FDC3 intents.")
-    }
+![CALM deployment architecture overview](/img/calm/ai-portfolio-assistant/architecture-overview.svg)
 
-    Container_Boundary(g1, "Governance Runtime Deployment - Managed Kubernetes") {
-      System(GR, "Portfolio Assistant Governance Runtime")
-    }
+## In-firewall inference flow
 
-    Container_Boundary(r1, "Artifact Repository") {
-      System_Ext(GM, "Governance Model", "Gemara, AIMS")
-    }
+Model prompts and completions leave the assistant only via Governance Gateway
+LLM-egress guardrails and stay inside the banking firewall
+(`flow-in-firewall-inference`).
 
-    Container_Boundary(o1, "Records Deployment - Object Storage Bucket") {
-      System_Ext(DE, "Decisions and Evidence Record", "Gemara")
-    }
-
-    System_Ext(FDC3, "FDC3 Desktop Agent", "Routes context and intents; enforces governance before forwarding sensitive requests.")
-    System_Ext(Chat, "Agentic Model", "Foundation model used by the assistant for explanation and recommendation.")
-  }
-
-  BiRel(portfolioManager, AIPA, "Uses")
-  BiRel(AIPA, FDC3, "Raises intents / receives and broadcasts context")
-  Rel(FDC3, GR, "Makes requests to")
-  Rel(GR, GM, "Is Informed By")
-  Rel(GR, DE, "Records / reports / aggregates")
-  Rel(AIPA, Chat, "Prompts / completions")
-
-  UpdateElementStyle(portfolioManager, $bgColor="#e1efed", $fontColor="#0d7c6f", $borderColor="#0d7c6f")
-  UpdateElementStyle(AIPA, $bgColor="#f5ebe1", $fontColor="#b45309", $borderColor="#b45309")
-  UpdateElementStyle(GR, $bgColor="#e4ede7", $fontColor="#1f6b3a", $borderColor="#1f6b3a")
-  UpdateElementStyle(GM, $bgColor="#eaeae9", $fontColor="#57534e", $borderColor="#57534e")
-  UpdateElementStyle(DE, $bgColor="#e2eef1", $fontColor="#0e7490", $borderColor="#0e7490")
-  UpdateElementStyle(FDC3, $bgColor="#e5ebf1", $fontColor="#2a5f8f", $borderColor="#2a5f8f")
-  UpdateElementStyle(Chat, $bgColor="#e7e9e8", $fontColor="#3f4f46", $borderColor="#3f4f46")
-
-  UpdateRelStyle(portfolioManager, AIPA, $textColor="#4a5a52", $lineColor="#4a5a52")
-  UpdateRelStyle(AIPA, FDC3, $textColor="#4a5a52", $lineColor="#4a5a52")
-  UpdateRelStyle(FDC3, GR, $textColor="#4a5a52", $lineColor="#4a5a52")
-  UpdateRelStyle(GR, GM, $textColor="#4a5a52", $lineColor="#4a5a52")
-  UpdateRelStyle(GR, DE, $textColor="#4a5a52", $lineColor="#4a5a52")
-  UpdateRelStyle(AIPA, Chat, $textColor="#4a5a52", $lineColor="#4a5a52")
-```
+![CALM in-firewall inference flow](/img/calm/ai-portfolio-assistant/in-firewall-inference-flow.svg)
 
 ## Key
 
-| Component | Purpose | Governance twin |
+| Component | Purpose | Governance twin / CALM node |
 | --- | --- | --- |
-| **Portfolio Manager** | Human user of the desktop. Retains authority for recommendations that require approval and for any path toward order proposal or execution. | — |
-| **Portfolio Assistant Deployment (Managed Kubernetes)** | Hosts the AI Portfolio Assistant workload inside the banking firewall. | [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) (shared host) |
-| **AI Portfolio Assistant** | Governed AI service that combines deterministic app results with model interpretation. Does not perform financial calculations itself. | [AI Portfolio Assistant](./gemara/components/ai-portfolio-assistant/) |
-| **Governance Runtime Deployment (Managed Kubernetes)** | Hosts the Portfolio Assistant Governance Runtime as a separate Kubernetes deployment. | [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) (shared host) |
-| **Governance Runtime** | Evaluates proposed sensitive activities (ALLOW / DENY / REQUIRE APPROVAL) and records / reports / aggregates evidence against the Evidence Record. | [Governance Runtime](./gemara/components/governance-runtime/) |
-| **Artifact Repository (Governance Model)** | Object store / registry that hosts and serves versioned Governance Model releases (lexicon → policy) and the AIMS envelope for all Gemara components. | [Artifact Repository](./gemara/components/artifact-repository/) |
-| **Records Deployment (Decisions and Evidence Record)** | Object-storage bucket that holds evaluation and enforcement evidence; store posture from CCC Object Storage (writers are the Governance Runtime). | [CCC Object Storage](../ccc-obj-stor/) |
-| **FDC3 Desktop Agent** | Interoperability layer for context and intents; calls the Governance Runtime before forwarding sensitive requests. | Out of scope for twins |
-| **Agentic Model** | External foundation-model capability used for language and reasoning. Subject to model-provider and data-handling controls in the AIMS. | Out of scope for twins |
-| **Inside Banking Firewall** | Trust boundary for portfolio data, desktop applications and the assistant runtime. Model access may still cross this boundary under supplier controls. | — |
+| **Portfolio Manager** | Human user of the desktop. Retains authority for recommendations that require approval and for any path toward order proposal or execution. | `portfolio-manager` |
+| **Portfolio Assistant Deployment (Managed Kubernetes)** | Hosts the AI Portfolio Assistant workload inside the banking firewall. | `aipa-k8s` · [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) |
+| **AI Portfolio Assistant** | Chat harness + governed AI service. Combines deterministic app results with model interpretation; chat turns and model I/O go through the Governance Gateway. Does not perform financial calculations itself. | `ai-portfolio-assistant` · [AI Portfolio Assistant](./gemara/components/ai-portfolio-assistant/) |
+| **Governance Runtime Deployment (Managed Kubernetes)** | Hosts the Portfolio Assistant Governance Runtime as a separate Kubernetes deployment. | `governance-runtime-k8s` · [CCC Managed Kubernetes](https://ccc.finos.org/catalogs/orchestration/k8s) |
+| **Governance Runtime / Gateway** | Evaluates FDC3 intents, chat ingress and LLM egress (ALLOW / DENY / REQUIRE APPROVAL) and records evidence. | `governance-runtime` / `governance-gateway` · [Governance Runtime](./gemara/components/governance-runtime/) |
+| **Artifact Repository (Governance Model)** | Hosts and serves versioned Governance Model releases (lexicon → policy) and the AIMS envelope. | `artifact-repository` · [Artifact Repository](./gemara/components/artifact-repository/) |
+| **Records Deployment (Decisions and Evidence Record)** | Object-storage bucket for evaluation and enforcement evidence. | `evidence-record` · [CCC Object Storage](../ccc-obj-stor/) |
+| **FDC3 Desktop Agent** | Interoperability layer for context and intents; calls the Governance Runtime before forwarding sensitive requests. | `fdc3-desktop-agent` |
+| **Agentic Model** | Foundation-model inference **inside** the banking firewall. Prompts and portfolio context do not egress to the model supplier (`fm-no-train-on-prompts` / `apa-ctl-014`). | `agentic-model` |
+| **Inside Banking Firewall** | Trust boundary for portfolio data, desktop applications, assistant runtime and model inference. | `banking-firewall` |

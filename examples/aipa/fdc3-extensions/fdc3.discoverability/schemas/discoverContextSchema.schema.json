@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.discoverContextSchema.schema.json",
+  "type": "object",
+  "title": "Discover Context Schema",
+  "description": "Broadcast on app channel `fdc3.discoverability` to ask for the JSON Schema that defines a given context `type`. Reply is `fdc3.discoverability.contextSchema`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.discoverability.discoverContextSchema"
+        },
+        "contextType": {
+          "type": "string",
+          "title": "Context type",
+          "description": "FDC3 context `type` string whose JSON Schema should be returned, e.g. `fdc3.instrument` or `fdc3.data.markdown`."
+        }
+      },
+      "required": ["type", "contextType"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.discoverability.discoverContextSchema",
+      "contextType": "fdc3.data.markdown"
+    }
+  ]
+}

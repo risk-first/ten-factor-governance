@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/approval.schema.json",
+  "type": "object",
+  "title": "Approval",
+  "description": "Identifies a provider-managed approval and may carry a snapshot of its state. Used as the IntentResult of `GetApproval` and as input to `ViewApproval` and `ReviewApproval`. A minimal navigation reference requires only `id.approvalId` and `provider`; `status` and related snapshot fields are omitted until a state snapshot is included.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.approval"
+        },
+        "id": {
+          "type": "object",
+          "title": "Approval identifiers",
+          "description": "FDC3 context `id` map. `approvalId` is required and is the durable identifier assigned by the provider. `requestId` may echo the original caller correlation identifier.",
+          "properties": {
+            "approvalId": {
+              "type": "string",
+              "title": "approvalId",
+              "description": "Durable identifier assigned by the provider."
+            },
+            "requestId": {
+              "type": "string",
+              "title": "requestId",
+              "description": "Original caller correlation identifier from `fdc3.approval.request.id.requestId`."
+            }
+          },
+          "required": ["approvalId"],
+          "unevaluatedProperties": {
+            "type": "string"
+          }
+        },
+        "provider": {
+          "type": "string",
+          "title": "Provider",
+          "description": "Configured service identifier used to resolve the approval, including its environment. Not an arbitrary endpoint to trust. Distinct from an FDC3 app ID: an app handles desktop interaction, while a service owns the durable decision."
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Optional short display label."
+        },
+        "subject": {
+          "title": "Subject",
+          "description": "Reference to the reviewed subject and version.",
+          "$ref": "context.schema.json#"
+        },
+        "status": {
+          "type": "string",
+          "title": "Status",
+          "description": "State snapshot. Omitted in a minimal navigation reference. The initial lifecycle is `pending` followed by one terminal outcome (`approved`, `rejected`, `cancelled`, or `expired`). Terminal approvals are not reopened.",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected",
+            "cancelled",
+            "expired"
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Updated at",
+          "description": "Time of the state snapshot, as an RFC 3339 timestamp."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Expires at",
+          "description": "Effective expiry assigned by the provider, as an RFC 3339 timestamp."
+        },
+        "decisionReason": {
+          "type": "string",
+          "title": "Decision reason",
+          "description": "Explanation accompanying the final outcome, where appropriate to disclose."
+        }
+      },
+      "required": ["type", "id", "provider"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.approval",
+      "id": {
+        "approvalId": "approval-456",
+        "requestId": "req-123"
+      },
+      "provider": "demo-fluxnova",
+      "name": "Approval for order ORD-123",
+      "subject": {
+        "type": "demo.order",
+        "id": {
+          "orderId": "ORD-123",
+          "version": "3"
+        }
+      },
+      "status": "pending",
+      "updatedAt": "2026-11-03T19:00:00Z",
+      "expiresAt": "2026-11-03T20:00:00Z"
+    },
+    {
+      "type": "fdc3.approval",
+      "id": {
+        "approvalId": "approval-456"
+      },
+      "provider": "demo-fluxnova"
+    }
+  ]
+}

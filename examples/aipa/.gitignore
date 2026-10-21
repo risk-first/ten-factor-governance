@@ -1,0 +1,7 @@
+node_modules/
+.vite/
+directory/static/generated/
+server-apps/portfolio/temp/
+server-apps/execution/temp/
+.env
+*.log

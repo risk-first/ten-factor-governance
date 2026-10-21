@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/ai.agentQuery.schema.json",
+  "type": "object",
+  "title": "Agent Query",
+  "description": "Payload for `AskAgent`. Starts a turn; the IntentResult is typically a PrivateChannel used for subsequent `fdc3.ai.agentDelta` / `agentAnswer` / `agentCancel` traffic. `text` may be null or omitted for session-open.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.ai.agentQuery"
+        },
+        "text": {
+          "type": ["string", "null"],
+          "title": "Text",
+          "description": "User utterance for this turn. Null/omitted for session-start."
+        },
+        "model": {
+          "type": "string",
+          "title": "Model",
+          "description": "Optional model id hint (e.g. openai:gpt-4o)."
+        },
+        "fileIds": {
+          "type": "array",
+          "title": "File IDs",
+          "description": "References to `fdc3.data.file` ids already delivered on this session (PrivateChannel). Omit to use all staged session files. Do not embed file bytes here.",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["type"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.ai.agentQuery",
+      "text": "Compare AAPL vs MSFT revenue",
+      "model": "openai:gpt-4o"
+    },
+    {
+      "type": "fdc3.ai.agentQuery",
+      "text": "Summarise the attached memo",
+      "fileIds": ["file-1"]
+    }
+  ]
+}

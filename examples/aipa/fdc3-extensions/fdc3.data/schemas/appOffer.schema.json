@@ -1,0 +1,251 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/data.appOffer.schema.json",
+  "type": "object",
+  "title": "App Offer",
+  "description": "Metadata-only advertisement of a shareable dataset in response to `fdc3.data.advertiseDatasets`. Identifies the offering instance, the context type that can be retrieved, where its JSON Schema lives (so custom types resolve), FDC3 DisplayMetadata for UI chrome, and Dublin Core metadata describing the offered resource. The BaseContext `id` MUST include `dataId`, which consumers echo in `fdc3.data.dataRequest` when raising `GetAppData`. Does not carry the dataset.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.data.appOffer"
+        },
+        "id": {
+          "title": "Offer identifiers",
+          "description": "FDC3 context `id` map for this offer. `dataId` is required and is the opaque handle consumers pass back in `fdc3.data.dataRequest` (via `GetAppData`) to select this specific offered dataset when an app instance advertises more than one.",
+          "type": "object",
+          "properties": {
+            "dataId": {
+              "type": "string",
+              "title": "dataId",
+              "description": "Stable identifier for this offered dataset within the offering app instance. Minted by the data app; unique among that instance's concurrent offers. Consumers copy this value into `fdc3.data.dataRequest.id.dataId` when raising `GetAppData`."
+            }
+          },
+          "required": ["dataId"],
+          "unevaluatedProperties": {
+            "type": "string"
+          }
+        },
+        "source": {
+          "title": "Source",
+          "description": "FDC3 AppIdentifier of the offering app instance. Both `appId` and `instanceId` are required so the consumer can target `GetAppData` / `raiseIntent` at this instance.",
+          "type": "object",
+          "properties": {
+            "appId": {
+              "type": "string",
+              "title": "appId",
+              "description": "Unique application identifier (FDC3 AppIdentifier.appId)."
+            },
+            "instanceId": {
+              "type": "string",
+              "title": "instanceId",
+              "description": "Running instance identifier (FDC3 AppIdentifier.instanceId)."
+            }
+          },
+          "required": ["appId", "instanceId"],
+          "additionalProperties": false
+        },
+        "contextType": {
+          "type": "string",
+          "title": "Context type",
+          "description": "FDC3 context `type` string that this offer can supply when `GetAppData` succeeds — e.g. `fdc3.instrument`, `fdc3.data.tabularData`, or an org-specific type such as `myorg.riskBook`."
+        },
+        "schemaUrl": {
+          "type": "string",
+          "format": "uri",
+          "title": "Schema URL",
+          "description": "Absolute URI of the JSON Schema that defines `contextType` (typically the schema `$id`). Required so consumers can validate custom / non-standard types that are not shipped in the FDC3 context suite — e.g. `https://fdc3.finos.org/schemas/next/context/instrument.schema.json` or a vendor-hosted schema."
+        },
+        "displayMetadata": {
+          "title": "Display metadata",
+          "description": "Hints for rendering this offer in UI, aligned with FDC3 API `DisplayMetadata` (name, color, glyph) as used for channel display. `name` is the user-visible label for what is being offered; `color` / `glyph` are optional presentation hints.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "name",
+              "description": "A user-readable name for what is displayed, e.g. \"Portfolio Greeks\"."
+            },
+            "color": {
+              "type": "string",
+              "title": "color",
+              "description": "Optional color associated with this offer in UI, e.g. `0xFF0000` (FDC3 DisplayMetadata.color)."
+            },
+            "glyph": {
+              "type": "string",
+              "format": "uri",
+              "title": "glyph",
+              "description": "Optional URL of an image used when displaying this offer (FDC3 DisplayMetadata.glyph)."
+            }
+          },
+          "required": ["name"],
+          "additionalProperties": false
+        },
+        "metadata": {
+          "title": "Dublin Core metadata",
+          "description": "Descriptive metadata for the offered resource using the [Dublin Core Metadata Element Set (DCMES)](https://www.dublincore.org/specifications/dublin-core/dces/) fifteen elements. Nested under `metadata` so DC `type` / `source` do not collide with the offer's FDC3 `type` or AppIdentifier `source`.",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "title": "dc:title",
+              "description": "A name given to the resource."
+            },
+            "creator": {
+              "type": "string",
+              "title": "dc:creator",
+              "description": "An entity primarily responsible for making the resource."
+            },
+            "subject": {
+              "type": "string",
+              "title": "dc:subject",
+              "description": "The topic of the resource."
+            },
+            "description": {
+              "type": "string",
+              "title": "dc:description",
+              "description": "An account of the resource."
+            },
+            "publisher": {
+              "type": "string",
+              "title": "dc:publisher",
+              "description": "An entity responsible for making the resource available."
+            },
+            "contributor": {
+              "type": "string",
+              "title": "dc:contributor",
+              "description": "An entity responsible for making contributions to the resource."
+            },
+            "date": {
+              "type": "string",
+              "format": "date-time",
+              "title": "dc:date",
+              "description": "A point or period of time associated with an event in the lifecycle of the resource (ISO 8601)."
+            },
+            "type": {
+              "type": "string",
+              "title": "dc:type",
+              "description": "The nature or genre of the resource (DCMI Type Vocabulary recommended, e.g. Dataset, Image, Text)."
+            },
+            "format": {
+              "type": "string",
+              "title": "dc:format",
+              "description": "The file format, physical medium, or dimensions of the resource (e.g. MIME type)."
+            },
+            "identifier": {
+              "type": "string",
+              "title": "dc:identifier",
+              "description": "An unambiguous reference to the resource within a given context."
+            },
+            "source": {
+              "type": "string",
+              "title": "dc:source",
+              "description": "A related resource from which the described resource is derived."
+            },
+            "language": {
+              "type": "string",
+              "title": "dc:language",
+              "description": "A language of the resource (RFC 5646 / BCP 47 recommended, e.g. en-US)."
+            },
+            "relation": {
+              "type": "string",
+              "title": "dc:relation",
+              "description": "A related resource."
+            },
+            "coverage": {
+              "type": "string",
+              "title": "dc:coverage",
+              "description": "The spatial or temporal topic of the resource, or jurisdiction under which it is relevant."
+            },
+            "rights": {
+              "type": "string",
+              "title": "dc:rights",
+              "description": "Information about rights held in and over the resource."
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["type", "id", "source", "contextType", "schemaUrl", "displayMetadata"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.data.appOffer",
+      "id": {
+        "dataId": "offer-portfolio-greeks-1"
+      },
+      "source": {
+        "appId": "example.portfolio-greeks",
+        "instanceId": "inst-portfolio-1"
+      },
+      "contextType": "fdc3.data.tabularData",
+      "schemaUrl": "https://fdc3.finos.org/schemas/next/context/data.tabularData.schema.json",
+      "displayMetadata": {
+        "name": "Portfolio Greeks"
+      },
+      "metadata": {
+        "title": "Portfolio Greeks",
+        "description": "Net delta / gamma by book",
+        "subject": "portfolio;risk;greeks",
+        "type": "Dataset",
+        "format": "application/json",
+        "language": "en",
+        "date": "2026-10-14T12:00:00Z"
+      }
+    },
+    {
+      "type": "fdc3.data.appOffer",
+      "id": {
+        "dataId": "offer-nvda-price"
+      },
+      "source": {
+        "appId": "example.price-history",
+        "instanceId": "inst-price-42"
+      },
+      "contextType": "fdc3.valuation",
+      "schemaUrl": "https://fdc3.finos.org/schemas/next/context/valuation.schema.json",
+      "displayMetadata": {
+        "name": "NVDA price",
+        "glyph": "https://example.com/icons/nvda.svg"
+      },
+      "metadata": {
+        "title": "NVDA closing price",
+        "description": "Daily close for NVIDIA Corporation",
+        "identifier": "ticker:NVDA",
+        "subject": "price;equity",
+        "type": "Dataset",
+        "format": "application/json",
+        "language": "en",
+        "date": "2026-10-14T12:00:00Z"
+      }
+    },
+    {
+      "type": "fdc3.data.appOffer",
+      "id": {
+        "dataId": "offer-rates-delta-7"
+      },
+      "source": {
+        "appId": "myorg.risk-book",
+        "instanceId": "inst-book-7"
+      },
+      "contextType": "myorg.riskBook",
+      "schemaUrl": "https://schemas.myorg.example/fdc3/riskBook.schema.json",
+      "displayMetadata": {
+        "name": "Rates book · delta",
+        "color": "0x336699"
+      },
+      "metadata": {
+        "title": "Rates book delta",
+        "creator": "Risk Desk",
+        "publisher": "MyOrg",
+        "subject": "rates;delta",
+        "type": "Dataset",
+        "coverage": "Rates",
+        "rights": "Internal use only"
+      }
+    }
+  ]
+}

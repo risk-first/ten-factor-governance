@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Order Entry</title>
+    <script type="module" src="./src/main.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box">
+        <div class="toolbar">
+          <button id="demo-create" class="primary">Create demo order</button>
+          <button id="add-row" type="button">Add row</button>
+          <button id="approve">Approve → demo.SubmitOrder</button>
+          <span id="verify" class="badge warn">Inbound signature: n/a</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Side</th>
+              <th>Ticker</th>
+              <th>Qty</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="blotter"></tbody>
+        </table>
+        <p id="blotter-empty" class="meta-row">No orders yet — add a row or create a demo order.</p>
+      </div>
+    </div>
+  </body>
+</html>

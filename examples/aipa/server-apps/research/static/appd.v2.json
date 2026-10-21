@@ -1,0 +1,50 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-research",
+      "name": "AIPA Research",
+      "title": "AIPA Research",
+      "description": "Investment research from EDGAR filings and Finnhub news; returns signed demo.researchBundle.",
+      "categories": ["AIPA", "Research"],
+      "icons": [{ "src": "http://localhost:4102/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4102/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.GetResearch": {
+              "displayName": "Get Research",
+              "purpose": "Fetch investment research (filings/news) and return a signed demo.researchBundle.",
+              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
+            },
+            "ViewInstrument": {
+              "displayName": "View Instrument",
+              "purpose": "Open the research UI focused on a single instrument.",
+              "contexts": ["fdc3.instrument"]
+            },
+            "ViewNews": {
+              "displayName": "View News",
+              "purpose": "Show news coverage for instruments, lists, or a portfolio.",
+              "contexts": ["fdc3.instrument", "fdc3.instrumentList", "fdc3.portfolio"]
+            },
+            "ViewResearch": {
+              "displayName": "View Research",
+              "purpose": "Display research content for a selected instrument.",
+              "contexts": ["fdc3.instrument"]
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": ["fdc3.instrument"],
+          "listensFor": ["fdc3.instrument", "fdc3.position"]
+        },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": { "injectApi": "2.0" }
+      }
+    }
+  ],
+  "message": "OK"
+}

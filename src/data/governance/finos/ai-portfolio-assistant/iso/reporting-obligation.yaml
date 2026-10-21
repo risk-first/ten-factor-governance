@@ -1,8 +1,8 @@
 # ReportingObligationRegister — ISO/IEC 42001 Annex A.8.3
-# Illustrative AIMS document for the AI Portfolio Assistant example.
+# Illustrative AIMS document for the AIPA example.
 # iso-type: ReportingObligationRegister
 
-title: "External reporting obligations for the AI Portfolio Assistant"
+title: "External reporting obligations for the AIPA"
 
 metadata:
   id: apa-reporting-obligation
@@ -17,15 +17,15 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    External reports owed about the AI Portfolio Assistant, including FCA
+    External reports owed about the AIPA, including FCA
     notification triggers for serious AI incidents.
   mapping-references:
     - id: apa-party-register
-      title: "Parties to the AI Portfolio Assistant"
+      title: "Parties to the AIPA"
       version: "0.1.0"
       url: file://party-register.yaml
     - id: apa-stakeholder-requirements
-      title: "Stakeholder requirements for the AI Portfolio Assistant"
+      title: "Stakeholder requirements for the AIPA"
       version: "0.1.0"
       url: file://stakeholder-requirements.yaml
     - id: apa-ai-system-register
