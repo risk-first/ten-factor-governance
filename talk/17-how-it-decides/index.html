@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>17 — How it decides</title>
+  <link rel="stylesheet" href="../css/talk.css?v=17refs6">
+</head>
+<body>
+  <main class="stage">
+    <article class="slide packed yaml-fit">
+      <p class="kicker">Governance as Code · ISO/IEC 42001</p>
+      <h1>How it decides</h1>
+      <div class="chain yaml-chain">
+        <div class="node">
+          <span class="kind">Threat</span>
+          <pre><code>- id: unauthorized-trade-execution
+  description: >
+    May submit orders or execute trades autonomously.
+  capabilities:
+    - reference-id: apa-capabilities
+      entries: [trade-execution]</code></pre>
+        </div>
+        <div class="node">
+          <span class="kind">Risk</span>
+          <pre><code>- id: unauthorized-trading
+  description: >
+    Orders without approval, or autonomous execution.
+  threats:
+    - reference-id: apa-threats
+      entries: [unauthorized-trade-execution]</code></pre>
+        </div>
+        <div class="node">
+          <span class="kind">Control</span>
+          <pre><code>- id: apa-ctl-006-execute-prohibit
+  objective: >
+    Prohibit autonomous trade execution always.
+  threats:
+    - reference-id: apa-threats
+      entries: [unauthorized-trade-execution]</code></pre>
+        </div>
+        <div class="node">
+          <span class="kind">Policy</span>
+          <pre><code>- id: proportional-authority
+  statement: >
+    Prohibit autonomous execute in all cases.
+  objectives:
+    - reference-id: objectives
+      entry-id: authority-boundary-compliance</code></pre>
+        </div>
+      </div>
+      <footer class="chrome">
+        <p class="cite">AIPA Gemara catalogs. ISO/IEC 42001:2023. Artificial intelligence management system.</p>
+        <nav class="nav">
+          <a class="prev" rel="prev" aria-label="Previous">←</a>
+          <span class="num"></span>
+          <a class="next" rel="next" aria-label="Next">→</a>
+        </nav>
+      </footer>
+    </article>
+  </main>
+  <script src="../js/talk.js"></script>
+</body>
+</html>
