@@ -54,7 +54,7 @@ statement: |
   This AIMS covers the development, deployment, operation and continual
   improvement of the AIPA used by portfolio managers in the
   Investment Management division of the firm. It includes AIPA's
-  FDC3-mediated access to specialist applications, retrieval of investment
+  access to specialist applications, retrieval of investment
   research, authority-bounded recommendation and order-proposal behaviour, and
   the controls that detect, deny and evidence any attempt at unsupervised
   trade execution. Firm-wide foundation-model training and retail banking AI
@@ -87,9 +87,11 @@ inclusions:
     type: Activity
     description: |
       Detecting, denying and evidencing attempts by AIPA or its tool
-      path to submit or effect orders without human authorisation. Unsupervised
-      execution is a prohibited intended use; governing that prohibition is in
-      scope of this AIMS, not an exclusion from it.
+      path to submit or effect orders without the required human approval
+      band: first approval, four-eyes on large orders, or hard reject above
+      the size ceiling. Unsupervised execution is a prohibited intended use;
+      governing that prohibition is in scope of this AIMS, not an exclusion
+      from it.
 
 exclusions:
   - id: model-training
@@ -113,26 +115,26 @@ interfaces:
   # Relations from docs/artifacts/finos/ai-portfolio-assistant/deployment.mdx
   - id: pm-uses-aipa
     description: |
-      Portfolio Manager uses the AIPA on the FDC3 desktop to
+      Portfolio Manager uses the AIPA on the investment desktop to
       analyse portfolios and manage risk (deployment: BiRel Uses).
     direction: Bidirectional
     counterparty:
       reference-id: apa-party-register
       entry-id: portfolio-managers
 
-  - id: fdc3-interface
+  - id: desktop-interface
     description: |
-      AIPA raises FDC3 intents and receives / broadcasts desktop context
-      via the FDC3 Desktop Agent (deployment: BiRel Raises intents / receives
-      and broadcasts context).
+      AIPA requests specialist-application functions and receives shared
+      desktop context (deployment: BiRel requests / receives shared
+      context).
     direction: Bidirectional
     counterparty:
       reference-id: apa-party-register
       entry-id: fdc3-desktop-agent
 
-  - id: fdc3-governance-runtime
+  - id: desktop-governance-runtime
     description: |
-      FDC3 Desktop Agent makes requests to the AIPA Governance
+      The desktop integration layer makes requests to the AIPA Governance
       Runtime before forwarding sensitive requests (deployment: Rel Makes
       requests to).
     direction: Bidirectional

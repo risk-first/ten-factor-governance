@@ -2,9 +2,9 @@
 # Illustrative AIMS document for the AIPA example.
 # iso-type: DatasetRegister
 #
-# Production datasets are FDC3 context payloads. Each is provided by exactly
-# one ToolResourceRegister entry (see provenance.reference). The synthetic
-# evaluation set is the only non-FDC3 dataset.
+# Production datasets are specialist-application outputs. Each is provided
+# by exactly one ToolResourceRegister entry (see provenance.reference). The
+# synthetic evaluation set is the only non-production dataset.
 
 title: "Data resources for the AIPA"
 
@@ -21,11 +21,13 @@ metadata:
     name: AI Governance Office
     type: Human
   description: |
-    Production data AIPA consumes arrives as FDC3 contexts from allowlisted
-    desktop applications inventoried in the ToolResourceRegister. Pairing is
-    1:1 for portfolio, risk, stress, research, market-data and order-proposal
-    contexts. A synthetic evaluation set is retained for pre-release testing
-    and is not sourced from live FDC3 sessions.
+    Production data AIPA consumes arrives from allowlisted specialist
+    applications inventoried in the ToolResourceRegister. Pairing is 1:1
+    for portfolio, risk, stress, research, market-data and order-proposal
+    outputs. The Order Limit Register is a governed policy dataset used at
+    inference time to band agent-initiated orders. A synthetic evaluation
+    set is retained for pre-release testing and is not sourced from live
+    sessions.
   mapping-references:
     - id: apa-ai-system-register
       title: "AI systems in the scope of the AIMS"
@@ -48,11 +50,10 @@ clauses: ["A.7.2", "A.7.3", "A.7.4", "A.7.5", "A.7.6", "A.4.3"]
 
 datasets:
   - id: fdc3-portfolio-context
-    name: "FDC3 portfolio holdings context"
+    name: "Portfolio holdings"
     description: |
-      Point-in-time holdings and mandate metadata for entitled books,
-      broadcast or resolved as FDC3 portfolio context (e.g. fdc3.portfolio).
-      Provided by tool fdc3-portfolio-app.
+      Point-in-time holdings and mandate metadata for entitled books.
+      Provided by the portfolio application.
     version: "2026.09"
     owner:
       responsible:
@@ -78,11 +79,11 @@ datasets:
       method: Derived
       source: |
         Internal portfolio accounting and entitlement systems, delivered to
-        AIPA only via FDC3 from tool fdc3-portfolio-app.
+        AIPA only from the portfolio application.
       lawful-basis: "Legitimate interests / contractual necessity for portfolio management"
       rights: "Firm may process for investment management; redistribution restricted"
     provenance:
-      description: "FDC3 context payload from the portfolio application"
+      description: "Holdings payload from the portfolio application"
       reference:
         reference-id: apa-tool-resource-register
         entry-id: fdc3-portfolio-app
@@ -104,11 +105,10 @@ datasets:
         entry-id: client-confidentiality-breach
 
   - id: fdc3-portfolio-risk-context
-    name: "FDC3 portfolio risk analysis context"
+    name: "Portfolio risk analysis"
     description: |
-      Structured risk and exposure analysis (demo.portfolioRisk) returned for
-      demo.GetPortfolioRisk, with FDC3 Security when broadcast. Provided by
-      tool fdc3-risk-app — not invented by AIPA.
+      Structured risk and exposure analysis returned by the Risk
+      application, with verifiable provenance. Not invented by AIPA.
     version: "2026.09"
     owner:
       responsible:
@@ -133,12 +133,11 @@ datasets:
     acquisition:
       method: Derived
       source: |
-        Deterministic calculations from tool fdc3-risk-app via FDC3
-        (demo.GetPortfolioRisk → demo.portfolioRisk).
+        Deterministic calculations from the Risk application.
       lawful-basis: "Legitimate interests / contractual necessity for portfolio management"
       rights: "Firm may process for investment management; no supplier training use"
     provenance:
-      description: "Signed FDC3 risk context from the Risk application"
+      description: "Provenance-verified risk result from the Risk application"
       reference:
         reference-id: apa-tool-resource-register
         entry-id: fdc3-risk-app
@@ -162,11 +161,10 @@ datasets:
         entry-id: client-confidentiality-breach
 
   - id: fdc3-stress-scenario-context
-    name: "FDC3 stress scenario result context"
+    name: "Stress scenario result"
     description: |
-      Calculated portfolio impact under hypothetical shocks
-      (demo.stressScenarioResult) for demo.RunStressScenario. Provided by
-      tool fdc3-stress-engine.
+      Calculated portfolio impact under hypothetical shocks. Provided by
+      the stress engine.
     version: "2026.09"
     owner:
       responsible:
@@ -190,12 +188,11 @@ datasets:
     acquisition:
       method: Derived
       source: |
-        Stress calculations from tool fdc3-stress-engine via FDC3
-        (demo.RunStressScenario → demo.stressScenarioResult).
+        Stress calculations from the stress engine.
       lawful-basis: "Legitimate interests / contractual necessity for portfolio management"
       rights: "Firm may process for investment management; no supplier training use"
     provenance:
-      description: "Signed FDC3 stress result context from the stress engine"
+      description: "Provenance-verified stress result from the stress engine"
       reference:
         reference-id: apa-tool-resource-register
         entry-id: fdc3-stress-engine
@@ -217,11 +214,11 @@ datasets:
         entry-id: operational-overreliance
 
   - id: fdc3-research-context
-    name: "FDC3 investment research context"
+    name: "Investment research"
     description: |
-      Structured research findings and sources (demo.researchBundle) for
-      demo.GetResearch. Provided by tool fdc3-research-app; underlying
-      vault/vendor corpora are not queried directly by AIPA.
+      Structured research findings and sources. Provided by the Research
+      application; underlying vault/vendor corpora are not queried
+      directly by AIPA.
     version: "2026.09"
     owner:
       responsible:
@@ -233,7 +230,7 @@ datasets:
     stages: ["Inference Input", "Retrieval"]
     purpose: |
       Ground explanations and recommendations in retrieved research passages
-      delivered through FDC3 rather than unaudited model recollection.
+      rather than unaudited model recollection.
     permitted-uses:
       - "Session-scoped grounding during authorised AIPA sessions"
       - "Evaluation of grounding quality against signed research bundles"
@@ -245,15 +242,15 @@ datasets:
     acquisition:
       method: Licensed
       source: |
-        Internal research vault and vendor feeds, surfaced to AIPA only as
-        FDC3 context from tool fdc3-research-app.
+        Internal research vault and vendor feeds, surfaced to AIPA only
+        from the Research application.
       supplier:
         reference-id: apa-supplier-assurance
         entry-id: market-data-assurance
       licence: "Vendor research redistribution terms; internal research policy"
       rights: "Retrieve and display under firm licence; no model training on restricted sets"
     provenance:
-      description: "Signed FDC3 research bundle from the Research application"
+      description: "Provenance-verified research bundle from the Research application"
       reference:
         reference-id: apa-tool-resource-register
         entry-id: fdc3-research-app
@@ -272,11 +269,10 @@ datasets:
         entry-id: unsuitable-investment-influence
 
   - id: fdc3-instrument-market-context
-    name: "FDC3 instrument and market data context"
+    name: "Instrument and market data"
     description: |
-      Instrument identifiers, quotes and related market metadata as FDC3
-      contexts (e.g. fdc3.instrument, fdc3.instrumentList). Provided by tool
-      fdc3-market-data-app.
+      Instrument identifiers, quotes and related market metadata. Provided
+      by the market-data application.
     version: "2026.09"
     owner:
       responsible:
@@ -299,15 +295,15 @@ datasets:
     acquisition:
       method: Licensed
       source: |
-        Market-data vendor feeds and internal symbology, delivered via FDC3
-        from tool fdc3-market-data-app.
+        Market-data vendor feeds and internal symbology, delivered from
+        the market-data application.
       supplier:
         reference-id: apa-supplier-assurance
         entry-id: market-data-assurance
       licence: "Vendor market-data redistribution and display terms"
       rights: "Display and session use under firm licence; no bulk export by AIPA"
     provenance:
-      description: "FDC3 instrument/market context from the market-data application"
+      description: "Instrument and market data from the market-data application"
       reference:
         reference-id: apa-tool-resource-register
         entry-id: fdc3-market-data-app
@@ -325,11 +321,10 @@ datasets:
         entry-id: model-supply-chain-exposure
 
   - id: fdc3-order-proposal-context
-    name: "FDC3 order proposal context"
+    name: "Order proposal"
     description: |
-      Structured proposals (demo.orderProposal) from demo.CreateOrder
-      for human review. Provided by tool fdc3-order-entry-app. Not execution
-      instructions and must not be treated as fdc3.orderList submission.
+      Structured proposals from Order Entry for human review. Not
+      execution instructions and must not be treated as a submitted order.
     version: "2026.09"
     owner:
       responsible:
@@ -353,13 +348,12 @@ datasets:
     acquisition:
       method: Derived
       source: |
-        Order Entry via FDC3 from tool fdc3-order-entry-app; AIPA may supply
-        demo.portfolioRecommendation that Order Entry turns into
-        demo.orderProposal.
+        Order Entry; AIPA may supply a recommendation that Order Entry
+        turns into a draft proposal.
       lawful-basis: "Legitimate interests / contractual necessity for portfolio management"
       rights: "Process for supervised proposal workflows only"
     provenance:
-      description: "FDC3 propose context from the Order Entry application"
+      description: "Propose-level draft from the Order Entry application"
       reference:
         reference-id: apa-tool-resource-register
         entry-id: fdc3-order-entry-app
@@ -381,12 +375,70 @@ datasets:
       - reference-id: apa-risks
         entry-id: unsuitable-investment-influence
 
+  - id: order-limit-register
+    name: "Order Limit Register"
+    description: |
+      Versioned notional and NAV thresholds that band agent-initiated
+      orders: first human approval, four-eyes review, or hard reject.
+      Desk defaults for the AIPA example are first approval for any
+      agent-initiated execution path; four-eyes at GBP 100,000 notional
+      or 5 percent of portfolio NAV; hard reject at GBP 5,000,000
+      notional or 25 percent of portfolio NAV. Evaluated by the
+      governance runtime and approving application, not by the assistant.
+    version: "2026.10"
+    owner:
+      responsible:
+        - name: "Trading Controls"
+          affiliation: "Investment Management"
+      accountable:
+        - name: "Chief Investment Officer"
+          affiliation: "Investment Management"
+    stages: ["Inference Input", "Monitoring"]
+    purpose: |
+      Decide whether an agent-initiated order requires one human, two
+      independent humans, or is refused without an approval path.
+    permitted-uses:
+      - "Runtime banding of approval requests and execution attempts"
+      - "Audit reconstruction of approval and reject decisions"
+    prohibited-uses:
+      - "Assistant-supplied substitute thresholds"
+      - "Waiving the hard-reject ceiling by recorded approval"
+    sensitivity: "Internal — trading authority"
+    personal-data: false
+    acquisition:
+      method: Contributed
+      source: |
+        Investment Management trading-authority policy, published by
+        Trading Controls as the Order Limit Register.
+      date: "2026-10-25T00:00:00Z"
+      rights: "Firm may evaluate at runtime; changes require CIO approval"
+    provenance:
+      description: "Governed policy dataset owned by Trading Controls"
+    quality:
+      assessed: "2026-10-25T00:00:00Z"
+      known-limitations:
+        - "Desk defaults are illustrative; production desks may publish tighter bands"
+        - "NAV must come from the deterministic portfolio or risk application"
+      representativeness: "UK/EU listed equity desks in AIMS scope"
+    retention:
+      period: "7 years from supersession"
+      disposition: Archive
+      classification: Internal
+    used-by:
+      - reference-id: apa-ai-system-register
+        entry-id: ai-portfolio-assistant
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+      - reference-id: apa-risks
+        entry-id: market-conduct-breach
+
   - id: historical-recommendations-eval
     name: "Historical recommendations for evaluation (synthetic/anonymized)"
     description: |
       Synthetic and anonymized recommendation and proposal scenarios for
       pre-release evaluation of authority gating, grounding and approval.
-      Not sourced from live FDC3 production tools or contexts.
+      Not sourced from live production tools or sessions.
     version: "1.0.0"
     owner:
       responsible:
@@ -425,6 +477,7 @@ review:
   last-reviewed: "2026-09-30T00:00:00Z"
   next-review: "2027-03-30T00:00:00Z"
   triggers:
-    - "New FDC3 tool added to the ToolResourceRegister"
-    - "New FDC3 context or intent type added to the tool allowlist"
+    - "New tool added to the ToolResourceRegister"
+    - "New specialist output type added to the tool allowlist"
     - "Change to personal-data lawful basis"
+    - "Change to Order Limit Register thresholds or owner"

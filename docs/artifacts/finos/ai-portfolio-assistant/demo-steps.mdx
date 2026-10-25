@@ -5,100 +5,87 @@ sidebar_position: 1
 
 # AI Portfolio Assistant Demo
 
-Intent and context names below match the [FDC3 interop catalog](./fdc3-interop.mdx).
+Steps 1–7a run **without** the governance gateway. Step 7a is the failure:
+an agent-initiated order reaches Execution. Step 7b turns governance on and
+shows approvals.
 
 1. **Select a portfolio** (`observe`)
-   - The Portfolio app broadcasts an `fdc3.portfolio` context.
-   - The AI Assistant receives the selected portfolio and aligns with the desktop.
+   - The Portfolio app shares the selected book, or the Assistant asks for
+     the current portfolio.
+   - The Assistant receives the book and aligns with the desktop.
 
 2. **Analyse portfolio risk** (`analyse`)
    - The user asks: *“What are the biggest risks in this portfolio?”*
-   - The AI Assistant raises `demo.GetPortfolioRisk` with `fdc3.portfolio`.
-   - The Desktop Agent intercepts the intent and checks it with the Governance Gateway.
-   - Governance returns **ALLOW**.
-   - The Risk app performs the deterministic analysis and returns `demo.portfolioRisk` (with FDC3 Security provenance).
-   - Optionally, the user asks for a stress test; the Assistant raises `demo.RunStressScenario` with `demo.stressScenarioRequest` and receives `demo.stressScenarioResult` from the Risk app.
+   - The Assistant asks the Risk app for an analysis of the selected book.
+   - The Risk app returns a signed risk result.
+   - Optionally, the user asks for a stress test; the Assistant sends a
+     scenario request and receives a signed stress result.
+   - Optionally, Risk pulls price history for the instruments in focus.
 
 3. **Gather evidence and explain** (`explain`)
-   - The AI Assistant raises `demo.GetResearch` with `fdc3.instrument`, `fdc3.instrumentList`, or `fdc3.portfolio`.
-   - Governance returns **ALLOW**.
-   - The Research app returns `demo.researchBundle` (signed for provenance).
-   - The Assistant combines `demo.portfolioRisk` and `demo.researchBundle` into an explanation for the user.
-   - Optionally, supporting `View*` intents (`ViewAnalysis`, `ViewNews`, `ViewInstrument`, and similar) open the underlying specialist UIs without changing the analysis itself.
+   - The Assistant asks the Research app for material on the instruments or
+     book in focus.
+   - The Research app returns a signed research bundle.
+   - The Assistant explains the book using the risk result and the research.
+   - Optionally, specialist UIs open for analysis, news, instruments,
+     charts, or holdings.
 
 4. **Request an investment recommendation** (`recommend`)
    - The user asks: *“What should I do about the energy concentration?”*
-   - Governance evaluates applicable controls, such as:
-     - approved AI model;
-     - current portfolio data;
-     - valid risk analysis and research evidence;
-     - permitted recommendation capability.
-   - Governance returns **ALLOW** or **CONDITIONAL ALLOW**.
-   - The Assistant produces an on-screen portfolio recommendation — a recommended portfolio change with rationale and supporting evidence, not an executable order.
+   - The Assistant produces an on-screen recommendation — rationale and
+     evidence, not an executable order.
 
-5. **Create an order proposal** (`propose`)
+5. **Create an order** (`propose`)
    - The user says: *“Reduce my energy exposure to 15%.”*
-   - The AI Assistant raises `demo.CreateOrder` with `demo.portfolioRecommendation`.
-   - Governance verifies that the AI is permitted to construct, but not execute, a proposed trade.
-   - The Order Entry app returns `demo.orderProposal` — a draft basket for human review (signed for provenance).
+   - The Assistant asks Order Entry to draft the order or basket.
+   - Order Entry returns a signed blotter draft.
 
 6. **Human review in Order Entry**
-   - The draft `demo.orderProposal` is presented in the Order Entry app.
-   - Governance treats this as **ALLOW — HUMAN APPROVAL REQUIRED**.
-   - The user inspects the proposed trades. A reviewed basket may be represented as an `fdc3.orderList` for any subsequent execution path.
+   - The draft is shown on the blotter.
+   - The user inspects the legs. This is local blotter review, not an
+     independent approval workflow.
 
-7. **Attempt autonomous execution** (`execute` — denied)
-   - The user (or the Assistant under user pressure) attempts: *“Just execute those trades.”*
-   - The AI Assistant raises `demo.SubmitOrders` with `fdc3.orderList`.
-   - The Desktop Agent checks with the Governance Gateway.
-   - Governance determines that the AI has no delegated trade-execution authority.
-   - Governance returns **DENY**.
-   - The Desktop Agent does not forward the intent to Execution / Order Entry.
+7a. **Execute without governance** (the failure)
+   - The user (or the Assistant under pressure) says: *“Just execute those
+     trades.”*
+   - The Assistant — or Order Entry on its behalf — submits the reviewed
+     draft to Execution.
+   - There is no governance gateway. Execution fills and returns a signed
+     result. The live portfolio updates.
+   - **That is the failure.** An agent-initiated order reached the market
+     with no independent approval.
 
-7b. **Approve the trade independently** (`execute` — four-eyes / human-in-the-loop)
-   - The proposed `fdc3.orderList` is sent to an independent approval system. The Order Entry app (or the Assistant) raises `GetApproval` with `fdc3.approval`, `subject` an `fdc3.action` for the reviewed basket, `status` `pending`.
-   - The approving application accepts the request. Governance treats this as **REQUIRE APPROVAL** — it is not execution authority. `GetApproval` stays open until the workflow finishes.
-   - **Human-in-the-loop:** an authorised reviewer opens `ReviewApproval` and records approve or reject through the provider's authenticated service. The AI cannot record that decision.
-   - **Four-eyes:** the reviewer is a second authenticated user, not the requester who originated the proposal; the provider enforces separation of duties.
-   - On `approved`, execution verifies the durable approval and the reviewed subject version, then submits once. Rejected, cancelled, or expired approvals still **DENY**.
-   - The Assistant still has no delegated `demo.SubmitOrders` authority. Independent human approval is what allows the trade.
+7b. **Turn governance on — ask for approval**
+   - Repeat the same execute attempt. The desktop now consults the
+     Governance Runtime before forwarding a submit.
+   - Order Entry requests approval for the action of submitting the
+     reviewed draft. The Assistant must not submit the order itself.
+   - An authorised reviewer opens the approval and approves or rejects.
+     The AI cannot record that decision. The raising app can poll for the
+     latest state.
+   - On approval, the approving application performs the submit (signed as
+     itself) and forwards Execution's result. A reject or cancel returns an
+     error and does not fill.
+   - That is the authority progression in one place:
+     `observe → analyse → explain → recommend → propose` is ungated;
+     `execute` requires a recorded human approval. Ten-Factor governance
+     decides how far the AI may go, from explicit, machine-readable
+     rules.
 
-8. **Inspect the governance decision**
-   - The Governance app displays the decision and its traceability:
-     - governed activity (including the named FDC3 intent);
-     - actor;
-     - applicable policy/control;
-     - evaluation results;
-     - evidence;
-     - decision;
-     - required human action.
-   - The denied `demo.SubmitOrders` and the later `GetApproval` / `ReviewApproval` path show that governance changes system behaviour rather than merely recording it.
+8. **Inspect the governance decision** (after 7b)
+   - The Governance app shows the attributable trace: activity, actor,
+     controls, evidence, outcome, and any required human action.
+   - Contrast 7a (ungated submit) with 7b (approval then submit) to show
+     that governance changes behaviour, not only records it.
 
 9. **Connect the runtime decision to ISO 42001**
-   - Show how the controls and evidence relate back to the organisation's AI governance requirements.
-   - Demonstrate the chain from:
-     - ISO 42001 guidance;
-     - risk;
-     - control/policy;
-     - sensitive activity;
-     - evaluation;
-     - evidence;
-     - runtime decision.
+   - Walk from ISO 42001 guidance through the risk, the controls, the
+     sensitive activity, the evaluation, the evidence, and the runtime
+     decision.
 
-10. **Show the authority progression**
-    - Summarise the increasing level of delegated authority:
-
-      `observe → analyse → explain → recommend → propose → execute`
-
-    - Map the demo intents onto that chain:
-      - analyse: `demo.GetPortfolioRisk`, `demo.RunStressScenario`
-      - explain: `demo.GetResearch`
-      - propose: `demo.CreateOrder`
-      - execute (blocked for the AI): `demo.SubmitOrders`
-      - execute (allowed after independent approval): `GetApproval` → `ReviewApproval` → verified `demo.SubmitOrders`
-    - The key point: **Ten-Factor governance determines how far the AI may progress along that chain, based on explicit, machine-readable governance.**
-
-11. **Opportunities for further expansion**
-    - Here, we are just showing how we can use FDC3 to govern an AI application.
-    - We could apply the same governance gateway to MCP.
-    - Also, the governance runtime itself could be an AI agent running to observe and constrain the assistant.
+10. **Opportunities for further expansion**
+    - Here we are showing how governance can constrain an AI application
+      regardless of the integration technology underneath.
+    - The same gateway could apply to other tool or protocol surfaces.
+    - The governance runtime itself could be an agent that observes and
+      constrains the assistant.

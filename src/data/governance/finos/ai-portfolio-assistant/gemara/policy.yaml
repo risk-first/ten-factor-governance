@@ -10,11 +10,11 @@ metadata:
     name: AI Governance Office
     type: Human
   description: >
-    Policy governing use of the AI Portfolio Assistant across FDC3 desktop
-    applications, including authority-ladder boundaries, human oversight for
-    propose activity, and prohibition of autonomous trade execution. Composes
-    FINOS AIGF guidance and CCC Managed Kubernetes host controls. Suitable
-    for dual use as an ISO/IEC 42001-aligned AI policy statement.
+    Policy governing use of the AI Portfolio Assistant, including
+    authority-ladder boundaries, human oversight for propose activity, and
+    prohibition of autonomous trade execution. Composes FINOS AIGF guidance
+    and CCC Managed Kubernetes host controls. Suitable for dual use as an
+    ISO/IEC 42001-aligned AI policy statement.
   mapping-references:
     - id: apa-risks
       title: AI Portfolio Assistant Risk Catalog
@@ -117,7 +117,7 @@ scope:
       - investment-analysts-authorized-to-use-assistant
     technologies:
       - ai-portfolio-assistant
-      - fdc3-desktop
+      - investment-desktop
       - portfolio-applications
       - risk-and-exposure-applications
       - investment-research-applications
@@ -184,7 +184,7 @@ implementation-plan:
     notes: >
       Begin with session-level evaluation of authority ceiling, recommend
       gating, propose approval, explanation grounding, and logging controls.
-      Automate checks progressively through the FDC3 desktop runtime, session
+      Automate checks progressively through the desktop runtime, session
       logger, and compliance notification integrations.
   enforcement-timeline:
     start: "2026-10-01T00:00:00Z"
@@ -200,10 +200,11 @@ implementation-plan:
 adherence:
   non-compliance: >
     Assistant activity that exceeds the granted authority level, constructs an
-    order proposal without recorded human approval, attempts autonomous
-    execution, or lacks required session evidence must not proceed until
-    remediated or formally risk-accepted by the AI Governance Office with
-    Compliance concurrence.
+    order proposal without recorded human approval, skips required four-eyes
+    review, proceeds with an oversized order that should have been rejected,
+    attempts autonomous execution, or lacks required session evidence must not
+    proceed until remediated or formally risk-accepted by the AI Governance
+    Office with Compliance concurrence.
 
   assessment-plans:
 
@@ -274,9 +275,9 @@ adherence:
           mode: Automated
           description: workflow approval check
       evidence-requirements: >
-        Evidence that no order proposal is released to trading or order-entry
-        applications without a recorded human approval from the accountable
-        portfolio manager.
+        Evidence that no agent-initiated execution path proceeds without a
+        recorded first human approval, and that the assistant never submits
+        orders itself.
 
     - id: ap-apa-006-execute-prohibit
       requirement-id: apa-ctl-006-execute-prohibit.ar01
@@ -336,8 +337,8 @@ adherence:
           mode: Automated
           description: automated tool allowlist check
       evidence-requirements: >
-        Evidence that tool calls are restricted to the approved FDC3 and
-        runtime allowlist for the granted authority level.
+        Evidence that tool calls are restricted to the approved runtime
+        allowlist for the granted authority level.
 
     - id: ap-apa-011-prompt-injection-defenses
       requirement-id: apa-ctl-011-prompt-injection-defenses.ar01
@@ -416,20 +417,56 @@ adherence:
         escalated to Compliance and AI Governance Office with recorded
         disposition.
 
-    - id: ap-apa-016-fdc3-security-provenance
+    - id: ap-apa-016-output-provenance
       requirement-id: apa-ctl-016-fdc3-security-provenance.ar01
       frequency: per-retrieval-and-tool-call
       evaluation-methods:
-        - id: automated-fdc3-signature-check
+        - id: automated-provenance-check
           type: Behavioral
           mode: Automated
-          description: automated FDC3 Security signature check
+          description: automated specialist-output provenance check
       evidence-requirements: >
-        Evidence that demo.portfolioRisk, demo.researchBundle,
-        demo.stressScenarioResult, demo.portfolioRecommendation, and
-        demo.orderProposal contexts used for explain, recommend, or propose
-        carry verifiable FDC3 Security signatures, and that unsigned instances
-        are rejected or flagged rather than treated as authoritative grounding.
+        Evidence that risk results, research, stress results, recommendations,
+        and order proposals used for explain, recommend, or propose carry
+        verifiable provenance, and that unattributed instances are rejected
+        or flagged rather than treated as authoritative grounding.
+
+    - id: ap-apa-017-order-limit-register
+      requirement-id: apa-ctl-017-order-limit-register.ar01
+      frequency: on-change-and-per-order
+      evaluation-methods:
+        - id: automated-limit-register-check
+          type: Behavioral
+          mode: Automated
+          description: automated order-limit register version and band check
+      evidence-requirements: >
+        Evidence that the runtime evaluated a current, owned Order Limit
+        Register version and used deterministic size and NAV figures.
+
+    - id: ap-apa-018-four-eyes-large-orders
+      requirement-id: apa-ctl-018-four-eyes-large-orders.ar01
+      frequency: per-order-proposal
+      evaluation-methods:
+        - id: automated-four-eyes-check
+          type: Behavioral
+          mode: Automated
+          description: automated four-eyes reviewer identity check
+      evidence-requirements: >
+        Evidence that orders at or above the four-eyes threshold have two
+        distinct authenticated human identities and that the requester is
+        not the second reviewer.
+
+    - id: ap-apa-019-hard-reject-oversize
+      requirement-id: apa-ctl-019-hard-reject-oversize.ar01
+      frequency: per-order-proposal
+      evaluation-methods:
+        - id: automated-hard-reject-check
+          type: Behavioral
+          mode: Automated
+          description: automated hard-reject ceiling check
+      evidence-requirements: >
+        Evidence that orders at or above the hard-reject ceiling are denied
+        with no accepted approval request and no subsequent execution.
 
   enforcement-methods:
     - id: em-apa-block-authority-escalation
@@ -445,8 +482,22 @@ adherence:
       mode: Automated
       required: true
       description: >
-        Hold order proposals until a recorded human approval is obtained from
-        the accountable portfolio manager.
+        Hold every agent-initiated execution path until a recorded first
+        human approval is obtained.
+    - id: em-apa-require-four-eyes
+      type: Gate
+      mode: Automated
+      required: true
+      description: >
+        Hold large orders until a second independent human records approval.
+        Refuse requester self-approval.
+    - id: em-apa-hard-reject-oversize
+      type: Gate
+      mode: Automated
+      required: true
+      description: >
+        Deny orders at or above the hard-reject ceiling without opening an
+        approval or execution path.
     - id: em-apa-block-execution
       type: Gate
       mode: Automated
@@ -471,10 +522,10 @@ adherence:
 
 purpose: |
   The organisation provides portfolio managers with an AI Portfolio Assistant
-  to interpret deterministic portfolio, risk, and research outputs across the
-  FDC3 desktop. This policy exists so that authority delegated to the assistant
-  remains proportional, checkable, and subject to human oversight—especially
-  where recommendations, order proposals, or execution-adjacent actions could
+  to interpret deterministic portfolio, risk, and research outputs. This
+  policy exists so that authority delegated to the assistant remains
+  proportional, checkable, and subject to human oversight—especially where
+  recommendations, order proposals, or execution-adjacent actions could
   affect clients or market conduct.
 
 commitments:
@@ -490,8 +541,9 @@ commitments:
   - id: human-oversight
     statement: |
       Keep a portfolio manager accountable for consequential decisions the
-      assistant informs, and require recorded human approval before any order
-      proposal is released.
+      assistant informs. Require a first recorded human approval before any
+      agent-initiated order can execute, a second independent human above
+      the four-eyes threshold, and a hard reject above the size ceiling.
     type: Responsible Use
   - id: assess-impact
     statement: |
@@ -546,7 +598,7 @@ review:
   triggers:
     - Material change to applicable AI or investment-conduct regulation
     - A serious assistant incident involving authority, confidentiality, or trading
-    - Change to foundation-model provider or FDC3 tool allowlist
+    - Change to foundation-model provider or tool allowlist
     - Expansion of granted authority levels beyond recommend
 
 communication:

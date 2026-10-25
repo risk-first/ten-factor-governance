@@ -13,8 +13,7 @@ metadata:
     type: Human
   description: >
     Pathways through which the AI Portfolio Assistant may cause harm,
-    exceed delegated authority, or degrade decision quality across FDC3
-    applications.
+    exceed delegated authority, or degrade decision quality.
   lexicon:
     reference-id: apa-lexicon
 
@@ -46,8 +45,8 @@ groups:
   - id: integration
     title: Integration
     description: >
-      Vectors arising from FDC3 interoperability, tool use, and third-party
-      model provider boundaries.
+      Vectors arising from application interoperability, tool use, and
+      third-party model provider boundaries.
 
 vectors:
   - id: prompt-injection-via-research
@@ -156,10 +155,29 @@ vectors:
     title: Execution Bypass
     group: authority-abuse
     description: >
-      The assistant submits or triggers order execution through FDC3
-      intents, APIs, or tooling despite the prohibition on autonomous
-      execution.
+      The assistant submits or triggers order execution through APIs or
+      tooling despite the prohibition on autonomous execution.
     applicability:
+      - execute
+
+  - id: four-eyes-bypass
+    title: Four-Eyes Bypass
+    group: authority-abuse
+    description: >
+      A large order proceeds with only the requester's approval, or the
+      assistant or requester records the second decision.
+    applicability:
+      - propose
+      - execute
+
+  - id: oversize-order-without-reject
+    title: Oversize Order Without Reject
+    group: authority-abuse
+    description: >
+      An order at or above the hard-reject ceiling is accepted into an
+      approval workflow or executed instead of being denied immediately.
+    applicability:
+      - propose
       - execute
 
   - id: overconfident-explanation
@@ -174,13 +192,12 @@ vectors:
       - recommend
       - propose
 
-  - id: unintended-fdc3-broadcast
-    title: Unintended FDC3 Broadcast
+  - id: unintended-context-sharing
+    title: Unintended Context Sharing
     group: integration
     description: >
-      Portfolio context, proposals, or sensitive explanations are broadcast
-      or shared through FDC3 channels beyond the authorized applications
-      and users for the current session.
+      Portfolio context, proposals, or sensitive explanations are shared
+      beyond the authorized applications and users for the current session.
     applicability:
       - observe
       - analyse

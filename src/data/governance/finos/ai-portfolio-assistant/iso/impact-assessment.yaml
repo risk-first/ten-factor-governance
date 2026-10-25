@@ -53,15 +53,16 @@ system-version: "1.0.0"
 
 purpose-assessed: |
   Assisting portfolio managers with observation, analysis, explanation and
-  authority-bounded recommendation or order proposal across FDC3 applications.
+  authority-bounded recommendation or order proposal.
   Conclusions do not hold for autonomous execution or unsupervised order
   submission, both of which are prohibited uses.
 
 deployment-context: |
-  UK/EU Investment Management desks using the firm desktop. Portfolio managers
-  open FDC3-enabled applications; AIPA sees entitled portfolio context,
-  invokes deterministic risk/stress tools, retrieves research, and may recommend
-  or propose actions subject to human approval at propose level.
+  UK/EU Investment Management desks using the firm desktop. Portfolio
+  managers open specialist applications; AIPA sees entitled portfolio
+  context, invokes deterministic risk/stress tools, retrieves research,
+  and may recommend or propose actions subject to human approval at
+  propose level.
 
 assessor:
   id: ai-governance-office
@@ -82,7 +83,8 @@ consultation:
       Managers asked for clear authority indicators and refused any path that
       could submit orders without an explicit approval step.
     influence: |
-      Propose-level human approval retained as a hard gate; execute remains prohibited.
+      First human approval retained as a hard gate; four-eyes and hard-reject
+      bands added for size; execute by the assistant remains prohibited.
   - party:
       reference-id: apa-party-register
       entry-id: compliance
@@ -117,6 +119,10 @@ impacts:
         entry-id: apa-ctl-004-recommend-gating
       - reference-id: apa-controls
         entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-018-four-eyes-large-orders
+      - reference-id: apa-controls
+        entry-id: apa-ctl-019-hard-reject-oversize
       - reference-id: apa-controls
         entry-id: apa-ctl-012-explanation-grounding
     residual:
@@ -184,6 +190,12 @@ impacts:
       - reference-id: apa-controls
         entry-id: apa-ctl-006-execute-prohibit
       - reference-id: apa-controls
+        entry-id: apa-ctl-017-order-limit-register
+      - reference-id: apa-controls
+        entry-id: apa-ctl-018-four-eyes-large-orders
+      - reference-id: apa-controls
+        entry-id: apa-ctl-019-hard-reject-oversize
+      - reference-id: apa-controls
         entry-id: apa-ctl-015-incident-escalation
     residual:
       severity: Medium
@@ -197,12 +209,17 @@ impacts:
 conclusion:
   outcome: "Proceed With Conditions"
   narrative: |
-    Impacts on clients and the firm are acceptable while propose requires human
-    approval, execute remains prohibited, and confidentiality/isolation controls
-    hold. These conditions are load-bearing: without them the assessment does
-    not support continued operation.
+    Impacts on clients and the firm are acceptable while every agent-initiated
+    order requires a first human approval, large orders require four-eyes,
+    oversized orders are hard-rejected, execute by the assistant remains
+    prohibited, and confidentiality/isolation controls hold. These conditions
+    are load-bearing: without them the assessment does not support continued
+    operation.
   conditions:
-    - "apa-ctl-005 propose human approval remains enforced in production"
+    - "apa-ctl-005 first human approval remains enforced in production"
+    - "apa-ctl-017 order-limit register remains published and evaluated"
+    - "apa-ctl-018 four-eyes remains enforced for large orders"
+    - "apa-ctl-019 hard reject remains enforced for oversized orders"
     - "apa-ctl-006 execute prohibition remains absolute for the AIPA"
     - "Cross-portfolio isolation and session logging remain enabled"
     - "Impact assessment is refreshed before raising the authority ceiling"
@@ -227,4 +244,4 @@ review:
   triggers:
     - "Change to intended use or prohibited-use list"
     - "Change of foundation model or major tool integration"
-    - "Any incident involving propose without approval or attempted execute"
+    - "Any incident involving propose without approval, four-eyes bypass, hard-reject miss, or attempted execute"

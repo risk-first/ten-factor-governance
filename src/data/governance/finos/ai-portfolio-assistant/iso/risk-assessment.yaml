@@ -159,7 +159,8 @@ entries:
     rating: High
     analysis: |
       Near-miss propose-without-approval scenarios show the risk is realistic if
-      authority gates fail; impact of execute would be severe.
+      authority gates fail. Large-order four-eyes and hard-reject bands contain
+      size-driven residual; impact of execute would be severe.
     treatment: Mitigate
     controls:
       - reference-id: apa-controls
@@ -168,6 +169,12 @@ entries:
         entry-id: apa-ctl-005-propose-human-approval
       - reference-id: apa-controls
         entry-id: apa-ctl-006-execute-prohibit
+      - reference-id: apa-controls
+        entry-id: apa-ctl-017-order-limit-register
+      - reference-id: apa-controls
+        entry-id: apa-ctl-018-four-eyes-large-orders
+      - reference-id: apa-controls
+        entry-id: apa-ctl-019-hard-reject-oversize
       - reference-id: apa-controls
         entry-id: apa-ctl-013-session-logging
     residual:

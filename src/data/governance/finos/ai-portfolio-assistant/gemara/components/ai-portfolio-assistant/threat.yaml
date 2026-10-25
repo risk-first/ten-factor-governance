@@ -13,8 +13,8 @@ metadata:
     type: Human
   description: >
     Threat catalog describing opportunities for negative impact arising from
-    the Financial AI Portfolio Assistant across FDC3 applications and the
-    observe-to-execute authority ladder. Composes relevant CCC Multi-Agent
+    the Financial AI Portfolio Assistant across the observe-to-execute
+    authority ladder. Composes relevant CCC Multi-Agent
     Reference Architecture threats for the agent/LLM/knowledge layers the
     assistant depends on.
   mapping-references:
@@ -154,7 +154,7 @@ threats:
       - reference-id: apa-vectors
         entries:
           - reference-id: cross-portfolio-context-bleed
-          - reference-id: unintended-fdc3-broadcast
+          - reference-id: unintended-context-sharing
           - reference-id: model-provider-data-exfiltration
     actors:
       - id: ai-agent
@@ -264,7 +264,7 @@ threats:
         entries:
           - reference-id: trade-execution
           - reference-id: tool-calling
-          - reference-id: fdc3-app-invocation
+          - reference-id: tool-calling
     vectors:
       - reference-id: apa-vectors
         entries:
@@ -276,10 +276,40 @@ threats:
         name: AI Portfolio Assistant
         type: AI
 
+  - id: limit-policy-bypass
+    title: Order Limit Policy Bypass
+    description: >
+      An agent-initiated order may skip the first human approval, skip the
+      required second reviewer on a large order, or enter an approval path
+      when it is above the hard-reject ceiling.
+    group: unauthorized-action
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: order-proposal-construction
+          - reference-id: trade-execution
+          - reference-id: tool-calling
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: four-eyes-bypass
+          - reference-id: oversize-order-without-reject
+          - reference-id: order-proposal-without-approval
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+      - id: requester
+        name: Requesting Portfolio Manager
+        type: Human
+        description: >
+          The human who originated the proposal and must not also record
+          the four-eyes decision.
+
   - id: cross-client-data-contamination
     title: Cross-Client Data Contamination
     description: >
-      Session memory or FDC3 context may mix holdings, preferences, or
+      Session memory or shared context may mix holdings, preferences, or
       research context from one client or portfolio into another user's
       session.
     group: confidentiality
@@ -293,7 +323,7 @@ threats:
       - reference-id: apa-vectors
         entries:
           - reference-id: cross-portfolio-context-bleed
-          - reference-id: unintended-fdc3-broadcast
+          - reference-id: unintended-context-sharing
     actors:
       - id: ai-agent
         name: AI Portfolio Assistant
@@ -328,14 +358,14 @@ threats:
     title: Tool Misuse Through Manipulation
     description: >
       Adversarial or untrusted content may induce the assistant to call tools
-      with unsafe arguments, invoke unintended FDC3 apps, or escalate beyond
-      permitted tool allowlists.
+      with unsafe arguments, invoke unintended applications, or escalate
+      beyond permitted tool allowlists.
     group: supply-chain
     capabilities:
       - reference-id: apa-capabilities
         entries:
           - reference-id: tool-calling
-          - reference-id: fdc3-app-invocation
+          - reference-id: tool-calling
           - reference-id: research-retrieval
     vectors:
       - reference-id: apa-vectors

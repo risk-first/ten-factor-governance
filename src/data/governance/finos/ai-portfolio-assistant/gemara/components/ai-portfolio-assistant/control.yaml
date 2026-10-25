@@ -3,7 +3,7 @@ title: AI Portfolio Assistant Control Catalog
 metadata:
   id: apa-controls
   type: ControlCatalog
-  version: "0.3.0"
+  version: "0.4.0"
   gemara-version: "1.2.0"
   draft: true
   date: "2026-09-11T00:00:00Z"
@@ -91,8 +91,18 @@ metadata:
     - id: human-approval-required
       title: Human Approval Required
       description: >
-        Applies when consequential propose-level actions require recorded
-        human approval before proceeding.
+        Applies when an agent-initiated path toward execution requires a
+        first recorded human approval.
+    - id: four-eyes-required
+      title: Four Eyes Required
+      description: >
+        Applies when order size meets or exceeds the four-eyes threshold
+        in the Order Limit Register.
+    - id: hard-reject
+      title: Hard Reject
+      description: >
+        Applies when order size meets or exceeds the hard-reject ceiling
+        in the Order Limit Register.
 
 groups:
   - id: authority-bound
@@ -116,8 +126,7 @@ groups:
   - id: tool-governance
     title: Tool Governance
     description: >
-      Controls that constrain tool calling, FDC3 invocation, and injected
-      content misuse.
+      Controls that constrain tool calling and injected content misuse.
 
   - id: assurance
     title: Assurance and Evidence
@@ -251,15 +260,15 @@ controls:
           - analyse
         recommendation: >
           Verify session entitlements and correlate analyse activity with
-          demo.GetPortfolioRisk and demo.RunStressScenario invocations rather
-          than model-computed figures.
+          recorded specialist risk and stress results rather than
+          model-computed figures.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-observe-only
           - reference-id: apa-guidance-deterministic-calcs
-          - reference-id: apa-guidance-demo-intents
+          - reference-id: apa-guidance-tool-allowlist
     threats:
       - reference-id: apa-threats
         entries:
@@ -290,7 +299,7 @@ controls:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-authority-ladder
-          - reference-id: apa-guidance-fdc3-boundaries
+          - reference-id: apa-guidance-session-boundaries
     threats:
       - reference-id: apa-threats
         entries:
@@ -329,31 +338,37 @@ controls:
           - reference-id: loss-of-human-oversight
 
   - id: apa-ctl-005-propose-human-approval
-    title: Human Approval for Order Proposals
+    title: First Human Approval for Agent-Initiated Orders
     objective: >
-      Require recorded human approval before any constructed order proposal
-      is accepted, transmitted, or otherwise acted upon.
+      Require a recorded first human approval before any agent-initiated
+      order can be executed.
     group: oversight
     state: Active
     assessment-requirements:
       - id: apa-ctl-005-propose-human-approval.ar01
         text: >
-          Order proposals produced via demo.CreateOrder MUST NOT leave
-          draft state or be handed to execution workflows without a recorded
-          human approval identifying the approver and approval time.
+          An agent-initiated path toward execution MUST request human
+          approval for the action to perform. The approving application
+          MUST record a first authorised human decision before performing
+          that action. The assistant MUST NOT submit the order itself.
+          Missing approval, AI self-approval, or an unauthenticated
+          identity is a control failure.
         applicability:
           - propose
+          - execute
           - human-approval-required
         recommendation: >
-          Correlate demo.CreateOrder events with approval workflow
-          records; treat missing or self-approved AI identities as failures.
+          Correlate order-construction and approval events with approval
+          records; treat assistant-originated submits, missing approver
+          identity, or self-approval as failures.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-propose-approval
+          - reference-id: apa-guidance-order-limits
           - reference-id: apa-guidance-human-oversight
-          - reference-id: apa-guidance-demo-intents
+          - reference-id: apa-guidance-tool-allowlist
       - reference-id: FINOS-AIR
         entries:
           - reference-id: AIR-DET-011
@@ -361,6 +376,7 @@ controls:
       - reference-id: apa-threats
         entries:
           - reference-id: unauthorized-order-proposal
+          - reference-id: unauthorized-trade-execution
           - reference-id: loss-of-human-oversight
 
   - id: apa-ctl-006-execute-prohibit
@@ -373,21 +389,24 @@ controls:
     assessment-requirements:
       - id: apa-ctl-006-execute-prohibit.ar01
         text: >
-          demo.SubmitOrders and any equivalent trade-execution tool calls or
-          order submissions MUST NOT be initiated by the AI Portfolio
-          Assistant identity under any session entitlement.
+          Trade-execution tool calls or order submissions MUST NOT be
+          initiated by the AI Portfolio Assistant identity under any
+          session entitlement. Execution MAY occur only when the approving
+          application performs an approved action after the required human
+          decision or decisions, and only when the order is within
+          published limits.
         applicability:
           - execute
           - all-authority-levels
         recommendation: >
-          Monitor FDC3 for assistant-originated demo.SubmitOrders intents;
-          any occurrence is a control failure.
+          Monitor for assistant-originated execution attempts; any
+          occurrence is a control failure.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-execute-prohibited
-          - reference-id: apa-guidance-demo-intents
+          - reference-id: apa-guidance-tool-allowlist
       - reference-id: FINOS-AIR
         entries:
           - reference-id: AIR-PREV-018
@@ -420,7 +439,7 @@ controls:
     guidelines:
       - reference-id: apa-guidance
         entries:
-          - reference-id: apa-guidance-fdc3-boundaries
+          - reference-id: apa-guidance-session-boundaries
     threats:
       - reference-id: apa-threats
         entries:
@@ -430,14 +449,14 @@ controls:
   - id: apa-ctl-008-cross-portfolio-isolation
     title: Cross-Portfolio Session Isolation
     objective: >
-      Prevent session memory and FDC3 context from mixing data across clients
-      or unrelated portfolios.
+      Prevent session memory and shared context from mixing data across
+      clients or unrelated portfolios.
     group: data-protection
     state: Active
     assessment-requirements:
       - id: apa-ctl-008-cross-portfolio-isolation.ar01
         text: >
-          Session context and FDC3 broadcasts used by the assistant MUST NOT
+          Session context and shared state used by the assistant MUST NOT
           contain portfolio identifiers, holdings, or preferences from a
           client or portfolio outside the active authorised session scope.
         applicability:
@@ -449,7 +468,7 @@ controls:
     guidelines:
       - reference-id: apa-guidance
         entries:
-          - reference-id: apa-guidance-fdc3-boundaries
+          - reference-id: apa-guidance-session-boundaries
     threats:
       - reference-id: apa-threats
         entries:
@@ -488,34 +507,32 @@ controls:
           - reference-id: unsuitable-recommendation
 
   - id: apa-ctl-010-tool-allowlist
-    title: Tool and Intent Allowlist
+    title: Tool Allowlist
     objective: >
-      Restrict tool calling and FDC3 application invocation to an approved
-      allowlist consistent with the session authority ceiling.
+      Restrict tool calling to an approved allowlist consistent with the
+      session authority ceiling.
     group: tool-governance
     state: Active
     assessment-requirements:
       - id: apa-ctl-010-tool-allowlist.ar01
         text: >
-          Observed tool calls and FDC3 intents by the assistant MUST be
-          members of the approved allowlist for the session's maximum
-          authority level. The core demo allowlist is demo.GetPortfolioRisk,
-          demo.GetResearch, demo.RunStressScenario, and
-          demo.CreateOrder (authority-scoped). demo.SubmitOrders and
-          other execution-capable intents MUST NOT appear on any assistant
-          allowlist.
+          Observed tool calls by the assistant MUST be members of the
+          approved allowlist for the session's maximum authority level.
+          The core allowlist is risk analysis, research retrieval, stress
+          scenarios, and order construction (authority-scoped). Execution
+          tools MUST NOT appear on any assistant allowlist.
         applicability:
           - all-authority-levels
         recommendation: >
-          Diff runtime intent logs against the authority-scoped allowlist;
-          flag unknown or execute-capable intents immediately.
+          Diff runtime tool logs against the authority-scoped allowlist;
+          flag unknown or execute-capable tools immediately.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
-          - reference-id: apa-guidance-fdc3-boundaries
+          - reference-id: apa-guidance-session-boundaries
           - reference-id: apa-guidance-execute-prohibited
-          - reference-id: apa-guidance-demo-intents
+          - reference-id: apa-guidance-tool-allowlist
       - reference-id: FINOS-AIR
         entries:
           - reference-id: AIR-PREV-019
@@ -576,15 +593,15 @@ controls:
           - recommend
         recommendation: >
           Evaluate sample transcripts for citation coverage and flag rate on
-          unsupported financial claims; verify FDC3 Security signatures on
-          demo.portfolioRisk, demo.researchBundle, and related contexts.
+          unsupported financial claims; verify provenance on risk results,
+          research, and related specialist outputs.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
           - reference-id: apa-guidance-deterministic-calcs
           - reference-id: apa-guidance-recommend-controls
-          - reference-id: apa-guidance-fdc3-security
+          - reference-id: apa-guidance-output-provenance
       - reference-id: FINOS-AIR
         entries:
           - reference-id: AIR-DET-013
@@ -697,20 +714,19 @@ controls:
           - reference-id: cross-client-data-contamination
 
   - id: apa-ctl-016-fdc3-security-provenance
-    title: FDC3 Security Provenance for Demo Contexts
+    title: Specialist Output Provenance
     objective: >
-      Require FDC3 Security signatures on demo suite contexts that convey
-      risk results, research, recommendations, and order proposals so the
-      assistant and downstream apps can verify provenance.
+      Require verifiable provenance on specialist outputs that convey risk
+      results, research, recommendations, and order proposals so the
+      assistant and downstream apps can confirm origin.
     group: assurance
     state: Active
     assessment-requirements:
       - id: apa-ctl-016-fdc3-security-provenance.ar01
         text: >
-          Broadcasts and returns of demo.portfolioRisk, demo.researchBundle,
-          demo.stressScenarioResult, demo.portfolioRecommendation, and
-          demo.orderProposal MUST include verifiable FDC3 Security signatures;
-          the assistant MUST NOT treat unsigned instances of those contexts as
+          Risk results, research, stress results, recommendations, and order
+          proposals used as evidence MUST include verifiable provenance; the
+          assistant MUST NOT treat unattributed instances of those outputs as
           authoritative grounding for explain, recommend, or propose actions.
         applicability:
           - analyse
@@ -718,14 +734,13 @@ controls:
           - recommend
           - propose
         recommendation: >
-          Inspect FDC3 context payloads for signature presence and validity on
-          the five demo contexts; reject or flag unsigned material used as
-          evidence.
+          Inspect specialist outputs for provenance presence and validity;
+          reject or flag unattributed material used as evidence.
         state: Active
     guidelines:
       - reference-id: apa-guidance
         entries:
-          - reference-id: apa-guidance-fdc3-security
+          - reference-id: apa-guidance-output-provenance
           - reference-id: apa-guidance-deterministic-calcs
       - reference-id: FINOS-AIR
         entries:
@@ -736,3 +751,111 @@ controls:
           - reference-id: misleading-risk-explanation
           - reference-id: tool-misuse-manipulation
           - reference-id: unsuitable-recommendation
+
+  - id: apa-ctl-017-order-limit-register
+    title: Order Limit Register
+    objective: >
+      Maintain a versioned, owned register of order-size thresholds that
+      the runtime and approving application evaluate before any
+      agent-initiated execution path proceeds.
+    group: oversight
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-017-order-limit-register.ar01
+        text: >
+          A published Order Limit Register MUST define the first-approval,
+          four-eyes, and hard-reject thresholds (notional and NAV), name
+          the accountable owner, and carry a version. Runtime banding MUST
+          use that register and deterministic size/NAV figures, not values
+          supplied by the assistant.
+        applicability:
+          - propose
+          - execute
+          - all-authority-levels
+        recommendation: >
+          Inspect the current register version, owner, and threshold values;
+          replay recent approval and deny events against those bands.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-order-limits
+          - reference-id: apa-guidance-deterministic-calcs
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: limit-policy-bypass
+          - reference-id: unauthorized-trade-execution
+
+  - id: apa-ctl-018-four-eyes-large-orders
+    title: Four-Eyes Review for Large Orders
+    objective: >
+      Require a second independent human before a large agent-initiated
+      order may be approved.
+    group: oversight
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-018-four-eyes-large-orders.ar01
+        text: >
+          When order size meets or exceeds the four-eyes threshold in the
+          Order Limit Register, the approving application MUST record a
+          second authenticated reviewer who is not the requester and MUST
+          NOT accept self-approval. The assistant MUST NOT record either
+          decision.
+        applicability:
+          - propose
+          - execute
+          - four-eyes-required
+        recommendation: >
+          Sample approvals at or above the four-eyes band and verify two
+          distinct human identities; flag requester-as-reviewer and AI
+          identities.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-order-limits
+          - reference-id: apa-guidance-human-oversight
+          - reference-id: apa-guidance-propose-approval
+      - reference-id: FINOS-AIR
+        entries:
+          - reference-id: AIR-DET-011
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: limit-policy-bypass
+          - reference-id: loss-of-human-oversight
+          - reference-id: unauthorized-trade-execution
+
+  - id: apa-ctl-019-hard-reject-oversize
+    title: Hard Reject for Oversized Orders
+    objective: >
+      Refuse oversized agent-initiated orders immediately, without opening
+      an approval or execution path.
+    group: oversight
+    state: Active
+    assessment-requirements:
+      - id: apa-ctl-019-hard-reject-oversize.ar01
+        text: >
+          When order size meets or exceeds the hard-reject ceiling in the
+          Order Limit Register, the approval request MUST be refused and
+          execution MUST be denied. No human approval MAY authorise an
+          oversized order through this assistant path.
+        applicability:
+          - propose
+          - execute
+          - hard-reject
+        recommendation: >
+          Submit oversize test orders and verify DENY with no accepted
+          approval request and no subsequent execution.
+        state: Active
+    guidelines:
+      - reference-id: apa-guidance
+        entries:
+          - reference-id: apa-guidance-order-limits
+          - reference-id: apa-guidance-execute-prohibited
+    threats:
+      - reference-id: apa-threats
+        entries:
+          - reference-id: limit-policy-bypass
+          - reference-id: unauthorized-trade-execution

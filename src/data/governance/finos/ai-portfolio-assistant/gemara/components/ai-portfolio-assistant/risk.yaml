@@ -12,9 +12,9 @@ metadata:
     name: AI Governance Office
     type: Human
   description: >
-    Risk catalog for the AI Portfolio Assistant operating across FDC3 desktop
-    applications, intended to support authority-bounded governance policy for
-    observe through propose activity while prohibiting autonomous execution.
+    Risk catalog for the AI Portfolio Assistant, intended to support
+    authority-bounded governance policy for observe through propose
+    activity while prohibiting autonomous execution.
   mapping-references:
     - id: apa-threats
       title: AI Portfolio Assistant Threat Catalog
@@ -144,8 +144,9 @@ risks:
     severity: High
     description: >
       The assistant may construct order proposals without required human
-      approval, escalate beyond its granted authority level, or attempt
-      autonomous trade execution.
+      approval, skip four-eyes review on a large order, proceed with an
+      oversized order that should have been rejected, escalate beyond its
+      granted authority level, or attempt autonomous trade execution.
     impact: >
       Could result in unauthorized market activity, client losses, trading-book
       incidents, regulatory breach, and material operational disruption.
@@ -154,6 +155,7 @@ risks:
         entries:
           - reference-id: unauthorized-order-proposal
           - reference-id: unauthorized-trade-execution
+          - reference-id: limit-policy-bypass
           - reference-id: loss-of-human-oversight
     owner:
       responsible:
