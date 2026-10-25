@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/approval.schema.json",
   "type": "object",
   "title": "Approval",
-  "description": "Identifies a provider-managed approval and may carry a snapshot of its state. Used as the IntentResult of `GetApproval` and as input to `ViewApproval` and `ReviewApproval`. A minimal navigation reference requires only `id.approvalId` and `provider`; `status` and related snapshot fields are omitted until a state snapshot is included.",
+  "description": "A proposed or in-flight approval of an `fdc3.action`. Used as the input to `GetApproval`, `UpdateApproval`, `CancelApproval`, `ViewApproval` and `ReviewApproval`, and as the IntentResult of `UpdateApproval` and `CancelApproval`. `subject` is the action to perform if approved. `status` is the lifecycle state: omit it or send `pending` when raising `GetApproval`; the approving application assigns `id.approvalId` and updates `status` as the decision proceeds. `cancelled` is produced by `CancelApproval` (or by the approving application invalidating the request). `GetApproval`'s IntentResult is still the target application's result, forwarded by the approving application — not this context.",
   "allOf": [
     {
       "type": "object",
@@ -14,28 +14,26 @@
         "id": {
           "type": "object",
           "title": "Approval identifiers",
-          "description": "FDC3 context `id` map. `approvalId` is required and is the durable identifier assigned by the provider. `requestId` may echo the original caller correlation identifier.",
+          "description": "FDC3 context `id` map. `requestId` is the caller-generated correlation and retry identifier, scoped by the provider to the authenticated caller. `approvalId` is the durable identifier assigned by the approving application after it accepts the request. At least one is required.",
           "properties": {
-            "approvalId": {
-              "type": "string",
-              "title": "approvalId",
-              "description": "Durable identifier assigned by the provider."
-            },
             "requestId": {
               "type": "string",
               "title": "requestId",
-              "description": "Original caller correlation identifier from `fdc3.approval.request.id.requestId`."
+              "description": "Caller-generated correlation and retry identifier. Reusing this identifier with a different subject or request content is an error. Identical request IDs from different callers must not collide."
+            },
+            "approvalId": {
+              "type": "string",
+              "title": "approvalId",
+              "description": "Durable identifier assigned by the approving application."
             }
           },
-          "required": ["approvalId"],
+          "anyOf": [
+            { "required": ["requestId"] },
+            { "required": ["approvalId"] }
+          ],
           "unevaluatedProperties": {
             "type": "string"
           }
-        },
-        "provider": {
-          "type": "string",
-          "title": "Provider",
-          "description": "Configured service identifier used to resolve the approval, including its environment. Not an arbitrary endpoint to trust. Distinct from an FDC3 app ID: an app handles desktop interaction, while a service owns the durable decision."
         },
         "name": {
           "type": "string",
@@ -44,13 +42,18 @@
         },
         "subject": {
           "title": "Subject",
-          "description": "Reference to the reviewed subject and version.",
-          "$ref": "context.schema.json#"
+          "description": "The `fdc3.action` that needs approval. After a terminal `approved` decision, the approving application performs this action (`raiseIntent` or `broadcast`) once, signed as itself, and forwards the target's IntentResult to the raising application.",
+          "$ref": "action.schema.json#"
+        },
+        "reason": {
+          "type": "string",
+          "title": "Reason",
+          "description": "Explanation of why approval is being requested. Informational; the approving application validates the applicable policy."
         },
         "status": {
           "type": "string",
           "title": "Status",
-          "description": "State snapshot. Omitted in a minimal navigation reference. The initial lifecycle is `pending` followed by one terminal outcome (`approved`, `rejected`, `cancelled`, or `expired`). Terminal approvals are not reopened.",
+          "description": "Lifecycle state. Omit or send `pending` when raising `GetApproval`. The initial lifecycle is `pending` followed by one terminal outcome (`approved`, `rejected`, `cancelled`, or `expired`). Terminal approvals are not reopened.",
           "enum": [
             "pending",
             "approved",
@@ -69,7 +72,7 @@
           "type": "string",
           "format": "date-time",
           "title": "Expires at",
-          "description": "Effective expiry assigned by the provider, as an RFC 3339 timestamp."
+          "description": "Review deadline as an RFC 3339 timestamp. Present only while `status` is `pending`. The approving application may enforce a different deadline than the one requested. Omitted after a terminal outcome — the deadline no longer applies."
         },
         "decisionReason": {
           "type": "string",
@@ -77,7 +80,7 @@
           "description": "Explanation accompanying the final outcome, where appropriate to disclose."
         }
       },
-      "required": ["type", "id", "provider"]
+      "required": ["type", "id", "subject"]
     },
     { "$ref": "context.schema.json#/definitions/BaseContext" }
   ],
@@ -85,16 +88,55 @@
     {
       "type": "fdc3.approval",
       "id": {
+        "requestId": "req-123"
+      },
+      "name": "Approve order above trading limit",
+      "subject": {
+        "type": "fdc3.action",
+        "action": "raiseIntent",
+        "title": "Submit order ORD-123",
+        "intent": "demo.SubmitOrder",
+        "context": {
+          "type": "demo.order",
+          "id": {
+            "orderId": "ORD-123",
+            "version": "3"
+          },
+          "name": "Buy 200 NVDA",
+          "instrument": {
+            "type": "fdc3.instrument",
+            "name": "NVIDIA",
+            "id": {
+              "ticker": "NVDA"
+            }
+          },
+          "side": "buy",
+          "quantity": 200,
+          "orderType": "market"
+        }
+      },
+      "reason": "Order exceeds the GBP 100,000 approval threshold",
+      "status": "pending",
+      "expiresAt": "2026-11-03T20:00:00Z"
+    },
+    {
+      "type": "fdc3.approval",
+      "id": {
         "approvalId": "approval-456",
         "requestId": "req-123"
       },
-      "provider": "demo-fluxnova",
       "name": "Approval for order ORD-123",
       "subject": {
-        "type": "demo.order",
-        "id": {
-          "orderId": "ORD-123",
-          "version": "3"
+        "type": "fdc3.action",
+        "action": "raiseIntent",
+        "title": "Submit order ORD-123",
+        "intent": "demo.SubmitOrder",
+        "context": {
+          "type": "demo.order",
+          "id": {
+            "orderId": "ORD-123",
+            "version": "3"
+          }
         }
       },
       "status": "pending",
@@ -104,9 +146,77 @@
     {
       "type": "fdc3.approval",
       "id": {
-        "approvalId": "approval-456"
+        "approvalId": "approval-456",
+        "requestId": "req-123"
       },
-      "provider": "demo-fluxnova"
+      "name": "Approval for order ORD-123",
+      "subject": {
+        "type": "fdc3.action",
+        "action": "raiseIntent",
+        "title": "Submit order ORD-123",
+        "intent": "demo.SubmitOrder",
+        "context": {
+          "type": "demo.order",
+          "id": {
+            "orderId": "ORD-123",
+            "version": "3"
+          }
+        }
+      },
+      "reason": "Order exceeds the GBP 100,000 approval threshold",
+      "status": "approved",
+      "updatedAt": "2026-11-03T19:12:00Z",
+      "decisionReason": "Within desk mandate after limit-exception review"
+    },
+    {
+      "type": "fdc3.approval",
+      "id": {
+        "approvalId": "approval-456",
+        "requestId": "req-123"
+      },
+      "name": "Approval for order ORD-123",
+      "subject": {
+        "type": "fdc3.action",
+        "action": "raiseIntent",
+        "title": "Submit order ORD-123",
+        "intent": "demo.SubmitOrder",
+        "context": {
+          "type": "demo.order",
+          "id": {
+            "orderId": "ORD-123",
+            "version": "3"
+          }
+        }
+      },
+      "reason": "Order exceeds the GBP 100,000 approval threshold",
+      "status": "rejected",
+      "updatedAt": "2026-11-03T19:12:00Z",
+      "decisionReason": "Position would breach the NVDA single-name limit"
+    },
+    {
+      "type": "fdc3.approval",
+      "id": {
+        "approvalId": "approval-456",
+        "requestId": "req-123"
+      },
+      "name": "Approval for order ORD-123",
+      "subject": {
+        "type": "fdc3.action",
+        "action": "raiseIntent",
+        "title": "Submit order ORD-123",
+        "intent": "demo.SubmitOrder",
+        "context": {
+          "type": "demo.order",
+          "id": {
+            "orderId": "ORD-123",
+            "version": "3"
+          }
+        }
+      },
+      "reason": "Order exceeds the GBP 100,000 approval threshold",
+      "status": "cancelled",
+      "updatedAt": "2026-11-03T19:08:00Z",
+      "decisionReason": "Requester withdrew the order"
     }
   ]
 }

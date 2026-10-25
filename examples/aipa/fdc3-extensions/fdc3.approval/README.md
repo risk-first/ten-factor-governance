@@ -2,97 +2,148 @@
 
 Proposed FDC3 extension for **requesting human approval, viewing its progress and opening a review interface**, independently of the workflow engine that manages the decision.
 
-An application raises `GetApproval` with a description of the proposed action and its subject. An approval provider accepts the request, returns a durable approval reference and manages the human workflow. 
+The **raising application** wants an [`fdc3.action`](https://fdc3.finos.org/docs/next/context/ref/Action) performed at a **target application**. When no approval is required, it raises that action itself and receives the target's IntentResult. When approval is required, it raises `GetApproval` to the **approving application**, which later performs the same action — signed as itself — at the target, then forwards the target's IntentResult back to the raising application. A **reviewer** may take part in that decision; some providers can record approval without a separate review UI.
 
 ## Flow
 
+
+
+### Without approval
+
+The raising application raises the intent (or broadcasts) directly at the target application.
+
 ```mermaid
 sequenceDiagram
-  participant C as Calling application
-  participant P as Approval provider
-  participant R as Reviewer
-  participant B as Execution backend
-  C->>P: GetApproval (fdc3.approval.request)
-  P-->>C: approval reference (pending)
-  Note over P,R: Human review may happen later, on another desktop
-  R->>P: Open task and authenticate
-  R->>P: Approve or reject
-  P-->>C: Optional approval status update
-  C->>B: Request execution using approval reference
-  B->>P: Verify authoritative decision and subject version
-  alt Valid approval
-    B->>B: Execute once
-  else Missing or invalid approval
-    B-->>C: Refuse execution
+  participant Raise as Raising application
+  participant Target as Target application
+  Raise->>Target: raiseIntent / broadcast
+  Target-->>Raise: Optional intent result
+```
+
+
+
+
+
+### With approval
+
+The raising application raises `GetApproval` with an `fdc3.approval` whose `subject` is the `fdc3.action`. After approval, the approving application raises that same action at the target application, then forwards the target's IntentResult to the raising application as the result of `GetApproval`.
+
+```mermaid
+sequenceDiagram
+  participant Raise as Raising application
+  participant Approve as Approving application
+  participant Review as Reviewer (optional)
+  participant Target as Target application
+  Raise->>Approve: GetApproval (fdc3.approval)
+  opt Refresh latest state
+    Raise->>Approve: UpdateApproval (fdc3.approval)
+    Approve-->>Raise: fdc3.approval (latest)
+  end
+  opt Human review
+    Note over Approve,Review: May happen later, on another desktop
+    Review->>Approve: Open task and authenticate
+  end
+  alt Approved
+    Review->>Approve: Approve
+    Approve->>Target: raiseIntent / broadcast, signed
+    Target-->>Approve: IntentResult
+    Approve-->>Raise: IntentResult (forwarded)
+  else Rejected
+    Review->>Approve: Reject
+    Approve-->>Raise: Error
+  else Cancelled
+    Raise->>Approve: CancelApproval (fdc3.approval)
+    Approve-->>Raise: fdc3.approval (cancelled)
+    Approve-->>Raise: Error
   end
 ```
 
-The execution backend may instead be called by a provider-side worker. Either arrangement must verify approval before execution. An approved request does not itself mean the action has executed.
+The approving application executes the approved action once. The target treats the signed raise or broadcast as coming from the approving application, not the raising application. `GetApproval` stays open until that workflow finishes: the raising application receives the target's IntentResult, forwarded by the approving application. A rejected, cancelled or expired request is not executed and completes `GetApproval` with an error. Execution failure after approval is a technical error; it does not reopen or reverse the decision.
 
 ## Intents and contexts
 
-| Intent | Input context | Purpose | Result |
-| --- | --- | --- | --- |
-| `GetApproval` | [`fdc3.approval.request`](schemas/request.schema.json) | Submit a proposed action for human approval. | [`fdc3.approval`](schemas/approval.schema.json), acknowledging acceptance and providing a durable reference. |
-| `ViewApproval` | [`fdc3.approval`](schemas/approval.schema.json) | Open an existing approval to inspect its current state and available history. | No result required. |
-| `ReviewApproval` | [`fdc3.approval`](schemas/approval.schema.json) | Open the decision interface for an authorised reviewer. | No result required; the decision is recorded through the provider's authenticated service. |
+
+| Intent           | Input context                                    | Purpose                                                                                                                                       | Result                                                                                                                                                                    |
+| ---------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GetApproval`    | [`fdc3.approval`](schemas/approval.schema.json)  | Submit a proposed `fdc3.action` (in `subject`) for human approval. If approved, the approving application executes it and forwards the target's IntentResult. | The target's IntentResult, forwarded by the approving application. The type is that of the subject action (for example `fdc3.transactionResult` after `demo.SubmitOrder`). |
+| `UpdateApproval` | [`fdc3.approval`](schemas/approval.schema.json)  | Send the raising application's current `fdc3.approval` and receive the approving application's latest snapshot. Does not change the decision. | [`fdc3.approval`](schemas/approval.schema.json) with current `status` and identifiers.                                                                                     |
+| `CancelApproval` | [`fdc3.approval`](schemas/approval.schema.json)  | Withdraw a `pending` approval. Resolves by `id.requestId` and/or `id.approvalId`. Only the authenticated caller (or the approving application invalidating the request) may cancel. | [`fdc3.approval`](schemas/approval.schema.json) with `status` `cancelled`. An outstanding `GetApproval` completes with an error.                                          |
+| `ViewApproval`   | [`fdc3.approval`](schemas/approval.schema.json)  | Open an existing approval to inspect its current state and available history.                                                                | No result required.                                                                                                                                                       |
+| `ReviewApproval` | [`fdc3.approval`](schemas/approval.schema.json)  | Open the decision interface for an authorised reviewer.                                                                                      | No result required; the decision is recorded through the provider's authenticated service.                                                                                |
+
+
+`UpdateApproval` resolves the input by `id.requestId` and/or `id.approvalId` and returns the latest snapshot. Input fields other than those identifiers are locators and display hints, not a patch: the raising application cannot change `subject`, `status` or the recorded decision this way.
+
+`CancelApproval` is the facility that produces `cancelled`. It succeeds only while `status` is `pending`. A terminal approval (`approved`, `rejected`, `cancelled`, `expired`) cannot be cancelled; that raise is an error. Optional `decisionReason` on the input is a withdrawal note; the result snapshot records the effective reason.
 
 `ReviewApproval` opens a task. It does not grant review permission or record a decision merely because the intent was raised. There is no `ApproveOrder` or generic `Approve` intent in the initial proposal.
 
 The approval app opens to **My tasks** when launched without context. Notifications and the inbox deliver work to reviewers; opening an app on the requester's desktop does not deliver it to another user.
 
-## Approval request
+## Approval
 
-[`fdc3.approval.request`](schemas/request.schema.json) describes what needs approval. Its `subject` is a nested context object so that the same protocol can support orders, payments, data exports and AI-proposed actions.
+[`fdc3.approval`](schemas/approval.schema.json) is the single context type for this extension. It is the input to `GetApproval`, `UpdateApproval`, `CancelApproval`, `ViewApproval` and `ReviewApproval`, and the IntentResult of `UpdateApproval` and `CancelApproval`. `subject` is an [`fdc3.action`](https://fdc3.finos.org/docs/next/context/ref/Action): raise an intent or broadcast a context. The nested `subject.context` is the domain object of that action (an order, payment, data export or AI-proposed payload). `status` is the only distinction between a newly raised request and a later snapshot.
 
-| Field | Required | Meaning |
-| --- | --- | --- |
-| `type` | Yes | `fdc3.approval.request`. |
-| `id.requestId` | Yes | Caller-generated correlation and retry identifier. Scoped by the provider to the authenticated caller. |
-| `name` | No | Short display label. |
-| `subject` | Yes | Domain context identifying the proposed action or object and the exact version to be reviewed. |
-| `reason` | Yes | Explanation of why approval is being requested. Informational; the provider validates the applicable policy. |
-| `expiresAt` | No | Requested expiry as an RFC 3339 timestamp. The provider may enforce a different deadline and returns the effective value. |
+It is not the IntentResult of `GetApproval`; that result is the target's result, forwarded at the end of the workflow.
+
+
+| Field            | Required | Meaning                                                                                                      |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `type`           | Yes      | `fdc3.approval`.                                                                                             |
+| `id.requestId`   | One of   | Caller-generated correlation and retry identifier. Required when raising `GetApproval`.                      |
+| `id.approvalId`  | One of   | Durable identifier assigned by the approving application after it accepts the request.                       |
+| `name`           | No       | Short display label.                                                                                         |
+| `subject`        | Yes      | The `fdc3.action` to perform if approved.                                                                    |
+| `reason`         | No       | Why approval is being requested. Informational; the approving application validates the applicable policy.   |
+| `status`         | No       | Lifecycle state. Omit or send `pending` when raising `GetApproval`.                                          |
+| `updatedAt`      | No       | Time of the state snapshot.                                                                                  |
+| `expiresAt`      | No       | Review deadline. Present only while `status` is `pending`.                                                   |
+| `decisionReason` | No       | Explanation accompanying the final outcome, where appropriate to disclose.                                   |
+
 
 ```json
 {
-  "type": "fdc3.approval.request",
+  "type": "fdc3.approval",
   "id": {
     "requestId": "req-123"
   },
   "name": "Approve order above trading limit",
   "subject": {
-    "type": "demo.order",
-    "id": {
-      "orderId": "ORD-123",
-      "version": "3"
+    "type": "fdc3.action",
+    "action": "raiseIntent",
+    "title": "Submit order ORD-123",
+    "intent": "demo.SubmitOrder",
+    "context": {
+      "type": "demo.order",
+      "id": {
+        "orderId": "ORD-123",
+        "version": "3"
+      }
     }
   },
   "reason": "Order exceeds the GBP 100,000 approval threshold",
+  "status": "pending",
   "expiresAt": "2026-11-03T20:00:00Z"
 }
 ```
 
-`demo.order` is an illustrative domain context, not a standard order schema. Each supported subject type must define how to identify and resolve an immutable version or snapshot. The provider fetches authoritative details rather than trusting values supplied in the context.
+`demo.order` is an illustrative nested context, not a standard order schema. Each supported nested type must define how to identify and resolve an immutable version or snapshot. The approving application fetches authoritative details rather than trusting values supplied in `subject.context`.
 
-Repeated requests with the same authenticated caller and `requestId` return the same approval. Reusing that identifier with a different subject or request content is an error. Identical request IDs from different callers must not collide.
+Repeated `GetApproval` raises with the same authenticated caller and `requestId` return the same approval. Reusing that identifier with a different subject or request content is an error. Identical request IDs from different callers must not collide.
 
-## Approval reference and state
 
-[`fdc3.approval`](schemas/approval.schema.json) identifies a provider-managed approval and can carry a snapshot of its state. It is used both as the result of `GetApproval` and as input to the viewing intents.
+| Status      | Meaning                                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------------------- |
+| `pending`   | Accepted and awaiting a final decision.                                                              |
+| `approved`  | The provider recorded approval for the specified action and will execute it, signed as the provider. |
+| `rejected`  | The reviewer declined the request.                                                                   |
+| `cancelled` | Withdrawn through `CancelApproval`, or invalidated by the approving application.                     |
+| `expired`   | The review deadline passed without a final decision.                                                 |
 
-| Field | Required | Meaning |
-| --- | --- | --- |
-| `type` | Yes | `fdc3.approval`. |
-| `id.approvalId` | Yes | Durable identifier assigned by the provider. |
-| `provider` | Yes | Configured service identifier used to resolve the approval, including its environment. Not an arbitrary endpoint to trust. |
-| `id.requestId` | No | Original caller correlation identifier. |
-| `name` | No | Short display label. |
-| `subject` | No | Reference to the reviewed subject and version. |
-| `status` | No | State snapshot; omitted in a minimal navigation reference. |
-| `updatedAt` | No | Time of the state snapshot. |
-| `expiresAt` | No | Effective expiry assigned by the provider. |
-| `decisionReason` | No | Explanation accompanying the final outcome, where appropriate to disclose. |
+
+The initial lifecycle is `pending` followed by one terminal outcome. Terminal approvals are not reopened; a changed proposal requires a new request. An execution policy can still refuse an approved action if its validity conditions no longer hold.
+
+`UpdateApproval` returns a snapshot in one of these states. After `approved`:
 
 ```json
 {
@@ -101,142 +152,97 @@ Repeated requests with the same authenticated caller and `requestId` return the 
     "approvalId": "approval-456",
     "requestId": "req-123"
   },
-  "provider": "demo-fluxnova",
   "name": "Approval for order ORD-123",
   "subject": {
-    "type": "demo.order",
-    "id": {
-      "orderId": "ORD-123",
-      "version": "3"
+    "type": "fdc3.action",
+    "action": "raiseIntent",
+    "title": "Submit order ORD-123",
+    "intent": "demo.SubmitOrder",
+    "context": {
+      "type": "demo.order",
+      "id": {
+        "orderId": "ORD-123",
+        "version": "3"
+      }
     }
   },
-  "status": "pending",
-  "updatedAt": "2026-11-03T19:00:00Z",
-  "expiresAt": "2026-11-03T20:00:00Z"
+  "reason": "Order exceeds the GBP 100,000 approval threshold",
+  "status": "approved",
+  "updatedAt": "2026-11-03T19:12:00Z",
+  "decisionReason": "Within desk mandate after limit-exception review"
 }
 ```
 
-Provider service identifiers are distinct from FDC3 app IDs: an app handles desktop interaction, while a service owns the durable decision. The deployment maps providers to trusted backends and appropriate viewing applications.
-
-| Status | Meaning |
-| --- | --- |
-| `pending` | Accepted and awaiting a final decision. |
-| `approved` | The provider recorded approval for the specified subject version. |
-| `rejected` | The reviewer declined the request. |
-| `cancelled` | The request was withdrawn or invalidated. |
-| `expired` | The review deadline passed without a final decision. |
-
-The initial lifecycle is `pending` followed by one terminal outcome. Terminal approvals are not reopened; a changed proposal requires a new request. An execution policy can still refuse an approved action if its validity conditions no longer hold.
-
-Failure to accept or retrieve a request is a technical error, not a human rejection. Providers should distinguish invalid input, unsupported subject types, access denial, missing approvals and service unavailability. Exact error payloads remain to be specified.
-
-## Results and updates
-
-`GetApproval` returns an acknowledgement promptly. It must not hold an intent result open while waiting for a human decision.
-
-The initial contract returns one `fdc3.approval` context. Live updates can be added through an explicitly negotiated result-channel profile; that profile must specify channel setup, subscription ordering and recovery before it is treated as interoperable. Status updates would use the same approval context.
-
-The durable approval remains accessible through the provider after a channel closes or a desktop restarts. `ViewApproval` reloads its current state. A backend status API is needed for automated callers that must resume monitoring without opening a UI; standardising that API is outside this desktop extension's initial scope.
-
-Approval details must not be broadcast on shared user channels or a shared app-channel bus. Clients treat received snapshots as display information and resolve current state through an authenticated provider connection.
-
-## Policy and enforcement
-
-The extension standardises interaction with an approval provider. It does not make desktop messages an authorisation mechanism.
-
-| Responsibility | Owner |
-| --- | --- |
-| Decide whether approval is required | Trusted domain backend / policy service. |
-| Resolve the subject and freeze its reviewed version | Domain backend and approval provider. |
-| Select eligible reviewers and prevent self-approval | Approval provider using authenticated identity and policy. |
-| Record the decision, reviewer, timestamps and policy version | Approval provider. |
-| Verify the decision before execution | Execution backend. |
-| Prevent duplicate execution | Execution backend. |
-
-The requester cannot choose an authoritative reviewer identity, waive separation of duties or declare an approval valid by including fields in a context. The provider derives requester and reviewer identities from authenticated sessions. A shared browser session pretending to be two users would only simulate this control.
-
-Changes to quantity, price, instrument or other material subject fields require reassessment. Approval is bound to the reviewed version or snapshot. The backend verifies that binding, the current validity conditions and its own policy before acting. It refuses execution when approval cannot be verified.
-
-Cancellation, expiry and reviewer completion must be resolved consistently by the provider so that competing actions cannot produce contradictory final outcomes.
-
-## Fluxnova implementation
-
-Proposed adapter responsibilities:
-
-| Piece | Role |
-| --- | --- |
-| Fluxnova FDC3 app | Handles the three intents; displays My tasks, approval progress and review forms. |
-| Approval service | Authenticates users, resolves subjects, applies policy, deduplicates requests and maps public approval IDs to Fluxnova instances/tasks. |
-| Fluxnova process | Runs the human task, approval/rejection branch and expiry handling. |
-| Domain backend / worker | Validates the recorded decision and submits the approved action once. |
-
-Fluxnova process-instance IDs and task IDs stay behind the adapter. The calling application depends on approval concepts rather than BPMN implementation details.
-
-For the order demo:
-
-1. A trader or AI prepares an order. The order backend calculates its authoritative value.
-2. An order at or below the configured threshold proceeds under the normal submission policy.
-3. An order above the threshold enters `pendingApproval`; the backend creates or validates the approval request. FDC3 provides the app-facing request and navigation interface, while backend enforcement applies to every entry point.
-4. The trader opens `ViewApproval` to inspect progress.
-5. A second authenticated user opens the task from their inbox or through `ReviewApproval` and approves or rejects it.
-6. Approval permits the backend worker to submit the reviewed order version. Rejection or expiry prevents submission.
-7. The demo shows the decision history alongside the resulting order state.
-
-The AI can propose an action and request approval. Its own approval claim has no authority over execution.
-
-## Discoverability
-
-Declare the intents and supported contexts in the approval app's App Directory record. Following the attached `fdc3.discoverability` proposal, include a `purpose` string so an agent can understand when to use each intent. `purpose` is an extension property in that proposal, not a standard App Directory field.
+After `cancelled` (`CancelApproval` while still `pending`):
 
 ```json
 {
-  "appId": "demo-fluxnova-approval",
-  "interop": {
-    "intents": {
-      "listensFor": {
-        "GetApproval": {
-          "displayName": "Get Approval",
-          "purpose": "Get independent human approval for a proposed action.",
-          "contexts": ["fdc3.approval.request"],
-          "resultType": "fdc3.approval"
-        },
-        "ViewApproval": {
-          "displayName": "View Approval",
-          "purpose": "Inspect an existing approval's current state and history.",
-          "contexts": ["fdc3.approval"]
-        },
-        "ReviewApproval": {
-          "displayName": "Review Approval",
-          "purpose": "Open an approval for an authorised human reviewer to decide.",
-          "contexts": ["fdc3.approval"]
-        }
+  "type": "fdc3.approval",
+  "id": {
+    "approvalId": "approval-456",
+    "requestId": "req-123"
+  },
+  "name": "Approval for order ORD-123",
+  "subject": {
+    "type": "fdc3.action",
+    "action": "raiseIntent",
+    "title": "Submit order ORD-123",
+    "intent": "demo.SubmitOrder",
+    "context": {
+      "type": "demo.order",
+      "id": {
+        "orderId": "ORD-123",
+        "version": "3"
       }
     }
-  }
+  },
+  "reason": "Order exceeds the GBP 100,000 approval threshold",
+  "status": "cancelled",
+  "updatedAt": "2026-11-03T19:08:00Z",
+  "decisionReason": "Requester withdrew the order"
 }
 ```
 
-This is an interoperability fragment, not a complete launchable App Directory record.
+After `rejected`:
 
-## Schemas
+```json
+{
+  "type": "fdc3.approval",
+  "id": {
+    "approvalId": "approval-456",
+    "requestId": "req-123"
+  },
+  "name": "Approval for order ORD-123",
+  "subject": {
+    "type": "fdc3.action",
+    "action": "raiseIntent",
+    "title": "Submit order ORD-123",
+    "intent": "demo.SubmitOrder",
+    "context": {
+      "type": "demo.order",
+      "id": {
+        "orderId": "ORD-123",
+        "version": "3"
+      }
+    }
+  },
+  "reason": "Order exceeds the GBP 100,000 approval threshold",
+  "status": "rejected",
+  "updatedAt": "2026-11-03T19:12:00Z",
+  "decisionReason": "Position would breach the NVDA single-name limit"
+}
+```
 
-JSON Schema definitions (draft-07), same composition pattern as [`@finos/fdc3` context schemas](https://github.com/finos/FDC3/tree/main/packages/fdc3-context/schemas/context): each type `allOf`s [`context.schema.json#/definitions/BaseContext`](schemas/context.schema.json). Register these schemas with the discoverability responder so callers can look up the exact context shape before constructing requests.
+Failure to accept or retrieve a request is a technical error, not a human rejection. Providers should distinguish invalid input, unsupported actions or nested context types, access denial, missing approvals and service unavailability. Exact error payloads remain to be specified.
 
-| File | `type` |
-| --- | --- |
-| [`schemas/request.schema.json`](schemas/request.schema.json) | `fdc3.approval.request` |
-| [`schemas/approval.schema.json`](schemas/approval.schema.json) | `fdc3.approval` |
+## Results and updates
 
-## Initial scope and open decisions
+`GetApproval` stays open until the workflow finishes. On approval, the approving application performs the subject action at the target and returns the target's IntentResult to the raising application, unchanged. The raising application therefore sees the same result it would have received by raising that action itself.
 
-Start with **one request, one immutable subject and one final outcome**. Multiple reviewers, quorum, delegation and escalation can be managed internally by a provider without exposing their task structures through FDC3.
+If the target returns no result (typical for `broadcast`), `GetApproval` completes without a context. If the request is rejected, cancelled or expired, `GetApproval` completes with an error and no target action is performed.
 
-Before implementation, agree:
+The durable approval remains accessible through the approving application after the raising application's `GetApproval` result has been delivered. `UpdateApproval` is how the raising application refreshes its copy without opening a UI: it sends the `fdc3.approval` it holds and receives the latest snapshot. `ViewApproval` opens that snapshot in the approving application's UI.
 
-- Namespace ownership and naming of the extension.
-- The domain subject schema and version-resolution contract.
-- Provider registration, trusted service resolution and identity integration.
-- Technical error representation and whether to add a live-update channel profile.
-- How backend clients request and query approvals alongside desktop callers.
+Approval details must not be broadcast on shared user channels or a shared app-channel bus. Clients treat received snapshots as display information and resolve current state through an authenticated provider connection.
 
-Cancellation intents, machine-readable reviewer rules and portable audit evidence are later extensions. The initial interoperability test is whether the order application can use a second approval provider without changing its request, reference or navigation contexts.
+The AIPA mapping onto Fluxnova is in [`fluxnova.md`](fluxnova.md).

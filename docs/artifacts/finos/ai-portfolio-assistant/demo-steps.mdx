@@ -56,8 +56,8 @@ Intent and context names below match the [FDC3 interop catalog](./fdc3-interop.m
    - The Desktop Agent does not forward the intent to Execution / Order Entry.
 
 7b. **Approve the trade independently** (`execute` — four-eyes / human-in-the-loop)
-   - The proposed `fdc3.orderList` is sent to an independent approval system. The Order Entry app (or the Assistant) raises `GetApproval` with `fdc3.approval.request`, subject the reviewed basket.
-   - The approval provider accepts the request and returns `fdc3.approval` (`pending`). Governance treats this as **REQUIRE APPROVAL** — it is not execution authority.
+   - The proposed `fdc3.orderList` is sent to an independent approval system. The Order Entry app (or the Assistant) raises `GetApproval` with `fdc3.approval`, `subject` an `fdc3.action` for the reviewed basket, `status` `pending`.
+   - The approving application accepts the request. Governance treats this as **REQUIRE APPROVAL** — it is not execution authority. `GetApproval` stays open until the workflow finishes.
    - **Human-in-the-loop:** an authorised reviewer opens `ReviewApproval` and records approve or reject through the provider's authenticated service. The AI cannot record that decision.
    - **Four-eyes:** the reviewer is a second authenticated user, not the requester who originated the proposal; the provider enforces separation of duties.
    - On `approved`, execution verifies the durable approval and the reviewed subject version, then submits once. Rejected, cancelled, or expired approvals still **DENY**.
