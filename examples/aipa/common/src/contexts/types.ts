@@ -17,6 +17,11 @@ export const INTENTS = {
   CreateOrder: 'demo.CreateOrder',
   ViewOrders: 'ViewOrders',
   SubmitOrder: 'demo.SubmitOrder',
+  GetApproval: 'GetApproval',
+  UpdateApproval: 'UpdateApproval',
+  CancelApproval: 'CancelApproval',
+  ViewApproval: 'ViewApproval',
+  ReviewApproval: 'ReviewApproval',
   /** fdc3.data — pull one advertised dataset from a data app */
   GetAppData: 'GetAppData',
   /** Standard FDC3 — seed / replace-in-place display context */
@@ -38,6 +43,7 @@ export const CONTEXT_TYPES = {
   stressScenarioResult: 'demo.stressScenarioResult',
   demoOrder: 'demo.order',
   demoOrderList: 'demo.orderList',
+  approval: 'fdc3.approval',
   priceHistory: 'demo.priceHistory',
   /** fdc3.data extension */
   advertiseDatasets: 'fdc3.data.advertiseDatasets',

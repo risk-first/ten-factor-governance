@@ -28,7 +28,7 @@
       },
       "hostManifests": {
         "sail": {
-          "injectApi": "2.0",
+          "injectApi": "3.0",
           "singleton": true
         }
       }

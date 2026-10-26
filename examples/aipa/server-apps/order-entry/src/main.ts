@@ -7,7 +7,7 @@ import {
   type DemoOrder,
   type DemoOrderOrList,
 } from '../../../common/src/contexts/types.ts';
-import { toResultContext, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
+import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { createBroadcastButton } from '../../../common/src/ui/broadcast-icon.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { DesktopAgent } from '@finos/fdc3';
@@ -165,26 +165,24 @@ function showOrders(orders: DemoOrder[]): void {
   renderBlotter();
 }
 
-async function createOrder(
-  incoming?: DemoOrderOrList,
-  meta?: unknown
-): Promise<Record<string, unknown>> {
+async function createOrder(incoming?: DemoOrderOrList, meta?: { signature?: unknown }) {
   const res = await fetch('/api/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ order: incoming, __appMeta: meta }),
+    body: JSON.stringify({ order: incoming, metadata: meta }),
   });
   const body = (await res.json()) as {
     envelope: SignedEnvelope;
     verify: { ok: boolean; warning?: string };
   };
-  const result = toResultContext(body.envelope) as DemoOrderOrList;
+  const signed = toSignedResult(body.envelope);
+  const result = signed.context as DemoOrderOrList;
   showOrders(ordersFromContext(result));
   const verifyEl = document.getElementById('verify')!;
   verifyEl.textContent = body.verify.warning ?? 'Inbound signature ok / not required';
   verifyEl.className = body.verify.ok ? 'badge' : 'badge warn';
   setStatus(statusEl(), `Signed ${result.type}`);
-  return result as unknown as Record<string, unknown>;
+  return signed;
 }
 
 async function approve(): Promise<void> {
@@ -222,9 +220,8 @@ async function setup(): Promise<void> {
   fdc3 = session.fdc3;
   if (!fdc3) return;
 
-  await fdc3.addIntentListener(INTENTS.CreateOrder, async ctx => {
-    const incoming = ctx as DemoOrderOrList & { __appMeta?: unknown };
-    return createOrder(incoming, incoming.__appMeta);
+  await fdc3.addIntentListener(INTENTS.CreateOrder, async (ctx, metadata) => {
+    return createOrder(ctx as DemoOrderOrList, metadata);
   });
 
   await fdc3.addIntentListener(INTENTS.ViewOrders, async ctx => {

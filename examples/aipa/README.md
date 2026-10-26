@@ -3,8 +3,10 @@
 Runnable FDC3 specialist apps for the [AI Portfolio Assistant](../../docs/artifacts/finos/ai-portfolio-assistant/)
 example. Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
 
-Governance Runtime is **out of scope** here. The Agent UI + harness cover the
-assistant chat path via [`fdc3.ai`](./fdc3-extensions/fdc3.ai/).
+The Agent UI + harness cover the assistant chat path via
+[`fdc3.ai`](./fdc3-extensions/fdc3.ai/). Sail's `sail-governance` extension
+(`sail-extensions/sail-governance`) can intercept unsigned `demo.SubmitOrder`
+and send `GetApproval` to Approvals.
 
 ## Apps
 
@@ -20,6 +22,7 @@ assistant chat path via [`fdc3.ai`](./fdc3-extensions/fdc3.ai/).
 | Agent harness | 4107 | listens `AskAgent` | Rita-derived agent loop; generic FDC3 tools; streams `fdc3.ai.*`; LLM via `/api/query` |
 | Markdown Viewer | 4108 | `ViewData` | Front-end; renders `fdc3.data.markdown` (open / replace-in-place) |
 | Discoverability | 4109 | — | Responder on `fdc3.discoverability` (apps / intents / context types) |
+| Approvals | 4110 | `GetApproval` and siblings | Invisible singleton; Entra login; signed re-raise of `demo.SubmitOrder` |
 | App Directory | 4099 | — | Combined AppD JSON |
 
 ## Quick start
@@ -75,8 +78,8 @@ Signing apps expose:
 - `POST /api/sign`
 - Secure-boundary WebSocket (`exchangeData('sign-context', …)`)
 
-Signed contexts embed `__appMeta` (`signature`, `antiReplay`, `jku`, `kid`) on
-intent results. Contexts that **MUST** be signed:
+Signed intent results return `{ context, metadata }` (`signature`, `antiReplay`
+on `ContextMetadata`). Contexts that **MUST** be signed:
 
 - `demo.portfolioRisk`
 - `demo.researchBundle`

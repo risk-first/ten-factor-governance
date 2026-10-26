@@ -61,10 +61,10 @@ function inboundVerify(meta: { signature?: string } | undefined): { ok: boolean;
   return { ok: true };
 }
 
-function incomingContext(body: { order?: unknown; __appMeta?: unknown }): unknown {
+function incomingContext(body: { order?: unknown; metadata?: unknown }): unknown {
   const wrapped = body?.order;
   if (wrapped && typeof wrapped === 'object') return wrapped;
-  const { order: _order, __appMeta: _meta, ...rest } = body ?? {};
+  const { order: _order, metadata: _meta, ...rest } = body ?? {};
   return rest;
 }
 
@@ -78,7 +78,7 @@ export default async function backend(
 
   app.post('/api/create', async (req, res) => {
     const incoming = incomingContext(req.body ?? {});
-    const meta = req.body?.__appMeta as { signature?: string } | undefined;
+    const meta = req.body?.metadata as { signature?: string } | undefined;
     const listIn = isDemoOrderList(incoming) ? incoming : undefined;
     const legs = ordersFromContext(incoming).map(normalizeOrder);
     const orders = legs.length > 0 ? legs : defaultOrders();

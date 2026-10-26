@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Approvals</title>
+    <script type="module" src="./src/main.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box">
+        <div class="toolbar">
+          <button id="login" class="primary">Sign in with Microsoft</button>
+          <button id="logout" type="button">Sign out</button>
+          <span id="session" class="badge warn">Not signed in</span>
+        </div>
+        <p id="empty" class="meta-row">No pending approval. Open this app from the Sail top bar when GetApproval arrives.</p>
+        <pre id="subject" class="code" hidden></pre>
+        <div class="toolbar">
+          <button id="approve" class="primary" disabled>Approve → demo.SubmitOrder</button>
+          <button id="reject" disabled>Reject</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
