@@ -3,5 +3,6 @@ node_modules/
 directory/static/generated/
 server-apps/portfolio/temp/
 server-apps/execution/temp/
+sail-extensions/sail-governance/temp/
 .env
 *.log

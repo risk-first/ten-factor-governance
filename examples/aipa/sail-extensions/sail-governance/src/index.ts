@@ -11,7 +11,11 @@ export const governanceExtension: SailExtension = {
   id: "sail-governance",
   title: "Sail Governance",
   getUIExtensions() {
-    return [{ type: SAIL_CONFIG_UI, url: new URL("./ui.tsx", import.meta.url).href }]
+    return [
+      { type: SAIL_CONFIG_UI, url: new URL("./ui.tsx", import.meta.url).href },
+      { type: SAIL_CONFIG_UI, url: new URL("./evaluation-log.tsx", import.meta.url).href },
+      { type: SAIL_CONFIG_UI, url: new URL("./enforcement-log.tsx", import.meta.url).href },
+    ]
   },
   wrapServer(instance, ctx) {
     const intercept = createGovernanceReceive(instance)

@@ -5,7 +5,9 @@ they raise and handle `demo.SubmitOrder` as usual. This extension parks unsigned
 raises and sends `GetApproval` to [`aipa-approvals`](../../server-apps/approvals/README.md).
 
 Protocol background: [`fdc3.approval` / Sail governance](../../fdc3-extensions/fdc3.approval/sail-governance.md).
-This package is the hard-coded first cut — no policy YAML, Gemara logs, or DENY.
+This package is the hard-coded first cut — no policy YAML evaluation or DENY.
+Layer 5 / 6 receipts use Gemara `EvaluationLog` / `EnforcementLog` types from
+`@gemara/react`.
 
 ## Hosting
 
@@ -18,13 +20,16 @@ The extension-server scan root
 `examples/aipa/sail-extensions` is in `SAIL_EXTENSION_SCAN_DIRS`.
 `@finos/sail-extension` is a `file:` dep on the local Sail checkout — do not publish.
 
-`sail.config` (Sail Configuration popup) persists `{ mode }` under storage key
-`settings`. Default is `intercept`.
+`sail.config` (Sail Configuration popup) has three screens. Settings persist
+`{ mode }` under storage key `settings`. Default is `intercept`. Layer 5 / 6
+receipts are appended to gitignored `temp/evaluation-log.json` and
+`temp/enforcement-log.json` (same pattern as Execution’s `temp/submit-order.json`).
 
-| Mode | Effect |
+| Screen | Role |
 | --- | --- |
-| `off` | Forward every DACP message unchanged. |
-| `intercept` | Apply the SubmitOrder rule below. Re-read storage on each `receive`. |
+| Sail Governance | Mode: `off` (forward everything) or `intercept`. |
+| Evaluation Log | Layer 5 receipts: actor, intent, policy/control versions, `ALLOW` / `REQUIRE_APPROVAL`. |
+| Enforcement Log | Layer 6 receipts: forward, or hold and raise `GetApproval`. |
 
 ## Intercept rule
 

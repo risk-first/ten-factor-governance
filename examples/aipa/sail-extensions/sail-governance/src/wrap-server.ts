@@ -1,5 +1,8 @@
 import type { FDC3ServerInstance } from "@finos/sail-headless-agent"
 
+import { appendReceipts } from "./log-store.js"
+import { buildEnforcementLog, buildEvaluationLog } from "./receipts.js"
+
 const SUBMIT_ORDER = "demo.SubmitOrder"
 const GET_APPROVAL = "GetApproval"
 const APPROVALS_APP_ID = "aipa-approvals"
@@ -79,6 +82,31 @@ async function waitForGetApprovalListener(
   return false
 }
 
+async function recordDecision(input: {
+    requestUuid: string
+    actorAppId: string
+    intent: string
+    decision: "ALLOW" | "REQUIRE_APPROVAL"
+    message: string
+  },
+): Promise<void> {
+  const evaluation = buildEvaluationLog({
+    id: input.requestUuid,
+    actorAppId: input.actorAppId,
+    intent: input.intent,
+    decision: input.decision,
+    message: input.message,
+  })
+  const enforcement = buildEnforcementLog({
+    id: input.requestUuid,
+    actorAppId: input.actorAppId,
+    intent: input.intent,
+    decision: input.decision,
+    evaluationId: evaluation.metadata.id,
+  })
+  appendReceipts(evaluation, enforcement)
+}
+
 export function createGovernanceReceive(instance: FDC3ServerInstance) {
   const parked = new Map<string, string>()
 
@@ -109,14 +137,30 @@ export function createGovernanceReceive(instance: FDC3ServerInstance) {
     }
 
     const raiser = instance.getInstanceDetails(from)
+    const actorAppId = raiser?.appId ?? from
+    const originalUuid = msg.meta?.requestUuid ?? instance.createUUID()
     if (raiser?.appId === APPROVALS_APP_ID || isSignedByApprovals(msg)) {
+      await recordDecision({
+        requestUuid: originalUuid,
+        actorAppId,
+        intent,
+        decision: "ALLOW",
+        message: `demo.SubmitOrder signed by ${APPROVALS_APP_ID} or raised from that app.`,
+      })
       return instance.receive(message, from)
     }
 
-    const originalUuid = msg.meta?.requestUuid
-    if (!originalUuid) {
+    if (!msg.meta?.requestUuid) {
       return instance.receive(message, from)
     }
+
+    await recordDecision({
+      requestUuid: originalUuid,
+      actorAppId,
+      intent,
+      decision: "REQUIRE_APPROVAL",
+      message: `Unsigned ${intent} from ${actorAppId} requires human approval.`,
+    })
 
     const getApprovalUuid = instance.createUUID()
     parked.set(getApprovalUuid, originalUuid)
