@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/gemara.evaluationLog.schema.json",
+  "type": "object",
+  "title": "Gemara Evaluation Log",
+  "description": "FDC3 wrapper for one OpenSSF Gemara Evaluation Log (layer 5). Input to `LogEvaluation`. The Gemara document is in `log`; `id.logId` may mirror `log.metadata.id`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.gemara.evaluationLog"
+        },
+        "id": {
+          "type": "object",
+          "title": "Identifiers",
+          "description": "Optional FDC3 context `id` map. `logId` should match `log.metadata.id` when known.",
+          "properties": {
+            "logId": {
+              "type": "string",
+              "title": "logId",
+              "description": "Identifier of the Evaluation Log document."
+            }
+          },
+          "unevaluatedProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Optional short display label."
+        },
+        "log": {
+          "type": "object",
+          "title": "Evaluation Log",
+          "description": "Gemara Evaluation Log document. See https://gemara.openssf.org/schema/. `metadata.type` must be `EvaluationLog`.",
+          "required": ["metadata"],
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "const": "EvaluationLog"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["type", "log"],
+      "additionalProperties": true
+    },
+    {
+      "$ref": "context.schema.json#/definitions/BaseContext"
+    }
+  ]
+}

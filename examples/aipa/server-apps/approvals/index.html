@@ -7,18 +7,26 @@
   </head>
   <body>
     <div class="container">
-      <div class="box">
+      <div class="box execution-log">
         <div class="toolbar">
-          <button id="login" class="primary">Sign in with Microsoft</button>
-          <button id="logout" type="button">Sign out</button>
+          <button id="login" class="primary" type="button">Sign in with Microsoft</button>
+          <button id="logout" type="button" disabled>Sign out</button>
           <span id="session" class="badge warn">Not signed in</span>
         </div>
-        <p id="empty" class="meta-row">No pending approval. Open this app from the Sail top bar when GetApproval arrives.</p>
-        <pre id="subject" class="code" hidden></pre>
-        <div class="toolbar">
-          <button id="approve" class="primary" disabled>Approve → demo.SubmitOrder</button>
-          <button id="reject" disabled>Reject</button>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Status</th>
+                <th>Subject</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="work"></tbody>
+          </table>
         </div>
+        <pre id="detail" class="code" hidden></pre>
       </div>
     </div>
   </body>

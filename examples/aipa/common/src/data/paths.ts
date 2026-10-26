@@ -12,6 +12,12 @@ export const LIVE_PORTFOLIO_DIR = path.resolve(here, '../../../server-apps/portf
 /** Runtime SubmitOrder log owned by the execution app (gitignored). */
 export const EXECUTION_LOG_DIR = path.resolve(here, '../../../server-apps/execution/temp');
 
+/** Runtime Gemara logs owned by the Governance Console (gitignored). */
+export const GOVERNANCE_CONSOLE_DIR = path.resolve(
+  here,
+  '../../../server-apps/governance-console/temp'
+);
+
 export function fixturePath(name: string): string {
   return path.join(FIXTURES_DIR, name);
 }
@@ -22,4 +28,12 @@ export function livePortfolioPath(): string {
 
 export function executionLogPath(): string {
   return path.join(EXECUTION_LOG_DIR, 'submit-order.json');
+}
+
+export function evaluationLogPath(): string {
+  return path.join(GOVERNANCE_CONSOLE_DIR, 'evaluation-log.json');
+}
+
+export function enforcementLogPath(): string {
+  return path.join(GOVERNANCE_CONSOLE_DIR, 'enforcement-log.json');
 }

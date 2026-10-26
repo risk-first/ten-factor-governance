@@ -95,6 +95,7 @@ examples/aipa/
   common/           # contexts, fixtures, signing, data clients
   server-apps/      # apps with a trusted Node backend
   front-end-apps/   # Agent UI, Markdown Viewer (browser-only)
+  fdc3-extensions/  # Proposed context/intent specs (approval, gemara, …)
   directory/        # aggregated AppD
   sail-extensions/  # Sail Desktop Agent extension (port 9101)
   main.ts           # Vite multi-app runner + sail-governance host

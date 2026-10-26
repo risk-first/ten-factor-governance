@@ -1,8 +1,5 @@
 import type { EnforcementLogData as EnforcementLog, EvaluationLogData as EvaluationLog } from "@gemara/react"
 
-export const EVALUATION_LOG_URL = new URL("../temp/evaluation-log.json", import.meta.url).href
-export const ENFORCEMENT_LOG_URL = new URL("../temp/enforcement-log.json", import.meta.url).href
-
 export type GovernanceDecision = "ALLOW" | "REQUIRE_APPROVAL"
 
 const POLICY_REF = "apa-policy"
@@ -158,4 +155,3 @@ export function buildEnforcementLog(input: {
     ],
   } as EnforcementLog
 }
-

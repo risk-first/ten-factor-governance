@@ -1,6 +1,6 @@
 import '../../../common/src/ui/styles.css';
 import { connectAppSession, setStatus } from '../../../common/src/fdc3/agent.ts';
-import { CONTEXT_TYPES, INTENTS } from '../../../common/src/contexts/types.ts';
+import { CONTEXT_TYPES, INTENTS, ordersFromContext } from '../../../common/src/contexts/types.ts';
 import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import { PublicClientApplication, type Configuration } from '@azure/msal-browser';
@@ -24,6 +24,7 @@ type Held = {
   record: ApprovalRecord;
   resolve: (result: Context | ContextWithMetadata) => void;
   reject: (error: Error) => void;
+  settled: boolean;
 };
 
 type EntraConfig = {
@@ -34,8 +35,11 @@ type EntraConfig = {
 
 const drawer = mountStatusDrawer();
 const statusEl = () => drawer.statusEl;
-const store = new Map<string, Held>();
-let currentId: string | undefined;
+/** Lookup by requestId and approvalId. */
+const byId = new Map<string, Held>();
+/** Unique held items, newest first. */
+let work: Held[] = [];
+let selectedId: string | undefined;
 let fdc3: DesktopAgent | null = null;
 let msal: PublicClientApplication | null = null;
 let sessionUser: { email: string; name: string } | null = null;
@@ -47,35 +51,158 @@ function keyOf(approval: { id?: { requestId?: string; approvalId?: string } }): 
 function findHeld(approval: { id?: { requestId?: string; approvalId?: string } }): Held | undefined {
   const approvalId = approval.id?.approvalId;
   const requestId = approval.id?.requestId;
-  if (approvalId && store.has(approvalId)) return store.get(approvalId);
-  if (requestId && store.has(requestId)) return store.get(requestId);
+  if (approvalId && byId.has(approvalId)) return byId.get(approvalId);
+  if (requestId && byId.has(requestId)) return byId.get(requestId);
   return undefined;
 }
 
-function render(): void {
+function indexHeld(held: Held): void {
+  if (held.record.id.requestId) byId.set(held.record.id.requestId, held);
+  if (held.record.id.approvalId) byId.set(held.record.id.approvalId, held);
+}
+
+function removeHeld(held: Held): void {
+  if (held.record.id.requestId) byId.delete(held.record.id.requestId);
+  if (held.record.id.approvalId) byId.delete(held.record.id.approvalId);
+  work = work.filter(item => item !== held);
+  const id = keyOf(held.record);
+  if (selectedId === id || selectedId === held.record.id.requestId || selectedId === held.record.id.approvalId) {
+    selectedId = work[0] ? keyOf(work[0].record) : undefined;
+  }
+}
+
+function summarizeSubject(record: ApprovalRecord): string {
+  const intent = record.subject?.intent ?? 'action';
+  const context = record.subject?.context;
+  const orders = ordersFromContext(context);
+  if (orders.length === 1) {
+    const o = orders[0];
+    const ticker = o.instrument?.id?.ticker ?? '';
+    return `${intent} · ${o.side} ${o.quantity} ${ticker}`.trim();
+  }
+  if (orders.length > 1) {
+    return `${intent} · ${orders.length} legs`;
+  }
+  const type = context && typeof context === 'object' ? (context as { type?: string }).type : undefined;
+  return type ? `${intent} · ${type}` : intent;
+}
+
+function formatWhen(iso?: string): string {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString();
+  } catch {
+    return iso;
+  }
+}
+
+function statusLabel(status: ApprovalRecord['status']): string {
+  switch (status) {
+    case 'pending':
+      return 'Pending';
+    case 'approved':
+      return 'Approved';
+    case 'rejected':
+      return 'Denied';
+    case 'cancelled':
+      return 'Cancelled';
+  }
+}
+
+function renderSession(): void {
   const session = document.getElementById('session')!;
-  const empty = document.getElementById('empty')!;
-  const subject = document.getElementById('subject')!;
-  const approve = document.getElementById('approve') as HTMLButtonElement;
-  const reject = document.getElementById('reject') as HTMLButtonElement;
+  const login = document.getElementById('login') as HTMLButtonElement;
+  const logout = document.getElementById('logout') as HTMLButtonElement;
   session.textContent = sessionUser
     ? `Signed in as ${sessionUser.name || sessionUser.email}`
     : 'Not signed in';
   session.className = sessionUser ? 'badge' : 'badge warn';
-  const held = currentId ? store.get(currentId) : undefined;
+  login.disabled = Boolean(sessionUser);
+  logout.disabled = !sessionUser;
+}
+
+function renderDetail(): void {
+  const detail = document.getElementById('detail')!;
+  const held = selectedId ? byId.get(selectedId) : undefined;
   if (!held) {
-    empty.hidden = false;
-    subject.hidden = true;
-    approve.disabled = true;
-    reject.disabled = true;
+    detail.hidden = true;
+    detail.textContent = '';
     return;
   }
-  empty.hidden = true;
-  subject.hidden = false;
-  subject.textContent = JSON.stringify(held.record, null, 2);
-  const pending = held.record.status === 'pending';
-  approve.disabled = !pending || !sessionUser;
-  reject.disabled = !pending;
+  detail.hidden = false;
+  detail.textContent = JSON.stringify(held.record, null, 2);
+}
+
+function render(): void {
+  renderSession();
+  const tbody = document.getElementById('work')!;
+  tbody.replaceChildren();
+
+  for (const held of work) {
+    const id = keyOf(held.record)!;
+    const pending = held.record.status === 'pending';
+    const tr = document.createElement('tr');
+    if (selectedId === id || selectedId === held.record.id.requestId || selectedId === held.record.id.approvalId) {
+      tr.classList.add('selected');
+    }
+    tr.addEventListener('click', event => {
+      if ((event.target as HTMLElement).closest('button')) return;
+      selectedId = id;
+      render();
+    });
+
+    const whenTd = document.createElement('td');
+    whenTd.textContent = formatWhen(held.record.updatedAt);
+
+    const statusTd = document.createElement('td');
+    statusTd.className =
+      held.record.status === 'approved'
+        ? 'outcome outcome--ok'
+        : held.record.status === 'pending'
+          ? 'outcome'
+          : 'outcome outcome--fail';
+    statusTd.textContent = statusLabel(held.record.status);
+
+    const subjectTd = document.createElement('td');
+    subjectTd.textContent = summarizeSubject(held.record);
+
+    const actionsTd = document.createElement('td');
+    actionsTd.className = 'actions--multi';
+    if (pending) {
+      const approveBtn = document.createElement('button');
+      approveBtn.type = 'button';
+      approveBtn.className = 'primary';
+      approveBtn.textContent = 'Approve';
+      approveBtn.disabled = !sessionUser;
+      approveBtn.title = sessionUser ? 'Approve and submit' : 'Sign in to approve';
+      approveBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        void approve(id);
+      });
+      const denyBtn = document.createElement('button');
+      denyBtn.type = 'button';
+      denyBtn.textContent = 'Deny';
+      denyBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        deny(id);
+      });
+      actionsTd.append(approveBtn, denyBtn);
+    } else {
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.textContent = 'Clear';
+      clearBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        clear(id);
+      });
+      actionsTd.append(clearBtn);
+    }
+
+    tr.append(whenTd, statusTd, subjectTd, actionsTd);
+    tbody.append(tr);
+  }
+
+  renderDetail();
 }
 
 async function refreshSession(): Promise<void> {
@@ -129,10 +256,11 @@ function accept(incoming: ApprovalRecord): ApprovalRecord {
 function holdGetApproval(incoming: ApprovalRecord): Promise<Context | ContextWithMetadata> {
   const record = accept(incoming);
   const id = keyOf(record)!;
-  currentId = id;
+  selectedId = id;
   const promise = new Promise<Context | ContextWithMetadata>((resolve, reject) => {
-    store.set(record.id.requestId!, { record, resolve, reject });
-    store.set(record.id.approvalId!, { record, resolve, reject });
+    const held: Held = { record, resolve, reject, settled: false };
+    indexHeld(held);
+    work = [held, ...work.filter(item => item !== held)];
   });
   render();
   setStatus(statusEl(), `Pending approval ${record.id.approvalId}`);
@@ -142,82 +270,105 @@ function holdGetApproval(incoming: ApprovalRecord): Promise<Context | ContextWit
 function snapshot(incoming: ApprovalRecord): ApprovalRecord {
   const held = findHeld(incoming);
   if (held) {
-    currentId = keyOf(held.record);
+    selectedId = keyOf(held.record);
     render();
     return held.record;
   }
   return accept({ ...incoming, status: incoming.status ?? 'pending' });
 }
 
-async function approve(): Promise<void> {
+async function approve(id: string): Promise<void> {
   if (!sessionUser) {
     setStatus(statusEl(), 'Sign in with Microsoft before approving.');
     return;
   }
-  const held = currentId ? store.get(currentId) : undefined;
-  if (!held || !fdc3) return;
+  const held = byId.get(id);
+  if (!held || held.settled || !fdc3) return;
   const subject = held.record.subject;
   const context = subject?.context;
   if (!context) {
+    held.settled = true;
     held.reject(new Error('Approval has no subject context'));
     return;
   }
-  const res = await fetch('/api/sign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ context }),
-  });
-  if (!res.ok) {
-    setStatus(statusEl(), `Sign failed: ${res.status}`);
-    return;
-  }
-  const envelope = (await res.json()) as SignedEnvelope;
-  const signed = toSignedResult(envelope);
-  const target = subject.app?.appId ? { appId: subject.app.appId } : { appId: 'aipa-execution' };
-  const resolution = await fdc3.raiseIntent(
-    subject.intent ?? INTENTS.SubmitOrder,
-    signed.context as Context,
-    target,
-    undefined,
-    { signature: signed.metadata.signature, antiReplay: signed.metadata.antiReplay }
-  );
-  const result = await resolution.getResult();
-  let resultMetadata: ContextMetadata | undefined;
   try {
-    resultMetadata = await resolution.getResultMetadata();
-  } catch {
-    resultMetadata = undefined;
-  }
-  held.record.status = 'approved';
-  held.record.updatedAt = new Date().toISOString();
-  render();
-  setStatus(statusEl(), 'Approved and submitted');
-  if (result && typeof result === 'object' && 'type' in result && resultMetadata) {
-    held.resolve({ context: result as Context, metadata: resultMetadata });
-  } else if (result && typeof result === 'object' && 'type' in result) {
-    held.resolve(result as Context);
-  } else {
-    held.resolve({ type: 'fdc3.nothing' });
+    const res = await fetch('/api/sign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ context }),
+    });
+    if (!res.ok) {
+      setStatus(statusEl(), `Sign failed: ${res.status}`);
+      return;
+    }
+    const envelope = (await res.json()) as SignedEnvelope;
+    const signed = toSignedResult(envelope);
+    const target = subject.app?.appId ? { appId: subject.app.appId } : { appId: 'aipa-execution' };
+    setStatus(statusEl(), `Submitting ${subject.intent ?? INTENTS.SubmitOrder}…`);
+    const resolution = await fdc3.raiseIntent(
+      subject.intent ?? INTENTS.SubmitOrder,
+      signed.context as Context,
+      target,
+      undefined,
+      { signature: signed.metadata.signature, antiReplay: signed.metadata.antiReplay }
+    );
+    const result = await resolution.getResult();
+    let resultMetadata: ContextMetadata | undefined;
+    try {
+      resultMetadata = await resolution.getResultMetadata();
+    } catch {
+      resultMetadata = undefined;
+    }
+    held.record.status = 'approved';
+    held.record.updatedAt = new Date().toISOString();
+    held.settled = true;
+    selectedId = keyOf(held.record);
+    work = [held, ...work.filter(item => item !== held)];
+    render();
+    setStatus(statusEl(), 'Approved and submitted');
+    if (result && typeof result === 'object' && 'type' in result && resultMetadata) {
+      held.resolve({ context: result as Context, metadata: resultMetadata });
+    } else if (result && typeof result === 'object' && 'type' in result) {
+      held.resolve(result as Context);
+    } else {
+      held.resolve({ type: 'fdc3.nothing' });
+    }
+  } catch (error) {
+    setStatus(statusEl(), `Approve failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
-function reject(): void {
-  const held = currentId ? store.get(currentId) : undefined;
-  if (!held) return;
+function deny(id: string): void {
+  const held = byId.get(id);
+  if (!held || held.settled) return;
   held.record.status = 'rejected';
   held.record.updatedAt = new Date().toISOString();
+  held.settled = true;
+  selectedId = keyOf(held.record);
+  work = [held, ...work.filter(item => item !== held)];
   render();
-  setStatus(statusEl(), 'Rejected');
+  setStatus(statusEl(), 'Denied');
   held.reject(new Error('Approval rejected'));
+}
+
+function clear(id: string): void {
+  const held = byId.get(id);
+  if (!held || held.record.status === 'pending') return;
+  removeHeld(held);
+  render();
+  setStatus(statusEl(), 'Cleared from worklist');
 }
 
 function cancel(incoming: ApprovalRecord): ApprovalRecord {
   const held = findHeld(incoming);
-  if (!held || held.record.status !== 'pending') {
+  if (!held || held.record.status !== 'pending' || held.settled) {
     throw new Error('Approval cannot be cancelled');
   }
   held.record.status = 'cancelled';
   held.record.updatedAt = new Date().toISOString();
+  held.settled = true;
+  selectedId = keyOf(held.record);
+  work = [held, ...work.filter(item => item !== held)];
   render();
   held.reject(new Error('Approval cancelled'));
   return held.record;
@@ -245,8 +396,6 @@ async function setup(): Promise<void> {
 
   document.getElementById('login')!.addEventListener('click', () => void login());
   document.getElementById('logout')!.addEventListener('click', () => void logout());
-  document.getElementById('approve')!.addEventListener('click', () => void approve());
-  document.getElementById('reject')!.addEventListener('click', () => reject());
 
   if (!fdc3) return;
 

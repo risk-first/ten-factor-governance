@@ -6,40 +6,38 @@ raises and sends `GetApproval` to [`aipa-approvals`](../../server-apps/approvals
 
 Protocol background: [`fdc3.approval` / Sail governance](../../fdc3-extensions/fdc3.approval/sail-governance.md).
 This package is the hard-coded first cut — no policy YAML evaluation or DENY.
-Layer 5 / 6 receipts use Gemara `EvaluationLog` / `EnforcementLog` types from
-`@gemara/react`.
+Layer 5 / 6 receipts are built as Gemara documents and raised to the
+[Governance Console](../../server-apps/governance-console/README.md) via
+[`fdc3.gemara`](../../fdc3-extensions/fdc3.gemara/README.md) (`LogEvaluation` /
+`LogEnforcement`).
 
 ## Hosting
 
 Not an FDC3 app (do not put this under `server-apps/`). This package runs
 `sail-extension-server --port 9101` (`npm run dev`). AIPA `npm run dev` starts
-that host. Sail v2-web pins
+that host. Sail hosts pin the same URL for browser and Node:
 
 `http://localhost:9101/src/index.ts`
 
 `@finos/sail-extension` and `@finos/sail-extension-server` are `file:` deps on
 the local Sail checkout — do not publish.
 
-`sail.config` (Sail Configuration popup) has three screens. Settings persist
-`{ mode }` under storage key `settings`. Default is `intercept`. Layer 5 / 6
-receipts are appended to gitignored `temp/evaluation-log.json` and
-`temp/enforcement-log.json` (same pattern as Execution’s `temp/submit-order.json`).
-
-| Screen | Role |
-| --- | --- |
-| Sail Governance | Mode: `off` (forward everything) or `intercept`. |
-| Evaluation Log | Layer 5 receipts: actor, intent, policy/control versions, `ALLOW` / `REQUIRE_APPROVAL`. |
-| Enforcement Log | Layer 6 receipts: forward, or hold and raise `GetApproval`. |
+`sail.config` has one screen: mode `off` (forward everything) or `intercept`
+(default). Settings persist `{ mode }` under storage key `settings`. Evidence
+lives in the Governance Console app, not in this extension.
 
 ## Intercept rule
 
 | Message | Decision |
 | --- | --- |
 | Not `raiseIntentRequest` | Forward |
-| `GetApproval` / `UpdateApproval` / `CancelApproval` / `ViewApproval` / `ReviewApproval` | Forward |
+| Intent other than `demo.SubmitOrder` | Forward |
 | `demo.SubmitOrder` from `aipa-approvals`, or raise metadata `signature` whose protected-header `jku` is `http://localhost:4110/.well-known/jwks.json` | ALLOW |
 | Other `demo.SubmitOrder` | REQUIRE_APPROVAL |
-| Everything else | ALLOW |
+
+After each `ALLOW` / `REQUIRE_APPROVAL` on `demo.SubmitOrder`, Sail opens
+`aipa-governance-console` if needed and posts `LogEvaluation` then
+`LogEnforcement`.
 
 `REQUIRE_APPROVAL` does **not** hold the original `raiseIntentRequest` (that hits
 `appLaunchTimeout`):

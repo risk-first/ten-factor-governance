@@ -1,5 +1,9 @@
 import { getAgent, type DesktopAgent } from '@finos/fdc3';
-import { connectRemoteHandlers, type FDC3Handlers } from '@finos/fdc3-security';
+import {
+  connectRemoteHandlers,
+  type ExchangeDataMessage,
+  type FDC3Handlers,
+} from '@finos/fdc3-security';
 
 export type AppSession = {
   fdc3: DesktopAgent | null;
@@ -32,7 +36,10 @@ export async function connectAgent(statusEl: HTMLElement | null): Promise<Deskto
  * browser can call `boundary.exchangeData('sign-context', { context })` while
  * private keys stay in Node. Without an agent, HTTP signed APIs still work.
  */
-export async function connectAppSession(statusEl: HTMLElement | null): Promise<AppSession> {
+export async function connectAppSession(
+  statusEl: HTMLElement | null,
+  onExchange?: (message: ExchangeDataMessage) => Promise<ExchangeDataMessage | void>
+): Promise<AppSession> {
   const fdc3 = await connectAgent(statusEl);
   if (!fdc3) {
     return { fdc3: null, boundary: null };
@@ -40,7 +47,7 @@ export async function connectAppSession(statusEl: HTMLElement | null): Promise<A
 
   try {
     statusEl && (statusEl.textContent = 'FDC3 agent connected. Connecting secure backend…');
-    const boundary = await connectRemoteHandlers(wsUrlForPage(), fdc3, async () => {});
+    const boundary = await connectRemoteHandlers(wsUrlForPage(), fdc3, onExchange ?? (async () => {}));
     statusEl && (statusEl.textContent = 'FDC3 agent + secure backend connected.');
     return { fdc3, boundary };
   } catch (e) {

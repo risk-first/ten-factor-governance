@@ -22,6 +22,9 @@ export const INTENTS = {
   CancelApproval: 'CancelApproval',
   ViewApproval: 'ViewApproval',
   ReviewApproval: 'ReviewApproval',
+  /** fdc3.gemara — append Gemara L5 / L6 receipts to Governance Console */
+  LogEvaluation: 'LogEvaluation',
+  LogEnforcement: 'LogEnforcement',
   /** fdc3.data — pull one advertised dataset from a data app */
   GetAppData: 'GetAppData',
   /** Standard FDC3 — seed / replace-in-place display context */
@@ -44,6 +47,8 @@ export const CONTEXT_TYPES = {
   demoOrder: 'demo.order',
   demoOrderList: 'demo.orderList',
   approval: 'fdc3.approval',
+  gemaraEvaluationLog: 'fdc3.gemara.evaluationLog',
+  gemaraEnforcementLog: 'fdc3.gemara.enforcementLog',
   priceHistory: 'demo.priceHistory',
   /** fdc3.data extension */
   advertiseDatasets: 'fdc3.data.advertiseDatasets',

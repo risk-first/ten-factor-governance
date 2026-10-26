@@ -1,20 +1,20 @@
+import type { SailExtensionStorage } from "@finos/sail-extension"
 import type { FDC3ServerInstance } from "@finos/sail-headless-agent"
 
-import { appendReceipts } from "./log-store.js"
 import { buildEnforcementLog, buildEvaluationLog } from "./receipts.js"
+import {
+  GOVERNANCE_SETTINGS_KEY,
+  resolveSettings,
+  type GovernanceSettings,
+} from "./settings.js"
 
 const SUBMIT_ORDER = "demo.SubmitOrder"
 const GET_APPROVAL = "GetApproval"
+const LOG_EVALUATION = "LogEvaluation"
+const LOG_ENFORCEMENT = "LogEnforcement"
 const APPROVALS_APP_ID = "aipa-approvals"
+const CONSOLE_APP_ID = "aipa-governance-console"
 const APPROVALS_JWKS = "http://localhost:4110/.well-known/jwks.json"
-
-const APPROVAL_INTENTS = new Set([
-  "GetApproval",
-  "UpdateApproval",
-  "CancelApproval",
-  "ViewApproval",
-  "ReviewApproval",
-])
 
 type DacpMessage = {
   type?: string
@@ -54,14 +54,19 @@ function isSignedByApprovals(message: DacpMessage): boolean {
   return jkuFromSignature(metadata?.signature) === APPROVALS_JWKS
 }
 
-async function findApprovalsInstance(instance: FDC3ServerInstance): Promise<string | undefined> {
+async function findAppInstance(
+  instance: FDC3ServerInstance,
+  appId: string,
+): Promise<string | undefined> {
   const apps = await instance.getConnectedApps()
-  return apps.find(app => app.appId === APPROVALS_APP_ID && app.instanceId)?.instanceId
+  return apps.find(app => app.appId === appId && app.instanceId)?.instanceId
 }
 
-async function waitForGetApprovalListener(
+async function waitForIntentListener(
   instance: FDC3ServerInstance,
+  appId: string,
   instanceId: string,
+  intentName: string,
   timeoutMs = 15_000,
 ): Promise<boolean> {
   const deadline = Date.now() + timeoutMs
@@ -70,9 +75,9 @@ async function waitForGetApprovalListener(
       .getIntentListeners()
       .some(
         listener =>
-          listener.appId === APPROVALS_APP_ID &&
+          listener.appId === appId &&
           listener.instanceId === instanceId &&
-          listener.intentName === GET_APPROVAL,
+          listener.intentName === intentName,
       )
     if (ready) {
       return true
@@ -82,9 +87,69 @@ async function waitForGetApprovalListener(
   return false
 }
 
-async function recordDecision(input: {
+async function ensureAppWithListener(
+  instance: FDC3ServerInstance,
+  appId: string,
+  intentName: string,
+  timeoutMs?: number,
+): Promise<string | undefined> {
+  let instanceId = await findAppInstance(instance, appId)
+  if (!instanceId) {
+    try {
+      instanceId = await instance.open(appId)
+    } catch (error) {
+      instance.log(
+        `[sail-governance] Could not open ${appId}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      )
+      return undefined
+    }
+  }
+  const ready = await waitForIntentListener(instance, appId, instanceId, intentName, timeoutMs)
+  if (!ready) {
+    instance.log(`[sail-governance] ${appId} never registered ${intentName}`)
+    return undefined
+  }
+  return instanceId
+}
+
+async function postIntentEvent(
+  instance: FDC3ServerInstance,
+  toInstanceId: string,
+  intent: string,
+  context: Record<string, unknown>,
+  source: { appId: string; instanceId: string },
+  raiseIntentRequestUuid?: string,
+): Promise<void> {
+  await instance.post(
+    {
+      type: "intentEvent",
+      payload: {
+        context,
+        intent,
+        metadata: {
+          source,
+          timestamp: new Date(),
+          traceId: instance.createUUID(),
+        },
+        raiseIntentRequestUuid: raiseIntentRequestUuid ?? instance.createUUID(),
+      },
+      meta: {
+        eventUuid: instance.createUUID(),
+        timestamp: new Date(),
+      },
+    },
+    toInstanceId,
+  )
+}
+
+async function recordDecision(
+  instance: FDC3ServerInstance,
+  input: {
     requestUuid: string
     actorAppId: string
+    actorInstanceId: string
     intent: string
     decision: "ALLOW" | "REQUIRE_APPROVAL"
     message: string
@@ -104,13 +169,37 @@ async function recordDecision(input: {
     decision: input.decision,
     evaluationId: evaluation.metadata.id,
   })
-  appendReceipts(evaluation, enforcement)
+
+  const consoleInstance = await ensureAppWithListener(instance, CONSOLE_APP_ID, LOG_EVALUATION, 2_000)
+  if (!consoleInstance) {
+    instance.log("[sail-governance] Skipping Gemara log intents — Governance Console unavailable")
+    return
+  }
+
+  const source = { appId: "sail-governance", instanceId: input.actorInstanceId }
+  await postIntentEvent(instance, consoleInstance, LOG_EVALUATION, {
+    type: "fdc3.gemara.evaluationLog",
+    id: { logId: evaluation.metadata.id },
+    name: evaluation.metadata.description,
+    log: evaluation,
+  }, source)
+  await postIntentEvent(instance, consoleInstance, LOG_ENFORCEMENT, {
+    type: "fdc3.gemara.enforcementLog",
+    id: { logId: enforcement.metadata.id },
+    name: enforcement.metadata.description,
+    log: enforcement,
+  }, source)
 }
 
-export function createGovernanceReceive(instance: FDC3ServerInstance) {
+export function createGovernanceReceive(instance: FDC3ServerInstance, storage: SailExtensionStorage) {
   const parked = new Map<string, string>()
 
   return async (message: Parameters<FDC3ServerInstance["receive"]>[0], from: string) => {
+    const settings = resolveSettings(await storage.get<GovernanceSettings>(GOVERNANCE_SETTINGS_KEY))
+    if (settings.mode === "off") {
+      return instance.receive(message, from)
+    }
+
     const msg = message as DacpMessage
 
     if (msg.type === "intentResultRequest") {
@@ -132,7 +221,7 @@ export function createGovernanceReceive(instance: FDC3ServerInstance) {
 
     const payload = asRecord(msg.payload)
     const intent = typeof payload?.intent === "string" ? payload.intent : ""
-    if (APPROVAL_INTENTS.has(intent) || intent !== SUBMIT_ORDER) {
+    if (intent !== SUBMIT_ORDER) {
       return instance.receive(message, from)
     }
 
@@ -140,9 +229,10 @@ export function createGovernanceReceive(instance: FDC3ServerInstance) {
     const actorAppId = raiser?.appId ?? from
     const originalUuid = msg.meta?.requestUuid ?? instance.createUUID()
     if (raiser?.appId === APPROVALS_APP_ID || isSignedByApprovals(msg)) {
-      await recordDecision({
+      void recordDecision(instance, {
         requestUuid: originalUuid,
         actorAppId,
+        actorInstanceId: from,
         intent,
         decision: "ALLOW",
         message: `demo.SubmitOrder signed by ${APPROVALS_APP_ID} or raised from that app.`,
@@ -154,9 +244,10 @@ export function createGovernanceReceive(instance: FDC3ServerInstance) {
       return instance.receive(message, from)
     }
 
-    await recordDecision({
+    void recordDecision(instance, {
       requestUuid: originalUuid,
       actorAppId,
+      actorInstanceId: from,
       intent,
       decision: "REQUIRE_APPROVAL",
       message: `Unsigned ${intent} from ${actorAppId} requires human approval.`,
@@ -165,36 +256,8 @@ export function createGovernanceReceive(instance: FDC3ServerInstance) {
     const getApprovalUuid = instance.createUUID()
     parked.set(getApprovalUuid, originalUuid)
 
-    let approvalsInstance = await findApprovalsInstance(instance)
+    const approvalsInstance = await ensureAppWithListener(instance, APPROVALS_APP_ID, GET_APPROVAL)
     if (!approvalsInstance) {
-      try {
-        approvalsInstance = await instance.open(APPROVALS_APP_ID)
-      } catch (error) {
-        instance.log(
-          `[sail-governance] Could not open ${APPROVALS_APP_ID}: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-        )
-        await instance.post(
-          {
-            meta: {
-              responseUuid: instance.createUUID(),
-              requestUuid: originalUuid,
-              timestamp: new Date(),
-            },
-            type: "raiseIntentResponse",
-            payload: { error: "TargetAppUnavailable" },
-          },
-          from,
-        )
-        parked.delete(getApprovalUuid)
-        return
-      }
-    }
-
-    const listenerReady = await waitForGetApprovalListener(instance, approvalsInstance)
-    if (!listenerReady) {
-      instance.log(`[sail-governance] ${APPROVALS_APP_ID} never registered ${GET_APPROVAL}`)
       await instance.post(
         {
           meta: {
@@ -203,7 +266,7 @@ export function createGovernanceReceive(instance: FDC3ServerInstance) {
             timestamp: new Date(),
           },
           type: "raiseIntentResponse",
-          payload: { error: "IntentDeliveryFailed" },
+          payload: { error: "TargetAppUnavailable" },
         },
         from,
       )
@@ -249,25 +312,13 @@ export function createGovernanceReceive(instance: FDC3ServerInstance) {
       },
     }
 
-    await instance.post(
-      {
-        type: "intentEvent",
-        payload: {
-          context: approval,
-          intent: GET_APPROVAL,
-          metadata: {
-            source: { appId: raiser?.appId ?? from, instanceId: from },
-            timestamp: new Date(),
-            traceId: instance.createUUID(),
-          },
-          raiseIntentRequestUuid: getApprovalUuid,
-        },
-        meta: {
-          eventUuid: instance.createUUID(),
-          timestamp: new Date(),
-        },
-      },
+    await postIntentEvent(
+      instance,
       approvalsInstance,
+      GET_APPROVAL,
+      approval,
+      { appId: raiser?.appId ?? from, instanceId: from },
+      getApprovalUuid,
     )
   }
 }

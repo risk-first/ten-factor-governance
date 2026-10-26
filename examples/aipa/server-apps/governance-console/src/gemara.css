@@ -1,0 +1,242 @@
+/* Headless @gemara/react emits data-gemara-* only. This is the Console skin. */
+
+[data-gemara-artifact] {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: #1a1a1a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+[data-gemara-artifact] :where(h1, h2, h3, h4, h5, h6) {
+  margin: 0 0 0.4rem;
+  font-weight: 650;
+  line-height: 1.3;
+  color: #101828;
+}
+
+[data-gemara-artifact] h1 {
+  font-size: 1.15rem;
+}
+[data-gemara-artifact] h2 {
+  font-size: 1.05rem;
+}
+[data-gemara-artifact] h3 {
+  font-size: 0.95rem;
+}
+[data-gemara-artifact] h4,
+[data-gemara-artifact] h5,
+[data-gemara-artifact] h6 {
+  font-size: 0.85rem;
+  color: #344054;
+}
+
+[data-gemara-artifact] p {
+  margin: 0 0 0.5rem;
+}
+
+[data-gemara-artifact] p:last-child {
+  margin-bottom: 0;
+}
+
+[data-gemara-artifact] :where(ul, ol) {
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 1.25rem;
+}
+
+[data-gemara-artifact] li + li {
+  margin-top: 0.35rem;
+}
+
+[data-gemara-artifact] code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background: #f2f4f7;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+[data-gemara-artifact] pre {
+  margin: 0.4rem 0 0;
+  padding: 8px 10px;
+  overflow: auto;
+  background: #f2f4f7;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+[data-gemara-part='header'] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e4e7ec;
+}
+
+[data-gemara-part='title'] {
+  word-break: break-word;
+}
+
+[data-gemara-part='meta'],
+[data-gemara-part='target-meta'],
+[data-gemara-part='action-meta'] {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+}
+
+[data-gemara-part='meta'] dt,
+[data-gemara-part='target-meta'] dt,
+[data-gemara-part='action-meta'] dt,
+[data-gemara-part='assessment'] dt {
+  margin: 0;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+[data-gemara-part='meta'] dd,
+[data-gemara-part='target-meta'] dd,
+[data-gemara-part='action-meta'] dd,
+[data-gemara-part='assessment'] dd {
+  margin: 0;
+  min-width: 0;
+}
+
+[data-gemara-part='result'],
+[data-gemara-part='disposition'],
+[data-gemara-part='action-disposition'],
+[data-gemara-part='assessment-result'] {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  background: #f2f4f7;
+  color: #344054;
+}
+
+[data-gemara-result='Passed'],
+[data-gemara-disposition='Clear'] {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+[data-gemara-result='Needs Review'],
+[data-gemara-disposition='Enforced'] {
+  background: #fffaeb;
+  color: #b54708;
+}
+
+[data-gemara-result='Failed'] {
+  background: #fef3f2;
+  color: #b42318;
+}
+
+[data-gemara-part='target'],
+[data-gemara-part='evaluations'],
+[data-gemara-part='actions'],
+[data-gemara-part='assessment-logs'],
+[data-gemara-part='justification'],
+[data-gemara-part='evidence'] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+[data-gemara-part='evaluation'],
+[data-gemara-part='assessment-log'],
+[data-gemara-part='action'],
+[data-gemara-part='evidence-item'] {
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  background: #fcfcfd;
+}
+
+[data-gemara-part='evaluation-list'],
+[data-gemara-part='assessment-log-list'],
+[data-gemara-part='action-list'] {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+[data-gemara-part='evaluation-name'],
+[data-gemara-part='control'] {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+[data-gemara-part='message'],
+[data-gemara-part='action-message'],
+[data-gemara-part='description'] {
+  color: #344054;
+}
+
+[data-gemara-part='references'],
+[data-gemara-part='steps'] {
+  border: 1px solid #e4e7ec;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  background: #fff;
+}
+
+[data-gemara-part='references-summary'],
+[data-gemara-part='steps-summary'] {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  color: #475467;
+}
+
+[data-gemara-empty] {
+  margin: 0;
+  color: #667085;
+  font-style: italic;
+}
+
+[data-gemara-part='applicability'],
+[data-gemara-part='confidence-level'],
+[data-gemara-part='plan'],
+[data-gemara-part='timespan'],
+[data-gemara-part='steps-executed'] {
+  font-size: 12px;
+  color: #475467;
+}
+
+[data-gemara-prose] {
+  white-space: pre-wrap;
+}
+
+[data-gemara-ref] {
+  color: #175cd3;
+}
+
+a[data-gemara-ref] {
+  text-decoration: none;
+}
+
+a[data-gemara-ref]:hover {
+  text-decoration: underline;
+}
+
+[data-gemara-part='assessment'] {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.2rem 0.75rem;
+  padding: 0.45rem 0;
+}
+
+[data-gemara-part='action-steps'] ol {
+  margin: 0.25rem 0 0;
+}

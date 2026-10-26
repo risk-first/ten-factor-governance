@@ -21,15 +21,16 @@ Override Entra via `server-apps/approvals/.env` if present; otherwise
 1. Sail governance (`sail-extensions/sail-governance`) intercepts an unsigned
    `demo.SubmitOrder` and posts `GetApproval` with an `fdc3.approval` whose
    `subject` is `{ type: fdc3.action, action: raiseIntent, intent: demo.SubmitOrder, … }`.
-2. `GetApproval` stays open. The UI shows the pending subject.
-3. **Approve** requires a valid Entra session (`loginPopup` → `POST /api/session`).
-   The backend signs the subject context (`POST /api/sign`, JWKS at
-   `/.well-known/jwks.json`). The client then
+2. `GetApproval` stays open. The UI adds a row to the work table (newest first).
+3. **Approve** (row action) requires a valid Entra session (`loginPopup` →
+   `POST /api/session`). The backend signs the subject context (`POST /api/sign`,
+   JWKS at `/.well-known/jwks.json`). The client then
    `raiseIntent('demo.SubmitOrder', context, { appId: 'aipa-execution' }, undefined, { signature, antiReplay })`.
    The held `GetApproval` forwards Execution’s `fdc3.transactionResult` (and
    result metadata).
-4. **Reject** / `CancelApproval` fail the held `GetApproval` and do not raise
-   SubmitOrder.
+4. **Deny** / `CancelApproval` fail the held `GetApproval` and do not raise
+   SubmitOrder. Terminal rows can be **Clear**’d from the table. Click a row to
+   show its JSON in the detail pane. Sign in / Sign out are mutually exclusive.
 
 A `demo.SubmitOrder` already signed by this app (or raised from `aipa-approvals`)
 is ALLOW’d through the intercept.

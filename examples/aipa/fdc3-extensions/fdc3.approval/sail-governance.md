@@ -66,7 +66,15 @@ After `approved`, the approving application performs the subject action signed a
 
 ## Evidence
 
-Sail writes Gemara layer 5 and 6 receipts ([Evaluation Log](https://gemara.openssf.org/schema/), [Enforcement Log](https://gemara.openssf.org/schema/)):
+Sail does not keep Gemara receipts in extension storage or files. After each
+decision it raises intents defined by [`fdc3.gemara`](../fdc3.gemara/README.md)
+to the **Governance Console** application:
 
-- **Evaluation Log** — inspection of the original raise: activity, original actor, policy/control versions, and `ALLOW` / `DENY` / `REQUIRE_APPROVAL`.
-- **Enforcement Log** — what Sail then did: forward, deny, or hold and raise `GetApproval`.
+| Intent | Context | Receipt |
+| --- | --- | --- |
+| `LogEvaluation` | `fdc3.gemara.evaluationLog` | Layer 5 — inspection of the original raise: activity, original actor, policy/control versions, and `ALLOW` / `DENY` / `REQUIRE_APPROVAL` ([Evaluation Log](https://gemara.openssf.org/schema/)). |
+| `LogEnforcement` | `fdc3.gemara.enforcementLog` | Layer 6 — what Sail then did: forward, deny, or hold and raise `GetApproval` ([Enforcement Log](https://gemara.openssf.org/schema/)). |
+
+The Console owns append-only display of those documents and persists them in
+`temp/evaluation-log.json` / `temp/enforcement-log.json`. `LogEvaluation` /
+`LogEnforcement` are passthrough for Sail (not re-evaluated).
