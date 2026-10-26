@@ -6,9 +6,7 @@ The **raising application** wants an [`fdc3.action`](https://fdc3.finos.org/docs
 
 ## Flow
 
-
-
-### Without approval
+### Without approvals
 
 The raising application raises the intent (or broadcasts) directly at the target application.
 
@@ -20,11 +18,7 @@ sequenceDiagram
   Target-->>Raise: Optional intent result
 ```
 
-
-
-
-
-### With approval
+### With approvals
 
 The raising application raises `GetApproval` with an `fdc3.approval` whose `subject` is the `fdc3.action`. After approval, the approving application raises that same action at the target application, then forwards the target's IntentResult to the raising application as the result of `GetApproval`.
 
@@ -58,7 +52,7 @@ sequenceDiagram
   end
 ```
 
-The approving application executes the approved action once. The target treats the signed raise or broadcast as coming from the approving application, not the raising application. `GetApproval` stays open until that workflow finishes: the raising application receives the target's IntentResult, forwarded by the approving application. A rejected, cancelled or expired request is not executed and completes `GetApproval` with an error. Execution failure after approval is a technical error; it does not reopen or reverse the decision.
+The approving application executes the approved action once. The target treats the signed raise or broadcast as coming from the approving application, not the raising application. `GetApproval` stays open until that workflow finishes. On approval, the raising application receives the target's IntentResult, forwarded unchanged — the same result it would have received by raising that action itself. If the target returns no result (typical for `broadcast`), `GetApproval` completes without a context. A rejected, cancelled or expired request is not executed and completes `GetApproval` with an error. Execution failure after approval is a technical error; it does not reopen or reverse the decision.
 
 ## Intents and contexts
 
@@ -72,19 +66,19 @@ The approving application executes the approved action once. The target treats t
 | `ReviewApproval` | [`fdc3.approval`](schemas/approval.schema.json)  | Open the decision interface for an authorised reviewer.                                                                                      | No result required; the decision is recorded through the provider's authenticated service.                                                                                |
 
 
-`UpdateApproval` resolves the input by `id.requestId` and/or `id.approvalId` and returns the latest snapshot. Input fields other than those identifiers are locators and display hints, not a patch: the raising application cannot change `subject`, `status` or the recorded decision this way.
+`UpdateApproval` is how the raising application refreshes its copy without opening a UI: it sends the `fdc3.approval` it holds, resolved by `id.requestId` and/or `id.approvalId`, and receives the latest snapshot. Input fields other than those identifiers are locators and display hints, not a patch: the raising application cannot change `subject`, `status` or the recorded decision this way. The durable approval remains accessible this way after `GetApproval` has completed.
 
 `CancelApproval` is the facility that produces `cancelled`. It succeeds only while `status` is `pending`. A terminal approval (`approved`, `rejected`, `cancelled`, `expired`) cannot be cancelled; that raise is an error. Optional `decisionReason` on the input is a withdrawal note; the result snapshot records the effective reason.
 
-`ReviewApproval` opens a task. It does not grant review permission or record a decision merely because the intent was raised. There is no `ApproveOrder` or generic `Approve` intent in the initial proposal.
+`ViewApproval` opens that snapshot in the approving application's UI. `ReviewApproval` opens a task. It does not grant review permission or record a decision merely because the intent was raised. There is no `ApproveOrder` or generic `Approve` intent in the initial proposal.
 
 The approval app opens to **My tasks** when launched without context. Notifications and the inbox deliver work to reviewers; opening an app on the requester's desktop does not deliver it to another user.
 
-## Approval
+### fdc3.approval
 
 [`fdc3.approval`](schemas/approval.schema.json) is the single context type for this extension. It is the input to `GetApproval`, `UpdateApproval`, `CancelApproval`, `ViewApproval` and `ReviewApproval`, and the IntentResult of `UpdateApproval` and `CancelApproval`. `subject` is an [`fdc3.action`](https://fdc3.finos.org/docs/next/context/ref/Action): raise an intent or broadcast a context. The nested `subject.context` is the domain object of that action (an order, payment, data export or AI-proposed payload). `status` is the only distinction between a newly raised request and a later snapshot.
 
-It is not the IntentResult of `GetApproval`; that result is the target's result, forwarded at the end of the workflow.
+It is not the IntentResult of `GetApproval`; that result is the target's result, forwarded at the end of the workflow. Approval details must not be broadcast on shared user channels or a shared app-channel bus. Clients treat received snapshots as display information and resolve current state through an authenticated provider connection.
 
 
 | Field            | Required | Meaning                                                                                                      |
@@ -235,14 +229,5 @@ After `rejected`:
 
 Failure to accept or retrieve a request is a technical error, not a human rejection. Providers should distinguish invalid input, unsupported actions or nested context types, access denial, missing approvals and service unavailability. Exact error payloads remain to be specified.
 
-## Results and updates
-
-`GetApproval` stays open until the workflow finishes. On approval, the approving application performs the subject action at the target and returns the target's IntentResult to the raising application, unchanged. The raising application therefore sees the same result it would have received by raising that action itself.
-
-If the target returns no result (typical for `broadcast`), `GetApproval` completes without a context. If the request is rejected, cancelled or expired, `GetApproval` completes with an error and no target action is performed.
-
-The durable approval remains accessible through the approving application after the raising application's `GetApproval` result has been delivered. `UpdateApproval` is how the raising application refreshes its copy without opening a UI: it sends the `fdc3.approval` it holds and receives the latest snapshot. `ViewApproval` opens that snapshot in the approving application's UI.
-
-Approval details must not be broadcast on shared user channels or a shared app-channel bus. Clients treat received snapshots as display information and resolve current state through an authenticated provider connection.
-
-The AIPA mapping onto Fluxnova is in [`fluxnova.md`](fluxnova.md).
+How approval interacts with a Sail governance extension is in [`sail-governance.md`](sail-governance.md).
+The AIPA mapping onto Fluxnova is in [`fluxnova.md`](fluxnova.md). 
