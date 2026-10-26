@@ -37,6 +37,7 @@ function syncEmptyState(): void {
 }
 
 function toOrders(): DemoOrder[] {
+  const date = new Date().toISOString();
   return blotter
     .filter(r => r.ticker.trim())
     .map(r => ({
@@ -45,6 +46,7 @@ function toOrders(): DemoOrder[] {
       instrument: { type: 'fdc3.instrument' as const, id: { ticker: r.ticker.toUpperCase() } },
       side: r.side,
       quantity: r.qty,
+      date,
       orderType: 'market' as const,
     }));
 }

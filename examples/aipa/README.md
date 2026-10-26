@@ -96,7 +96,8 @@ examples/aipa/
   server-apps/      # apps with a trusted Node backend
   front-end-apps/   # Agent UI, Markdown Viewer (browser-only)
   directory/        # aggregated AppD
-  main.ts           # Vite multi-app runner
+  sail-extensions/  # Sail Desktop Agent extension (port 9101)
+  main.ts           # Vite multi-app runner + sail-governance host
 ```
 
 CALM: [`calm/`](./calm/) — `npm run calm:validate` / `npm run calm:diagrams`.

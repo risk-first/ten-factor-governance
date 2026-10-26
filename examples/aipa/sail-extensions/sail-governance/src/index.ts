@@ -5,7 +5,6 @@ import {
   resolveSettings,
   type GovernanceSettings,
 } from "./settings.js"
-import { createGovernanceReceive } from "./wrap-server.js"
 
 export const governanceExtension: SailExtension = {
   id: "sail-governance",
@@ -18,16 +17,15 @@ export const governanceExtension: SailExtension = {
     ]
   },
   wrapServer(instance, ctx) {
-    const intercept = createGovernanceReceive(instance)
+    let intercept: typeof instance.receive | undefined
     return applyExtensions(instance, {
       receive: async (message, from) => {
         const settings = resolveSettings(await ctx.storage.get<GovernanceSettings>(GOVERNANCE_SETTINGS_KEY))
-        switch (settings.mode) {
-          case "off":
-            return instance.receive(message, from)
-          case "intercept":
-            return intercept(message, from)
+        if (settings.mode === "off") {
+          return instance.receive(message, from)
         }
+        intercept ??= (await import("./wrap-server.js")).createGovernanceReceive(instance)
+        return intercept(message, from)
       },
     })
   },

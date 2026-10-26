@@ -11,14 +11,14 @@ Layer 5 / 6 receipts use Gemara `EvaluationLog` / `EnforcementLog` types from
 
 ## Hosting
 
-Not a Vite app (do not put this under `server-apps/`). Sail v2-web loads it from
-the pinned list in `FDC3-Sail/packages/sail-v2-web/src/extensions.ts`:
+Not an FDC3 app (do not put this under `server-apps/`). This package runs
+`sail-extension-server --port 9101` (`npm run dev`). AIPA `npm run dev` starts
+that host. Sail v2-web pins
 
-`http://localhost:9100/sail-governance/src/index.ts`
+`http://localhost:9101/src/index.ts`
 
-The extension-server scan root
-`examples/aipa/sail-extensions` is in `SAIL_EXTENSION_SCAN_DIRS`.
-`@finos/sail-extension` is a `file:` dep on the local Sail checkout — do not publish.
+`@finos/sail-extension` and `@finos/sail-extension-server` are `file:` deps on
+the local Sail checkout — do not publish.
 
 `sail.config` (Sail Configuration popup) has three screens. Settings persist
 `{ mode }` under storage key `settings`. Default is `intercept`. Layer 5 / 6

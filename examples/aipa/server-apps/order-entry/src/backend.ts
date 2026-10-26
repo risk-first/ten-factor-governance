@@ -12,6 +12,7 @@ import {
 } from '../../../common/src/contexts/types.js';
 
 function defaultOrders(): DemoOrder[] {
+  const date = new Date().toISOString();
   return [
     {
       type: 'demo.order',
@@ -19,6 +20,7 @@ function defaultOrders(): DemoOrder[] {
       instrument: { type: 'fdc3.instrument', id: { ticker: 'SHEL' }, name: 'Shell' },
       side: 'sell',
       quantity: 1000,
+      date,
       orderType: 'market',
     },
     {
@@ -27,6 +29,7 @@ function defaultOrders(): DemoOrder[] {
       instrument: { type: 'fdc3.instrument', id: { ticker: 'NVDA' }, name: 'NVIDIA' },
       side: 'buy',
       quantity: 200,
+      date,
       orderType: 'market',
     },
   ];
@@ -46,6 +49,7 @@ function normalizeOrder(incoming: Partial<DemoOrder> | undefined): DemoOrder {
     },
     side: incoming?.side === 'sell' ? 'sell' : 'buy',
     quantity: Number.isFinite(qty) && qty > 0 ? Math.round(qty) : 200,
+    date: typeof incoming?.date === 'string' && incoming.date ? incoming.date : new Date().toISOString(),
     orderType: incoming?.orderType ?? 'market',
   };
 }

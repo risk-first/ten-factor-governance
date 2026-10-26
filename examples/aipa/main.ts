@@ -1,3 +1,4 @@
+import { spawn, type ChildProcess } from 'node:child_process';
 import express, { type Request } from 'express';
 import rateLimit from 'express-rate-limit';
 import http from 'http';
@@ -140,6 +141,26 @@ function writeGeneratedAppDirectory(combined: { applications: unknown[]; message
   console.info({ path: generatedAppdPath }, 'Wrote generated app directory');
 }
 
+function startSailGovernanceHost() {
+  const root = path.join(packageRoot, 'sail-extensions', 'sail-governance');
+  const cli = path.join(root, 'node_modules', '@finos', 'sail-extension-server', 'bin', 'sail-extension-server.mjs');
+  if (!fs.existsSync(cli)) {
+    console.warn('Sail governance host skipped — npm install in sail-extensions/sail-governance');
+    return;
+  }
+  const child: ChildProcess = spawn(process.execPath, [cli, '--port', '9101'], {
+    cwd: root,
+    stdio: 'inherit',
+    env: process.env,
+  });
+  const stop = () => {
+    if (child.exitCode == null && !child.killed) {
+      child.kill();
+    }
+  };
+  process.on('exit', stop);
+}
+
 async function startApp(appName: string, appRoot: string, port: number) {
   const normalizedAppRoot = fs.realpathSync(appRoot);
   const app = express();
@@ -218,6 +239,8 @@ async function startApp(appName: string, appRoot: string, port: number) {
     console.warn('No apps found to start.');
     return;
   }
+
+  startSailGovernanceHost();
 
   const combinedAppd = buildCombinedAppDirectory(apps);
   writeGeneratedAppDirectory(combinedAppd);

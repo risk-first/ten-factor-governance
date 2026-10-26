@@ -52,13 +52,19 @@
           "description": "Executable size. Not present on standard `fdc3.order`.",
           "exclusiveMinimum": 0
         },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Date",
+          "description": "When this order was created or last materialised, as an RFC 3339 timestamp."
+        },
         "orderType": {
           "type": "string",
           "title": "Order type",
           "const": "market"
         }
       },
-      "required": ["type", "id", "instrument", "side", "quantity"]
+      "required": ["type", "id", "instrument", "side", "quantity", "date"]
     },
     { "$ref": "context.schema.json#/definitions/BaseContext" }
   ]

@@ -332,6 +332,8 @@ export type DemoOrder = {
   instrument: Fdc3Instrument;
   side: 'buy' | 'sell';
   quantity: number;
+  /** RFC 3339 timestamp when the order was created or last materialised. */
+  date: string;
   orderType?: 'market';
 };
 

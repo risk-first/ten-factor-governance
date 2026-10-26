@@ -10,6 +10,7 @@
     "./ui": "./src/ui.tsx"
   },
   "scripts": {
+    "dev": "sail-extension-server --port 9101",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
+    "@finos/sail-extension-server": "file:../../../../../../fdc3-general/FDC3-Sail/packages/sail-extension-server",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.x"
   }
