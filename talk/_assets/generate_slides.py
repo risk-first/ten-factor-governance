@@ -121,10 +121,38 @@ slides.append((
 ))
 
 slides.append((
-    "02-software-engineering-dead",
+    "02-no-more-jobs",
     page(
-        "02 — Is software engineering dead?",
+        "02 — No more jobs",
         """      <p class="kicker">02</p>
+      <h1>No more jobs</h1>
+      <div class="figure-full">
+        <img src="independent.png" alt="The Independent: More than 1m young people are out of work, and AI is about to wipe out millions more jobs">
+      </div>""",
+        cite="Haygarth, D. (2026). More than 1m young people are out of work… The Independent.",
+        extra_class="image-led",
+    ),
+    notes(
+        "02 — No more jobs",
+        [
+            "This is the popular version of the same fear: AI wipes out work, starting with the young.",
+            "Read the headline, not the article. The talk is not a labour-economics paper. It is about who is allowed to act.",
+        ],
+        [
+            "IPPR job-loss numbers unless you want one figure. If you do: “nearly eight million UK jobs exposed, without intervention.”",
+        ],
+        [
+            "Haygarth, D. (2026). More than 1m young people are out of work, and AI is about to wipe out millions more jobs. What should we do? The Independent. https://www.independent.co.uk/news/uk/home-news/ai-jobs-work-unemployment-b3048696.html",
+        ],
+        "1 min",
+    ),
+))
+
+slides.append((
+    "03-software-engineering-dead",
+    page(
+        "03 — Is software engineering dead?",
+        """      <p class="kicker">03</p>
       <h1>Is software engineering dead?</h1>
       <div class="figure-full">
         <img src="hn-search.png" alt="Hacker News search results for software engineering dead">
@@ -133,7 +161,7 @@ slides.append((
         extra_class="image-led",
     ),
     notes(
-        "02 — Is software engineering dead?",
+        "03 — Is software engineering dead?",
         [
             "The same anxiety now hits our own trade. Search HN and the obituaries write themselves.",
             "You do not need to settle it. The point is the mood: if code is cheap, what is left for humans, and what happens to power?",
@@ -149,10 +177,10 @@ slides.append((
 ))
 
 slides.append((
-    "03-if-we-build-it",
+    "04-if-we-build-it",
     page(
-        "03 — If we build it, everyone dies",
-        """      <p class="kicker">03</p>
+        "04 — If we build it, everyone dies",
+        """      <p class="kicker">04</p>
       <div class="split">
         <div>
           <h1>If we build it, everyone dies</h1>
@@ -165,7 +193,7 @@ slides.append((
         cite="Yudkowsky, E. &amp; Soares, N. (2025). If Anyone Builds It, Everyone Dies. Little, Brown.",
     ),
     notes(
-        "03 — If we build it, everyone dies",
+        "04 — If we build it, everyone dies",
         [
             "Name the argument: a superintelligence that can think better than us will take the resources it needs, and we lose.",
             "You are not here to litigate alignment theory. The rebuttal for this talk is simpler: in the real world, the smartest person in the room is rarely in charge.",
@@ -179,34 +207,6 @@ slides.append((
             "Yudkowsky, E. & Soares, N. (2025). If Anyone Builds It, Everyone Dies: Why Superhuman AI Would Kill Us All. Little, Brown and Company. https://ifanyonebuildsit.com/",
         ],
         "2 min",
-    ),
-))
-
-slides.append((
-    "04-no-more-jobs",
-    page(
-        "04 — No more jobs",
-        """      <p class="kicker">04</p>
-      <h1>No more jobs</h1>
-      <div class="figure-full">
-        <img src="independent.png" alt="The Independent: More than 1m young people are out of work, and AI is about to wipe out millions more jobs">
-      </div>""",
-        cite="Haygarth, D. (2026). More than 1m young people are out of work… The Independent.",
-        extra_class="image-led",
-    ),
-    notes(
-        "04 — No more jobs",
-        [
-            "This is the popular version of the same fear: AI wipes out work, starting with the young.",
-            "Read the headline, not the article. The talk is not a labour-economics paper. It is about who is allowed to act.",
-        ],
-        [
-            "IPPR job-loss numbers unless you want one figure. If you do: “nearly eight million UK jobs exposed, without intervention.”",
-        ],
-        [
-            "Haygarth, D. (2026). More than 1m young people are out of work, and AI is about to wipe out millions more jobs. What should we do? The Independent. https://www.independent.co.uk/news/uk/home-news/ai-jobs-work-unemployment-b3048696.html",
-        ],
-        "1 min",
     ),
 ))
 

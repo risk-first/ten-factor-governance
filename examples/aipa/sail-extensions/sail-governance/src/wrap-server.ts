@@ -144,6 +144,40 @@ async function postIntentEvent(
   )
 }
 
+/**
+ * ALLOW still goes through `receive()` so approvals get a normal
+ * raiseIntentResponse / getResult. Target the live Execution instance
+ * (or open it) first — a singleton already running never fires
+ * addIntentListener again, so an appId-only raise would park forever.
+ */
+async function forwardAllowedSubmitOrder(
+  instance: FDC3ServerInstance,
+  message: Parameters<FDC3ServerInstance["receive"]>[0],
+  from: string,
+  payload: Record<string, unknown>,
+  intent: string,
+): Promise<void> {
+  const target = asRecord(payload.app)
+  const targetAppId = typeof target?.appId === "string" ? target.appId : "aipa-execution"
+  const instanceId =
+    typeof target?.instanceId === "string"
+      ? target.instanceId
+      : await ensureAppWithListener(instance, targetAppId, intent)
+  if (!instanceId) {
+    return instance.receive(message, from)
+  }
+  return instance.receive(
+    {
+      ...message,
+      payload: {
+        ...payload,
+        app: { appId: targetAppId, instanceId },
+      },
+    } as typeof message,
+    from,
+  )
+}
+
 async function recordDecision(
   instance: FDC3ServerInstance,
   input: {
@@ -237,7 +271,7 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
         decision: "ALLOW",
         message: `demo.SubmitOrder signed by ${APPROVALS_APP_ID} or raised from that app.`,
       })
-      return instance.receive(message, from)
+      return forwardAllowedSubmitOrder(instance, message, from, payload ?? {}, intent)
     }
 
     if (!msg.meta?.requestUuid) {

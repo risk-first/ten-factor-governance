@@ -247,6 +247,16 @@ h1 {
   filter: invert(1) opacity(0.88);
 }
 
+.card-photo {
+  display: block;
+  width: 100%;
+  height: clamp(4.2rem, 11cqw, 7.8rem);
+  margin: 0 0 0.55rem;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+}
+
 .card-logo {
   display: block;
   height: 2rem;
@@ -418,6 +428,62 @@ h1 {
   background: #f6f6ef;
 }
 
+.slide.portraits-slide {
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+  padding-top: 3.8%;
+  padding-bottom: 7%;
+}
+
+.slide.portraits-slide h1 {
+  margin-bottom: 0.35rem;
+  font-size: clamp(1.8rem, 3.4cqw, 2.9rem);
+}
+
+.slide.portraits-slide .quote {
+  margin: 0 0 0.9rem;
+  max-width: none;
+  font-size: clamp(1.15rem, 2cqw, 1.7rem);
+}
+
+.portraits {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+}
+
+.portraits figure {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+}
+
+.portraits img {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center 18%;
+  border-radius: 10px;
+  background: #0b140e;
+}
+
+.portraits img.trader {
+  object-position: 72% 20%;
+}
+
+.portraits figcaption {
+  margin-top: 0.5rem;
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 2cqw, 1.7rem);
+  font-weight: 600;
+}
+
 .questions {
   list-style: none;
   margin: 1.2rem 0 0;
@@ -494,6 +560,105 @@ h1 {
   color: var(--accent);
 }
 
+.slide.involve-slide {
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+  padding-top: 3.8%;
+  padding-bottom: 7%;
+}
+
+.slide.involve-slide h1 {
+  margin-bottom: 0.7rem;
+  font-size: clamp(2rem, 3.8cqw, 3.25rem);
+}
+
+.involve {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 0.85rem 0.9rem;
+}
+
+.involve a {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  padding: 1rem 1.05rem 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.involve a:hover {
+  text-decoration: none;
+  border-color: rgba(61, 154, 92, 0.55);
+}
+
+.involve img {
+  display: block;
+  flex: none;
+  height: clamp(2.6rem, 7.2cqw, 5.75rem);
+  width: auto;
+  max-width: 14cqw;
+  margin: 0 0 0.65rem;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.involve img.glyph {
+  filter: invert(1);
+}
+
+.involve strong {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 2.15cqw, 2rem);
+  line-height: 1.15;
+}
+
+.involve p {
+  margin: 0.4rem 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(1.05rem, 1.55cqw, 1.45rem);
+  line-height: 1.32;
+}
+
+.involve span {
+  display: block;
+  margin-top: auto;
+  padding-top: 0.55rem;
+  color: var(--accent);
+  font-size: clamp(0.95rem, 1.25cqw, 1.2rem);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.involve a:hover span {
+  text-decoration: underline;
+}
+
+.involve.row {
+  flex: none;
+  grid-template-rows: auto;
+  margin-top: 1.4rem;
+}
+
+.involve.row a {
+  height: auto;
+}
+
+.slide.involve-slide .lede {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(1.2rem, 2cqw, 1.7rem);
+}
+
 .people {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -527,6 +692,19 @@ h1 {
   text-decoration: underline;
 }
 
+.disclaimer {
+  margin: 2.4rem 0 0;
+  max-width: 46ch;
+  color: var(--ink-dim);
+  font-size: clamp(0.95rem, 1.55vw, 1.25rem);
+  line-height: 1.4;
+}
+
+.disclaimer strong {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
 .repo-link {
   display: block;
   margin-top: 1.35rem;
@@ -553,6 +731,11 @@ h1 {
 .split .repo-link {
   margin-top: 0.85rem;
   font-size: clamp(0.82rem, 1.35vw, 1.05rem);
+}
+
+.split .repo-link.primary {
+  margin-top: 1.4rem;
+  font-size: clamp(1.15rem, 2.3vw, 1.75rem);
 }
 
 .chain {
@@ -681,6 +864,358 @@ h1 {
   margin-top: 0.25rem;
   color: var(--ink-muted);
   font-size: 0.85em;
+}
+
+.slide.fill-cards {
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+}
+
+.slide.fill-cards h1 {
+  font-size: clamp(2rem, 3.5cqw, 3.1rem);
+  margin-bottom: 0.55rem;
+}
+
+.slide.fill-cards .kicker {
+  font-size: clamp(0.85rem, 1.3cqw, 1.15rem);
+  margin-bottom: 0.35rem;
+}
+
+.headline {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-bottom: 0.55rem;
+}
+
+.headline h1 {
+  margin-bottom: 0.3rem;
+}
+
+.headline .lede {
+  max-width: none;
+}
+
+.headline .answer {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: clamp(2.6rem, 6vw, 4.4rem);
+  line-height: 0.85;
+}
+
+.venns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1.05rem;
+  width: 100%;
+  min-height: 0;
+}
+
+.venns.single {
+  grid-template-columns: 1fr;
+}
+
+.cognition {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(17rem, 0.9fr);
+  gap: 0.85rem 1.1rem;
+  width: 100%;
+  min-height: 0;
+}
+
+.cognition .venn {
+  min-height: 0;
+}
+
+.slice-cards {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+.slice-cards .card,
+.slide.fill-cards .slice-cards .card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: auto;
+  min-height: min-content;
+}
+
+.slice-cards .card ul {
+  margin: 0.45rem 0 0;
+}
+
+.venn {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0.55rem 0.7rem 0.45rem;
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 10px;
+}
+
+.venn h2 {
+  margin: 0 0 0.25rem;
+  font-family: var(--serif);
+  font-size: clamp(1.05rem, 1.7vw, 1.4rem);
+  font-weight: 600;
+  text-align: center;
+}
+
+.venn-stages {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.6rem;
+  margin: 0 0 0.2rem;
+}
+
+.venn-stages p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: clamp(0.72rem, 1.05vw, 0.9rem);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.venn-stages b {
+  display: block;
+  margin-bottom: 0.1rem;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: 0.86em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.venn img,
+.venn svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+}
+
+.slide.fill-cards > .apps,
+.slide.fill-cards > .chain,
+.slide.fill-cards > .cards.icons,
+.slide.fill-cards > .cards.four,
+.slide.fill-cards > .venns,
+.slide.fill-cards > .cognition {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.slide.fill-cards > .cards.two,
+.slide.fill-cards > .cards.three:not(.icons) {
+  flex: none;
+  height: auto;
+  margin-top: 0.4rem;
+}
+
+.slide.fill-cards > .cards.three.icons,
+.slide.fill-cards > .cards.four,
+.slide.fill-cards > .apps,
+.slide.fill-cards > .chain.yaml-chain {
+  grid-template-rows: 1fr 1fr;
+  align-items: stretch;
+}
+
+.slide.fill-cards .card,
+.slide.fill-cards .app {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-height: 0;
+}
+
+.slide.fill-cards .cards.icons {
+  gap: 0.75rem 0.85rem;
+}
+
+.slide.fill-cards .card {
+  padding: 1rem 1.1rem;
+}
+
+.card .kind {
+  display: block;
+  margin: 0 0 0.35rem;
+  font-family: var(--sans);
+  font-size: clamp(0.7rem, 1.1cqw, 0.9rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.slide.fill-cards .card-icon {
+  width: clamp(2.8rem, 7cqw, 5.6rem);
+  height: clamp(2.8rem, 7cqw, 5.6rem);
+  margin: 0 0 0.7rem;
+}
+
+.slide.fill-cards .cards.four .card-icon {
+  width: clamp(2.6rem, 6.4cqw, 5.2rem);
+  height: clamp(2.6rem, 6.4cqw, 5.2rem);
+}
+
+.slide.fill-cards .card-logo {
+  height: clamp(2.6rem, 5.4cqw, 4.4rem);
+  max-width: min(100%, 22cqw);
+  margin-bottom: 0.75rem;
+}
+
+.slide.fill-cards .cards.three .card-logo {
+  height: clamp(4.2rem, 11cqw, 8.5rem);
+  max-width: 100%;
+}
+
+.slide.fill-cards .card-mascot {
+  height: clamp(3.4rem, 7.5cqw, 6rem);
+}
+
+.slide.fill-cards .card-brand .card-logo {
+  height: clamp(2rem, 3.6cqw, 3.1rem);
+}
+
+.slide.fill-cards .card h3 {
+  font-size: clamp(1.45rem, 2.45cqw, 2.15rem);
+  margin-bottom: 0.45rem;
+}
+
+.slide.fill-cards .cards.four .card h3 {
+  font-size: clamp(1.25rem, 2.15cqw, 1.9rem);
+}
+
+.slide.fill-cards .cards.two .card h3,
+.slide.fill-cards .cards.three:not(.icons) .card h3 {
+  font-size: clamp(1.7rem, 2.8cqw, 2.5rem);
+}
+
+.slide.fill-cards .card p,
+.slide.fill-cards .card li {
+  font-size: clamp(1.1rem, 1.9cqw, 1.65rem);
+  line-height: 1.35;
+}
+
+.slide.fill-cards .cards.four .card p {
+  font-size: clamp(1.05rem, 1.65cqw, 1.45rem);
+}
+
+.slide.fill-cards .cards.two .card p,
+.slide.fill-cards .cards.two .card li,
+.slide.fill-cards .cards.three:not(.icons) .card p {
+  font-size: clamp(1.3rem, 2.15cqw, 1.9rem);
+}
+
+.slide.fill-cards .card li + li {
+  margin-top: 0.55rem;
+}
+
+.slide.fill-cards .lede.wide {
+  flex: none;
+  margin-top: 0.75rem;
+  font-size: clamp(1.15rem, 1.85cqw, 1.65rem);
+}
+
+.slide.fill-cards .headline {
+  flex: none;
+  margin-bottom: 0.7rem;
+}
+
+.slide.fill-cards .headline h1 {
+  font-size: clamp(1.85rem, 3.2cqw, 2.7rem);
+  margin-bottom: 0.25rem;
+}
+
+.slide.fill-cards .headline .lede {
+  font-size: clamp(0.95rem, 1.55cqw, 1.25rem);
+}
+
+.slide.fill-cards .headline .answer {
+  font-size: clamp(3rem, 6.5cqw, 5rem);
+}
+
+.slide.fill-cards .venn {
+  padding: 0.7rem 0.85rem 0.55rem;
+}
+
+.slide.fill-cards .venn h2 {
+  font-size: clamp(1.2rem, 2cqw, 1.65rem);
+}
+
+.slide.fill-cards .venn-stages p {
+  font-size: clamp(0.82rem, 1.25cqw, 1.05rem);
+}
+
+.slide.fill-cards .slice-cards .card {
+  padding: 0.7rem 0.85rem;
+}
+
+.slide.fill-cards .slice-cards .card h3 {
+  font-size: clamp(1.15rem, 1.9cqw, 1.55rem);
+}
+
+.slide.fill-cards .slice-cards .card p,
+.slide.fill-cards .slice-cards .card li {
+  font-size: clamp(0.88rem, 1.4cqw, 1.15rem);
+}
+
+.slide.fill-cards .slice-cards .card li + li {
+  margin-top: 0.25rem;
+}
+
+.slide.fill-cards .app {
+  align-items: center;
+  padding: 1rem 0.85rem;
+}
+
+.slide.fill-cards .app-icon {
+  width: clamp(4rem, 9cqw, 7.2rem);
+  height: clamp(4rem, 9cqw, 7.2rem);
+  margin-bottom: 0.75rem;
+}
+
+.slide.fill-cards .app strong {
+  font-size: clamp(1.5rem, 2.6cqw, 2.3rem);
+}
+
+.slide.fill-cards .app span {
+  margin-top: 0.4rem;
+  font-size: clamp(1.1rem, 1.75cqw, 1.55rem);
+}
+
+.slide.fill-cards.yaml-fit h1 {
+  font-size: clamp(1.7rem, 3cqw, 2.6rem);
+  margin-bottom: 0.35rem;
+}
+
+.slide.fill-cards .chain.yaml-chain .node {
+  justify-content: flex-start;
+  height: 100%;
+  padding: 0.7rem 0.8rem 0.65rem;
+}
+
+.slide.fill-cards .chain.yaml-chain .kind {
+  font-size: clamp(0.8rem, 1.25cqw, 1.05rem);
+}
+
+.slide.fill-cards .chain.yaml-chain code {
+  font-size: clamp(0.85rem, 1.5cqw, 1.3rem);
+  line-height: 1.35;
 }
 
 .diagram {

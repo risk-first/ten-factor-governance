@@ -1,9 +1,9 @@
 const SLIDES = [
   { dir: '00-title', title: 'Title' },
   { dir: '01-humans-are-the-horses', title: 'Humans are the horses' },
-  { dir: '02-software-engineering-dead', title: 'Is software engineering dead?' },
-  { dir: '03-if-we-build-it', title: 'If we build it, everyone dies' },
-  { dir: '04-no-more-jobs', title: 'No more jobs' },
+  { dir: '02-no-more-jobs', title: 'No more jobs' },
+  { dir: '03-software-engineering-dead', title: 'Is software engineering dead?' },
+  { dir: '04-if-we-build-it', title: 'If we build it, everyone dies' },
   { dir: '05-a-simple-formula', title: 'A simple formula' },
   { dir: '06-corporate-vs-ai-governance', title: 'Corporate vs AI governance' },
   { dir: '07-three-questions', title: 'Three questions' },
@@ -25,9 +25,10 @@ const SLIDES = [
   { dir: '23-governance-used-to-be-harder', title: 'Governance used to be harder' },
   { dir: '24-software-engineering-isnt-dead', title: "Software engineering isn't dead" },
   { dir: '25-are-humans-the-new-horses', title: 'Are humans the new horses?' },
-  { dir: '26-how-to-get-involved', title: 'How to get involved' },
-  { dir: '27-belling-the-cat', title: 'Belling the cat' },
-  { dir: '28-linkedin', title: 'Thank you' },
+  { dir: '26-cognitive-revolution', title: 'A cognitive revolution' },
+  { dir: '27-how-to-get-involved', title: 'How to get involved' },
+  { dir: '28-belling-the-cat', title: 'Belling the cat' },
+  { dir: '29-linkedin', title: 'Thank you' },
 ];
 
 function currentIndex() {

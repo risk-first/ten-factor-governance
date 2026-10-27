@@ -1,4 +1,4 @@
-# 26 — How to get involved
+# 27 — How to get involved
 
 ## Say
 

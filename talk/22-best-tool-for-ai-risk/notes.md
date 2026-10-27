@@ -5,6 +5,7 @@
 - Close the Yudkowsky loop. Unlimited intelligence plus unlimited power is a choice, not a law of nature.
 - Kings were rarely the smartest people in the room. Einstein did not run Austria. Quants are paid well and still not the bank.
 - AIGF is the catalogue of AI-specific risks. Risk-First is the habit. The Lindy effect: practices that have lasted are the ones to bet on. Corporate governance has lasted.
+- The three pictures are the argument: the king is in charge, Einstein is not, and the trader is paid well without running the bank.
 
 ## Don't put on the slide
 

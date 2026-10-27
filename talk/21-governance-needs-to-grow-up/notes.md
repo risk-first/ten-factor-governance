@@ -4,10 +4,7 @@
 
 - Governance has to adopt software-engineering procedure. Not because it is fashionable. Because agents will not wait for the next committee cycle.
 - Ten Factor is the how. This repo is a worked example, not a slideware framework.
-
-## Don't put on the slide
-
-- A tools list. The point is the practice, not the stack.
+- Point at the four places people can actually pick this up: Gemara, FINOS AI, Ten Factor, and the playbook.
 
 ## Citations
 

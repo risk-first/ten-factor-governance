@@ -4,7 +4,8 @@
 
 - Return to slide 1. The answer is no.
 - Horses had no comparative advantage left once machines did the work cheaper. Humans still have land, judgment, and the right to say no.
-- The Venn is the argument: some work is machine-only, some is shared, some remains human because it is authority, not intelligence.
+- The industrial Venn is the precedent: the economy got much larger. Human work became a smaller share of a bigger pie, and agriculture shrank inside that human share.
+- Hold the cognitive case for the next slide.
 
 ## Don't put on the slide
 
@@ -12,8 +13,8 @@
 
 ## Citations
 
-- None on this slide.
+- None on this slide. Areas are schematic.
 
 ## Timing
 
-2 min
+1–2 min
