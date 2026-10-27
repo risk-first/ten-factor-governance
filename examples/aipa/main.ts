@@ -2,7 +2,7 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import express, { type Request } from 'express';
 import rateLimit from 'express-rate-limit';
 import http from 'http';
-import { createServer } from 'vite';
+import { createServer, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -24,6 +24,27 @@ function resolveWithinRoot(root: string, ...segments: string[]): string {
   return resolvedPath;
 }
 
+/** When an app has no index.html (e.g. Approvals inbox at list.html), serve that at `/`. */
+function rewriteRootToListHtml(appRoot: string): Plugin {
+  return {
+    name: 'aipa-rewrite-root-to-list',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const pathOnly = req.url?.split('?')[0] ?? '';
+        if (pathOnly === '/' || pathOnly === '') {
+          const hasIndex = fs.existsSync(path.join(appRoot, 'index.html'));
+          const hasList = fs.existsSync(path.join(appRoot, 'list.html'));
+          if (!hasIndex && hasList) {
+            const query = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+            req.url = `/list.html${query}`;
+          }
+        }
+        next();
+      });
+    },
+  };
+}
+
 function discoverApps(baseDir: string) {
   if (!fs.existsSync(baseDir)) return [];
   return fs
@@ -34,7 +55,7 @@ function discoverApps(baseDir: string) {
         dirent.isDirectory() &&
         dirent.name !== 'node_modules' &&
         dirent.name !== 'dist' &&
-        fs.existsSync(resolveWithinRoot(appPath, 'index.html'))
+        fs.readdirSync(appPath).some(name => name.endsWith('.html'))
       );
     })
     .map(dirent => ({
@@ -201,7 +222,7 @@ async function startApp(appName: string, appRoot: string, port: number) {
       },
     },
     appType: 'spa',
-    plugins: [react()],
+    plugins: [react(), rewriteRootToListHtml(normalizedAppRoot)],
     resolve: {
       alias: {
         '@aipa/common': path.join(commonDir, 'src'),
@@ -222,8 +243,11 @@ async function startApp(appName: string, appRoot: string, port: number) {
   app.get('/{*splat}', spaIndexLimiter, (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/.well-known')) return next();
     const indexPath = resolveWithinRoot(normalizedAppRoot, 'index.html');
+    const listPath = resolveWithinRoot(normalizedAppRoot, 'list.html');
     if (fs.existsSync(indexPath)) {
       res.sendFile('index.html', { root: normalizedAppRoot });
+    } else if (fs.existsSync(listPath)) {
+      res.sendFile('list.html', { root: normalizedAppRoot });
     } else {
       next();
     }

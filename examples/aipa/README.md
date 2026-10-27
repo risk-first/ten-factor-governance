@@ -22,7 +22,7 @@ and send `GetApproval` to Approvals.
 | Agent harness | 4107 | listens `AskAgent` | Rita-derived agent loop; generic FDC3 tools; streams `fdc3.ai.*`; LLM via `/api/query` |
 | Markdown Viewer | 4108 | `ViewData` | Front-end; renders `fdc3.data.markdown` (open / replace-in-place) |
 | Discoverability | 4109 | — | Responder on `fdc3.discoverability` (apps / intents / context types) |
-| Approvals | 4110 | `GetApproval` and siblings | Invisible singleton; Entra login; signed re-raise of `demo.SubmitOrder` |
+| Approvals | 4110 | inbox: `GetApproval` and siblings; view: `ViewApproval` | Two apps, one origin: invisible singleton inbox + per-case view; shared Entra login; view signs and raises `demo.SubmitOrder` |
 | App Directory | 4099 | — | Combined AppD JSON |
 
 ## Quick start
