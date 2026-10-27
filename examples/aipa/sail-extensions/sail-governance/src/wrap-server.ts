@@ -331,7 +331,6 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
       from,
     )
 
-    const target = asRecord(payload?.app)
     const context = payload?.context
     const approval = {
       type: "fdc3.approval",
@@ -342,7 +341,7 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
         action: "raiseIntent",
         intent: SUBMIT_ORDER,
         context,
-        app: target?.appId ? { appId: target.appId } : { appId: "aipa-execution" },
+        app: { appId: "aipa-execution" },
       },
     }
 

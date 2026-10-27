@@ -82,7 +82,7 @@
       "hostManifests": {
         "sail": {
           "injectApi": "3.0",
-          "singleton": false,
+          "singleton": true,
           "autostart": false,
           "searchable": false
         }

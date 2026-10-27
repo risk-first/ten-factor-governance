@@ -53,6 +53,26 @@ function removeHeld(held: Held): void {
   }
 }
 
+function persistWork(): void {
+  void fetch('/api/approvals', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ entries: work.map(item => item.record) }),
+  }).catch(() => undefined);
+}
+
+function restoreHeld(record: ApprovalRecord): Held {
+  const settled = record.status !== 'pending';
+  const held: Held = {
+    record,
+    resolve: () => undefined,
+    reject: () => undefined,
+    settled,
+  };
+  indexHeld(held);
+  return held;
+}
+
 function render(): void {
   const tbody = document.getElementById('work')!;
   tbody.replaceChildren();
@@ -68,7 +88,6 @@ function render(): void {
       if ((event.target as HTMLElement).closest('button')) return;
       selectedId = id;
       render();
-      void openView(held);
     });
 
     const whenTd = document.createElement('td');
@@ -83,6 +102,17 @@ function render(): void {
 
     const actionsTd = document.createElement('td');
     actionsTd.className = 'actions--multi';
+    const openBtn = document.createElement('button');
+    openBtn.type = 'button';
+    openBtn.className = 'primary';
+    openBtn.textContent = 'Open';
+    openBtn.addEventListener('click', event => {
+      event.stopPropagation();
+      selectedId = id;
+      render();
+      void openView(held);
+    });
+    actionsTd.append(openBtn);
     if (!pending) {
       const clearBtn = document.createElement('button');
       clearBtn.type = 'button';
@@ -99,12 +129,22 @@ function render(): void {
   }
 }
 
+async function hideInbox(): Promise<void> {
+  if (!fdc3) return;
+  try {
+    await fdc3.close();
+  } catch {
+    /* already hidden or agent ignored close */
+  }
+}
+
 async function openView(held: Held): Promise<void> {
   if (!fdc3) return;
   selectedId = keyOf(held.record);
   render();
   try {
     const resolution = await fdc3.raiseIntent(INTENTS.ViewApproval, held.record, { appId: VIEW_APP_ID });
+    void hideInbox();
     const result = await resolution.getResult();
     if (held.settled) return;
     if (result && typeof result === 'object' && 'type' in result) {
@@ -151,7 +191,7 @@ function finishApproved(held: Held, result: Context | ContextWithMetadata | void
   } else {
     held.resolve({ type: 'fdc3.nothing' });
   }
-  void notifyViews(held.record);
+  persistWork();
 }
 
 function finishRejected(held: Held, message: string): void {
@@ -163,7 +203,7 @@ function finishRejected(held: Held, message: string): void {
   render();
   setStatus(statusEl(), message === 'Approval rejected' ? 'Denied' : message);
   held.reject(new Error(message));
-  void notifyViews(held.record);
+  persistWork();
 }
 
 function holdGetApproval(incoming: ApprovalRecord): Promise<Context | ContextWithMetadata> {
@@ -175,6 +215,7 @@ function holdGetApproval(incoming: ApprovalRecord): Promise<Context | ContextWit
     selectedId = keyOf(record);
     void openView(held);
   });
+  persistWork();
   render();
   setStatus(statusEl(), `Pending approval ${record.id.approvalId}`);
   return promise;
@@ -184,6 +225,7 @@ async function openViewOnly(record: ApprovalRecord): Promise<void> {
   if (!fdc3) return;
   try {
     await fdc3.raiseIntent(INTENTS.ViewApproval, record, { appId: VIEW_APP_ID });
+    void hideInbox();
   } catch {
     /* view may not be available */
   }
@@ -216,6 +258,7 @@ function clear(id: string): void {
   const held = byId.get(id);
   if (!held || held.record.status === 'pending') return;
   removeHeld(held);
+  persistWork();
   render();
   setStatus(statusEl(), 'Cleared from worklist');
 }
@@ -233,6 +276,7 @@ function cancel(incoming: ApprovalRecord): ApprovalRecord {
   render();
   held.reject(new Error('Approval cancelled'));
   setStatus(statusEl(), 'Cancelled');
+  persistWork();
   void notifyViews(held.record);
   return held.record;
 }
@@ -243,6 +287,13 @@ async function setup(): Promise<void> {
 
   const app = await connectAppSession(statusEl());
   fdc3 = app.fdc3;
+  try {
+    const res = await fetch('/api/approvals');
+    const body = (await res.json()) as { entries?: ApprovalRecord[] };
+    work = (body.entries ?? []).map(restoreHeld);
+  } catch {
+    work = [];
+  }
   session.render();
   render();
 

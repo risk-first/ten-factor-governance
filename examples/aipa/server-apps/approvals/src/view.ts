@@ -4,7 +4,7 @@ import { INTENTS } from '../../../common/src/contexts/types.ts';
 import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { Context, ContextMetadata, ContextWithMetadata, DesktopAgent } from '@finos/fdc3';
-import { accept, keyOf, sameApproval, statusLabel, type ApprovalRecord } from './approval.ts';
+import { accept, keyOf, statusLabel, type ApprovalRecord } from './approval.ts';
 import { mountSession, type SessionHandle } from './session.ts';
 
 type Waiter = {
@@ -17,7 +17,7 @@ const statusEl = () => drawer.statusEl;
 let fdc3: DesktopAgent | null = null;
 let session: SessionHandle | null = null;
 let record: ApprovalRecord | undefined;
-const waiters: Waiter[] = [];
+const waitersById = new Map<string, Waiter[]>();
 
 function render(): void {
   session?.render();
@@ -43,8 +43,19 @@ function render(): void {
 }
 
 function settleWaiters(action: (waiter: Waiter) => void): void {
-  const pending = waiters.splice(0);
+  const id = record ? keyOf(record) : undefined;
+  const pending = id ? (waitersById.get(id) ?? []) : [];
+  if (id) waitersById.delete(id);
   for (const waiter of pending) action(waiter);
+}
+
+async function hideView(): Promise<void> {
+  if (!fdc3) return;
+  try {
+    await fdc3.close();
+  } catch {
+    /* already hidden or agent ignored close */
+  }
 }
 
 async function approve(): Promise<void> {
@@ -60,6 +71,7 @@ async function approve(): Promise<void> {
     record.updatedAt = new Date().toISOString();
     render();
     settleWaiters(w => w.reject(new Error('Approval has no subject context')));
+    void hideView();
     return;
   }
   try {
@@ -74,10 +86,11 @@ async function approve(): Promise<void> {
     }
     const envelope = (await res.json()) as SignedEnvelope;
     const signed = toSignedResult(envelope);
-    const target = subject.app?.appId ? { appId: subject.app.appId } : { appId: 'aipa-execution' };
-    setStatus(statusEl(), `Submitting ${subject.intent ?? INTENTS.SubmitOrder}…`);
+    const intent = subject.intent ?? INTENTS.SubmitOrder;
+    const target = { appId: intent === INTENTS.SubmitOrder ? 'aipa-execution' : (subject.app?.appId ?? 'aipa-execution') };
+    setStatus(statusEl(), `Submitting ${intent} → ${target.appId}…`);
     const resolution = await fdc3.raiseIntent(
-      subject.intent ?? INTENTS.SubmitOrder,
+      intent,
       signed.context as Context,
       target,
       undefined,
@@ -101,6 +114,7 @@ async function approve(): Promise<void> {
           ? (result as Context)
           : { type: 'fdc3.nothing' };
     settleWaiters(w => w.resolve(payload));
+    void hideView();
   } catch (error) {
     setStatus(statusEl(), `Approve failed: ${error instanceof Error ? error.message : String(error)}`);
   }
@@ -113,23 +127,23 @@ function deny(): void {
   render();
   setStatus(statusEl(), 'Denied');
   settleWaiters(w => w.reject(new Error('Approval rejected')));
+  void hideView();
 }
 
 function show(incoming: ApprovalRecord): Promise<Context | ContextWithMetadata> | Context {
-  if (record && !sameApproval(record, incoming)) {
-    return { type: 'fdc3.nothing' };
-  }
   record = accept(incoming);
   document.title = `Approval ${keyOf(record) ?? ''}`.trim();
   render();
   if (record.status !== 'pending') {
     setStatus(statusEl(), statusLabel(record.status));
-    settleWaiters(w => w.reject(new Error(`Approval ${record!.status}`)));
     return { type: 'fdc3.nothing' };
   }
   setStatus(statusEl(), `Pending approval ${record.id.approvalId}`);
+  const id = keyOf(record)!;
   return new Promise<Context | ContextWithMetadata>((resolve, reject) => {
-    waiters.push({ resolve, reject });
+    const pending = waitersById.get(id) ?? [];
+    pending.push({ resolve, reject });
+    waitersById.set(id, pending);
   });
 }
 

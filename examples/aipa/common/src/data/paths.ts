@@ -12,6 +12,9 @@ export const LIVE_PORTFOLIO_DIR = path.resolve(here, '../../../server-apps/portf
 /** Runtime SubmitOrder log owned by the execution app (gitignored). */
 export const EXECUTION_LOG_DIR = path.resolve(here, '../../../server-apps/execution/temp');
 
+/** Runtime approval worklist owned by the approvals inbox (gitignored). */
+export const APPROVALS_DIR = path.resolve(here, '../../../server-apps/approvals/temp');
+
 /** Runtime Gemara logs owned by the Governance Console (gitignored). */
 export const GOVERNANCE_CONSOLE_DIR = path.resolve(
   here,
@@ -28,6 +31,10 @@ export function livePortfolioPath(): string {
 
 export function executionLogPath(): string {
   return path.join(EXECUTION_LOG_DIR, 'submit-order.json');
+}
+
+export function approvalsLogPath(): string {
+  return path.join(APPROVALS_DIR, 'approvals.json');
 }
 
 export function evaluationLogPath(): string {

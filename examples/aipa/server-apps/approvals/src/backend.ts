@@ -3,6 +3,7 @@ import type { Server } from 'http';
 import dotenv from 'dotenv';
 import path from 'path';
 import { createAppSigner, mountSigningRoutes } from '../../../common/src/security/signing.js';
+import { loadApprovalsLog, saveApprovalsLog } from '../../../common/src/data/approvals-log.js';
 import { loadEntraConfig } from './config.js';
 import { JWTValidator } from './jwt-validator.js';
 
@@ -46,5 +47,16 @@ export default async function backend(
   app.post('/api/logout', (_req, res) => {
     user = null;
     res.json({ user: null });
+  });
+
+  app.get('/api/approvals', (_req, res) => {
+    res.json(loadApprovalsLog());
+  });
+
+  app.put('/api/approvals', (req, res) => {
+    const entries = Array.isArray(req.body?.entries) ? req.body.entries : [];
+    const log = { entries };
+    saveApprovalsLog(log);
+    res.json(log);
   });
 }
