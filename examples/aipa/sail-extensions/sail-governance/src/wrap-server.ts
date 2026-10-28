@@ -5,6 +5,7 @@ import { buildEnforcementLog, buildEvaluationLog } from "./receipts.js"
 import {
   GOVERNANCE_SETTINGS_KEY,
   resolveSettings,
+  type ApprovalAppId,
   type GovernanceSettings,
 } from "./settings.js"
 
@@ -13,8 +14,13 @@ const GET_APPROVAL = "GetApproval"
 const LOG_EVALUATION = "LogEvaluation"
 const LOG_ENFORCEMENT = "LogEnforcement"
 const APPROVALS_APP_ID = "aipa-approvals"
+const FLUXNOVA_APP_ID = "aipa-fluxnova"
 const CONSOLE_APP_ID = "aipa-governance-console"
 const APPROVALS_JWKS = "http://localhost:4110/.well-known/jwks.json"
+const FLUXNOVA_JWKS = "http://localhost:4112/.well-known/jwks.json"
+
+const TRUSTED_APPROVER_APP_IDS = new Set([APPROVALS_APP_ID, FLUXNOVA_APP_ID])
+const TRUSTED_APPROVER_JWKS = new Set([APPROVALS_JWKS, FLUXNOVA_JWKS])
 
 type DacpMessage = {
   type?: string
@@ -48,10 +54,11 @@ function jkuFromSignature(signature: unknown): string | undefined {
   return typeof jku === "string" ? jku : undefined
 }
 
-function isSignedByApprovals(message: DacpMessage): boolean {
+function isSignedByTrustedApprover(message: DacpMessage): boolean {
   const payload = asRecord(message.payload)
   const metadata = asRecord(payload?.metadata)
-  return jkuFromSignature(metadata?.signature) === APPROVALS_JWKS
+  const jku = jkuFromSignature(metadata?.signature)
+  return typeof jku === "string" && TRUSTED_APPROVER_JWKS.has(jku)
 }
 
 async function findAppInstance(
@@ -112,6 +119,40 @@ async function ensureAppWithListener(
     return undefined
   }
   return instanceId
+}
+
+/** Platform-decides: pick any connected GetApproval listener (prefer fluxnova, then approvals). */
+async function findAnyGetApprovalListener(
+  instance: FDC3ServerInstance,
+): Promise<{ appId: string; instanceId: string } | undefined> {
+  const preferred = [FLUXNOVA_APP_ID, APPROVALS_APP_ID]
+  const listeners = instance
+    .getIntentListeners()
+    .filter(listener => listener.intentName === GET_APPROVAL && listener.instanceId)
+
+  for (const appId of preferred) {
+    const match = listeners.find(listener => listener.appId === appId)
+    if (match?.instanceId) {
+      return { appId: match.appId, instanceId: match.instanceId }
+    }
+  }
+  const first = listeners[0]
+  if (first?.appId && first.instanceId) {
+    return { appId: first.appId, instanceId: first.instanceId }
+  }
+  return undefined
+}
+
+async function resolveApprovalTarget(
+  instance: FDC3ServerInstance,
+  approvalAppId: ApprovalAppId,
+): Promise<{ appId: string; instanceId: string } | undefined> {
+  if (approvalAppId === "none") {
+    return findAnyGetApprovalListener(instance)
+  }
+  const instanceId = await ensureAppWithListener(instance, approvalAppId, GET_APPROVAL)
+  if (!instanceId) return undefined
+  return { appId: approvalAppId, instanceId }
 }
 
 async function postIntentEvent(
@@ -262,14 +303,17 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
     const raiser = instance.getInstanceDetails(from)
     const actorAppId = raiser?.appId ?? from
     const originalUuid = msg.meta?.requestUuid ?? instance.createUUID()
-    if (raiser?.appId === APPROVALS_APP_ID || isSignedByApprovals(msg)) {
+    if (
+      (raiser?.appId && TRUSTED_APPROVER_APP_IDS.has(raiser.appId)) ||
+      isSignedByTrustedApprover(msg)
+    ) {
       void recordDecision(instance, {
         requestUuid: originalUuid,
         actorAppId,
         actorInstanceId: from,
         intent,
         decision: "ALLOW",
-        message: `demo.SubmitOrder signed by ${APPROVALS_APP_ID} or raised from that app.`,
+        message: `demo.SubmitOrder signed by a trusted approvals provider or raised from that app.`,
       })
       return forwardAllowedSubmitOrder(instance, message, from, payload ?? {}, intent)
     }
@@ -290,8 +334,8 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
     const getApprovalUuid = instance.createUUID()
     parked.set(getApprovalUuid, originalUuid)
 
-    const approvalsInstance = await ensureAppWithListener(instance, APPROVALS_APP_ID, GET_APPROVAL)
-    if (!approvalsInstance) {
+    const target = await resolveApprovalTarget(instance, settings.approvalAppId)
+    if (!target) {
       await instance.post(
         {
           meta: {
@@ -324,7 +368,7 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
         payload: {
           intentResolution: {
             intent: SUBMIT_ORDER,
-            source: { appId: APPROVALS_APP_ID, instanceId: approvalsInstance },
+            source: { appId: target.appId, instanceId: target.instanceId },
           },
         },
       },
@@ -347,7 +391,7 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
 
     await postIntentEvent(
       instance,
-      approvalsInstance,
+      target.instanceId,
       GET_APPROVAL,
       approval,
       { appId: raiser?.appId ?? from, instanceId: from },

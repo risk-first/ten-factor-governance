@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Fluxnova</title>
+    <script type="module" src="./src/bridge.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box execution-log">
+        <div class="toolbar">
+          <button id="open-tasklist" class="primary" type="button">Open Fluxnova Tasklist</button>
+        </div>
+        <div class="table-scroll table-scroll--fill">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Event</th>
+                <th>Task</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="log"></tbody>
+          </table>
+        </div>
+        <pre id="detail" class="code" hidden></pre>
+      </div>
+    </div>
+  </body>
+</html>

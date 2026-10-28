@@ -31,6 +31,15 @@ sequenceDiagram
 
 The AI can propose the original action. Its signature has no authority over execution, and it cannot complete the Fluxnova user task.
 
+## Current demo slice
+
+See [`server-apps/fluxnova`](../../server-apps/fluxnova/README.md): invisible `aipa-fluxnova` on port **4112** listens for `CreateTask` and `GetApproval`. Its Sail popup opens native Tasklist (`http://localhost:8080/fluxnova/app/tasklist/`, demo/demo).
+
+- **CreateTask** — generic user task (`aipa-create-task`).
+- **GetApproval** — order-approval process (`aipa-order-approval`) with order form fields and Approve/Reject. On Approve the bridge app-signs and raises the subject (`demo.SubmitOrder`).
+
+Sail Governance’s config **GetApproval app** selects the target: `aipa-approvals` (stub inbox), `aipa-fluxnova` (this path), or `none` (any connected listener). The [Approvals stub](../../server-apps/approvals/README.md) (port 4110) remains the default. The two-app four-eyes Inbox design below is still the longer-term Sail-native end state.
+
 ## Sail apps
 
 Two FDC3 apps sit on the Fluxnova engine. They are the Camunda Tasklist and the approval-intent bridge, not a new workflow product.

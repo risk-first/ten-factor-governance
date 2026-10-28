@@ -1,0 +1,48 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-fluxnova",
+      "name": "AIPA Fluxnova",
+      "title": "AIPA Fluxnova",
+      "description": "Invisible Fluxnova bridge. Listens for CreateTask and GetApproval. Popup opens native Tasklist in a tab.",
+      "categories": ["AIPA", "Governance"],
+      "icons": [{ "src": "http://localhost:4112/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4112/bridge.html" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "CreateTask": {
+              "displayName": "Create Task",
+              "purpose": "Start a Fluxnova process that creates a user task.",
+              "contexts": ["demo.task"]
+            },
+            "GetApproval": {
+              "displayName": "Get Approval",
+              "purpose": "Start an order-approval user task in Fluxnova Tasklist; on approve, sign and raise the subject action.",
+              "contexts": ["fdc3.approval"]
+            }
+          },
+          "raises": {
+            "demo.SubmitOrder": {
+              "displayName": "Submit Order",
+              "contexts": ["demo.order", "demo.orderList"]
+            }
+          }
+        },
+        "userChannels": { "broadcasts": [], "listensFor": [] },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": true,
+          "searchable": false
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

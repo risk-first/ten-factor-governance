@@ -134,7 +134,7 @@ export function buildEnforcementLog(input: {
         disposition,
         method: { "reference-id": POLICY_REF, "entry-id": METHOD_ID },
         message: hold
-          ? "Park getResult() and post GetApproval to aipa-approvals."
+          ? "Park getResult() and post GetApproval to the configured approvals app."
           : "Forward the original raiseIntentRequest.",
         start,
         end: start,

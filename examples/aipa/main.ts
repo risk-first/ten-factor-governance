@@ -96,13 +96,14 @@ type AppDirectoryRecord = {
   screenshots?: Array<{ src?: string }>;
 };
 
+/** Remap localhost URLs to this package's port. Leave other ports (e.g. Fluxnova :8080) alone. */
 function rewriteLocalhostUrl(url: string, port: number): string {
   try {
     const parsed = new URL(url);
-    if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
-      parsed.port = String(port);
-      return parsed.toString();
-    }
+    if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return url;
+    if (parsed.port && parsed.port !== String(port)) return url;
+    parsed.port = String(port);
+    return parsed.toString();
   } catch {
     /* keep original */
   }
@@ -114,16 +115,11 @@ function applyPortToAppDirectoryRecords(applications: AppDirectoryRecord[], port
   return applications.map(app => {
     const next: AppDirectoryRecord = { ...app, details: app.details ? { ...app.details } : {} };
     if (next.details) {
-      let pathAndQuery = '/';
       if (app.details?.url) {
-        try {
-          const parsed = new URL(app.details.url);
-          pathAndQuery = `${parsed.pathname}${parsed.search}`;
-        } catch {
-          pathAndQuery = '/';
-        }
+        next.details.url = rewriteLocalhostUrl(app.details.url, port);
+      } else {
+        next.details.url = `${base}/`;
       }
-      next.details.url = `${base}${pathAndQuery.startsWith('/') ? pathAndQuery : `/${pathAndQuery}`}`;
     }
     if (next.icons) {
       next.icons = next.icons.map(icon => (icon.src ? { ...icon, src: rewriteLocalhostUrl(icon.src, port) } : icon));

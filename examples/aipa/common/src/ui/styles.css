@@ -55,6 +55,12 @@ body {
   border-radius: 6px;
 }
 
+.table-scroll--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+
 .table-scroll table {
   margin: 0;
 }
@@ -826,6 +832,12 @@ pre.code {
 .box.execution-log > pre.code {
   flex: 1 1 auto;
   min-height: 0;
+}
+
+.box.execution-log:has(.table-scroll--fill) > pre.code {
+  flex: 0 1 auto;
+  max-height: min(30vh, 12rem);
+  overflow: auto;
 }
 
 .box.execution-log > pre.code[hidden] {

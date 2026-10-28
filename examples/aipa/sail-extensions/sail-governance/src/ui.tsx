@@ -7,10 +7,12 @@ import {
 } from "@finos/sail-extension/ui"
 
 import {
+  APPROVAL_APP_IDS,
   GOVERNANCE_DEFAULT_SETTINGS,
   GOVERNANCE_MODES,
   GOVERNANCE_SETTINGS_KEY,
   resolveSettings,
+  type ApprovalAppId,
   type GovernanceMode,
   type GovernanceSettings,
 } from "./settings.js"
@@ -20,18 +22,25 @@ const MODE_LABELS: Record<GovernanceMode, string> = {
   intercept: "Intercept — require approval for unsigned demo.SubmitOrder",
 }
 
+const APPROVAL_APP_LABELS: Record<ApprovalAppId, string> = {
+  none: "none — platform decides (any GetApproval listener)",
+  "aipa-approvals": "aipa-approvals — Approvals stub inbox",
+  "aipa-fluxnova": "aipa-fluxnova — Fluxnova bridge / Tasklist",
+}
+
 export function ConfigScreen({ storage }: SailExtensionConfigProps) {
-  const [mode, setMode] = useState<GovernanceMode>(GOVERNANCE_DEFAULT_SETTINGS.mode)
+  const [settings, setSettings] = useState<GovernanceSettings>(GOVERNANCE_DEFAULT_SETTINGS)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
     void storage.get<GovernanceSettings>(GOVERNANCE_SETTINGS_KEY).then(stored => {
-      setMode(resolveSettings(stored).mode)
+      setSettings(resolveSettings(stored))
       setReady(true)
     })
   }, [storage])
 
   async function persist(next: GovernanceSettings): Promise<void> {
+    setSettings(next)
     await storage.set(GOVERNANCE_SETTINGS_KEY, next)
   }
 
@@ -41,7 +50,7 @@ export function ConfigScreen({ storage }: SailExtensionConfigProps) {
 
   return (
     <form
-      style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxWidth: "28rem" }}
+      style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxWidth: "32rem" }}
       onSubmit={event => event.preventDefault()}
     >
       <p style={{ margin: 0 }}>
@@ -53,14 +62,30 @@ export function ConfigScreen({ storage }: SailExtensionConfigProps) {
           <input
             type="radio"
             name="governance-mode"
-            checked={mode === value}
+            checked={settings.mode === value}
             onChange={() => {
-              const next = { mode: value }
-              setMode(value)
-              void persist(next)
+              void persist({ ...settings, mode: value })
             }}
           />
           {MODE_LABELS[value]}
+        </label>
+      ))}
+
+      <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>GetApproval app</p>
+      <p style={{ margin: 0, fontSize: "0.9rem", color: "#475467" }}>
+        Where <code>REQUIRE_APPROVAL</code> posts <code>GetApproval</code>.
+      </p>
+      {APPROVAL_APP_IDS.map((value: ApprovalAppId) => (
+        <label key={value} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <input
+            type="radio"
+            name="approval-app"
+            checked={settings.approvalAppId === value}
+            onChange={() => {
+              void persist({ ...settings, approvalAppId: value })
+            }}
+          />
+          {APPROVAL_APP_LABELS[value]}
         </label>
       ))}
     </form>

@@ -2,7 +2,9 @@
 
 Sail `wrapServer` MITM for AIPA. Raising apps and Execution stay approval-agnostic:
 they raise and handle `demo.SubmitOrder` as usual. This extension parks unsigned
-raises and sends `GetApproval` to [`aipa-approvals`](../../server-apps/approvals/README.md).
+raises and sends `GetApproval` to a configurable approvals provider
+([`aipa-approvals`](../../server-apps/approvals/README.md) or
+[`aipa-fluxnova`](../../server-apps/fluxnova/README.md)).
 
 Protocol background: [`fdc3.approval` / Sail governance](../../fdc3-extensions/fdc3.approval/sail-governance.md).
 This package is the hard-coded first cut — no policy YAML evaluation or DENY.
@@ -22,9 +24,19 @@ that host. Sail hosts pin the same URL for browser and Node:
 `@finos/sail-extension` and `@finos/sail-extension-server` are `file:` deps on
 the local Sail checkout — do not publish.
 
-`sail.config` has one screen: mode `off` (forward everything) or `intercept`
-(default). Settings persist `{ mode }` under storage key `settings`. Evidence
+`sail.config` has:
+
+| Setting | Values | Default |
+| --- | --- | --- |
+| Mode | `off` (forward everything) / `intercept` | `intercept` |
+| GetApproval app | `none` / `aipa-approvals` / `aipa-fluxnova` | `aipa-approvals` |
+
+Settings persist `{ mode, approvalAppId }` under storage key `settings`. Evidence
 lives in the Governance Console app, not in this extension.
+
+- **none** — post `GetApproval` to any connected listener (prefer fluxnova, then approvals); does not force-open an app.
+- **aipa-approvals** — open/post to the Approvals stub inbox.
+- **aipa-fluxnova** — open/post to the Fluxnova bridge (Tasklist completion path).
 
 ## Intercept rule
 
@@ -32,7 +44,7 @@ lives in the Governance Console app, not in this extension.
 | --- | --- |
 | Not `raiseIntentRequest` | Forward |
 | Intent other than `demo.SubmitOrder` | Forward |
-| `demo.SubmitOrder` from `aipa-approvals`, or raise metadata `signature` whose protected-header `jku` is `http://localhost:4110/.well-known/jwks.json` | ALLOW |
+| `demo.SubmitOrder` from `aipa-approvals` or `aipa-fluxnova`, or raise metadata `signature` whose protected-header `jku` is `http://localhost:4110/.well-known/jwks.json` or `http://localhost:4112/.well-known/jwks.json` | ALLOW |
 | Other `demo.SubmitOrder` | REQUIRE_APPROVAL |
 
 After each `ALLOW` / `REQUIRE_APPROVAL` on `demo.SubmitOrder`, Sail opens
@@ -42,9 +54,9 @@ After each `ALLOW` / `REQUIRE_APPROVAL` on `demo.SubmitOrder`, Sail opens
 `REQUIRE_APPROVAL` does **not** hold the original `raiseIntentRequest` (that hits
 `appLaunchTimeout`):
 
-1. `post` a `raiseIntentResponse` (`intent: demo.SubmitOrder`, `source: aipa-approvals`).
+1. `post` a `raiseIntentResponse` (`intent: demo.SubmitOrder`, `source` = chosen approvals app).
 2. `addPendingResolution` for the original uuid.
-3. `open('aipa-approvals')` if needed, wait for its `GetApproval` listener, then
+3. Resolve the GetApproval target from settings (`open` when a concrete appId is set), then
    `post` an `intentEvent` with a new uuid and an `fdc3.approval` whose `subject`
    is the original raise.
 4. Remap a later `intentResultRequest` for that uuid back to the original raiser’s
