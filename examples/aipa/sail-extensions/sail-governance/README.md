@@ -50,7 +50,12 @@ lives in the Governance Console app, not in this extension.
 
 After each `ALLOW` / `REQUIRE_APPROVAL` on `demo.SubmitOrder`, Sail opens
 `aipa-governance-console` if needed and posts `LogEvaluation` then
-`LogEnforcement`.
+`LogEnforcement`. Control and assessment-requirement links
+(`apa-ctl-005-propose-human-approval`, `apa-ctl-005-propose-human-approval.ar01`)
+use `GEMARA_CONTROLS_CATALOG_URL` from the AIPA `.env` (default
+`https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/controls-catalog`).
+Optional `GEMARA_POLICY_URL` sets the policy document for plan/method links.
+Restart AIPA after changing either.
 
 `REQUIRE_APPROVAL` does **not** hold the original `raiseIntentRequest` (that hits
 `appLaunchTimeout`):

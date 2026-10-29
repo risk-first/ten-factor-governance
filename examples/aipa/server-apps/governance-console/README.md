@@ -16,3 +16,9 @@ with `exchangeData('load-logs')` and receives `logs-updated` pushes after
 each append. There are no HTTP log APIs.
 
 Started by `npm run dev` at the AIPA package root (port **4111**).
+
+Control / requirement links in receipts open the published catalog from
+`GEMARA_CONTROLS_CATALOG_URL` (AIPA `.env`), with `#apa-ctl-005-propose-human-approval`
+and `#apa-ctl-005-propose-human-approval.ar01` fragments. Override
+`GEMARA_POLICY_URL` for policy plan/method links. **Restart AIPA** after changing
+these — Express `/api/config` is loaded once.

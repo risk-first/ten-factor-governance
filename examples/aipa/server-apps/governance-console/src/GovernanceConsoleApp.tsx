@@ -6,8 +6,14 @@ import {
   type EvaluationLogData,
 } from '@gemara/react';
 import { GemaraProvider } from '@gemara/react/provider';
+import {
+  DEFAULT_CATALOG_URLS,
+  makeCatalogLinkResolver,
+  withCatalogUrls,
+  type CatalogUrls,
+} from './catalogLinks.tsx';
 import { EvaluationLog } from '@gemara/react/evaluation-log';
-import { EnforcementLog } from '@gemara/react/enforcement-log';
+import { EnforcementReceipt } from './EnforcementReceipt.tsx';
 import type { Context, ContextMetadata } from '@finos/fdc3';
 import type { ExchangeDataMessage } from '@finos/fdc3-security';
 import { connectAppSession, setStatus } from '../../../common/src/fdc3/agent.ts';
@@ -53,6 +59,7 @@ export function GovernanceConsoleApp() {
   const [enforcements, setEnforcements] = useState<EnforcementLogData[]>([]);
   const [selectedEvalId, setSelectedEvalId] = useState<string>();
   const [selectedEnfId, setSelectedEnfId] = useState<string>();
+  const [catalogs, setCatalogs] = useState<CatalogUrls>(DEFAULT_CATALOG_URLS);
   const drawer = useRef(mountStatusDrawer());
 
   const applySnapshot = useCallback((payload: unknown) => {
@@ -65,6 +72,18 @@ export function GovernanceConsoleApp() {
     if (next.enforcements[0]?.metadata?.id) {
       setSelectedEnfId(current => current ?? next.enforcements[0].metadata.id);
     }
+  }, []);
+
+  useEffect(() => {
+    void fetch('/api/config')
+      .then(res => (res.ok ? res.json() : DEFAULT_CATALOG_URLS))
+      .then((body: Partial<CatalogUrls>) => {
+        setCatalogs({
+          controlsCatalogUrl: body.controlsCatalogUrl?.trim() || DEFAULT_CATALOG_URLS.controlsCatalogUrl,
+          policyUrl: body.policyUrl?.trim() || DEFAULT_CATALOG_URLS.policyUrl,
+        });
+      })
+      .catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -176,11 +195,17 @@ export function GovernanceConsoleApp() {
           {!selected ? (
             <p className="console__empty-detail">{empty}</p>
           ) : (
-            <GemaraProvider>
+            <GemaraProvider linkResolver={makeCatalogLinkResolver(catalogs)}>
               {tab === 'evaluation' ? (
-                <EvaluationLog data={selected as EvaluationLogData} headingLevel={2} />
+                <EvaluationLog
+                  data={withCatalogUrls(selected as EvaluationLogData, catalogs)}
+                  headingLevel={2}
+                />
               ) : (
-                <EnforcementLog data={selected as EnforcementLogData} headingLevel={2} />
+                <EnforcementReceipt
+                  data={withCatalogUrls(selected as EnforcementLogData, catalogs)}
+                  headingLevel={2}
+                />
               )}
             </GemaraProvider>
           )}

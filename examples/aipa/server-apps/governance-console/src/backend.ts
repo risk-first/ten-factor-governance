@@ -81,7 +81,21 @@ class GovernanceConsoleHandlers extends DefaultFDC3Handlers {
   }
 }
 
-export default function backend(_app: Application, server: Server): void {
+const DEFAULT_CONTROLS_CATALOG_URL =
+  'https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/controls-catalog';
+const DEFAULT_POLICY_URL =
+  'https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/policy';
+
+export default function backend(app: Application, server: Server): void {
   ensureGovernanceLogs();
+
+  app.get('/api/config', (_req, res) => {
+    res.json({
+      controlsCatalogUrl:
+        process.env.GEMARA_CONTROLS_CATALOG_URL?.trim() || DEFAULT_CONTROLS_CATALOG_URL,
+      policyUrl: process.env.GEMARA_POLICY_URL?.trim() || DEFAULT_POLICY_URL,
+    });
+  });
+
   setupWebsocketServer(server, () => {}, (ws: WebSocket) => new GovernanceConsoleHandlers(ws));
 }

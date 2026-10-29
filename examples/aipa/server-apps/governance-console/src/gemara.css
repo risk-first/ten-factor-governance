@@ -122,10 +122,15 @@
   color: #344054;
 }
 
-[data-gemara-result='Passed'],
-[data-gemara-disposition='Clear'] {
+[data-gemara-result='Passed'] {
   background: #ecfdf3;
   color: #027a48;
+}
+
+[data-gemara-disposition='Clear'] {
+  background: transparent;
+  color: #027a48;
+  padding: 0;
 }
 
 [data-gemara-result='Needs Review'],
@@ -230,11 +235,57 @@ a[data-gemara-ref]:hover {
   text-decoration: underline;
 }
 
+[data-gemara-artifact='EnforcementLog'] > [data-gemara-part='header'] > [data-gemara-part='header'] {
+  display: contents;
+}
+
+[data-gemara-part='action'] > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+[data-gemara-part='action'] > header :where(h1, h2, h3, h4, h5, h6) {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+[data-gemara-part='assessments'],
+[data-gemara-part='mapping-references'] {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.35rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
 [data-gemara-part='assessment'] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  background: #fff;
+}
+
+[data-gemara-part='assessment'] > dl {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 0.2rem 0.75rem;
-  padding: 0.45rem 0;
+  gap: 0.25rem 1rem;
+  margin: 0;
+}
+
+[data-gemara-part='action-steps'] {
+  border: 1px solid #e4e7ec;
+  border-radius: 6px;
+  padding: 0.45rem 0.65rem;
+  background: #fff;
 }
 
 [data-gemara-part='action-steps'] ol {

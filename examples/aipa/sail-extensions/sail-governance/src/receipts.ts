@@ -9,20 +9,30 @@ const REQUIREMENT_ID = "apa-ctl-005-propose-human-approval.ar01"
 const PLAN_ID = "ap-apa-005-propose-human-approval"
 const METHOD_ID = "em-apa-require-human-approval"
 
-const MAPPING_REFERENCES = [
-  {
-    id: POLICY_REF,
-    title: "AI Portfolio Assistant Policy",
-    version: "0.2.0",
-    url: "file://src/data/governance/finos/ai-portfolio-assistant/gemara/policy.yaml",
-  },
-  {
-    id: CONTROLS_REF,
-    title: "AI Portfolio Assistant Control Catalog",
-    version: "0.2.0",
-    url: "file://src/data/governance/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/control.yaml",
-  },
-]
+const DEFAULT_CONTROLS_CATALOG_URL =
+  "https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/controls-catalog"
+const DEFAULT_POLICY_URL =
+  "https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/policy"
+
+function mappingReferences() {
+  const controlsCatalogUrl =
+    process.env.GEMARA_CONTROLS_CATALOG_URL?.trim() || DEFAULT_CONTROLS_CATALOG_URL
+  const policyUrl = process.env.GEMARA_POLICY_URL?.trim() || DEFAULT_POLICY_URL
+  return [
+    {
+      id: POLICY_REF,
+      title: "AI Portfolio Assistant Policy",
+      version: "0.2.0",
+      url: policyUrl,
+    },
+    {
+      id: CONTROLS_REF,
+      title: "AI Portfolio Assistant Control Catalog",
+      version: "0.4.0",
+      url: controlsCatalogUrl,
+    },
+  ]
+}
 
 function isoNow(): string {
   return new Date().toISOString()
@@ -55,7 +65,7 @@ export function buildEvaluationLog(input: {
       date: start,
       description: `Inspection of ${input.intent} from ${input.actorAppId}: ${input.decision}`,
       author: author(),
-      "mapping-references": MAPPING_REFERENCES,
+      "mapping-references": mappingReferences(),
     },
     result,
     target: {
@@ -115,7 +125,7 @@ export function buildEnforcementLog(input: {
         : `Forwarded ${input.intent} unchanged`,
       author: author(),
       "mapping-references": [
-        ...MAPPING_REFERENCES,
+        ...mappingReferences(),
         {
           id: input.evaluationId,
           title: `${input.intent} Evaluation Log`,
