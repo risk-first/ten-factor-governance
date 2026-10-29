@@ -22,6 +22,7 @@ export const INTENTS = {
   CancelApproval: 'CancelApproval',
   ViewApproval: 'ViewApproval',
   ReviewApproval: 'ReviewApproval',
+  ViewTask: 'ViewTask',
   /** fdc3.gemara — append Gemara L5 / L6 receipts to Governance Console */
   LogEvaluation: 'LogEvaluation',
   LogEnforcement: 'LogEnforcement',

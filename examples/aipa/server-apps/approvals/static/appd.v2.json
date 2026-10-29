@@ -45,8 +45,8 @@
           "injectApi": "3.0",
           "invisible": true,
           "singleton": true,
-          "autostart": true,
-          "searchable": false
+          "autostart": false,
+          "searchable": true
         }
       }
     },
@@ -67,13 +67,6 @@
               "purpose": "Open an fdc3.approval to inspect and decide.",
               "contexts": ["fdc3.approval"]
             }
-          },
-          "raises": {
-            "demo.SubmitOrder": {
-              "displayName": "Submit Order",
-              "contexts": ["demo.order", "demo.orderList"],
-              "resultType": "fdc3.transactionResult"
-            }
           }
         },
         "userChannels": { "broadcasts": [], "listensFor": [] },
@@ -82,7 +75,7 @@
       "hostManifests": {
         "sail": {
           "injectApi": "3.0",
-          "singleton": true,
+          "singleton": false,
           "autostart": false,
           "searchable": false
         }

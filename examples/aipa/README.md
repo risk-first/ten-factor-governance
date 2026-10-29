@@ -23,7 +23,7 @@ and send `GetApproval` to Approvals.
 | Markdown Viewer | 4108 | `ViewData` | Front-end; renders `fdc3.data.markdown` (open / replace-in-place) |
 | Discoverability | 4109 | — | Responder on `fdc3.discoverability` (apps / intents / context types) |
 | Approvals | 4110 | inbox: `GetApproval` and siblings; view: `ViewApproval` | Two apps, one origin: invisible singleton inbox + visible singleton view; shared Entra login; view signs and raises `demo.SubmitOrder` |
-| Fluxnova | 4112 | bridge: `CreateTask`, `GetApproval` | Invisible `aipa-fluxnova`. Popup opens native Tasklist (`demo`/`demo`). Order approval via Tasklist when Sail Governance **GetApproval app** is `aipa-fluxnova`. |
+| Fluxnova | 4112 | inbox: `GetApproval`, `CreateTask`; view: `ViewTask` | Two apps, one origin: invisible singleton inbox polls Fluxnova; visible singleton task panel for approve/deny. Inbox executes the subject `fdc3.action` after the engine records approval (second-user path). |
 | App Directory | 4099 | — | Combined AppD JSON |
 
 ## Quick start

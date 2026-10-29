@@ -4,29 +4,29 @@
       "appId": "aipa-fluxnova",
       "name": "AIPA Fluxnova",
       "title": "AIPA Fluxnova",
-      "description": "Invisible Fluxnova bridge. Listens for CreateTask and GetApproval. Popup opens native Tasklist in a tab.",
+      "description": "Fluxnova task inbox. Listens for GetApproval and CreateTask, polls the engine, and opens AIPA Fluxnova Task for new work.",
       "categories": ["AIPA", "Governance"],
-      "icons": [{ "src": "http://localhost:4112/icon.svg" }],
+      "icons": [{ "src": "http://localhost:4112/icon.png" }],
       "type": "web",
-      "details": { "url": "http://localhost:4112/bridge.html" },
+      "details": { "url": "http://localhost:4112/list.html" },
       "interop": {
         "intents": {
           "listensFor": {
+            "GetApproval": {
+              "displayName": "Get Approval",
+              "purpose": "Start a Fluxnova user task for an fdc3.approval. If approved, execute the subject action.",
+              "contexts": ["fdc3.approval"]
+            },
             "CreateTask": {
               "displayName": "Create Task",
               "purpose": "Start a Fluxnova process that creates a user task.",
               "contexts": ["demo.task"]
-            },
-            "GetApproval": {
-              "displayName": "Get Approval",
-              "purpose": "Start an order-approval user task in Fluxnova Tasklist; on approve, sign and raise the subject action.",
-              "contexts": ["fdc3.approval"]
             }
           },
           "raises": {
-            "demo.SubmitOrder": {
-              "displayName": "Submit Order",
-              "contexts": ["demo.order", "demo.orderList"]
+            "ViewTask": {
+              "displayName": "View Task",
+              "contexts": ["demo.task"]
             }
           }
         },
@@ -38,7 +38,39 @@
           "injectApi": "3.0",
           "invisible": true,
           "singleton": true,
-          "autostart": true,
+          "autostart": false,
+          "searchable": true
+        }
+      }
+    },
+    {
+      "appId": "aipa-fluxnova-view",
+      "name": "AIPA Fluxnova Task",
+      "title": "AIPA Fluxnova Task",
+      "description": "Detail view of one Fluxnova user task. Approve or deny writes the decision back to the engine.",
+      "categories": ["AIPA", "Governance"],
+      "icons": [{ "src": "http://localhost:4112/icon.png" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4112/view.html" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewTask": {
+              "displayName": "View Task",
+              "purpose": "Open a Fluxnova user task to inspect and decide.",
+              "contexts": ["demo.task"]
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": { "broadcasts": [], "listensFor": [] },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "singleton": false,
+          "autostart": false,
           "searchable": false
         }
       }

@@ -380,6 +380,7 @@ export function createGovernanceReceive(instance: FDC3ServerInstance, storage: S
       type: "fdc3.approval",
       id: { requestId: originalUuid },
       status: "pending",
+      approver: settings.approver,
       subject: {
         type: "fdc3.action",
         action: "raiseIntent",

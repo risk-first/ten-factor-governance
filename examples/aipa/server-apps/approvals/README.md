@@ -8,7 +8,7 @@ Two FDC3 apps share one Express/Vite process and origin (`http://localhost:4110`
 | --- | --- | --- |
 | `appId` | `aipa-approvals` | `aipa-approval-view` |
 | URL | `http://localhost:4110/list.html` | `http://localhost:4110/view.html` |
-| Host | Invisible, singleton, autostart, not searchable | Visible, singleton, not autostart, not searchable |
+| Host | Invisible, singleton, not autostart, searchable | Visible, singleton, not autostart, searchable |
 | Listens | `GetApproval`, `UpdateApproval`, `CancelApproval`, `ReviewApproval` | `ViewApproval` |
 | Raises | `ViewApproval` | signed `demo.SubmitOrder` |
 
@@ -33,7 +33,7 @@ page; MSAL uses `localStorage` and `/api/session` is process-wide.
 2. The inbox holds `GetApproval`, adds a row, and
    `raiseIntent('ViewApproval', approval, { appId: 'aipa-approval-view' })` so Sail
    reuses the singleton view (or launches it). The inbox then `fdc3.close()`s
-   itself to hide its dialog; the autostart instance stays connected.
+   itself to hide its dialog; the singleton instance stays connected.
 3. The view’s `ViewApproval` handler stays open. **Approve** requires a valid Entra
    session. The view signs the subject context (`POST /api/sign`, JWKS at
    `/.well-known/jwks.json`) and

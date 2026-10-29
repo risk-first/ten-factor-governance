@@ -1,11 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
+  CONTEXT_TYPES,
   ORDER_APPROVAL_PROCESS_KEY,
   PROCESS_KEY,
   PROCESS_KEYS,
+  approvalFromContext,
+  statusFromDecision,
   type FluxnovaHistoricTask,
   type FluxnovaTask,
+  type TaskSnapshot,
 } from './types.js';
 
 export const ENGINE_UNREACHABLE =
@@ -269,11 +273,22 @@ export async function getTask(id: string): Promise<FluxnovaTask | undefined> {
   return asTask((await readJson<EngineTask>(res)) ?? {});
 }
 
-export async function completeTask(id: string): Promise<void> {
+export async function completeTask(
+  id: string,
+  decision?: 'approved' | 'rejected'
+): Promise<void> {
+  const body =
+    decision === 'approved' || decision === 'rejected'
+      ? {
+          variables: {
+            decision: { value: decision, type: 'String' },
+          },
+        }
+      : {};
   const res = await engineFetch(`/task/${encodeURIComponent(id)}/complete`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({}),
+    body: JSON.stringify(body),
   });
   if (!res.ok && res.status !== 204) {
     const detail = await res.text();
@@ -337,4 +352,162 @@ export async function getProcessVariable(
 
 export async function getTaskDecision(processInstanceId: string): Promise<string | undefined> {
   return getProcessVariable(processInstanceId, 'decision');
+}
+
+type EngineVariableMap = Record<string, { value?: unknown; type?: string }>;
+
+function stringifyVar(value: unknown): string | undefined {
+  if (value == null) return undefined;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return undefined;
+  }
+}
+
+function mapFromVariableObject(body: EngineVariableMap | undefined): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (!body) return out;
+  for (const [name, entry] of Object.entries(body)) {
+    const value = stringifyVar(entry?.value);
+    if (value != null && value !== '') out[name] = value;
+  }
+  return out;
+}
+
+function mapFromVariableList(body: EngineVariable[] | undefined): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (!body) return out;
+  for (const entry of body) {
+    if (!entry.name) continue;
+    const value = stringifyVar(entry.value);
+    if (value != null && value !== '') out[entry.name] = value;
+  }
+  return out;
+}
+
+export async function getTaskVariables(taskId: string): Promise<Record<string, string>> {
+  const res = await engineFetch(`/task/${encodeURIComponent(taskId)}/variables?deserializeValues=false`);
+  if (res.status === 404) return {};
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`Fluxnova task variables failed (${res.status}): ${detail || res.statusText}`);
+  }
+  return mapFromVariableObject(await readJson<EngineVariableMap>(res));
+}
+
+export async function getHistoricVariables(processInstanceId: string): Promise<Record<string, string>> {
+  const params = new URLSearchParams({
+    processInstanceId,
+    deserializeValues: 'false',
+  });
+  const res = await engineFetch(`/history/variable-instance?${params}`);
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`Fluxnova history variables failed (${res.status}): ${detail || res.statusText}`);
+  }
+  return mapFromVariableList(await readJson<EngineVariable[]>(res));
+}
+
+async function variablesFor(task: FluxnovaTask, historic: boolean): Promise<Record<string, string>> {
+  if (!historic) {
+    try {
+      const live = await getTaskVariables(task.id);
+      if (Object.keys(live).length) return live;
+    } catch {
+      /* fall through to history */
+    }
+  }
+  if (!task.processInstanceId) return {};
+  try {
+    return await getHistoricVariables(task.processInstanceId);
+  } catch {
+    return {};
+  }
+}
+
+function parseApprovalJson(raw?: string): TaskSnapshot['approval'] {
+  if (!raw) return undefined;
+  try {
+    return approvalFromContext(JSON.parse(raw));
+  } catch {
+    return undefined;
+  }
+}
+
+export function snapshotFromTask(
+  task: FluxnovaTask | FluxnovaHistoricTask,
+  vars: Record<string, string>,
+  historic: boolean
+): TaskSnapshot {
+  const historicTask = task as FluxnovaHistoricTask;
+  const ended = historic ? historicTask.endTime : undefined;
+  const decision = vars.decision ?? historicTask.decision;
+  const approval = parseApprovalJson(vars.approvalJson);
+  return {
+    type: CONTEXT_TYPES.task,
+    id: {
+      taskId: task.id,
+      processInstanceId: task.processInstanceId,
+    },
+    name: vars.name?.trim() || task.name,
+    description: vars.description || task.description,
+    assignee: vars.approver || task.assignee,
+    processInstanceId: task.processInstanceId,
+    status: statusFromDecision(decision, historic || Boolean(ended)),
+    created: task.created,
+    ended,
+    processDefinitionKey: task.processDefinitionKey,
+    decision,
+    requester: vars.requester,
+    approver: vars.approver || task.assignee,
+    orderSummary: vars.orderSummary,
+    ticker: vars.ticker,
+    side: vars.side,
+    quantity: vars.quantity,
+    approval,
+  };
+}
+
+export async function toSnapshot(
+  task: FluxnovaTask | FluxnovaHistoricTask,
+  historic: boolean
+): Promise<TaskSnapshot> {
+  const vars = await variablesFor(task, historic);
+  return snapshotFromTask(task, vars, historic);
+}
+
+export async function listOpenSnapshots(): Promise<TaskSnapshot[]> {
+  const tasks = await listTasks();
+  return Promise.all(tasks.map(task => toSnapshot(task, false)));
+}
+
+export async function getHistoricTask(id: string): Promise<FluxnovaHistoricTask | undefined> {
+  const params = new URLSearchParams({ taskId: id, maxResults: '1' });
+  const res = await engineFetch(`/history/task?${params}`);
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`Fluxnova history task failed (${res.status}): ${detail || res.statusText}`);
+  }
+  const body = (await readJson<EngineHistoricTask[]>(res)) ?? [];
+  return body.map(asHistoricTask).find((task): task is FluxnovaHistoricTask => Boolean(task));
+}
+
+export async function getTaskSnapshot(id: string): Promise<TaskSnapshot | undefined> {
+  const live = await getTask(id);
+  if (live) return toSnapshot(live, false);
+  const historic = await getHistoricTask(id);
+  if (!historic) return undefined;
+  return toSnapshot(historic, true);
+}
+
+export async function listCompletedSnapshots(opts?: {
+  processDefinitionKey?: string;
+  finishedAfter?: string;
+  maxResults?: number;
+}): Promise<TaskSnapshot[]> {
+  const tasks = await listCompletedTasks(opts);
+  return Promise.all(tasks.map(task => toSnapshot(task, true)));
 }

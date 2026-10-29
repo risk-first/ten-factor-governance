@@ -158,6 +158,21 @@ function writeGeneratedAppDirectory(combined: { applications: unknown[]; message
   console.info({ path: generatedAppdPath }, 'Wrote generated app directory');
 }
 
+function watchAppDirectories(appsList: AppWithPort[]): void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const rewrite = () => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      writeGeneratedAppDirectory(buildCombinedAppDirectory(appsList));
+    }, 50);
+  };
+  for (const a of appsList) {
+    const appdPath = resolveWithinRoot(a.root, 'static', 'appd.v2.json');
+    if (!fs.existsSync(appdPath)) continue;
+    fs.watch(appdPath, rewrite);
+  }
+}
+
 function startSailGovernanceHost() {
   const root = path.join(packageRoot, 'sail-extensions', 'sail-governance');
   const cli = path.join(root, 'node_modules', '@finos', 'sail-extension-server', 'bin', 'sail-extension-server.mjs');
@@ -264,6 +279,7 @@ async function startApp(appName: string, appRoot: string, port: number) {
 
   const combinedAppd = buildCombinedAppDirectory(apps);
   writeGeneratedAppDirectory(combinedAppd);
+  watchAppDirectories(apps);
 
   for (const a of apps) {
     try {

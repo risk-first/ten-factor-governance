@@ -33,12 +33,12 @@ The AI can propose the original action. Its signature has no authority over exec
 
 ## Current demo slice
 
-See [`server-apps/fluxnova`](../../server-apps/fluxnova/README.md): invisible `aipa-fluxnova` on port **4112** listens for `CreateTask` and `GetApproval`. Its Sail popup opens native Tasklist (`http://localhost:8080/fluxnova/app/tasklist/`, demo/demo).
+See [`server-apps/fluxnova`](../../server-apps/fluxnova/README.md): two apps on port **4112**.
 
-- **CreateTask** — generic user task (`aipa-create-task`).
-- **GetApproval** — order-approval process (`aipa-order-approval`) with order form fields and Approve/Reject. On Approve the bridge app-signs and raises the subject (`demo.SubmitOrder`).
+- **AIPA Fluxnova** (`aipa-fluxnova`) — invisible singleton inbox (Sail Governance opens it when posting `GetApproval`). Listens for `CreateTask` and `GetApproval`. Polls the engine worklist. Does **not** open a view on `GetApproval` (the approver may be another desktop). When a **new** open task appears on a later poll, it raises `ViewTask` at `aipa-fluxnova-view`. When a held task becomes `approved` in the engine, this inbox performs the subject `fdc3.action` (signed raise or broadcast) and forwards the result.
+- **AIPA Fluxnova Task** (`aipa-fluxnova-view`) — visible singleton panel. Listens for `ViewTask`, renders the task, and Approve/Deny complete the Fluxnova user task via the REST API.
 
-Sail Governance’s config **GetApproval app** selects the target: `aipa-approvals` (stub inbox), `aipa-fluxnova` (this path), or `none` (any connected listener). The [Approvals stub](../../server-apps/approvals/README.md) (port 4110) remains the default. The two-app four-eyes Inbox design below is still the longer-term Sail-native end state.
+Sail Governance’s config **GetApproval app** selects the target: `aipa-approvals` (stub inbox), `aipa-fluxnova` (this path), or `none` (any connected listener). The [Approvals stub](../../server-apps/approvals/README.md) (port 4110) remains the default. Native Tasklist (`http://localhost:8080/fluxnova/app/tasklist/`, demo/demo) still works as a fallback.
 
 ## Sail apps
 
@@ -46,8 +46,8 @@ Two FDC3 apps sit on the Fluxnova engine. They are the Camunda Tasklist and the 
 
 | App | Sail host | Role |
 | --- | --- | --- |
-| Fluxnova Inbox | Visible, singleton. Opens to **My tasks** when launched without context. | The Tasklist. The signed-in user sees their user tasks, opens one, authenticates, and completes it (approve or reject). |
-| Fluxnova Approvals | Invisible, singleton, autostart. See [`sail.manifest`](../sail.manifest/README.md). | The bridge between `fdc3.approval` (and the related intents) and the Fluxnova process system. Always connected. Starts a process on `GetApproval`, writes `id.processInstanceId` onto the snapshot, and when the process reaches a terminal outcome performs the subject action or fails `GetApproval`. |
+| Fluxnova Inbox (`aipa-fluxnova`) | Invisible, singleton. Popup is the worklist. | Polls Fluxnova. Starts a process on `GetApproval`. Opens `ViewTask` when a **new** task arrives on poll (not on the raise — the approver may be another user). When the engine records approval, performs the subject action or fails `GetApproval`. |
+| Fluxnova Task (`aipa-fluxnova-view`) | Visible, singleton, not autostart. | The task panel. Approve/Deny complete the user task through the Fluxnova API. Does not execute the subject action. |
 
 The inbox is how people action Fluxnova work in Sail. Opening an inbox on the requester’s desktop does not deliver the task to another user; notifications and the inbox on the reviewer’s desktop do.
 
@@ -77,6 +77,8 @@ The process instance is an FDC3 identifier, not a hidden adapter secret. After a
 | `CancelApproval` | Approvals | Cancel a `pending` process. |
 | `ViewApproval` | Inbox | Open that case read-only. |
 | `ReviewApproval` | Inbox | Open the user task for the signed-in reviewer. Does not complete the task by itself. |
+
+The current apps use `ViewTask` (`demo.task`) to open `aipa-fluxnova-view` as a Sail panel. That is the demo stand-in for `ReviewApproval`: the view records the decision on the engine; the inbox still performs the subject action.
 
 ## Completing a workflow
 

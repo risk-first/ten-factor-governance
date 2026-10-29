@@ -30,13 +30,14 @@ the local Sail checkout — do not publish.
 | --- | --- | --- |
 | Mode | `off` (forward everything) / `intercept` | `intercept` |
 | GetApproval app | `none` / `aipa-approvals` / `aipa-fluxnova` | `aipa-approvals` |
+| Approver | Fluxnova Tasklist assignee written onto `GetApproval` | `demo` |
 
-Settings persist `{ mode, approvalAppId }` under storage key `settings`. Evidence
+Settings persist `{ mode, approvalAppId, approver }` under storage key `settings`. Evidence
 lives in the Governance Console app, not in this extension.
 
 - **none** — post `GetApproval` to any connected listener (prefer fluxnova, then approvals); does not force-open an app.
 - **aipa-approvals** — open/post to the Approvals stub inbox.
-- **aipa-fluxnova** — open/post to the Fluxnova bridge (Tasklist completion path).
+- **aipa-fluxnova** — open/post to the Fluxnova inbox (engine task; view opens on the approver’s poll).
 
 ## Intercept rule
 

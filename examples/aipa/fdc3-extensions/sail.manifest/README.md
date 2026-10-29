@@ -19,7 +19,7 @@ Proposed Sail-specific AppD configuration:
 | --- | --- | --- |
 | `invisible` | `false` | Start without a visible panel, using a hidden hosted page connected to FDC3. Icons appear in the Sail top bar; clicking one presents the page in a dialog. |
 | `singleton` | `false` | **At most one** live instance per app ID within one Sail session. |
-| `autostart` | `false` | Ensure **at least one** live instance of the app after Sail loads (and after catalog refreshes). If an instance already exists or a launch is in flight, do nothing. |
+| `autostart` | `false` | Ensure **at least one** live instance of the app after Sail loads (and after catalog refreshes). If an instance already exists or a launch is in flight, do nothing. Invisible apps without `autostart` are not restored across a page reload. |
 | `searchable` | `true` | Means the app is available to choose in the directory picker (already implemented and used for conformance) |
 
 These settings are independent. Invisible apps can subsequently become visible (dialog). Singleton is an instance policy, not a presentation policy. Autostart is deployment-controlled; an arbitrary announcement cannot cause future automatic launches beyond ensuring ≥1 for apps already in the active directories.
