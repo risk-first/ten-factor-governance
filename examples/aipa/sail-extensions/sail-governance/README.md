@@ -1,61 +1,66 @@
 # Sail Governance
 
-Sail `wrapServer` MITM for AIPA. Raising apps and Execution stay approval-agnostic:
-they raise and handle `demo.SubmitOrder` as usual. This extension parks unsigned
-raises and sends `GetApproval` to a configurable approvals provider
-([`aipa-approvals`](../../server-apps/approvals/README.md) or
-[`aipa-fluxnova`](../../server-apps/fluxnova/README.md)).
+Sail `wrapServer` MITM for AIPA — the **policy enforcement point (PEP)**.
+Raising apps and Execution stay approval-agnostic: they raise and handle
+`demo.SubmitOrder` as usual. This extension intercepts that intent, asks a
+**policy decision point (PDP)** FDC3 app (`aipa-direct-governance` or
+`aipa-jev-governance`) via `demo.GetGovernanceDecision`, then enforces the
+filled Gemara EvaluationLog: **Passed** → forward, **Needs Review** →
+`GetApproval`, **Failed** → `IntentDeliveryFailed`.
+
+It is not the policy engine. Direct and JEV fill `log.result` /
+`log.evaluations` and raise **LogEvaluation** (layer 5) plus **LogEnforcement**
+(layer 6) when they Allow or Deny. Approvals / Fluxnova raise **LogEnforcement**
+when they hold `GetApproval` and again when they execute an approved order.
+This extension does not raise those intents.
 
 Protocol background: [`fdc3.approval` / Sail governance](../../fdc3-extensions/fdc3.approval/sail-governance.md).
-This package is the hard-coded first cut — no policy YAML evaluation or DENY.
-Layer 5 / 6 receipts are built as Gemara documents and raised to the
+Layer 5 / 6 receipts are Gemara documents routed to the
 [Governance Console](../../server-apps/governance-console/README.md) via
-[`fdc3.gemara`](../../fdc3-extensions/fdc3.gemara/README.md) (`LogEvaluation` /
-`LogEnforcement`).
+[`fdc3.gemara`](../../fdc3-extensions/fdc3.gemara/README.md).
 
-## Hosting
 
-Not an FDC3 app (do not put this under `server-apps/`). This package runs
-`sail-extension-server --port 9101` (`npm run dev`). AIPA `npm run dev` starts
-that host. Sail hosts pin the same URL for browser and Node:
+### Evaluation
 
-`http://localhost:9101/src/index.ts`
-
-`@finos/sail-extension` and `@finos/sail-extension-server` are `file:` deps on
-the local Sail checkout — do not publish.
-
-`sail.config` has:
+Which policy decision point (if any) Sail asks:
 
 | Setting | Values | Default |
 | --- | --- | --- |
-| Mode | `off` (forward everything) / `intercept` | `intercept` |
+| Mode | `off` (forward everything) / `direct` (`aipa-direct-governance`) / `jev` (`aipa-jev-governance`) | `direct` |
+
+### Approval
+
+Used only when evaluation **Escalates** (`Needs Review` → `REQUIRE_APPROVAL`).
+Controls stay visible when evaluation is `off` (they are unused).
+
+| Setting | Values | Default |
+| --- | --- | --- |
 | GetApproval app | `none` / `aipa-approvals` / `aipa-fluxnova` | `aipa-approvals` |
 | Approver | Fluxnova Tasklist assignee written onto `GetApproval` | `demo` |
-
-Settings persist `{ mode, approvalAppId, approver }` under storage key `settings`. Evidence
-lives in the Governance Console app, not in this extension.
 
 - **none** — post `GetApproval` to any connected listener (prefer fluxnova, then approvals); does not force-open an app.
 - **aipa-approvals** — open/post to the Approvals stub inbox.
 - **aipa-fluxnova** — open/post to the Fluxnova inbox (engine task; view opens on the approver’s poll).
 
-## Intercept rule
+## Intercept
 
 | Message | Decision |
 | --- | --- |
 | Not `raiseIntentRequest` | Forward |
-| Intent other than `demo.SubmitOrder` | Forward |
-| `demo.SubmitOrder` from `aipa-approvals` or `aipa-fluxnova`, or raise metadata `signature` whose protected-header `jku` is `http://localhost:4110/.well-known/jwks.json` or `http://localhost:4112/.well-known/jwks.json` | ALLOW |
-| Other `demo.SubmitOrder` | REQUIRE_APPROVAL |
+| Intent other than `demo.SubmitOrder` | Forward (`GetGovernanceDecision`, `GetApproval`, `LogEvaluation`, `LogEnforcement` are never intercepted) |
+| Mode `off` | Forward |
+| `demo.SubmitOrder` from `aipa-approvals` or `aipa-fluxnova`, or raise metadata `signature` whose protected-header `jku` is `http://localhost:4110/.well-known/jwks.json` or `http://localhost:4112/.well-known/jwks.json` | ALLOW (trusted-approver bypass; no re-evaluation) |
+| Other `demo.SubmitOrder` | Ask the configured PDP; wait for `demo.governanceDecision`; map `log.result` |
 
-After each `ALLOW` / `REQUIRE_APPROVAL` on `demo.SubmitOrder`, Sail opens
-`aipa-governance-console` if needed and posts `LogEvaluation` then
-`LogEnforcement`. Control and assessment-requirement links
-(`apa-ctl-005-propose-human-approval`, `apa-ctl-005-propose-human-approval.ar01`)
-use `GEMARA_CONTROLS_CATALOG_URL` from the AIPA `.env` (default
-`https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/controls-catalog`).
-Optional `GEMARA_POLICY_URL` sets the policy document for plan/method links.
-Restart AIPA after changing either.
+`log.result` mapping: **Passed** → ALLOW (`forwardAllowedSubmitOrder`);
+**Needs Review** → REQUIRE_APPROVAL (existing GetApproval park);
+**Failed** → DENY (`raiseIntentResponse` error `IntentDeliveryFailed`).
+Missing PDP / timeout / malformed result fail-safe to **Needs Review**.
+
+The unsigned-vs-trusted rule for Direct lives in
+[`direct-governance`](../../server-apps/direct-governance/README.md).
+JEV scores committed [`rules.json`](../../server-apps/jev-governance/rules.json)
+(ctl-005 + ctl-006) via `POST /decide`.
 
 `REQUIRE_APPROVAL` does **not** hold the original `raiseIntentRequest` (that hits
 `appLaunchTimeout`):

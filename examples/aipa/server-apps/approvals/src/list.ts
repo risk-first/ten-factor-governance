@@ -2,8 +2,9 @@ import '../../../common/src/ui/styles.css';
 import './list.css';
 import { connectAppSession, setStatus } from '../../../common/src/fdc3/agent.ts';
 import { INTENTS } from '../../../common/src/contexts/types.ts';
+import { recordEnforcement } from '../../../common/src/governance/enforcement.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
-import type { Context, ContextWithMetadata, DesktopAgent } from '@finos/fdc3';
+import type { Context, ContextMetadata, ContextWithMetadata, DesktopAgent } from '@finos/fdc3';
 import {
   accept,
   formatWhen,
@@ -206,8 +207,20 @@ function finishRejected(held: Held, message: string): void {
   persistWork();
 }
 
-function holdGetApproval(incoming: ApprovalRecord): Promise<Context | ContextWithMetadata> {
+function holdGetApproval(
+  incoming: ApprovalRecord,
+  metadata?: ContextMetadata
+): Promise<Context | ContextWithMetadata> {
   const record = accept(incoming);
+  recordEnforcement(fdc3, {
+    id: record.id.requestId ?? record.id.approvalId ?? crypto.randomUUID(),
+    actorAppId: metadata?.source?.appId ?? 'unknown',
+    intent: record.subject?.intent ?? INTENTS.SubmitOrder,
+    decision: 'REQUIRE_APPROVAL',
+    authorId: 'aipa-approvals',
+    authorName: 'AIPA Approvals',
+    steps: ['aipa-approvals.holdGetApproval'],
+  });
   const promise = new Promise<Context | ContextWithMetadata>((resolve, reject) => {
     const held: Held = { record, resolve, reject, settled: false };
     indexHeld(held);
@@ -299,7 +312,9 @@ async function setup(): Promise<void> {
 
   if (!fdc3) return;
 
-  await fdc3.addIntentListener(INTENTS.GetApproval, async ctx => holdGetApproval(ctx as ApprovalRecord));
+  await fdc3.addIntentListener(INTENTS.GetApproval, async (ctx, metadata) =>
+    holdGetApproval(ctx as ApprovalRecord, metadata)
+  );
   await fdc3.addIntentListener(INTENTS.UpdateApproval, async ctx => snapshot(ctx as ApprovalRecord));
   await fdc3.addIntentListener(INTENTS.ReviewApproval, async ctx => review(ctx as ApprovalRecord));
   await fdc3.addIntentListener(INTENTS.CancelApproval, async ctx => cancel(ctx as ApprovalRecord));

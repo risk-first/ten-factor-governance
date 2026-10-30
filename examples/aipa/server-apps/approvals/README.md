@@ -10,7 +10,7 @@ Two FDC3 apps share one Express/Vite process and origin (`http://localhost:4110`
 | URL | `http://localhost:4110/list.html` | `http://localhost:4110/view.html` |
 | Host | Invisible, singleton, not autostart, searchable | Visible, singleton, not autostart, searchable |
 | Listens | `GetApproval`, `UpdateApproval`, `CancelApproval`, `ReviewApproval` | `ViewApproval` |
-| Raises | `ViewApproval` | signed `demo.SubmitOrder` |
+| Raises | `ViewApproval`, `LogEnforcement` (hold) | signed `demo.SubmitOrder`, `LogEnforcement` (allow) |
 
 This is the stub of Fluxnova Approvals. The worklist is stored in
 `server-apps/approvals/temp/approvals.json` (gitignored), same pattern as
@@ -52,7 +52,7 @@ page; MSAL uses `localStorage` and `/api/session` is process-wide.
 
 | Intent | App | Behaviour |
 | --- | --- | --- |
-| `GetApproval` | inbox | Accept, assign `approvalId`, keep the raise open, open a view. |
+| `GetApproval` | inbox | Accept, assign `approvalId`, raise `LogEnforcement` (hold), keep the raise open, open a view. |
 | `ReviewApproval` | inbox | Open a view for the matching (or supplied) approval. |
 | `UpdateApproval` | inbox | Return the current snapshot. |
 | `CancelApproval` | inbox | If `pending`, mark `cancelled` and fail the held `GetApproval`. |

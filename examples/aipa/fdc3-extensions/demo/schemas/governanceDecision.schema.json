@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/demo.governanceDecision.schema.json",
+  "type": "object",
+  "title": "Governance Decision",
+  "description": "Input to and IntentResult of `demo.GetGovernanceDecision`. Same pattern as `fdc3.approval`: one context type for the raise and the result. `subject` is the `fdc3.action` being judged. `log` is a Gemara EvaluationLog: skeleton on the way in (metadata and target, no `result` / `evaluations`); the decision app fills `log.result` (`Passed` / `Needs Review` / `Failed`) and `log.evaluations`. Sail maps those to Allow / Escalate / Deny.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "demo.governanceDecision"
+        },
+        "id": {
+          "type": "object",
+          "title": "Identifiers",
+          "description": "Optional FDC3 context `id` map. `requestId` correlates the original raise.",
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "title": "requestId",
+              "description": "Caller-generated correlation id, typically the original raiseIntent requestUuid."
+            }
+          },
+          "unevaluatedProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Optional short display label."
+        },
+        "subject": {
+          "type": "object",
+          "title": "Subject",
+          "description": "The `fdc3.action` being judged (raiseIntent or broadcast).",
+          "properties": {
+            "type": { "const": "fdc3.action" },
+            "action": {
+              "type": "string",
+              "enum": ["raiseIntent", "broadcast"]
+            },
+            "title": { "type": "string" },
+            "intent": { "type": "string" },
+            "context": { "type": "object" },
+            "app": {
+              "type": "object",
+              "properties": {
+                "appId": { "type": "string" },
+                "instanceId": { "type": "string" }
+              },
+              "required": ["appId"]
+            }
+          },
+          "required": ["type", "context"]
+        },
+        "signatureJku": {
+          "type": "string",
+          "title": "Signature JKU",
+          "description": "Protected-header `jku` from the original raise's ContextMetadata.signature, when present. Direct governance uses this for the trusted-approver JWKS check."
+        },
+        "log": {
+          "type": "object",
+          "title": "Evaluation Log",
+          "description": "Gemara Evaluation Log document. See https://gemara.openssf.org/schema/. `metadata.type` must be `EvaluationLog`. Skeleton on input; filled on the IntentResult.",
+          "required": ["metadata"],
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": { "const": "EvaluationLog" }
+              },
+              "additionalProperties": true
+            },
+            "result": {
+              "type": "string",
+              "title": "Result",
+              "description": "Filled by the decision app. `Passed` → Allow, `Needs Review` → Escalate (GetApproval), `Failed` → Deny.",
+              "enum": ["Passed", "Needs Review", "Failed"]
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["type", "subject", "log"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ]
+}

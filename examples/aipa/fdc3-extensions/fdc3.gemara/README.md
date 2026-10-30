@@ -1,6 +1,6 @@
 # `fdc3.gemara` — Gemara evidence via FDC3
 
-Proposed FDC3 extension for **appending Gemara layer 5 and 6 receipts** (Evaluation Log and Enforcement Log) to a dedicated **Governance Console** application. Policy decision points (for example a Sail governance extension) raise log intents; the Console owns durable display of those receipts. The Console does not evaluate policy.
+Proposed FDC3 extension for **appending Gemara layer 5 and 6 receipts** (Evaluation Log and Enforcement Log) to a dedicated **Governance Console** application. Policy decision points raise `LogEvaluation` and, when they Allow or Deny, `LogEnforcement`. Approval apps raise `LogEnforcement` when they hold `GetApproval` and when they execute an approved action. The Console owns durable display of those receipts. The Console does not evaluate policy. The policy enforcement point does not raise these intents.
 
 Gemara document shapes follow the [OpenSSF Gemara schema](https://gemara.openssf.org/schema/) (Evaluation Log / Enforcement Log). This extension wraps each document as an FDC3 context so Desktop Agents can route them with ordinary intents.
 
@@ -8,7 +8,9 @@ Gemara document shapes follow the [OpenSSF Gemara schema](https://gemara.openssf
 
 | Piece | Role |
 | --- | --- |
-| Policy enforcement point (PEP) | After each decision, raises `LogEvaluation` and `LogEnforcement` with the corresponding Gemara documents. Does not render the logs. |
+| Policy decision point (PDP) | After evaluating a raise, raises `LogEvaluation`. Also raises `LogEnforcement` when the result is Allow (`Passed`) or Deny (`Failed`). Escalate (`Needs Review`) leaves layer 6 to the approval app. |
+| Approving application | Raises `LogEnforcement` when it holds `GetApproval`, and again when it executes an approved subject action. |
+| Policy enforcement point (PEP) | Enforces `log.result`. Does not raise `LogEvaluation` or `LogEnforcement`. |
 | Governance Console | FDC3 application that listens for those intents, appends receipts, and shows evaluation and enforcement tables. |
 | Raising / target apps | Unaware of Gemara logging. |
 
@@ -20,15 +22,23 @@ How Sail governance uses this together with [`fdc3.approval`](../fdc3.approval/R
 sequenceDiagram
   participant Raise as Raising application
   participant Pep as Policy enforcement point
+  participant Pdp as Policy decision point
+  participant Approve as Approving application
   participant Console as Governance Console
   Raise->>Pep: raiseIntent / broadcast (subject)
-  Pep->>Pep: evaluate policy
-  Pep->>Console: LogEvaluation (fdc3.gemara.evaluationLog)
-  Pep->>Console: LogEnforcement (fdc3.gemara.enforcementLog)
-  Note over Console: Append and display L5 / L6 receipts
-  alt Forward or hold for approval
-    Pep-->>Raise: forward, deny, or approval workflow
+  Pep->>Pdp: demo.GetGovernanceDecision
+  Pdp->>Console: LogEvaluation (fdc3.gemara.evaluationLog)
+  alt Allow or Deny
+    Pdp->>Console: LogEnforcement (fdc3.gemara.enforcementLog)
   end
+  Pdp-->>Pep: demo.governanceDecision
+  alt Escalate
+    Pep->>Approve: GetApproval
+    Approve->>Console: LogEnforcement (hold)
+    Note over Approve: later, on approved execute
+    Approve->>Console: LogEnforcement (allow)
+  end
+  Note over Console: Append and display L5 / L6 receipts
 ```
 
 Appends are fire-and-forget: no IntentResult is required. The Console may still acknowledge with an empty result. Query or clear intents are out of scope for the initial proposal.
@@ -71,8 +81,8 @@ Carries one Evaluation Log document in `log`. Optional `id.logId` mirrors `log.m
       "date": "2026-10-26T18:00:00Z",
       "description": "Inspection of demo.SubmitOrder from aipa-agent-ui: REQUIRE_APPROVAL",
       "author": {
-        "id": "sail-governance",
-        "name": "Sail Governance",
+        "id": "aipa-direct-governance",
+        "name": "Direct Governance",
         "type": "Software",
         "version": "0.0.0"
       }
@@ -109,8 +119,8 @@ Same wrapping pattern for an Enforcement Log (`metadata.type` is `EnforcementLog
       "date": "2026-10-26T18:00:00Z",
       "description": "Held demo.SubmitOrder and raised GetApproval",
       "author": {
-        "id": "sail-governance",
-        "name": "Sail Governance",
+        "id": "aipa-approvals",
+        "name": "AIPA Approvals",
         "type": "Software",
         "version": "0.0.0"
       }

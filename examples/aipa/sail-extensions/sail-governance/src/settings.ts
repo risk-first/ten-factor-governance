@@ -1,6 +1,6 @@
 export const GOVERNANCE_SETTINGS_KEY = "settings"
 
-export const GOVERNANCE_MODES = ["off", "intercept"] as const
+export const GOVERNANCE_MODES = ["off", "direct", "jev"] as const
 export type GovernanceMode = (typeof GOVERNANCE_MODES)[number]
 
 export const APPROVAL_APP_IDS = ["none", "aipa-approvals", "aipa-fluxnova"] as const
@@ -14,7 +14,7 @@ export type GovernanceSettings = {
 }
 
 export const GOVERNANCE_DEFAULT_SETTINGS: GovernanceSettings = {
-  mode: "intercept",
+  mode: "direct",
   approvalAppId: "aipa-approvals",
   approver: "demo",
 }
@@ -33,9 +33,13 @@ export function resolveApprover(value: unknown): string {
     : GOVERNANCE_DEFAULT_SETTINGS.approver
 }
 
+function resolveMode(value: unknown): GovernanceMode {
+  if (value === "intercept") return "direct"
+  return isGovernanceMode(value) ? value : GOVERNANCE_DEFAULT_SETTINGS.mode
+}
+
 export function resolveSettings(stored: GovernanceSettings | null): GovernanceSettings {
-  const mode =
-    stored && isGovernanceMode(stored.mode) ? stored.mode : GOVERNANCE_DEFAULT_SETTINGS.mode
+  const mode = resolveMode(stored?.mode)
   const approvalAppId =
     stored && isApprovalAppId(stored.approvalAppId)
       ? stored.approvalAppId

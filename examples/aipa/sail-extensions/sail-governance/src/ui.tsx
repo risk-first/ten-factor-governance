@@ -18,8 +18,9 @@ import {
 } from "./settings.js"
 
 const MODE_LABELS: Record<GovernanceMode, string> = {
-  off: "Off — forward every raise unchanged",
-  intercept: "Intercept — require approval for unsigned demo.SubmitOrder",
+  off: "Off — no evaluation; forward every raise unchanged",
+  direct: "Direct — aipa-direct-governance (unsigned SubmitOrder → human review)",
+  jev: "JEV — aipa-jev-governance (Clef / Jev rules via LM Studio System One)",
 }
 
 const APPROVAL_APP_LABELS: Record<ApprovalAppId, string> = {
@@ -54,9 +55,12 @@ export function ConfigScreen({ storage }: SailExtensionConfigProps) {
       onSubmit={event => event.preventDefault()}
     >
       <p style={{ margin: 0 }}>
-        Desktop Agent governance. <code>intercept</code> parks unsigned{" "}
-        <code>demo.SubmitOrder</code> raises and sends <code>GetApproval</code>.
+        Desktop Agent governance. <strong>Evaluation</strong> chooses which policy
+        decision point Sail asks. <strong>Approval</strong> settings apply if that
+        app escalates (<code>Needs Review</code> → <code>GetApproval</code>).
       </p>
+
+      <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>Evaluation</p>
       {GOVERNANCE_MODES.map((value: GovernanceMode) => (
         <label key={value} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <input
@@ -71,10 +75,12 @@ export function ConfigScreen({ storage }: SailExtensionConfigProps) {
         </label>
       ))}
 
-      <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>GetApproval app</p>
+      <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>Approval</p>
       <p style={{ margin: 0, fontSize: "0.9rem", color: "#475467" }}>
-        Where <code>REQUIRE_APPROVAL</code> posts <code>GetApproval</code>.
+        Where evaluation <code>Escalates</code> posts <code>GetApproval</code>. Unused when
+        evaluation is Off.
       </p>
+      <p style={{ margin: 0, fontWeight: 600 }}>GetApproval app</p>
       {APPROVAL_APP_IDS.map((value: ApprovalAppId) => (
         <label key={value} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <input

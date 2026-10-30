@@ -1,0 +1,47 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-jev-governance",
+      "name": "JEV Governance",
+      "title": "JEV Governance",
+      "description": "Policy decision point: Jev rules scored on LM Studio System One (Allow / Review / Block).",
+      "categories": ["AIPA", "Governance"],
+      "icons": [{ "src": "http://localhost:4113/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4113/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.GetGovernanceDecision": {
+              "displayName": "Get Governance Decision",
+              "purpose": "Fill a demo.governanceDecision EvaluationLog using the JEV engine.",
+              "contexts": ["demo.governanceDecision"]
+            }
+          },
+          "raises": {
+            "LogEvaluation": {
+              "displayName": "Log Evaluation",
+              "contexts": ["fdc3.gemara.evaluationLog"]
+            },
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "contexts": ["fdc3.gemara.enforcementLog"]
+            }
+          }
+        },
+        "userChannels": { "broadcasts": [], "listensFor": [] },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": false,
+          "searchable": false
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

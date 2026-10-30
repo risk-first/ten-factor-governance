@@ -1,6 +1,7 @@
 import '../../../common/src/ui/styles.css';
 import { connectAppSession, setStatus } from '../../../common/src/fdc3/agent.ts';
 import { INTENTS } from '../../../common/src/contexts/types.ts';
+import { recordEnforcement } from '../../../common/src/governance/enforcement.ts';
 import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { Context, ContextMetadata, ContextWithMetadata, DesktopAgent } from '@finos/fdc3';
@@ -103,6 +104,15 @@ async function approve(): Promise<void> {
     } catch {
       resultMetadata = undefined;
     }
+    recordEnforcement(fdc3, {
+      id: record.id.requestId ?? record.id.approvalId ?? crypto.randomUUID(),
+      actorAppId: 'aipa-approval-view',
+      intent,
+      decision: 'ALLOW',
+      authorId: 'aipa-approvals',
+      authorName: 'AIPA Approvals',
+      steps: ['aipa-approval-view.approve', 'aipa-approval-view.raiseSubmitOrder'],
+    });
     record.status = 'approved';
     record.updatedAt = new Date().toISOString();
     render();

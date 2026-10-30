@@ -5,8 +5,13 @@ example. Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/
 
 The Agent UI + harness cover the assistant chat path via
 [`fdc3.ai`](./fdc3-extensions/fdc3.ai/). Sail's `sail-governance` extension
-(`sail-extensions/sail-governance`) can intercept unsigned `demo.SubmitOrder`
-and send `GetApproval` to Approvals.
+(`sail-extensions/sail-governance`) is the policy enforcement point: it
+intercepts `demo.SubmitOrder`, asks Direct or JEV for
+`demo.GetGovernanceDecision`, and enforces Allow / Escalate / Deny. Sail
+settings split into **Evaluation** (`off` / `direct` / `jev`) and **Approval**
+(GetApproval app + approver). JEV scores committed rules via LM Studio
+`POST /v1/systemone` with a loaded **decision** model (`clef` or `clef-flash`);
+the harness keeps QWEN on chat completions.
 
 ## Apps
 
@@ -23,7 +28,10 @@ and send `GetApproval` to Approvals.
 | Markdown Viewer | 4108 | `ViewData` | Front-end; renders `fdc3.data.markdown` (open / replace-in-place) |
 | Discoverability | 4109 | — | Responder on `fdc3.discoverability` (apps / intents / context types) |
 | Approvals | 4110 | inbox: `GetApproval` and siblings; view: `ViewApproval` | Two apps, one origin: invisible singleton inbox + visible singleton view; shared Entra login; view signs and raises `demo.SubmitOrder` |
+| Governance Console | 4111 | `LogEvaluation`, `LogEnforcement` | Invisible autostart; Gemara L5/L6 store |
 | Fluxnova | 4112 | inbox: `GetApproval`, `CreateTask`; view: `ViewTask` | Two apps, one origin: invisible singleton inbox polls Fluxnova; visible singleton task panel for approve/deny. Inbox executes the subject `fdc3.action` after the engine records approval (second-user path). |
+| JEV governance | 4113 | `demo.GetGovernanceDecision` | Invisible singleton PDP; `POST /decide` + LM Studio System One |
+| Direct governance | 4114 | `demo.GetGovernanceDecision` | Invisible singleton PDP; unsigned SubmitOrder → human review |
 | App Directory | 4099 | — | Combined AppD JSON |
 
 ## Quick start

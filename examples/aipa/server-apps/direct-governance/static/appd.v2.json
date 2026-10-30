@@ -1,0 +1,47 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-direct-governance",
+      "name": "Direct Governance",
+      "title": "Direct Governance",
+      "description": "Policy decision point: unsigned demo.SubmitOrder requires human review; trusted approvers pass.",
+      "categories": ["AIPA", "Governance"],
+      "icons": [{ "src": "http://localhost:4114/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4114/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "demo.GetGovernanceDecision": {
+              "displayName": "Get Governance Decision",
+              "purpose": "Fill a demo.governanceDecision EvaluationLog for an intercepted demo.SubmitOrder.",
+              "contexts": ["demo.governanceDecision"]
+            }
+          },
+          "raises": {
+            "LogEvaluation": {
+              "displayName": "Log Evaluation",
+              "contexts": ["fdc3.gemara.evaluationLog"]
+            },
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "contexts": ["fdc3.gemara.enforcementLog"]
+            }
+          }
+        },
+        "userChannels": { "broadcasts": [], "listensFor": [] },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": false,
+          "searchable": false
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

@@ -135,8 +135,8 @@ export function GovernanceConsoleApp() {
   const selected = logs.find((log, index) => logId(log, index) === selectedId) ?? logs[0];
   const empty =
     tab === 'evaluation'
-      ? 'No evaluation receipts yet. Sail governance raises LogEvaluation after each decision.'
-      : 'No enforcement receipts yet. Sail governance raises LogEnforcement after each decision.';
+      ? 'No evaluation receipts yet. Direct or JEV governance raises LogEvaluation after each decision.'
+      : 'No enforcement receipts yet. Direct / JEV raise LogEnforcement on Allow or Deny; Approvals / Fluxnova raise it on hold and approved execute.';
 
   function select(id: string): void {
     if (tab === 'evaluation') setSelectedEvalId(id);

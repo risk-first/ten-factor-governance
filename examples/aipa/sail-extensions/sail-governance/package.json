@@ -15,8 +15,7 @@
   },
   "dependencies": {
     "@finos/sail-extension": "file:../../../../../../fdc3-general/FDC3-Sail/packages/sail-extension",
-    "@finos/sail-headless-agent": "file:../../../../../../fdc3-general/FDC3-Sail/packages/sail-headless-agent",
-    "@gemara/react": "^0.2.2"
+    "@finos/sail-headless-agent": "file:../../../../../../fdc3-general/FDC3-Sail/packages/sail-headless-agent"
   },
   "peerDependencies": {
     "react": ">=18.0.0",

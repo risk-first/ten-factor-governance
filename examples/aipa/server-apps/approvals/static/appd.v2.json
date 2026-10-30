@@ -34,6 +34,10 @@
             "ViewApproval": {
               "displayName": "View Approval",
               "contexts": ["fdc3.approval"]
+            },
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "contexts": ["fdc3.gemara.enforcementLog"]
             }
           }
         },
@@ -66,6 +70,12 @@
               "displayName": "View Approval",
               "purpose": "Open an fdc3.approval to inspect and decide.",
               "contexts": ["fdc3.approval"]
+            }
+          },
+          "raises": {
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "contexts": ["fdc3.gemara.enforcementLog"]
             }
           }
         },

@@ -17,6 +17,8 @@ export const INTENTS = {
   CreateOrder: 'demo.CreateOrder',
   ViewOrders: 'ViewOrders',
   SubmitOrder: 'demo.SubmitOrder',
+  /** Policy decision point — Direct or JEV fills demo.governanceDecision.log */
+  GetGovernanceDecision: 'demo.GetGovernanceDecision',
   GetApproval: 'GetApproval',
   UpdateApproval: 'UpdateApproval',
   CancelApproval: 'CancelApproval',
@@ -47,6 +49,7 @@ export const CONTEXT_TYPES = {
   stressScenarioResult: 'demo.stressScenarioResult',
   demoOrder: 'demo.order',
   demoOrderList: 'demo.orderList',
+  governanceDecision: 'demo.governanceDecision',
   approval: 'fdc3.approval',
   gemaraEvaluationLog: 'fdc3.gemara.evaluationLog',
   gemaraEnforcementLog: 'fdc3.gemara.enforcementLog',

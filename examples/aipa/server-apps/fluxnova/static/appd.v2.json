@@ -27,6 +27,10 @@
             "ViewTask": {
               "displayName": "View Task",
               "contexts": ["demo.task"]
+            },
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "contexts": ["fdc3.gemara.enforcementLog"]
             }
           }
         },

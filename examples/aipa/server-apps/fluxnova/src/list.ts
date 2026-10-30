@@ -20,6 +20,7 @@ import {
   startApproval,
 } from './api.ts';
 import { formatWhen, outcomeClass, statusLabel, summarizeTask } from './task.ts';
+import { recordEnforcement } from '../../../common/src/governance/enforcement.ts';
 import { mountSession } from './session.ts';
 import {
   CONTEXT_TYPES,
@@ -295,6 +296,15 @@ async function settleApproved(held: HeldApproval): Promise<void> {
   }
   try {
     const payload = await performAction(subject);
+    recordEnforcement(fdc3, {
+      id: held.approval.id.requestId ?? held.approval.id.approvalId ?? held.processInstanceId,
+      actorAppId: 'aipa-fluxnova',
+      intent: subject.intent ?? INTENTS.SubmitOrder,
+      decision: 'ALLOW',
+      authorId: 'aipa-fluxnova',
+      authorName: 'AIPA Fluxnova',
+      steps: ['aipa-fluxnova.settleApproved', 'aipa-fluxnova.performAction'],
+    });
     held.settled = true;
     held.approval.status = 'approved';
     held.approval.updatedAt = new Date().toISOString();
@@ -417,13 +427,25 @@ async function poll(): Promise<void> {
   }
 }
 
-function handleGetApproval(ctx: unknown): Promise<Context | ContextWithMetadata> {
+function handleGetApproval(
+  ctx: unknown,
+  metadata?: ContextMetadata
+): Promise<Context | ContextWithMetadata> {
   const incoming = approvalFromContext(ctx);
   setStatus(statusEl(), `GetApproval · ${incoming.name || incoming.subject?.intent || 'approval'}`);
   return (async () => {
     createInFlight += 1;
     try {
       const started = await startApproval({ approval: incoming });
+      recordEnforcement(fdc3, {
+        id: started.approval.id.requestId ?? started.approval.id.approvalId ?? started.processInstanceId,
+        actorAppId: metadata?.source?.appId ?? 'unknown',
+        intent: incoming.subject?.intent ?? INTENTS.SubmitOrder,
+        decision: 'REQUIRE_APPROVAL',
+        authorId: 'aipa-fluxnova',
+        authorName: 'AIPA Fluxnova',
+        steps: ['aipa-fluxnova.holdGetApproval'],
+      });
       const approval = started.approval;
       const task = started.task
         ? { ...started.task, approval: started.task.approval ?? approval }
@@ -515,7 +537,9 @@ async function setup(): Promise<void> {
     return;
   }
   await fdc3.addIntentListener(INTENTS.CreateTask, async ctx => handleCreateTask(ctx));
-  await fdc3.addIntentListener(INTENTS.GetApproval, async ctx => handleGetApproval(ctx));
+  await fdc3.addIntentListener(INTENTS.GetApproval, async (ctx, metadata) =>
+    handleGetApproval(ctx, metadata)
+  );
   setStatus(statusEl(), 'Listening for GetApproval / CreateTask');
 }
 

@@ -11,7 +11,7 @@ a shared FDC3 session — so a second user can approve work the first user raise
 | URL | `http://localhost:4112/list.html` | `http://localhost:4112/view.html` |
 | Host | Invisible, singleton, not autostart, not searchable | Visible, singleton, not autostart, not searchable |
 | Listens | `GetApproval`, `CreateTask` | `ViewTask` |
-| Raises | `ViewTask`; signed subject action (`demo.SubmitOrder`, or broadcast) | — |
+| Raises | `ViewTask`, `LogEnforcement`; signed subject action (`demo.SubmitOrder`, or broadcast) | — |
 
 ## Engine
 
@@ -75,7 +75,7 @@ from the local worklist (the engine history remains).
 
 | Intent | App | Behaviour |
 | --- | --- | --- |
-| `GetApproval` | inbox | Start a Fluxnova user task, keep the raise open, do not open a view. |
+| `GetApproval` | inbox | Start a Fluxnova user task, raise `LogEnforcement` (hold), keep the raise open, do not open a view. On approved complete, execute the subject action and raise `LogEnforcement` (allow). |
 | `CreateTask` | inbox | Start `aipa-create-task`. Same inbox/view path; no FDC3 action on complete. |
 | `ViewTask` | view | Render the task (order, proposed action, requester/approver). Handler stays open until Approve or Deny. |
 
