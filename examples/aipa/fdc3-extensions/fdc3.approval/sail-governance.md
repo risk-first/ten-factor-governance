@@ -64,7 +64,7 @@ sequenceDiagram
   end
 ```
 
-After `approved`, the approving application performs the subject action signed as itself. Sail treats that as a different actor and `ALLOW`s it. An assistant-originated execute remains `DENY` (`apa-ctl-006`).
+After `approved`, the approving application performs the subject action signed as itself. Sail asks the PDP again; Direct / JEV Allow a trusted-approver raise. An assistant-originated execute remains a control failure (`apa-ctl-006`).
 
 `GetApproval`, `UpdateApproval`, `CancelApproval`, `ViewApproval` and `ReviewApproval` are handled by the approval app. Users may raise them to inspect or act on a request. That does not circumvent Sail: the subject action is forwarded only after a completed approval.
 

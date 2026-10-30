@@ -1,10 +1,11 @@
 {
-  "name": "AIPA SubmitOrder (ctl-005 + ctl-006)",
-  "rulesHash": "sha256:1c5a1231d0540489d11ad4bf2b9b3b59b95c2a78acf0a7f49e2c8ea92bf672d8",
+  "name": "AIPA SubmitOrder (trusted approver signature)",
   "watch": {
     "sourceAppIds": [
       "aipa-agent-harness",
-      "aipa-order-entry"
+      "aipa-order-entry",
+      "aipa-approvals",
+      "aipa-fluxnova"
     ],
     "intents": [
       "demo.SubmitOrder"
@@ -16,20 +17,11 @@
   },
   "rules": [
     {
-      "id": "apa-ctl-006-execute-prohibit.ar01",
-      "controlId": "apa-ctl-006-execute-prohibit",
-      "question": "Does this FDC3 action break the rule below? Answer no when the rule does not apply to it.\nRule apa-ctl-006-execute-prohibit.ar01: Trade-execution tool calls or order submissions MUST NOT be initiated by the AI Portfolio Assistant identity (aipa-agent-harness) under any session entitlement. Execution MAY occur only when the approving application performs an approved action after the required human decision.\nPolicy values:\n- Blocked order intents (blocked-intents): demo.SubmitOrder",
-      "thresholds": {
-        "block": 0.8,
-        "review": 0.5
-      }
-    },
-    {
       "id": "apa-ctl-005-propose-human-approval.ar01",
       "controlId": "apa-ctl-005-propose-human-approval",
-      "question": "Does this FDC3 action break the rule below? Answer no when the rule does not apply to it.\nRule apa-ctl-005-propose-human-approval.ar01: An agent-initiated path toward execution MUST request human approval for the action to perform. The approving application MUST record a first authorised human decision before performing that action. The assistant MUST NOT submit the order itself. Missing approval, AI self-approval, or an unauthenticated identity is a control failure. Unsigned execute of demo.SubmitOrder needs human review.",
+      "question": "Does this FDC3 action break the rule below? Answer no when the rule does not apply to it.\nRule apa-ctl-005-propose-human-approval.ar01: demo.SubmitOrder may execute only when it is raised by the AIPA Approvals app (aipa-approvals) or the Fluxnova approval app (aipa-fluxnova), or when it is signed with that app's JWKS (http://localhost:4110/.well-known/jwks.json or http://localhost:4112/.well-known/jwks.json). The signature object on this action (state.signature) records that inspection: trusted true means one of those apps signed or raised it. If signature.trusted is true, the rule does not apply — answer no. Otherwise the action is unsigned or from another identity and needs human review — answer yes.",
       "thresholds": {
-        "block": 0.8,
+        "block": 1,
         "review": 0.5
       }
     }

@@ -40,6 +40,7 @@ export type GovernanceDecisionContext = {
   name?: string;
   subject: Fdc3Action;
   signatureJku?: string;
+  signaturePresent?: boolean;
   log: EvaluationLog;
 };
 

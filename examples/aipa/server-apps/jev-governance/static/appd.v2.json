@@ -14,7 +14,7 @@
           "listensFor": {
             "demo.GetGovernanceDecision": {
               "displayName": "Get Governance Decision",
-              "purpose": "Fill a demo.governanceDecision EvaluationLog using the JEV engine.",
+              "purpose": "Fill a demo.governanceDecision EvaluationLog using JEV scoring on LM Studio System One.",
               "contexts": ["demo.governanceDecision"]
             }
           },
@@ -38,7 +38,7 @@
           "invisible": true,
           "singleton": true,
           "autostart": false,
-          "searchable": false
+          "searchable": true
         }
       }
     }

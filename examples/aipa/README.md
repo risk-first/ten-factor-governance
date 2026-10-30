@@ -10,7 +10,7 @@ intercepts `demo.SubmitOrder`, asks Direct or JEV for
 `demo.GetGovernanceDecision`, and enforces Allow / Escalate / Deny. Sail
 settings split into **Evaluation** (`off` / `direct` / `jev`) and **Approval**
 (GetApproval app + approver). JEV scores committed rules via LM Studio
-`POST /v1/systemone` with a loaded **decision** model (`clef` or `clef-flash`);
+`POST /v1/systemone` with a loaded **decision** model (instance id in `CLEF_MODEL`);
 the harness keeps QWEN on chat completions.
 
 ## Apps
@@ -30,7 +30,7 @@ the harness keeps QWEN on chat completions.
 | Approvals | 4110 | inbox: `GetApproval` and siblings; view: `ViewApproval` | Two apps, one origin: invisible singleton inbox + visible singleton view; shared Entra login; view signs and raises `demo.SubmitOrder` |
 | Governance Console | 4111 | `LogEvaluation`, `LogEnforcement` | Invisible autostart; Gemara L5/L6 store |
 | Fluxnova | 4112 | inbox: `GetApproval`, `CreateTask`; view: `ViewTask` | Two apps, one origin: invisible singleton inbox polls Fluxnova; visible singleton task panel for approve/deny. Inbox executes the subject `fdc3.action` after the engine records approval (second-user path). |
-| JEV governance | 4113 | `demo.GetGovernanceDecision` | Invisible singleton PDP; `POST /decide` + LM Studio System One |
+| JEV governance | 4113 | `demo.GetGovernanceDecision` | Invisible singleton PDP; scores rules.json on LM Studio System One |
 | Direct governance | 4114 | `demo.GetGovernanceDecision` | Invisible singleton PDP; unsigned SubmitOrder → human review |
 | App Directory | 4099 | — | Combined AppD JSON |
 

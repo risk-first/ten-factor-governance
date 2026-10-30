@@ -9,6 +9,26 @@
     <div class="container">
       <p class="meta-row">Direct governance — listens for <code>demo.GetGovernanceDecision</code>.</p>
       <p class="meta-row">Unsigned <code>demo.SubmitOrder</code> needs human review (apa-ctl-005). Trusted approvers pass.</p>
+      <div class="toolbar">
+        <button id="test-decision" type="button" class="primary">Test decision</button>
+      </div>
+      <div class="box execution-log">
+        <div class="table-scroll table-scroll--fill">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Source</th>
+                <th>Sent</th>
+                <th>Outcome</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="log"></tbody>
+          </table>
+        </div>
+        <pre id="detail" class="code" hidden></pre>
+      </div>
     </div>
   </body>
 </html>

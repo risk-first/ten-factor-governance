@@ -58,7 +58,12 @@
         "signatureJku": {
           "type": "string",
           "title": "Signature JKU",
-          "description": "Protected-header `jku` from the original raise's ContextMetadata.signature, when present. Direct governance uses this for the trusted-approver JWKS check."
+          "description": "Protected-header `jku` from the original raise's ContextMetadata.signature, when present. Direct and JEV governance use this for the trusted-approver JWKS check."
+        },
+        "signaturePresent": {
+          "type": "boolean",
+          "title": "Signature present",
+          "description": "True when the original raise carried ContextMetadata.signature. The PDP inspects jku / raiser appId; Sail does not decide trust."
         },
         "log": {
           "type": "object",

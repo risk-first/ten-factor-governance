@@ -67,9 +67,54 @@ export function planIdForControl(controlId: string): string {
   return controlId.includes('006') ? CTL_006_PLAN : CTL_005_PLAN;
 }
 
+export type SignatureCheck = {
+  present: boolean;
+  jku?: string;
+  actorAppId?: string;
+  trustedAppId: boolean;
+  trustedJku: boolean;
+  trusted: boolean;
+  reason: string;
+};
+
+export function inspectSignature(input: {
+  actorAppId?: string;
+  signatureJku?: string;
+  signaturePresent?: boolean;
+}): SignatureCheck {
+  const actorAppId = input.actorAppId?.trim() || undefined;
+  const jku = input.signatureJku?.trim() || undefined;
+  const trustedAppId = !!(actorAppId && TRUSTED_APPROVER_APP_IDS.has(actorAppId));
+  const trustedJku = !!(jku && TRUSTED_APPROVER_JWKS.has(jku));
+  const present = input.signaturePresent === true || !!jku;
+  const trusted = trustedAppId || trustedJku;
+  let reason: string;
+  if (trustedAppId && trustedJku) {
+    reason = `raised from ${actorAppId} and signed with trusted jku ${jku}`;
+  } else if (trustedAppId) {
+    reason = `raised from trusted approvals app ${actorAppId}`;
+  } else if (trustedJku) {
+    reason = `signed with trusted approvals JWKS ${jku}`;
+  } else if (present && jku) {
+    reason = `signature jku ${jku} is not a trusted approvals JWKS`;
+  } else if (present) {
+    reason = `signature present on demo.SubmitOrder from ${actorAppId || 'unknown'} but jku missing`;
+  } else {
+    reason = `no signature on demo.SubmitOrder from ${actorAppId || 'unknown'}`;
+  }
+  return {
+    present,
+    ...(jku ? { jku } : {}),
+    ...(actorAppId ? { actorAppId } : {}),
+    trustedAppId,
+    trustedJku,
+    trusted,
+    reason,
+  };
+}
+
 export function isTrustedApprover(actorAppId: string | undefined, signatureJku: string | undefined): boolean {
-  if (actorAppId && TRUSTED_APPROVER_APP_IDS.has(actorAppId)) return true;
-  return typeof signatureJku === 'string' && TRUSTED_APPROVER_JWKS.has(signatureJku);
+  return inspectSignature({ actorAppId, signatureJku }).trusted;
 }
 
 export function isoNow(): string {

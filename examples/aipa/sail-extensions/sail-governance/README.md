@@ -49,18 +49,19 @@ Controls stay visible when evaluation is `off` (they are unused).
 | Not `raiseIntentRequest` | Forward |
 | Intent other than `demo.SubmitOrder` | Forward (`GetGovernanceDecision`, `GetApproval`, `LogEvaluation`, `LogEnforcement` are never intercepted) |
 | Mode `off` | Forward |
-| `demo.SubmitOrder` from `aipa-approvals` or `aipa-fluxnova`, or raise metadata `signature` whose protected-header `jku` is `http://localhost:4110/.well-known/jwks.json` or `http://localhost:4112/.well-known/jwks.json` | ALLOW (trusted-approver bypass; no re-evaluation) |
-| Other `demo.SubmitOrder` | Ask the configured PDP; wait for `demo.governanceDecision`; map `log.result` |
+| `demo.SubmitOrder` | Ask the configured PDP; wait for `demo.governanceDecision`; map `log.result` |
 
 `log.result` mapping: **Passed** → ALLOW (`forwardAllowedSubmitOrder`);
 **Needs Review** → REQUIRE_APPROVAL (existing GetApproval park);
 **Failed** → DENY (`raiseIntentResponse` error `IntentDeliveryFailed`).
 Missing PDP / timeout / malformed result fail-safe to **Needs Review**.
 
-The unsigned-vs-trusted rule for Direct lives in
-[`direct-governance`](../../server-apps/direct-governance/README.md).
-JEV scores committed [`rules.json`](../../server-apps/jev-governance/rules.json)
-(ctl-005 + ctl-006) via `POST /decide`.
+Trusted-approver Allow (approvals / Fluxnova second raise) is a **PDP**
+decision, not a PEP bypass. Direct applies it in
+[`direct-governance`](../../server-apps/direct-governance/README.md); JEV
+applies the same check then scores
+[`rules.json`](../../server-apps/jev-governance/rules.json)
+(one question: trusted Approvals / Fluxnova signature) on LM Studio System One.
 
 `REQUIRE_APPROVAL` does **not** hold the original `raiseIntentRequest` (that hits
 `appLaunchTimeout`):

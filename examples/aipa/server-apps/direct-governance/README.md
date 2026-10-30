@@ -7,14 +7,14 @@ a skeleton `demo.governanceDecision`. This app fills `log.result` /
 `LogEnforcement` when the result is Allow, and returns the same context.
 Escalate (`Needs Review`) leaves layer 6 to the approval app.
 
-Port **4114**. Browser listener only (no secrets). Not autostart — Sail opens
-it on first intercept via `ensureAppWithListener`.
+Port **4114**. Trusted backend inspects the raise (actor appId + signature
+`jku`) and fills the EvaluationLog. Not autostart — Sail opens it on first
+intercept via `ensureAppWithListener`.
 
 ## Intercept rule
 
-Copied from the previous Sail hard-coded table. Sail still skips trusted
-approvers before asking this app (so an approver’s second raise is not
-re-escalated). Direct applies the same rule if it does see the raise.
+Sail asks this app for every `demo.SubmitOrder`, including the approver’s
+second raise. Direct Allows that raise so it is not re-escalated.
 
 | Message | Decision |
 | --- | --- |

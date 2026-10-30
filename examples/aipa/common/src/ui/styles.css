@@ -92,6 +92,10 @@ body {
   color: #b42318;
 }
 
+.outcome--warn {
+  color: #b54708;
+}
+
 .box:has(.chart-host),
 .box.research-panel {
   flex: 1 1 auto;

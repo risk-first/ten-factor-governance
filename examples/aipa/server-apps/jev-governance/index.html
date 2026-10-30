@@ -8,7 +8,27 @@
   <body>
     <div class="container">
       <p class="meta-row">JEV governance — listens for <code>demo.GetGovernanceDecision</code>.</p>
-      <p class="meta-row">Scores committed <code>rules.json</code> via the sibling JEV engine (<code>POST /decide</code>) and LM Studio <code>/v1/systemone</code>.</p>
+      <p class="meta-row">Scores committed <code>rules.json</code> on LM Studio <code>/v1/systemone</code>.</p>
+      <div class="toolbar">
+        <button id="test-clef" type="button" class="primary">Test Clef</button>
+      </div>
+      <div class="box execution-log">
+        <div class="table-scroll table-scroll--fill">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Source</th>
+                <th>Sent</th>
+                <th>Outcome</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="log"></tbody>
+          </table>
+        </div>
+        <pre id="detail" class="code" hidden></pre>
+      </div>
     </div>
   </body>
 </html>

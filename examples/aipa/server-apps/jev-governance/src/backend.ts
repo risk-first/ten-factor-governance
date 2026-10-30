@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { randomUUID } from 'node:crypto';
 import type { Application } from 'express';
 import type { Server } from 'http';
 import type { Context } from '@finos/fdc3-context';
@@ -15,35 +16,112 @@ import {
   CTL_005,
   CTL_005_AR,
   CTL_005_PLAN,
+  inspectSignature,
   jevOutcomeToEvalResult,
   planIdForControl,
   type EvalResult,
 } from '../../../common/src/governance/refs.js';
-
-type JevRuleResult = {
-  ruleId: string;
-  controlId: string;
-  score: number | null;
-  outcome: string;
-};
-
-type JevDecision = {
-  outcome: string;
-  message: string;
-  rules?: JevRuleResult[];
-  clef?: { model?: string; status?: string; detail?: string };
-};
+import { decide, parseRules, type Decision, type JevRule } from './decide.ts';
 
 type RulesFile = { rules?: unknown };
 
 const AUTHOR_ID = 'aipa-jev-governance';
 const AUTHOR_NAME = 'JEV Governance';
-const DECIDE_TIMEOUT_MS = 35_000;
+const MAX_LOG = 50;
+
+export type LogEntry = {
+  id: string;
+  at: string;
+  source: 'live' | 'test';
+  ms: number;
+  activity: {
+    intent: string;
+    sourceAppId: string;
+    targetAppId?: string;
+    contextType?: string;
+    signature?: string;
+  };
+  sent: Decision['request'];
+  decision: Decision;
+};
+
+const decisionLog: LogEntry[] = [];
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
   return value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : undefined;
+}
+
+function activitySummary(activity: Record<string, unknown>): LogEntry['activity'] {
+  const ctx = asRecord(activity.context);
+  const targetAppId = activity.targetAppId;
+  const contextType = ctx?.type;
+  const signature = asRecord(activity.signature);
+  const signatureLabel = signature?.trusted
+    ? 'trusted'
+    : signature?.present
+      ? 'signed'
+      : 'unsigned';
+  return {
+    intent: typeof activity.intent === 'string' ? activity.intent : '',
+    sourceAppId: typeof activity.sourceAppId === 'string' ? activity.sourceAppId : '',
+    ...(typeof targetAppId === 'string' && targetAppId ? { targetAppId } : {}),
+    ...(typeof contextType === 'string' && contextType ? { contextType } : {}),
+    signature: signatureLabel,
+  };
+}
+
+function recordDecision(
+  source: LogEntry['source'],
+  activity: Record<string, unknown>,
+  decision: Decision,
+  ms: number
+): LogEntry {
+  const entry: LogEntry = {
+    id: randomUUID(),
+    at: new Date().toISOString(),
+    source,
+    ms,
+    activity: activitySummary(activity),
+    sent: decision.request,
+    decision,
+  };
+  decisionLog.unshift(entry);
+  decisionLog.splice(MAX_LOG);
+  const scores = decision.rules.map(rule => {
+    const short = rule.controlId.replace(/^apa-/, '');
+    return `${short}=${rule.score ?? '—'} ${rule.outcome}`;
+  });
+  console.info(
+    {
+      app: AUTHOR_ID,
+      source,
+      outcome: decision.outcome,
+      ms,
+      model: decision.clef.model,
+      status: decision.clef.status,
+      message: decision.message,
+      activity: entry.activity,
+      signature: asRecord(activity.signature),
+      scores,
+      ...(decision.clef.detail ? { detail: decision.clef.detail } : {}),
+    },
+    'JEV decision'
+  );
+  return entry;
+}
+
+async function scoreActivity(
+  rules: readonly JevRule[],
+  activity: Record<string, unknown>,
+  source: LogEntry['source']
+): Promise<{ scored: Decision; entry: LogEntry }> {
+  console.info({ app: AUTHOR_ID, source, rules: rules.length }, 'JEV scoring');
+  const started = Date.now();
+  const scored = await decide(rules, activity);
+  const entry = recordDecision(source, activity, scored, Date.now() - started);
+  return { scored, entry };
 }
 
 function failSafe(decision: GovernanceDecisionContext, reason: string): GovernanceDecisionContext {
@@ -60,34 +138,36 @@ function failSafe(decision: GovernanceDecisionContext, reason: string): Governan
         planId: CTL_005_PLAN,
         result: 'Needs Review',
         message: reason,
-        description: 'JEV engine did not return a decision; fail-safe to human review.',
-        steps: ['jev-governance.postDecide', `fail-safe: ${reason}`],
+        description: 'JEV did not return a decision; fail-safe to human review.',
+        steps: ['jev-governance.decide', `fail-safe: ${reason}`],
       }),
     ],
   });
   return { ...decision, log };
 }
 
-function filledFromEngine(decision: GovernanceDecisionContext, engine: JevDecision): GovernanceDecisionContext {
-  const result: EvalResult = jevOutcomeToEvalResult(engine.outcome);
-  const clef = engine.clef;
+function filledFromDecision(
+  decision: GovernanceDecisionContext,
+  scored: Decision
+): GovernanceDecisionContext {
+  const result: EvalResult = jevOutcomeToEvalResult(scored.outcome);
+  const clef = scored.clef;
   const clefStep =
-    clef && (clef.model || clef.status)
-      ? `clef ${clef.model ?? ''} ${clef.status ?? ''}${clef.detail ? `: ${clef.detail}` : ''}`.trim()
+    clef.model || clef.status
+      ? `clef ${clef.model} ${clef.status}${clef.detail ? `: ${clef.detail}` : ''}`.trim()
       : 'clef.score';
-  const rules = Array.isArray(engine.rules) ? engine.rules : [];
   const evaluations =
-    rules.length > 0
-      ? rules.map(rule => {
+    scored.rules.length > 0
+      ? scored.rules.map(rule => {
           const ruleResult = jevOutcomeToEvalResult(rule.outcome);
           return controlEvaluation({
             controlId: rule.controlId,
             requirementId: rule.ruleId,
             planId: planIdForControl(rule.controlId),
             result: ruleResult,
-            message: engine.message,
+            message: scored.message,
             description: `Clef scored ${rule.ruleId} for this raiseIntent.`,
-            steps: ['jev-governance.postDecide', clefStep],
+            steps: ['jev-governance.decide', clefStep],
             score: rule.score,
           });
         })
@@ -97,9 +177,9 @@ function filledFromEngine(decision: GovernanceDecisionContext, engine: JevDecisi
             requirementId: CTL_005_AR,
             planId: CTL_005_PLAN,
             result,
-            message: engine.message,
+            message: scored.message,
             description: 'JEV overall outcome with no per-rule scores.',
-            steps: ['jev-governance.postDecide', clefStep],
+            steps: ['jev-governance.decide', clefStep],
           }),
         ];
   const log = fillEvaluationLog({
@@ -107,15 +187,15 @@ function filledFromEngine(decision: GovernanceDecisionContext, engine: JevDecisi
     authorId: AUTHOR_ID,
     authorName: AUTHOR_NAME,
     result,
-    description: engine.message,
+    description: scored.message,
     evaluations,
   });
   return { ...decision, log };
 }
 
-function loadRules(appRoot: string): unknown[] {
+function loadRules(appRoot: string): JevRule[] {
   const raw = JSON.parse(fs.readFileSync(path.join(appRoot, 'rules.json'), 'utf-8')) as RulesFile;
-  return Array.isArray(raw.rules) ? raw.rules : [];
+  return parseRules(Array.isArray(raw.rules) ? raw.rules : []);
 }
 
 function activityFrom(decision: GovernanceDecisionContext): Record<string, unknown> {
@@ -129,46 +209,60 @@ function activityFrom(decision: GovernanceDecisionContext): Record<string, unkno
     typeof decision.id?.requestId === 'string' && decision.id.requestId
       ? decision.id.requestId
       : `jev-${Date.now()}`;
+  const signature = inspectSignature({
+    actorAppId: sourceAppId,
+    signatureJku: typeof decision.signatureJku === 'string' ? decision.signatureJku : undefined,
+    signaturePresent: decision.signaturePresent,
+  });
   return {
     kind: 'raiseIntent',
     intent: typeof subject.intent === 'string' ? subject.intent : 'demo.SubmitOrder',
     ...(targetAppId ? { targetAppId } : {}),
     sourceAppId,
+    signature,
     context: subject.context ?? {},
     correlationId,
   };
 }
 
-async function askEngine(rules: unknown[], activity: Record<string, unknown>): Promise<JevDecision | { error: string }> {
-  const base = (process.env.JEV_ENGINE_URL?.trim() || 'http://localhost:3000').replace(/\/$/, '');
-  const apiKey = process.env.ENGINE_API_KEY?.trim();
-  const headers: Record<string, string> = { 'content-type': 'application/json' };
-  if (apiKey) headers.authorization = `Bearer ${apiKey}`;
-  try {
-    const res = await fetch(`${base}/decide`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ rules, activity }),
-      signal: AbortSignal.timeout(DECIDE_TIMEOUT_MS),
-    });
-    const body: unknown = await res.json().catch(() => null);
-    if (!res.ok) {
-      const err = asRecord(body)?.error;
-      const why = typeof err === 'string' ? err : `HTTP ${res.status}`;
-      return { error: `Engine error: ${why}` };
-    }
-    const rec = asRecord(body);
-    if (!rec || typeof rec.outcome !== 'string' || typeof rec.message !== 'string') {
-      return { error: 'Engine reply was not a decision.' };
-    }
-    return rec as unknown as JevDecision;
-  } catch (error) {
-    return { error: `Engine unreachable: ${error instanceof Error ? error.message : String(error)}` };
-  }
+/** Unsigned two-leg blotter, same shape as Order Entry's demo create. */
+function testActivity(): Record<string, unknown> {
+  const date = new Date().toISOString();
+  return {
+    kind: 'raiseIntent',
+    intent: 'demo.SubmitOrder',
+    targetAppId: 'aipa-execution',
+    sourceAppId: 'aipa-order-entry',
+    signature: inspectSignature({ actorAppId: 'aipa-order-entry' }),
+    context: {
+      type: 'demo.orderList',
+      orders: [
+        {
+          type: 'demo.order',
+          id: { orderId: 'jev-test-shel' },
+          instrument: { type: 'fdc3.instrument', id: { ticker: 'SHEL' }, name: 'Shell' },
+          side: 'sell',
+          quantity: 1000,
+          date,
+          orderType: 'market',
+        },
+        {
+          type: 'demo.order',
+          id: { orderId: 'jev-test-nvda' },
+          instrument: { type: 'fdc3.instrument', id: { ticker: 'NVDA' }, name: 'NVIDIA' },
+          side: 'buy',
+          quantity: 200,
+          date,
+          orderType: 'market',
+        },
+      ],
+    },
+    correlationId: `jev-test-${Date.now()}`,
+  };
 }
 
 class JevGovernanceHandlers extends DefaultFDC3Handlers {
-  constructor(private readonly rules: unknown[]) {
+  constructor(private readonly rules: JevRule[]) {
     super();
   }
 
@@ -180,9 +274,9 @@ class JevGovernanceHandlers extends DefaultFDC3Handlers {
         if (this.rules.length === 0) {
           return failSafe(decision, 'JEV rules.json has no rules; fail-safe to human review.');
         }
-        const engine = await askEngine(this.rules, activityFrom(decision));
-        if ('error' in engine) return failSafe(decision, engine.error);
-        return filledFromEngine(decision, engine);
+        const activity = activityFrom(decision);
+        const { scored } = await scoreActivity(this.rules, activity, 'live');
+        return filledFromDecision(decision, scored);
       };
     }
     return super.remoteIntentHandler(intent);
@@ -190,10 +284,30 @@ class JevGovernanceHandlers extends DefaultFDC3Handlers {
 }
 
 export default function backend(
-  _app: Application,
+  app: Application,
   server: Server,
   opts: { port: number; appRoot: string; packageRoot: string }
 ): void {
   const rules = loadRules(opts.appRoot);
   setupWebsocketServer(server, () => {}, () => new JevGovernanceHandlers(rules));
+  console.info({ app: AUTHOR_ID, rules: rules.length }, 'JEV rules loaded');
+
+  app.get('/api/log', (_req, res) => {
+    res.json({ entries: decisionLog });
+  });
+
+  app.post('/api/test', async (_req, res) => {
+    if (rules.length === 0) {
+      res.status(500).json({
+        outcome: 'Review',
+        message: 'JEV rules.json has no rules; fail-safe to human review.',
+        rules: [],
+        clef: { model: '', status: 'unavailable', detail: 'no rules' },
+        request: { model: '', state: {}, questions: {} },
+      } satisfies Decision);
+      return;
+    }
+    const { scored, entry } = await scoreActivity(rules, testActivity(), 'test');
+    res.json({ ...scored, log: entry });
+  });
 }

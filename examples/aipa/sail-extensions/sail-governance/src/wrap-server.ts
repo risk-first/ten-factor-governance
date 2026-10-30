@@ -2,9 +2,8 @@ import type { SailExtensionStorage } from "@finos/sail-extension"
 import type { FDC3ServerInstance } from "@finos/sail-headless-agent"
 
 import { INTENTS } from "../../../common/src/contexts/types.ts"
-import { isTrustedApprover } from "../../../common/src/governance/refs.ts"
 import { createApproval } from "./approval.js"
-import { asRecord, jkuFromDacp, type DacpMessage } from "./dacp.js"
+import { asRecord, type DacpMessage } from "./dacp.js"
 import { denySubmitOrder, forwardAllowedSubmitOrder } from "./instances.js"
 import { createPdp } from "./pdp.js"
 import { GOVERNANCE_SETTINGS_KEY, resolveSettings, type GovernanceSettings } from "./settings.js"
@@ -48,10 +47,6 @@ export function createGovernanceWrap(instance: FDC3ServerInstance, storage: Sail
     const raiser = instance.getInstanceDetails(from)
     const actorAppId = raiser?.appId ?? from
     const originalUuid = msg.meta?.requestUuid ?? instance.createUUID()
-    if (isTrustedApprover(raiser?.appId, jkuFromDacp(msg))) {
-      return forwardAllowedSubmitOrder(instance, message, from, payload ?? {}, intent)
-    }
-
     if (!msg.meta?.requestUuid) {
       return instance.receive(message, from)
     }

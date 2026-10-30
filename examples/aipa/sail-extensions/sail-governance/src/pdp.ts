@@ -12,7 +12,7 @@ import { asRecord, contextFromIntentResult, jkuFromDacp, type DacpMessage } from
 import { ensureAppWithListener, postIntentEvent } from "./instances.js"
 import type { GovernanceMode } from "./settings.js"
 
-/** Clef local inference can take ~30s; leave a small buffer for /decide. */
+/** Clef local inference can take ~30s; leave a small buffer for System One. */
 const DECISION_TIMEOUT_MS = 35_000
 
 function pdpAppId(mode: GovernanceMode): string | undefined {
@@ -94,6 +94,8 @@ export function createPdp(instance: FDC3ServerInstance) {
     const decisionUuid = instance.createUUID()
     const wait = waitForDecision(decisionUuid, DECISION_TIMEOUT_MS)
     const target = asRecord(payload.app)
+    const signatureJku = jkuFromDacp(message)
+    const signaturePresent = !!asRecord(asRecord(message.payload)?.metadata)?.signature
     await postIntentEvent(
       instance,
       pdpInstance,
@@ -101,7 +103,8 @@ export function createPdp(instance: FDC3ServerInstance) {
       {
         type: "demo.governanceDecision",
         id: { requestId: originalUuid },
-        signatureJku: jkuFromDacp(message),
+        ...(signatureJku ? { signatureJku } : {}),
+        signaturePresent,
         subject: {
           type: "fdc3.action",
           action: "raiseIntent",

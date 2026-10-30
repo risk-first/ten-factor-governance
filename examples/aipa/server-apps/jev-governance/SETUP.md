@@ -2,13 +2,16 @@
 
 LM Studio must serve **two models on one server** (port 1234): the harness chat
 model, and a **decision** model for JEV. This file only covers the decision
-model. 
+model.
 
 JEV scores [`rules.json`](rules.json) on
 [System One](https://lmstudio.ai/docs/developer/jev-compat/systemone)
-(`POST /v1/systemone`). The engine sends `"model": CLEF_MODEL` (`clef` or
-`clef-flash`, default `clef-flash`), so the loaded decision model’s API id must
-match. Do not point `CLEF_URL` at `/v1/chat/completions`.
+(`POST /v1/systemone`). `jev-governance` sends `"model": CLEF_MODEL` (the loaded
+instance id, default `clef-flash-artemis`). Do not point `CLEF_URL` at
+`/v1/chat/completions`.
+
+Needs LM Studio **0.4.26+** with a llama.cpp runtime that knows architecture
+`clef` (2.64+). Older Studio builds fail with `unknown model architecture: 'clef'`.
 
 ## 1. Install and start the local server
 
@@ -21,24 +24,37 @@ match. Do not point `CLEF_URL` at `/v1/chat/completions`.
 Search the catalog for a **Decision model**, or open:
 
 - [turintech/clef-flash-artemis](https://lmstudio.ai/turintech/clef-flash-artemis)
-  — matches default `CLEF_MODEL=clef-flash`. Recommended file
-  `Clef-Flash-Artemis-IQ4_XS.gguf`.
-- [turintech/clef-artemis](https://lmstudio.ai/turintech/clef-artemis) — use if
-  you set `CLEF_MODEL=clef`.
+  — recommended file `Clef-Flash-Artemis-IQ4_XS.gguf`.
+- [turintech/clef-artemis](https://lmstudio.ai/turintech/clef-artemis) — larger
+  Clef; set `CLEF_MODEL` to that instance’s id.
 
-Click **Use Model in LM Studio** / download. The catalog key is often
-`turintech/clef-flash-artemis`; that is not what the engine sends.
+Click **Use Model in LM Studio** / download.
 
-## 3. Load it as `clef-flash` (or `clef`)
+## 3. Load it and note the instance id
 
 Load the decision model. The `model` field on `POST /v1/systemone` must be the
-loaded instance id, and it must be exactly `clef-flash` or `clef`.
+loaded instance id (Hub default is often `clef-flash-artemis`).
 
-In LM Studio, set the loaded model’s **API identifier** (sometimes labelled
-identifier / alias) to `clef-flash` if you downloaded Flash, or `clef` for the
-full Clef. JIT load by substring can also work if the catalog name contains
-`clef-flash` and you send that id — confirm with the curl below rather than
-assuming.
+Before you load, open the model’s load settings (gear / **Developer → Load**)
+and raise the llama.cpp batch so a real `demo.SubmitOrder` fits:
+
+- **Context Length** — at least **2048** (4096 is safer).
+- **Batch Size** / physical batch (`n_batch` / `n_ubatch`) — at least **1024**,
+  in the same ballpark as context length.
+
+The Studio default physical batch is often **512**. Two `rules.json` questions
+plus the full order as `state` is about **560+ tokens**, so System One then
+returns HTTP 500:
+
+`clef-flash-artemis: input (561 tokens) is too large to process. increase the
+physical batch size (current batch size: 512).`
+
+JEV fail-safes that to **Needs Review**. The smoke curl in the next section uses
+a one-line `state`, so it can succeed while a live order fails. If the load UI
+only shows context length, raise that first; some Studio builds keep `n_ubatch`
+at 512 until you set batch size explicitly.
+
+Confirm with the curl below rather than assuming `clef-flash`.
 
 ## 4. Check System One
 
@@ -46,7 +62,7 @@ assuming.
 curl http://127.0.0.1:1234/v1/systemone \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "clef-flash",
+    "model": "clef-flash-artemis",
     "state": "demo.SubmitOrder from aipa-order-entry",
     "questions": {
       "smoke": {
@@ -58,7 +74,7 @@ curl http://127.0.0.1:1234/v1/systemone \
 ```
 
 A good reply has `answers.smoke.noul` (a number 0–1). Errors about an unknown
-or chat model mean the decision model is not loaded under `clef-flash`.
+or chat model mean the decision model is not loaded under that id.
 
 List what LM Studio thinks is loaded:
 
@@ -66,30 +82,25 @@ List what LM Studio thinks is loaded:
 curl http://127.0.0.1:1234/api/v1/models
 ```
 
-Look for `"type": "decision"` and a loaded instance id of `clef-flash`.
+Look for `"type": "decision"` and a loaded instance id; put that id in `CLEF_MODEL`.
 
 ## 5. AIPA `.env`
 
 From `examples/aipa/` (`cp .env.example .env` if needed):
 
 ```bash
-JEV_ENGINE_URL=http://localhost:3000
-ENGINE_API_KEY=
+CLEF_URL=http://127.0.0.1:1234/v1/systemone
+CLEF_MODEL=clef-flash-artemis
+CLEF_TIMEOUT_MS=30000
 ```
 
-`JEV_ENGINE_URL` is whoever implements `POST /decide`. `CLEF_*` belong on the
-engine process, not AIPA. Local inference is slower than Cloudflare’s 2 s
-default — keep `CLEF_TIMEOUT_MS` generous on the engine.
+Local inference is slower than a hosted Clef — keep `CLEF_TIMEOUT_MS` generous.
+Restart AIPA after changing these.
 
 ## 6. Run the demo
 
-1. Start the engine (for example `bun index.ts` in
-   [governance-compliance-jev](https://github.com/SeeWhatsOn/governance-compliance-jev))
-   with `CLEF_URL=http://127.0.0.1:1234/v1/systemone`, `CLEF_MODEL=clef-flash`,
-   `CLEF_TIMEOUT_MS=30000`.
-2. `npm start` in `examples/aipa`.
-3. Sail **Evaluation** = **jev**. Do **not** add
-   `http://localhost:3000/sail-extension/index.js` to Sail.
+1. `npm start` in `examples/aipa`.
+2. Sail **Evaluation** = **jev**.
 
 If LM Studio is down, the decision model is not loaded, or `/v1/systemone`
 errors, JEV fail-safes to **Needs Review** (human approval), not Deny.
