@@ -33,7 +33,7 @@ The AI can propose the original action. Its signature has no authority over exec
 
 See [`server-apps/fluxnova`](../../server-apps/fluxnova/README.md): two apps on port **4112**.
 
-- **AIPA Fluxnova** (`aipa-fluxnova`) — invisible singleton inbox (Sail Governance opens it when posting `GetApproval`). Listens for `CreateTask` and `GetApproval`. Polls the engine worklist. Does **not** open a view on `GetApproval` (the approver may be another desktop). When a **new** open task appears on a later poll, it raises `ViewTask` at `aipa-fluxnova-view`. When a held task becomes `approved` in the engine, this inbox performs the subject `fdc3.action` (signed raise or broadcast) and forwards the result.
+- **AIPA Fluxnova** (`aipa-fluxnova`) — invisible singleton inbox (Sail Governance opens it when posting `GetApproval`). Listens for `CreateTask` and `GetApproval`. Polls the engine worklist. On `GetApproval`, opens `ViewTask` when the signed-in Entra user is the assignee; otherwise waits. When a **new** open task appears on a later poll (another desktop’s assignee), it raises `ViewTask` at `aipa-fluxnova-view`. When a held task becomes `approved` in the engine, this inbox performs the subject `fdc3.action` (signed raise or broadcast) and forwards the result.
 - **AIPA Fluxnova Task** (`aipa-fluxnova-view`) — visible singleton panel. Listens for `ViewTask`, renders the task, and Approve/Deny complete the Fluxnova user task via the REST API.
 
 Sail Governance’s config **GetApproval app** selects the target: `aipa-approvals` (stub inbox), `aipa-fluxnova` (this path), or `none` (any connected listener). The [Approvals stub](../../server-apps/approvals/README.md) (port 4110) remains the default. Native Tasklist (`http://localhost:8080/fluxnova/app/tasklist/`, demo/demo) still works as a fallback.
@@ -44,7 +44,7 @@ Two FDC3 apps sit on the Fluxnova engine. They are the Camunda Tasklist and the 
 
 | App | Sail host | Role |
 | --- | --- | --- |
-| Fluxnova Inbox (`aipa-fluxnova`) | Invisible, singleton. Popup is the worklist. | Polls Fluxnova. Starts a process on `GetApproval`. Opens `ViewTask` when a **new** task arrives on poll (not on the raise — the approver may be another user). When the engine records approval, performs the subject action or fails `GetApproval`. |
+| Fluxnova Inbox (`aipa-fluxnova`) | Invisible, singleton. Popup is the worklist. | Polls Fluxnova. Starts a process on `GetApproval`. Opens `ViewTask` on that raise when the signed-in user is the assignee; otherwise opens it when a **new** task arrives on poll. When the engine records approval, performs the subject action or fails `GetApproval`. |
 | Fluxnova Task (`aipa-fluxnova-view`) | Visible, singleton, not autostart. | The task panel. Approve/Deny complete the user task through the Fluxnova API. Does not execute the subject action. |
 
 The inbox is how people action Fluxnova work in Sail. Opening an inbox on the requester’s desktop does not deliver the task to another user; notifications and the inbox on the reviewer’s desktop do.

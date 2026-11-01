@@ -57,9 +57,11 @@ inbox polls `/api/tasks`.
    and fails the original raise with `ApprovalRequired`.
 2. The **requester’s** inbox starts `aipa-order-approval`, assigns Sail
    Governance’s **Approver** setting (default Tasklist user `demo`), and **holds**
-   `GetApproval`. It does **not** open a view — the approver may be a different
-   person.
-3. The **approver’s** inbox sees the new open task on the next poll and
+   `GetApproval`. If the signed-in Entra user is that assignee, it opens
+   `ViewTask` immediately. Otherwise it leaves the view closed — the approver
+   may be on another desktop.
+3. If the view was not opened on the raise, the **approver’s** inbox sees the
+   new open task on the next poll and
    `raiseIntent('ViewTask', task, { appId: 'aipa-fluxnova-view' })` so Sail opens
    the task panel. The approver signs in with Microsoft. Approve / Deny call
    `POST /api/tasks/:id/complete` with `decision` only if the Entra session
@@ -76,7 +78,7 @@ from the local worklist (the engine history remains).
 
 | Intent | App | Behaviour |
 | --- | --- | --- |
-| `GetApproval` | inbox | Start a Fluxnova user task, raise `LogEnforcement` (hold), keep the raise open, do not open a view. On approved complete, execute the subject action and raise `LogEnforcement` (allow). |
+| `GetApproval` | inbox | Start a Fluxnova user task, raise `LogEnforcement` (hold), keep the raise open. Open `ViewTask` when the signed-in user is the assignee. On approved complete, execute the subject action and raise `LogEnforcement` (allow). |
 | `CreateTask` | inbox | Start `aipa-create-task`. Same inbox/view path; no FDC3 action on complete. |
 | `ViewTask` | view | Render the task (order, proposed action, requester/approver). Handler stays open until Approve or Deny. |
 

@@ -21,7 +21,8 @@ import {
 } from './api.ts';
 import { formatWhen, outcomeClass, statusLabel, summarizeTask } from './task.ts';
 import { recordEnforcement } from '../../../common/src/governance/enforcement.ts';
-import { mountSession } from './session.ts';
+import { sessionMatchesAssignee } from './org.ts';
+import { mountSession, type SessionHandle } from './session.ts';
 import {
   CONTEXT_TYPES,
   EXECUTION_APP_ID,
@@ -63,7 +64,16 @@ let selectedId: string | undefined;
 let primed = false;
 let createInFlight = 0;
 let fdc3: DesktopAgent | null = null;
+let session: SessionHandle | null = null;
 let engineOk: boolean | undefined;
+
+function assigneeOf(task: TaskSnapshot | undefined): string | undefined {
+  return task?.approver ?? task?.assignee;
+}
+
+function assignedToSignedInUser(task: TaskSnapshot | undefined): boolean {
+  return sessionMatchesAssignee(session?.user, assigneeOf(task));
+}
 
 function findHeld(taskId?: string, processInstanceId?: string): HeldApproval | undefined {
   if (taskId && heldByTaskId.has(taskId)) return heldByTaskId.get(taskId);
@@ -466,6 +476,9 @@ function handleGetApproval(
         statusEl(),
         `Task posted · ${started.approver} · process ${started.processInstanceId}`
       );
+      if (task && assignedToSignedInUser(task)) {
+        void openView(task);
+      }
 
       return await new Promise<Context | ContextWithMetadata>((resolve, reject) => {
         const held: HeldApproval = {
@@ -524,7 +537,7 @@ async function handleCreateTask(ctx: unknown): Promise<DemoTaskResult> {
 }
 
 async function setup(): Promise<void> {
-  const session = await mountSession(statusEl, render);
+  session = await mountSession(statusEl, render);
   session.bind();
   session.render();
   render();
