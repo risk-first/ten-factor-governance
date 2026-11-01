@@ -7,6 +7,7 @@ import {
   type DemoOrder,
   type DemoOrderOrList,
 } from '../../../common/src/contexts/types.ts';
+import { isApprovalRequiredError, submitOrderErrorMessage } from '../../../common/src/governance/refs.ts';
 import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { createBroadcastButton } from '../../../common/src/ui/broadcast-icon.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
@@ -193,6 +194,7 @@ async function approve(): Promise<void> {
     setStatus(statusEl(), 'No complete orders to approve (need ticker on each row).');
     return;
   }
+  const submittedIds = new Set(orders.map(order => order.id?.orderId).filter((id): id is string => Boolean(id)));
   blotter = blotter.filter(r => r.ticker.trim()).map(b => ({ ...b, status: 'approved' }));
   renderBlotter();
   const payload = asOrderOrList(orders);
@@ -200,20 +202,31 @@ async function approve(): Promise<void> {
     setStatus(statusEl(), 'Approved locally (no agent to raise demo.SubmitOrder).');
     return;
   }
-  const resolution = await fdc3.raiseIntent(
-    INTENTS.SubmitOrder,
-    payload as Parameters<DesktopAgent['raiseIntent']>[1],
-    { appId: 'aipa-execution' }
-  );
-  const result = await resolution.getResult();
-  const resultType =
-    result && typeof result === 'object' ? (result as { type?: string }).type : undefined;
-  setStatus(
-    statusEl(),
-    resultType
-      ? `demo.SubmitOrder → ${resultType}`
-      : `Raised demo.SubmitOrder (${payload.type})`
-  );
+  try {
+    const resolution = await fdc3.raiseIntent(
+      INTENTS.SubmitOrder,
+      payload as Parameters<DesktopAgent['raiseIntent']>[1],
+      { appId: 'aipa-execution' }
+    );
+    const result = await resolution.getResult();
+    const resultType =
+      result && typeof result === 'object' ? (result as { type?: string }).type : undefined;
+    setStatus(
+      statusEl(),
+      resultType
+        ? `demo.SubmitOrder → ${resultType}`
+        : `Raised demo.SubmitOrder (${payload.type})`
+    );
+  } catch (error) {
+    const awaiting = isApprovalRequiredError(error);
+    blotter = blotter.map(row =>
+      submittedIds.has(row.id)
+        ? { ...row, status: awaiting ? 'awaiting approval' : 'blocked' }
+        : row
+    );
+    renderBlotter();
+    setStatus(statusEl(), submitOrderErrorMessage(error));
+  }
 }
 
 async function setup(): Promise<void> {

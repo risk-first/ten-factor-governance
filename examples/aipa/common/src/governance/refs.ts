@@ -24,6 +24,25 @@ export const CTL_006_PLAN = 'ap-apa-006-execute-prohibit';
 export type EvalResult = 'Passed' | 'Needs Review' | 'Failed';
 export type EnforcementDecision = 'ALLOW' | 'REQUIRE_APPROVAL' | 'DENY';
 
+/** DACP `raiseIntentResponse` error when Sail escalates `demo.SubmitOrder` to GetApproval. */
+export const APPROVAL_REQUIRED_ERROR = 'ApprovalRequired';
+
+export function isApprovalRequiredError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message === APPROVAL_REQUIRED_ERROR || message.includes(APPROVAL_REQUIRED_ERROR);
+}
+
+export function submitOrderErrorMessage(error: unknown): string {
+  if (isApprovalRequiredError(error)) {
+    return 'Human approval required — complete the pending request in Approvals or Fluxnova.';
+  }
+  const message = error instanceof Error ? error.message : String(error);
+  if (message === 'IntentDeliveryFailed') {
+    return 'Order submission was denied.';
+  }
+  return message;
+}
+
 const DEFAULT_CONTROLS_CATALOG_URL =
   'https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/components/ai-portfolio-assistant/controls-catalog';
 const DEFAULT_POLICY_URL =

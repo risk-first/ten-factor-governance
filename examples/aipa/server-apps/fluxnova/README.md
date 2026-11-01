@@ -52,8 +52,9 @@ Two Sail users (two desktops) share the same Fluxnova engine. Sail Governance
 opens the configured inbox (`aipa-fluxnova`) when it posts `GetApproval`; that
 inbox polls `/api/tasks`.
 
-1. Sail governance intercepts an unsigned `demo.SubmitOrder` and posts `GetApproval`
-   with an `fdc3.approval` whose `subject` is the `fdc3.action` to run if approved.
+1. Sail governance intercepts an unsigned `demo.SubmitOrder`, posts `GetApproval`
+   with an `fdc3.approval` whose `subject` is the `fdc3.action` to run if approved,
+   and fails the original raise with `ApprovalRequired`.
 2. The **requester’s** inbox starts `aipa-order-approval`, assigns Sail
    Governance’s **Approver** setting (default Tasklist user `demo`), and **holds**
    `GetApproval`. It does **not** open a view — the approver may be a different
@@ -65,8 +66,8 @@ inbox polls `/api/tasks`.
    matches the task assignee.
 4. The **requester’s** inbox sees the task leave the open list, reads `decision`
    from the engine, and only then performs the embedded `fdc3.action` (signed
-   `raiseIntent` or `broadcast`). `GetApproval` resolves with the target’s result,
-   or fails on deny.
+   `raiseIntent` or `broadcast`). The original raiser already received
+   `ApprovalRequired` from Sail; deny does not fill.
 
 `Open` on a row uses the same `ViewTask` path. Terminal rows can be **Clear**’d
 from the local worklist (the engine history remains).

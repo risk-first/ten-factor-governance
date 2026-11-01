@@ -58,14 +58,13 @@ shows approvals.
 7b. **Turn governance on — ask for approval**
    - Repeat the same execute attempt. The desktop now consults the
      Governance Runtime before forwarding a submit.
-   - Order Entry requests approval for the action of submitting the
-     reviewed draft. The Assistant must not submit the order itself.
+   - Order Entry's submit fails immediately with `ApprovalRequired`, so the
+     blotter shows that a human must finish the request. The Assistant
+     must not submit the order itself.
    - An authorised reviewer opens the approval and approves or rejects.
-     The AI cannot record that decision. The raising app can poll for the
-     latest state.
+     The AI cannot record that decision.
    - On approval, the approving application performs the submit (signed as
-     itself) and forwards Execution's result. A reject or cancel returns an
-     error and does not fill.
+     itself). A reject or cancel does not fill.
    - That is the authority progression in one place:
      `observe → analyse → explain → recommend → propose` is ungated;
      `execute` requires a recorded human approval. Ten-Factor governance

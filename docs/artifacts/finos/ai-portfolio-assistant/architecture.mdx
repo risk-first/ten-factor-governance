@@ -64,9 +64,10 @@ apps can fill:
 
 Sail settings split **Evaluation** (`off` / `direct` / `jev`) from **Approval**
 (GetApproval app + approver). `log.result` mapping: **Passed** → forward,
-**Needs Review** → park and raise `GetApproval`, **Failed** →
-`IntentDeliveryFailed`. Missing PDP, timeout, or a malformed result fail-safe to
-Needs Review. Trusted-approver Allow is a **PDP** decision, not a PEP bypass.
+**Needs Review** → raise `GetApproval` and return `ApprovalRequired` to the
+raiser, **Failed** → `IntentDeliveryFailed`. Missing PDP, timeout, or a
+malformed result fail-safe to Needs Review. Trusted-approver Allow is a **PDP**
+decision, not a PEP bypass.
 
 ```mermaid
 sequenceDiagram
@@ -86,6 +87,7 @@ sequenceDiagram
         Exec-->>Raiser: signed fdc3.transactionResult
     else Needs Review
         PEP->>Approval: GetApproval (original action held)
+        PEP-->>Raiser: ApprovalRequired
         Approval->>Console: LogEnforcement (hold)
         Approval->>Approval: first authenticated reviewer decides
         Approval->>PEP: demo.SubmitOrder (as reviewer)

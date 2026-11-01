@@ -7,7 +7,8 @@ The Agent UI + harness cover the assistant chat path via
 [`fdc3.ai`](./fdc3-extensions/fdc3.ai/). Sail's `sail-governance` extension
 (`sail-extensions/sail-governance`) is the policy enforcement point: it
 intercepts `demo.SubmitOrder`, asks Direct or JEV for
-`demo.GetGovernanceDecision`, and enforces Allow / Escalate / Deny. Sail
+`demo.GetGovernanceDecision`, and enforces Allow / Escalate (`GetApproval` +
+`ApprovalRequired` to the raiser) / Deny. Sail
 settings split into **Evaluation** (`off` / `direct` / `jev`) and **Approval**
 (GetApproval app + approver). JEV scores committed rules via LM Studio
 `POST /v1/systemone` with a loaded **decision** model (instance id in `CLEF_MODEL`);

@@ -14,18 +14,16 @@ sequenceDiagram
 
   Raise->>Sail: raiseIntent (subject), signed as requester
   Sail->>Flux: GetApproval (keep original signer)
+  Sail-->>Raise: ApprovalRequired
   Review->>Flux: ReviewApproval (authenticate)
   alt Same person as original signer
     Flux-->>Review: refuse self-approval
   else Distinct reviewer rejects
-    Flux-->>Sail: error
-    Sail-->>Raise: getResult error
+    Flux-->>Sail: GetApproval error
   else Distinct reviewer approves
     Flux->>Sail: raiseIntent (subject), signed as approver
     Sail->>Target: ALLOW (signer is not requester)
     Target-->>Flux: IntentResult
-    Flux-->>Sail: forwarded result
-    Sail-->>Raise: getResult
   end
 ```
 
@@ -84,7 +82,7 @@ The current apps use `ViewTask` (`demo.task`) to open `aipa-fluxnova-view` as a 
 
 When the user task is completed, Fluxnova Approvals tells the rest of the desktop in two FDC3 ways. It does not dump BPMN internals onto a shared user channel.
 
-1. **The held raise.** `GetApproval` stays open. On approve, Fluxnova Approvals raises the subject action signed as itself and forwards the target’s IntentResult to Sail, which completes the original `getResult()`. On reject, cancel or expiry it completes `GetApproval` with an error. That is how the raising application learns the outcome without knowing about Fluxnova.
+1. **The held raise.** `GetApproval` stays open on the inbox. The original raiser already received `ApprovalRequired` from Sail and is not waiting. On approve, Fluxnova Approvals raises the subject action signed as itself. On reject, cancel or expiry it completes `GetApproval` with an error.
 2. **A snapshot to listeners.** Fluxnova Inbox or Fluxnova Approvals raises `ViewApproval` with the terminal `fdc3.approval` at apps that handle it — for example a blotter or governance trace — or sends that snapshot on a **private / app channel** those apps joined. `status` is the news (`approved`, `rejected`, `cancelled`, `expired`). Clients treat it as display information and resolve current state through `UpdateApproval`. Approval details are not broadcast on shared user channels.
 
 ```mermaid

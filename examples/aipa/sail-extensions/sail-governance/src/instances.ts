@@ -126,10 +126,11 @@ export async function forwardAllowedSubmitOrder(
   )
 }
 
-export async function denySubmitOrder(
+export async function rejectSubmitOrder(
   instance: FDC3ServerInstance,
   from: string,
   originalUuid: string,
+  error: string,
 ): Promise<void> {
   await instance.post(
     {
@@ -139,8 +140,16 @@ export async function denySubmitOrder(
         timestamp: new Date(),
       },
       type: "raiseIntentResponse",
-      payload: { error: "IntentDeliveryFailed" },
+      payload: { error },
     },
     from,
   )
+}
+
+export async function denySubmitOrder(
+  instance: FDC3ServerInstance,
+  from: string,
+  originalUuid: string,
+): Promise<void> {
+  return rejectSubmitOrder(instance, from, originalUuid, "IntentDeliveryFailed")
 }

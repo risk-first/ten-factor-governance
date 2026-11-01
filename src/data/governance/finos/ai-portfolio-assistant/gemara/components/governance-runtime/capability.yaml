@@ -71,8 +71,6 @@ groups:
     description: >
       Intercept the sensitive raise at the Desktop Agent and map the
       evaluation result to forward, park pending review, or refuse.
-      The enforcement point does not re-decide policy; it applies
-      the evaluation result.
 
   - id: evidence-behaviours
     title: Evidence Behaviours
@@ -167,10 +165,7 @@ capabilities:
     title: Enforce Evaluation Result
     description: >
       Ability to intercept a sensitive raise at the Desktop Agent,
-      request an evaluation, and apply the result: forward on Passed,
-      park the intent (so getResult waits) on Needs Review, or refuse
-      on Failed. The enforcement point maps the evaluation result; it
-      does not apply its own policy rules.
+      request an evaluation: Passed / Needs Review / Failed.
     group: enforcement
 
   - id: apa-runtime-record-evidence

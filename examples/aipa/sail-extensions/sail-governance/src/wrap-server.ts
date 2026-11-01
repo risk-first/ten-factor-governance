@@ -29,11 +29,6 @@ export function createGovernanceWrap(instance: FDC3ServerInstance, storage: Sail
       return instance.receive(message, from)
     }
 
-    const parked = approval.rewriteParkedResult(msg)
-    if (parked) {
-      return instance.receive(parked as typeof message, from)
-    }
-
     if (msg.type !== "raiseIntentRequest") {
       return instance.receive(message, from)
     }

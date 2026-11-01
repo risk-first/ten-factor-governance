@@ -268,8 +268,8 @@ threats:
   - id: apa-runtime-enforcement-mismatch
     title: Enforcement Does Not Apply the Evaluation Result
     description: >
-      The enforcement point may apply its own rules, map Passed to park,
-      map Needs Review to forward, or refuse a Failed result
+      The enforcement point may apply its own rules, map Passed to
+      hold, map Needs Review to forward, or refuse a Failed result
       inconsistently, so the Desktop Agent outcome diverges from
       evaluation.
     group: enforcement

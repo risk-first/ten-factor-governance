@@ -49,7 +49,7 @@ export function buildEnforcementLog(input: EnforcementLogInput): Record<string, 
   const message = deny
     ? 'Do not forward; IntentDeliveryFailed.'
     : hold
-      ? 'Park getResult() until a human records a decision.'
+      ? 'Return ApprovalRequired to the raiser and post GetApproval.'
       : 'Forward the original raiseIntentRequest.';
   const steps = input.steps ?? [hold ? 'hold' : deny ? 'deny' : 'forward'];
   const catalogRefs = mappingReferences();

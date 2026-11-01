@@ -9,7 +9,7 @@ The extension will live under [`FDC3-Sail/extensions`](https://github.com/finos/
 | Piece | Role |
 | --- | --- |
 | Raising application | Raises the subject action (`raiseIntent` or broadcast). Does not raise `GetApproval`. |
-| Sail governance extension | **Policy enforcement point (PEP).** Wraps `FDC3ServerInstance` via `wrapServer` and inspects DACP `receive` traffic. Asks a policy decision point for `demo.GetGovernanceDecision`, then enforces `log.result`. Raises `GetApproval` when the PDP escalates. Completes the original raise with the forwarded result or an error. Does not record a human decision and does not raise `LogEvaluation` or `LogEnforcement`. |
+| Sail governance extension | **Policy enforcement point (PEP).** Wraps `FDC3ServerInstance` via `wrapServer` and inspects DACP `receive` traffic. Asks a policy decision point for `demo.GetGovernanceDecision`, then enforces `log.result`. Raises `GetApproval` when the PDP escalates and fails the original raise with `ApprovalRequired`. Does not record a human decision and does not raise `LogEvaluation` or `LogEnforcement`. |
 | Direct / JEV app | **Policy decision point (PDP).** Fills the Gemara EvaluationLog on `demo.governanceDecision` and raises `LogEvaluation`. Raises `LogEnforcement` when the result is Allow or Deny. Direct applies the unsigned-vs-trusted SubmitOrder rule; JEV scores committed Jev rules. |
 | Approving application | Records the human decision and, if approved, performs the subject action signed as itself. Raises `LogEnforcement` when it holds `GetApproval` and when it executes an approved action. Fluxnova or any other engine stays behind this adapter — see [`fluxnova.md`](fluxnova.md). |
 | Reviewer | Opens the task through `ReviewApproval` (or the provider inbox) and authenticates. The AI cannot record that decision. |
@@ -23,9 +23,9 @@ Sail maps the PDP’s `log.result` (`Passed` / `Needs Review` / `Failed`) onto:
 | --- | --- |
 | `ALLOW` | Forward the original workflow. Both apps see the ungoverned path. |
 | `DENY` | Do not forward. Workflow results in an error. The raising/broadcasting app learns delivery failed, not that an approval protocol exists. |
-| `REQUIRE_APPROVAL` | Do not forward the original action. `raiseIntent` creates an intent result while it raises a `GetApproval` intent. Park `getResult()` until the approval workflow finishes. |
+| `REQUIRE_APPROVAL` | Do not forward the original action. Raise `GetApproval` at the approving application, then fail the original `raiseIntent` with `ApprovalRequired` so the raiser can tell the user to complete that approval. Do not park `getResult()`. |
 
-`raiseIntent` is not specified to time out because a handler is slow. The long wait belongs on `getResult()`, which has no mandated duration. Holding the DACP `raiseIntentRequest` unanswered until a human decides would look like a hung Desktop Agent on a web proxy (`appLaunchTimeout`).
+Holding the DACP `raiseIntentRequest` unanswered until a human decides would look like a hung Desktop Agent on a web proxy (`appLaunchTimeout`). Parking `getResult()` has the same problem for the raising app: the user never sees that they need to act. The PEP therefore answers immediately.
 
 Copy the original app and user identity onto the approval. Four-eyes and “requester is not the reviewer” apply to that actor, not to Sail.
 
@@ -48,18 +48,15 @@ sequenceDiagram
   else DENY (log.result Failed)
     Sail-->>Raise: error, no forward
   else REQUIRE_APPROVAL (log.result Needs Review)
-    Sail-->>Raise: IntentResolution (getResult pending)
     Sail->>Approve: GetApproval (fdc3.approval)
+    Sail-->>Raise: ApprovalRequired
     Review->>Approve: ReviewApproval
     alt Approved
       Approve->>Sail: raiseIntent (subject), signed as Approve
       Sail->>Target: ALLOW, forward
       Target-->>Approve: IntentResult
-      Approve-->>Sail: forwarded result
-      Sail-->>Raise: getResult
     else Rejected or cancelled
-      Approve-->>Sail: error
-      Sail-->>Raise: getResult error
+      Note over Approve: GetApproval completes with an error; the original raiser already received ApprovalRequired
     end
   end
 ```

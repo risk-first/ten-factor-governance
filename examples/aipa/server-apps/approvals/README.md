@@ -28,8 +28,9 @@ page; MSAL uses `localStorage` and `/api/session` is process-wide.
 ## Flow
 
 1. Sail governance (`sail-extensions/sail-governance`) intercepts an unsigned
-   `demo.SubmitOrder` and posts `GetApproval` with an `fdc3.approval` whose
-   `subject` is `{ type: fdc3.action, action: raiseIntent, intent: demo.SubmitOrder, … }`.
+   `demo.SubmitOrder`, posts `GetApproval` with an `fdc3.approval` whose
+   `subject` is `{ type: fdc3.action, action: raiseIntent, intent: demo.SubmitOrder, … }`,
+   and fails the original raise with `ApprovalRequired`.
 2. The inbox holds `GetApproval`, adds a row, and
    `raiseIntent('ViewApproval', approval, { appId: 'aipa-approval-view' })` so Sail
    reuses the singleton view (or launches it). The inbox then `fdc3.close()`s

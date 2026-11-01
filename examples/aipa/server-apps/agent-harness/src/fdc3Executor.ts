@@ -6,6 +6,7 @@ import {
   CONTEXT_TYPES,
   DISCOVERABILITY_CHANNEL,
 } from '../../../common/src/contexts/types.ts';
+import { isApprovalRequiredError, submitOrderErrorMessage } from '../../../common/src/governance/refs.ts';
 import { summarizeDiscoverApps } from './agent/discover-summary.ts';
 
 export type ContextCache = Map<string, Context>;
@@ -102,12 +103,19 @@ async function serializeIntentResult(
     }
     return { kind: 'context', context: result ?? null, source };
   } catch (e) {
-    return {
-      kind: 'error',
-      source,
-      message: e instanceof Error ? e.message : String(e),
-    };
+    return { ...serializeRaiseError(e), source };
   }
+}
+
+function serializeRaiseError(error: unknown): { kind: 'error'; message: string } {
+  return {
+    kind: 'error',
+    message: isApprovalRequiredError(error)
+      ? submitOrderErrorMessage(error)
+      : error instanceof Error
+        ? error.message
+        : String(error),
+  };
 }
 
 export async function executeFdc3Tool(
@@ -145,22 +153,30 @@ export async function executeFdc3Tool(
       return fdc3.findInstances(asAppId(args.app));
 
     case 'fdc3_raise_intent': {
-      const resolution = await fdc3.raiseIntent(
-        String(args.intent),
-        args.context == null ? null : asContext(args.context),
-        args.target == null ? null : asAppId(args.target),
-        typeof args.newInstance === 'boolean' ? args.newInstance : undefined
-      );
-      return serializeIntentResult(resolution);
+      try {
+        const resolution = await fdc3.raiseIntent(
+          String(args.intent),
+          args.context == null ? null : asContext(args.context),
+          args.target == null ? null : asAppId(args.target),
+          typeof args.newInstance === 'boolean' ? args.newInstance : undefined
+        );
+        return serializeIntentResult(resolution);
+      } catch (error) {
+        return serializeRaiseError(error);
+      }
     }
 
     case 'fdc3_raise_intent_for_context': {
-      const resolution = await fdc3.raiseIntentForContext(
-        asContext(args.context),
-        args.target == null ? null : asAppId(args.target),
-        typeof args.newInstance === 'boolean' ? args.newInstance : undefined
-      );
-      return serializeIntentResult(resolution);
+      try {
+        const resolution = await fdc3.raiseIntentForContext(
+          asContext(args.context),
+          args.target == null ? null : asAppId(args.target),
+          typeof args.newInstance === 'boolean' ? args.newInstance : undefined
+        );
+        return serializeIntentResult(resolution);
+      } catch (error) {
+        return serializeRaiseError(error);
+      }
     }
 
     case 'fdc3_open':

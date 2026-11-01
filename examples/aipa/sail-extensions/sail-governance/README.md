@@ -6,7 +6,8 @@ Raising apps and Execution stay approval-agnostic: they raise and handle
 **policy decision point (PDP)** FDC3 app (`aipa-direct-governance` or
 `aipa-jev-governance`) via `demo.GetGovernanceDecision`, then enforces the
 filled Gemara EvaluationLog: **Passed** → forward, **Needs Review** →
-`GetApproval`, **Failed** → `IntentDeliveryFailed`.
+`GetApproval` plus `ApprovalRequired` to the raiser, **Failed** →
+`IntentDeliveryFailed`.
 
 It is not the policy engine. Direct and JEV fill `log.result` /
 `log.evaluations` and raise **LogEvaluation** (layer 5) plus **LogEnforcement**
@@ -52,7 +53,7 @@ Controls stay visible when evaluation is `off` (they are unused).
 | `demo.SubmitOrder` | Ask the configured PDP; wait for `demo.governanceDecision`; map `log.result` |
 
 `log.result` mapping: **Passed** → ALLOW (`forwardAllowedSubmitOrder`);
-**Needs Review** → REQUIRE_APPROVAL (existing GetApproval park);
+**Needs Review** → REQUIRE_APPROVAL (`GetApproval` + `ApprovalRequired`);
 **Failed** → DENY (`raiseIntentResponse` error `IntentDeliveryFailed`).
 Missing PDP / timeout / malformed result fail-safe to **Needs Review**.
 
@@ -64,15 +65,16 @@ applies the same check then scores
 (one question: trusted Approvals / Fluxnova signature) on LM Studio System One.
 
 `REQUIRE_APPROVAL` does **not** hold the original `raiseIntentRequest` (that hits
-`appLaunchTimeout`):
+`appLaunchTimeout`) and does **not** park `getResult()`:
 
-1. `post` a `raiseIntentResponse` (`intent: demo.SubmitOrder`, `source` = chosen approvals app).
-2. `addPendingResolution` for the original uuid.
-3. Resolve the GetApproval target from settings (`open` when a concrete appId is set), then
-   `post` an `intentEvent` with a new uuid and an `fdc3.approval` whose `subject`
-   is the original raise.
-4. Remap a later `intentResultRequest` for that uuid back to the original raiser’s
-   parked `getResult()`.
+1. Resolve the GetApproval target from settings (`open` when a concrete appId is set), then
+   `post` an `intentEvent` with an `fdc3.approval` whose `subject` is the original raise.
+2. `post` a `raiseIntentResponse` error `ApprovalRequired` to the original raiser so
+   `fdc3.raiseIntent('demo.SubmitOrder', …)` fails immediately with a message that
+   human approval is waiting in Approvals / Fluxnova.
+
+The approving app later re-raises `demo.SubmitOrder` signed as itself. That second
+raise is a **PDP Allow**, not a completion of the original `getResult()`.
 
 Do not `receive()` a synthetic `GetApproval` as the original app — that would leak
 a GetApproval `raiseIntentResponse` to the raiser.
