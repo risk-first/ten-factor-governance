@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>17c — Control</title>
+  <link rel="stylesheet" href="../css/talk.css?v=17ccols1">
+</head>
+<body>
+  <main class="stage">
+    <article class="slide packed yaml-fit fill-cards">
+      <p class="kicker">How it decides · Control</p>
+      <h1>What we require</h1>
+      <div class="chain yaml-chain yaml-two">
+        <div class="node">
+          <span class="kind">apa-controls</span>
+          <pre><code>- id: apa-ctl-005-propose-human-approval
+  title: First Human Approval for
+    Agent-Initiated Orders
+  objective: >
+    Require a recorded first human approval
+    before any agent-initiated order can
+    be executed.
+  group: oversight
+  state: Active
+  assessment-requirements:
+    - id: apa-ctl-005-propose-human-approval.ar01
+      text: >
+        An agent-initiated path toward
+        execution MUST request human
+        approval for the action to perform.
+        The approving application MUST
+        record a first authorised human
+        decision before performing that
+        action. The assistant MUST NOT
+        submit the order itself. Missing
+        approval, AI self-approval, or an
+        unauthenticated identity is a
+        control failure. In the AIPA
+        example this is assessed on
+        demo.SubmitOrder: Passed only when
+        the raise is from a trusted
+        approving application or signed
+        with that application's JWKS;
+        otherwise Needs Review and
+        GetApproval.</code></pre>
+        </div>
+        <div class="node">
+          <span class="kind">continued</span>
+          <pre><code>      applicability:
+        - propose
+        - execute
+        - human-approval-required
+      recommendation: >
+        Correlate order-construction and
+        approval events with approval
+        records; treat assistant-originated
+        submits, missing approver identity,
+        or self-approval as failures. In
+        the example, inspect raise identity
+        and attestation on demo.SubmitOrder.
+      state: Active
+  guidelines:
+    - reference-id: apa-guidance
+      entries:
+        - reference-id: apa-guidance-propose-approval
+        - reference-id: apa-guidance-order-limits
+        - reference-id: apa-guidance-human-oversight
+        - reference-id: apa-guidance-tool-allowlist
+    - reference-id: FINOS-AIR
+      entries:
+        - reference-id: AIR-PREV-018
+        - reference-id: AIR-PREV-019
+        - reference-id: AIR-DET-011
+        - reference-id: AIR-DET-021
+  threats:
+    - reference-id: apa-threats
+      entries:
+        - reference-id: unauthorized-order-proposal
+        - reference-id: unauthorized-trade-execution
+        - reference-id: loss-of-human-oversight</code></pre>
+        </div>
+      </div>
+      <footer class="chrome">
+        <p class="cite">AIPA Gemara control catalog. FINOS AIGF AIR-PREV-018, AIR-PREV-019, AIR-DET-011, AIR-DET-021.</p>
+        <nav class="nav">
+          <a class="prev" rel="prev" aria-label="Previous">←</a>
+          <span class="num"></span>
+          <a class="next" rel="next" aria-label="Next">→</a>
+        </nav>
+      </footer>
+    </article>
+  </main>
+  <script src="../js/talk.js"></script>
+</body>
+</html>

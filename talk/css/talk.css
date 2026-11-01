@@ -1218,6 +1218,48 @@ h1 {
   line-height: 1.35;
 }
 
+.chain.yaml-chain.yaml-three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.chain.yaml-chain.yaml-one {
+  grid-template-columns: 1fr;
+}
+
+.chain.yaml-chain.yaml-two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.slide.fill-cards > .chain.yaml-chain.yaml-one,
+.slide.fill-cards > .chain.yaml-chain.yaml-two {
+  grid-template-rows: 1fr;
+}
+
+.slide.fill-cards .chain.yaml-chain.yaml-one .node,
+.slide.fill-cards .chain.yaml-chain.yaml-two .node {
+  padding: 0.55rem 0.75rem 0.5rem;
+  overflow: hidden;
+}
+
+.slide.fill-cards .chain.yaml-chain.yaml-one pre,
+.slide.fill-cards .chain.yaml-chain.yaml-two pre {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.slide.fill-cards .chain.yaml-chain.yaml-one code {
+  font-size: clamp(0.78rem, 1.4cqw, 1.15rem);
+  line-height: 1.36;
+  white-space: pre-wrap;
+}
+
+.slide.fill-cards .chain.yaml-chain.yaml-two code {
+  font-size: clamp(0.62rem, 1.15cqw, 0.95rem);
+  line-height: 1.32;
+  white-space: pre-wrap;
+}
+
 .diagram {
   width: 100%;
   height: auto;

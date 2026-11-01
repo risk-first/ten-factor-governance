@@ -2,10 +2,10 @@
 
 ## Say
 
-- This is governance as a service in the sandbox. The plugin sits on the desktop agent, not inside the model.
-- It inspects the agent's work as intents and context cross the bus. That is independent information.
-- It refers to versioned policy and controls. Then it allows the action, denies it, or escalates — for example to a human in Fluxnova.
-- Slide 17 is the thread it is evaluating against.
+- This is governance as a service in the sandbox. The plugin sits on the FDC3 bus — the Desktop Agent — not inside the model or the apps.
+- Agent and Order Entry stay above the bus. They raise and handle intents as usual.
+- Policy and Approvals hang under the bus. The plugin asks policy for a decision, then allows, denies, or escalates to approvals.
+- That decision is the Gemara thread you just saw. Next is the live demo.
 
 ## Don't put on the slide
 
