@@ -17,11 +17,11 @@ metadata:
   mapping-references:
     - id: apa-governance-runtime-threats
       title: APA Governance Runtime Threats
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://threat.yaml
     - id: apa-governance-runtime-capabilities
       title: APA Governance Runtime Capabilities
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://capability.yaml
 
 groups:

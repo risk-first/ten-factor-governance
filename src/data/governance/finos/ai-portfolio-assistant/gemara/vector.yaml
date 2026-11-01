@@ -3,10 +3,10 @@ title: AI Portfolio Assistant Vector Catalog
 metadata:
   id: apa-vectors
   type: VectorCatalog
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-10T00:00:00Z"
+  date: "2026-11-01T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
@@ -216,6 +216,58 @@ vectors:
     applicability:
       - observe
       - analyse
+      - explain
+      - recommend
+      - propose
+
+  - id: prompt-injection-via-attachment
+    title: Prompt Injection via Attached File
+    group: injection-and-manipulation
+    description: >
+      A file attached to an agent query, or content opened as desktop
+      markdown, embeds instructions that alter tool choice, intent
+      arguments, or the explanation shown to the portfolio manager.
+    applicability:
+      - analyse
+      - explain
+      - recommend
+      - propose
+
+  - id: forged-specialist-attestation
+    title: Forged or Missing Specialist Attestation
+    group: integration
+    description: >
+      A specialist result is accepted as grounding without a verifiable
+      signature, or a forged attestation is treated as a trusted
+      application output.
+    applicability:
+      - analyse
+      - explain
+      - recommend
+      - propose
+      - execute
+
+  - id: discoverability-poisoning
+    title: Discoverability Catalog Poisoning
+    group: integration
+    description: >
+      The workspace catalog of apps, intents, or context types is incomplete
+      or falsified so the harness raises an unintended application or an
+      intent outside the assistant allowlist.
+    applicability:
+      - analyse
+      - recommend
+      - propose
+      - execute
+
+  - id: untrusted-desktop-render
+    title: Untrusted Desktop Render
+    group: decision-quality
+    description: >
+      Streamed HTML, suggestion chips, or replace-in-place markdown present
+      a misleading or attacker-controlled view that the portfolio manager
+      treats as specialist output.
+    applicability:
       - explain
       - recommend
       - propose

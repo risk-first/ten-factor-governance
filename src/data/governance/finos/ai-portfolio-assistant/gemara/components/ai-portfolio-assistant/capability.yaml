@@ -3,20 +3,22 @@ title: AI Portfolio Assistant Capability Catalog
 metadata:
   id: apa-capabilities
   type: CapabilityCatalog
-  version: "0.3.0"
+  version: "0.4.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-11T00:00:00Z"
+  date: "2026-11-01T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: >
-    System capabilities that create the attack surface and authority surface
-    for the Financial AI Portfolio Assistant operating across FDC3 applications,
-    including the named demo intents the assistant may raise. Composes relevant
-    CCC Multi-Agent Reference Architecture capabilities rather than twinning
-    that catalog.
+    Capabilities embodied by the AI Portfolio Assistant specialist applications
+    (Portfolio, Risk, Research, Market Data, Order Entry, Execution, Agent UI,
+    Agent harness, Markdown Viewer, Discoverability). Grouped by the app that
+    provides each capability. Composes relevant CCC Multi-Agent Reference
+    Architecture capabilities rather than twinning that catalog. Evaluation,
+    human approval, enforcement, and evidence recording are catalogued on the
+    Governance Runtime, not here.
   mapping-references:
     - id: CCC.MARefArc.CP
       title: CCC Multi-Agent Reference Architecture Capabilities
@@ -25,168 +27,265 @@ metadata:
       description: >
         Subsystem capabilities from
         https://ccc.finos.org/catalogs/ai-ml/multi-agent-refarch imported as
-        architectural dependencies of the assistant.
+        architectural dependencies of the assistant applications.
 
 imports:
   - reference-id: CCC.MARefArc.CP
     entries:
       - reference-id: CCC.MARefArc.CP01
-        remarks: User-facing application surface (desktop assistant)
-      - reference-id: CCC.MARefArc.CP02
-        remarks: Human-in-the-loop output review (propose approval)
-      - reference-id: CCC.MARefArc.CP05
-        remarks: Agent-ingress zero-trust guardrails (governance gateway path)
+        remarks: Agent UI — user-facing chat surface that raises AskAgent
       - reference-id: CCC.MARefArc.CP07
-        remarks: Unified sandboxed agent runtime (assistant execution envelope)
+        remarks: Agent harness — sandboxed agent loop, session channel, tool dispatch
       - reference-id: CCC.MARefArc.CP08
-        remarks: Built-in trusted tools (deterministic FDC3 specialist apps)
+        remarks: Specialist FDC3 apps invoked as trusted tools (portfolio, risk, research, market data, order entry)
       - reference-id: CCC.MARefArc.CP09
-        remarks: Agent memory (session context retention)
+        remarks: Agent harness — conversation and selected-instrument session memory
       - reference-id: CCC.MARefArc.CP12
-        remarks: Authoritative knowledge source bases (research corpus)
-      - reference-id: CCC.MARefArc.CP13
-        remarks: Vector-based semantic retrieval (research RAG path)
-      - reference-id: CCC.MARefArc.CP14
-        remarks: Approved-model registry and lifecycle
+        remarks: Research app — EDGAR filings and vendor news as authoritative sources
       - reference-id: CCC.MARefArc.CP15
-        remarks: LLM inference gateway routing
-      - reference-id: CCC.MARefArc.CP16
-        remarks: Model-interaction zero-trust guardrails
-      - reference-id: CCC.MARefArc.CP21
-        remarks: Human supervision and oversight
-      - reference-id: CCC.MARefArc.CP22
-        remarks: Runtime protection (governance runtime DENY/ALLOW)
+        remarks: Agent harness — routes chat completions through the configured inference endpoint
       - reference-id: CCC.MARefArc.CP23
-        remarks: Cross-layer telemetry collection (session evidence)
+        remarks: Agent harness — streams status, citations, and artifacts to the Agent UI
 
 groups:
-  - id: data-access
-    title: Data Access
+  - id: portfolio-app
+    title: Portfolio
     description: >
-      Capabilities that read portfolio holdings, client context, or investment
-      research content used by the assistant.
+      Holdings lookup and desktop context broadcast for the authenticated
+      portfolio manager.
 
-  - id: calculation-integration
-    title: Calculation Integration
+  - id: risk-app
+    title: Risk
     description: >
-      Capabilities that invoke deterministic FDC3 applications and consume
-      their calculated outputs rather than computing financial figures in the
-      model.
+      Deterministic exposure and stress calculation, signed so consumers can
+      treat figures as application output rather than model invention.
 
-  - id: interpretation
-    title: Interpretation
+  - id: research-app
+    title: Research
     description: >
-      Capabilities through which the assistant interprets calculated results
-      and research to produce explanations and recommendations.
+      Retrieval of investment research, news, and instrument views, signed
+      when returned as a research bundle.
 
-  - id: authority-actions
-    title: Authority Actions
+  - id: market-data-app
+    title: Market Data
     description: >
-      Capabilities that construct or submit consequential investment actions
-      along the propose and execute authority levels.
+      Price history, charts, and generic data-app views used by Risk and by
+      the desktop workspace.
 
-  - id: session-and-context
-    title: Session and Context
+  - id: order-entry-app
+    title: Order Entry
     description: >
-      Capabilities that retain session state, broadcast desktop context, or
-      invoke tools across the multi-application workspace.
+      Construction of draft orders from recommendations, plus blotter review
+      of signed order contexts.
+
+  - id: execution-app
+    title: Execution
+    description: >
+      Submission of a single order and return of a signed transaction result.
+      Autonomous use by the assistant is prohibited.
+
+  - id: agent-ui
+    title: Agent UI
+    description: >
+      Chat front end: opens an agent session, attaches files, and renders
+      streamed answers. Does not call specialist intents itself.
+
+  - id: agent-harness
+    title: Agent harness
+    description: >
+      Agent loop that interprets specialist outputs, retains session state,
+      and raises the demo intent allowlist. demo.SubmitOrder is not on that
+      allowlist.
+
+  - id: markdown-viewer
+    title: Markdown Viewer
+    description: >
+      Renders fdc3.data.markdown opened or replaced in place.
+
+  - id: discoverability
+    title: Discoverability
+    description: >
+      Answers catalog queries so the harness can discover apps, intents,
+      context types, schemas, and App Directory records.
 
 capabilities:
   - id: portfolio-read
     title: Portfolio Read
     description: >
-      Ability to read portfolio holdings, positions, cash, and related client
-      portfolio attributes available to the authenticated portfolio manager.
-    group: data-access
-
-  - id: research-retrieval
-    title: Investment Research Retrieval
-    description: >
-      Ability to retrieve investment research via demo.GetResearch (and related
-      approved channels) for use as interpretive context by the assistant.
-    group: data-access
-
-  - id: fdc3-app-invocation
-    title: FDC3 Application Invocation
-    description: >
-      Ability to raise approved FDC3 intents against specialist desktop
-      applications (Risk, Research, Order Entry) that perform portfolio, risk,
-      or market functions on behalf of the user.
-    group: calculation-integration
-
-  - id: exposure-calculation-consume
-    title: Exposure Calculation Consumption
-    description: >
-      Ability to raise demo.GetPortfolioRisk and consume demo.portfolioRisk
-      (and related exposure figures) from the Risk app rather than inventing
-      numeric risk measures in the model.
-    group: calculation-integration
-
-  - id: stress-scenario-consume
-    title: Stress Scenario Consumption
-    description: >
-      Ability to raise demo.RunStressScenario with demo.stressScenarioRequest
-      and consume demo.stressScenarioResult from the Risk app.
-    group: calculation-integration
-
-  - id: research-intent-consume
-    title: Research Intent Consumption
-    description: >
-      Ability to raise demo.GetResearch and consume demo.researchBundle from
-      the Research app as evidence for explanations.
-    group: calculation-integration
-
-  - id: explanation-generation
-    title: Explanation Generation
-    description: >
-      Ability to generate natural-language explanations of portfolio positions,
-      exposures, stress results, and related risk information, grounded in
-      signed demo.portfolioRisk, demo.stressScenarioResult, and
-      demo.researchBundle contexts where available.
-    group: interpretation
-
-  - id: recommendation-generation
-    title: Recommendation Generation
-    description: >
-      Ability to generate a demo.portfolioRecommendation describing suggested
-      portfolio changes, rationale, and supporting evidence for the portfolio
-      manager, without constructing or submitting executable orders.
-    group: interpretation
-
-  - id: order-proposal-construction
-    title: Order Proposal Construction
-    description: >
-      Ability to raise demo.CreateOrder with a
-      demo.portfolioRecommendation and receive a demo.orderProposal draft
-      basket from Order Entry for human review.
-    group: authority-actions
-
-  - id: trade-execution
-    title: Trade Execution
-    description: >
-      Ability to raise demo.SubmitOrders with an fdc3.orderList. Autonomous
-      use of this capability by the assistant is prohibited.
-    group: authority-actions
-
-  - id: session-context-retention
-    title: Session Context Retention
-    description: >
-      Ability to retain conversation history, selected instruments, and other
-      session context across turns within an assistant session.
-    group: session-and-context
+      Ability of the Portfolio app to satisfy GetPortfolio and ViewHoldings
+      with holdings, positions, cash, and related client portfolio attributes
+      available to the authenticated portfolio manager.
+    group: portfolio-app
 
   - id: multi-app-context-broadcast
     title: Multi-Application Context Broadcast
     description: >
-      Ability to broadcast or receive FDC3 context so that multiple desktop
-      applications share the same instrument, portfolio, or intent state.
-    group: session-and-context
+      Ability of the Portfolio app to broadcast fdc3.portfolio, position, and
+      instrument context so other desktop applications share the same
+      selected book and names. Other specialist apps may also broadcast
+      instrument or analysis context.
+    group: portfolio-app
+
+  - id: exposure-calculation-consume
+    title: Exposure Calculation
+    description: >
+      Ability of the Risk app to satisfy demo.GetPortfolioRisk and return a
+      signed demo.portfolioRisk (and related exposure figures) rather than
+      leaving numeric risk measures to the model. May pull OHLC via
+      demo.GetPriceHistory.
+    group: risk-app
+
+  - id: stress-scenario-consume
+    title: Stress Scenario
+    description: >
+      Ability of the Risk app to satisfy demo.RunStressScenario with
+      demo.stressScenarioRequest and return a signed demo.stressScenarioResult.
+    group: risk-app
+
+  - id: risk-analysis-view
+    title: Risk Analysis View
+    description: >
+      Ability of the Risk app to present calculated risk and stress output
+      through ViewAnalysis for human inspection alongside the assistant.
+    group: risk-app
+
+  - id: research-retrieval
+    title: Investment Research Retrieval
+    description: >
+      Ability of the Research app to retrieve filings, news, and related
+      research content from approved sources for use as interpretive context.
+    group: research-app
+
+  - id: research-intent-consume
+    title: Research Bundle
+    description: >
+      Ability of the Research app to satisfy demo.GetResearch and return a
+      signed demo.researchBundle as evidence for explanations.
+    group: research-app
+
+  - id: research-instrument-view
+    title: Research Instrument and News View
+    description: >
+      Ability of the Research app to present instrument, news, and research
+      documents through ViewInstrument, ViewNews, and ViewResearch.
+    group: research-app
+
+  - id: market-data-price-history
+    title: Price History
+    description: >
+      Ability of the Market Data app to satisfy demo.GetPriceHistory with
+      OHLC (or equivalent) series used by Risk and other consumers.
+    group: market-data-app
+
+  - id: market-data-chart-view
+    title: Chart and Data View
+    description: >
+      Ability of the Market Data app to present ViewChart, GetAppData, and
+      ViewData as an fdc3.data data app.
+    group: market-data-app
+
+  - id: order-proposal-construction
+    title: Order Proposal Construction
+    description: >
+      Ability of the Order Entry app to satisfy demo.CreateOrder with a
+      demo.portfolioRecommendation and return a signed demo.order or
+      demo.orderList draft for human review.
+    group: order-entry-app
+
+  - id: order-blotter-view
+    title: Order Blotter
+    description: >
+      Ability of the Order Entry app to present outstanding and recent
+      drafts through ViewOrders.
+    group: order-entry-app
+
+  - id: trade-execution
+    title: Trade Execution
+    description: >
+      Ability of the Execution app to satisfy demo.SubmitOrder and return a
+      signed fdc3.transactionResult. 
+    group: execution-app
+
+  - id: agent-query-session
+    title: Agent Query Session
+    description: >
+      Ability of the Agent UI to raise AskAgent, open a session
+      PrivateChannel, reuse that channel for follow-ups, and observe
+      user-channel fdc3.portfolio.
+    group: agent-ui
+
+  - id: agent-file-attach
+    title: Agent File Attach
+    description: >
+      Ability of the Agent UI to broadcast fdc3.data.file and include
+      fileIds on a subsequent fdc3.ai.agentQuery.
+    group: agent-ui
+
+  - id: agent-response-render
+    title: Agent Response Render
+    description: >
+      Ability of the Agent UI to render streamed markdown, status,
+      citations, HTML artifacts, and suggestion chips from the harness.
+    group: agent-ui
+
+  - id: explanation-generation
+    title: Explanation Generation
+    description: >
+      Ability of the Agent harness to generate natural-language explanations
+      of portfolio positions, exposures, stress results, and related risk
+      information, grounded in signed demo.portfolioRisk,
+      demo.stressScenarioResult, and demo.researchBundle contexts where
+      available.
+    group: agent-harness
+
+  - id: recommendation-generation
+    title: Recommendation Generation
+    description: >
+      Ability of the Agent harness to generate a demo.portfolioRecommendation
+      describing suggested portfolio changes, rationale, and supporting
+      evidence for the portfolio manager, without constructing or submitting
+      executable orders.
+    group: agent-harness
+
+  - id: session-context-retention
+    title: Session Context Retention
+    description: >
+      Ability of the Agent harness to retain conversation history, selected
+      instruments, and other session context across turns within an
+      assistant session.
+    group: agent-harness
+
+  - id: fdc3-app-invocation
+    title: FDC3 Application Invocation
+    description: >
+      Ability of the Agent harness to raise approved FDC3 intents against
+      specialist desktop applications (Portfolio, Risk, Research, Market
+      Data, Order Entry) that perform portfolio, risk, or market functions
+      on behalf of the user.
+    group: agent-harness
 
   - id: tool-calling
     title: Tool Calling
     description: >
-      Ability to call registered tools and APIs, including the demo intent
-      allowlist (demo.GetPortfolioRisk, demo.GetResearch,
-      demo.RunStressScenario, demo.CreateOrder) and model-invoked
-      functions. demo.SubmitOrders must not appear on any assistant allowlist.
-    group: session-and-context
+      Ability of the Agent harness to call registered tools, including
+      discoverability queries and the demo intent allowlist
+      (demo.GetPortfolioRisk, demo.GetResearch, demo.RunStressScenario,
+      demo.CreateOrder, demo.GetPriceHistory, GetPortfolio). demo.SubmitOrder
+      must not appear on any assistant allowlist.
+    group: agent-harness
+
+  - id: markdown-view
+    title: Markdown View
+    description: >
+      Ability of the Markdown Viewer to seed or replace-in-place a display
+      of fdc3.data.markdown via fdc3.open or ViewData.
+    group: markdown-viewer
+
+  - id: workspace-discoverability
+    title: Workspace Discoverability
+    description: >
+      Ability of the Discoverability app to answer catalog requests
+      (apps, intents, context types, context schemas, App Directory records)
+      on the fdc3.discoverability channel so the harness can resolve what
+      it may raise.
+    group: discoverability
