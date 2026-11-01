@@ -13,6 +13,7 @@
   },
   "scripts": {
     "clean": "rimraf --glob \"directory/static/generated\" \"server-apps/*/.vite\" \"front-end-apps/*/.vite\" \"directory/.vite\"",
+    "clean:temp": "rimraf --glob \"server-apps/*/temp\" \"sail-extensions/*/temp\"",
     "dev": "tsx main.ts",
     "start": "tsx main.ts"
   },
