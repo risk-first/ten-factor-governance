@@ -388,6 +388,16 @@ h1 {
   object-position: center right;
 }
 
+.split.wide-visual .visual.visual-top {
+  align-items: flex-start;
+}
+
+.split.wide-visual .visual.visual-top img {
+  height: auto;
+  max-height: 100%;
+  object-position: top right;
+}
+
 .slide.image-led .visual img {
   max-height: 62%;
   width: auto;
