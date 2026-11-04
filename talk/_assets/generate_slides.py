@@ -382,10 +382,47 @@ slides.append((
 ))
 
 slides.append((
-    "11-ten-factor",
+    "11-ccc-and-gemara",
     page(
-        "11 — Ten Factor Governance",
+        "11 — CCC and Gemara",
         """      <p class="kicker">11</p>
+      <h1>CCC and Gemara</h1>
+      <div class="cards two">
+        <div class="card">
+          <h3>CCC · FINOS</h3>
+          <p>Reusable, technology-agnostic threats, controls and assessment requirements. Written once, mapped across clouds.</p>
+        </div>
+        <div class="card">
+          <h3>Gemara · OpenSSF</h3>
+          <p>Schemas for expressing governance, risks, controls, policies and evidence as structured, machine-readable data.</p>
+        </div>
+      </div>
+      <p class="lede" style="margin-top:1.4rem">Gemara links requirements to threats, controls, policies and assessments. That is what makes governance version-controlled, testable and reusable.</p>""",
+        cite="FINOS Common Cloud Controls. ccc.finos.org\nOpenSSF Gemara. gemara.openssf.org",
+    ),
+    notes(
+        "11 — CCC and Gemara",
+        [
+            "CCC is the control catalogue. Gemara is the data model.",
+            "Together they turn governance from a manifesto into files you can diff, review and compose. Ten Factor is the vocabulary; this is how you write it down.",
+            "The AI Portfolio Assistant example is already expressed this way.",
+        ],
+        [
+            "A schema walkthrough. Stay at the connecting-the-dots level.",
+        ],
+        [
+            "FINOS Common Cloud Controls. https://ccc.finos.org",
+            "OpenSSF Gemara. https://gemara.openssf.org",
+        ],
+        "2 min",
+    ),
+))
+
+slides.append((
+    "12-ten-factor",
+    page(
+        "12 — Ten Factor Governance",
+        """      <p class="kicker">12</p>
       <div class="split">
         <div>
           <h1>Ten Factor Governance</h1>
@@ -409,7 +446,7 @@ slides.append((
         cite="Ten Factor Governance. tenfactorgovernance.org",
     ),
     notes(
-        "11 — Ten Factor Governance",
+        "12 — Ten Factor Governance",
         [
             "This is the architectural vocabulary. Analogous to the Twelve-Factor App, for operable governance.",
             "Do not read all ten. Voice 1, 5, 6 and 7: sensitive activities, context in / decisions out, evidence by default, continuous governance.",
@@ -422,43 +459,6 @@ slides.append((
             "Ten Factor Governance. https://tenfactorgovernance.org",
         ],
         "3 min",
-    ),
-))
-
-slides.append((
-    "12-ccc-and-gemara",
-    page(
-        "12 — CCC and Gemara",
-        """      <p class="kicker">12</p>
-      <h1>CCC and Gemara</h1>
-      <div class="cards two">
-        <div class="card">
-          <h3>CCC · FINOS</h3>
-          <p>Reusable, technology-agnostic threats, controls and assessment requirements. Written once, mapped across clouds.</p>
-        </div>
-        <div class="card">
-          <h3>Gemara · OpenSSF</h3>
-          <p>Schemas for expressing governance, risks, controls, policies and evidence as structured, machine-readable data.</p>
-        </div>
-      </div>
-      <p class="lede" style="margin-top:1.4rem">Gemara links requirements to threats, controls, policies and assessments. That is what makes governance version-controlled, testable and reusable.</p>""",
-        cite="FINOS Common Cloud Controls. ccc.finos.org\nOpenSSF Gemara. gemara.openssf.org",
-    ),
-    notes(
-        "12 — CCC and Gemara",
-        [
-            "CCC is the control catalogue. Gemara is the data model.",
-            "Together they turn the last slide from a manifesto into files you can diff, review and compose.",
-            "The AI Portfolio Assistant example is already expressed this way.",
-        ],
-        [
-            "A schema walkthrough. Stay at the connecting-the-dots level.",
-        ],
-        [
-            "FINOS Common Cloud Controls. https://ccc.finos.org",
-            "OpenSSF Gemara. https://gemara.openssf.org",
-        ],
-        "2 min",
     ),
 ))
 

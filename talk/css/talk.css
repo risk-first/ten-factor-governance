@@ -494,6 +494,56 @@ h1 {
   font-weight: 600;
 }
 
+.slide.recap-slide {
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+}
+
+.slide.recap-slide h1 {
+  flex: none;
+  margin-bottom: 0.55rem;
+  font-size: clamp(1.7rem, 3cqw, 2.6rem);
+}
+
+.recap-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0.65rem 0.85rem;
+}
+
+.recap-grid figure {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+}
+
+.recap-grid img {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 8px;
+  background: #0b140e;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.recap-grid figcaption {
+  flex: none;
+  margin-top: 0.35rem;
+  font-family: var(--serif);
+  font-size: clamp(0.95rem, 1.55cqw, 1.25rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink-muted);
+}
+
 .questions {
   list-style: none;
   margin: 1.2rem 0 0;
@@ -1332,6 +1382,16 @@ h1 {
   font-size: clamp(0.62rem, 1vw, 0.78rem);
   line-height: 1.35;
   white-space: pre-line;
+}
+
+.slide-url {
+  margin: 0 0 0.45rem;
+  font-family: var(--serif);
+  font-size: clamp(1.55rem, 3.2vw, 2.55rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 .nav {
