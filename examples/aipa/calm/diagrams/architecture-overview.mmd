@@ -1,0 +1,95 @@
+---
+config:
+  theme: base
+  themeVariables:
+    fontFamily: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', sans-serif
+    darkMode: false
+    fontSize: 14px
+    edgeLabelBackground: '#d5d7e1'
+    lineColor: '#000000'
+---
+%%{init: {"layout": "elk", "flowchart": {"htmlLabels": false}}}%%
+flowchart TB
+classDef boundary fill:#e1e4f0,stroke:#204485,stroke-dasharray: 5 4,stroke-width:1px,color:#000000;
+classDef node fill:#eef1ff,stroke:#007dff,stroke-width:1px,color:#000000;
+classDef iface fill:#f0f0f0,stroke:#b6b6b6,stroke-width:1px,font-size:10px,color:#000000;
+classDef highlight fill:#fdf7ec,stroke:#f0c060,stroke-width:1px,color:#000000;
+
+        subgraph banking-firewall["Inside Banking Firewall"]
+        direction TB
+            agentic-model["Agentic Model #40;Foundation Model#41;"]:::node
+            market-data["Market Data"]:::node
+            portfolio-position-data["Portfolio / Position Data"]:::node
+            portfolio-manager["Portfolio Manager"]:::node
+            research-data["Research / News / Filings"]:::node
+            trading-execution-service["Trading / Execution Service"]:::node
+                subgraph artifact-repository["Artifact Repository #40;Governance Model#41;"]
+                direction TB
+                    governance-model["Governance Model #40;Gemara + AIMS#41;"]:::node
+                end
+                class artifact-repository boundary
+                subgraph fdc3-desktop["FDC3 Desktop"]
+                direction TB
+                    ai-portfolio-assistant["AI Portfolio Assistant"]:::node
+                    execution-app["Execution App"]:::node
+                    fdc3-desktop-agent["FDC3 Desktop Agent"]:::node
+                    governance-console["Governance Console"]:::node
+                    market-data-app["Market Data App"]:::node
+                    order-entry-app["Order Entry / Trade Blotter"]:::node
+                    portfolio-app["Portfolio App"]:::node
+                    research-app["Research App"]:::node
+                    risk-app["Risk App"]:::node
+                    stress-engine["Stress Engine"]:::node
+                end
+                class fdc3-desktop boundary
+                subgraph governance-runtime-k8s["Governance Runtime Deployment #40;Managed Kubernetes#41;"]
+                direction TB
+                        subgraph governance-runtime["Portfolio Assistant Governance Runtime"]
+                        direction TB
+                            deterministic-policy-evaluation["Deterministic Policy Evaluation"]:::node
+                            evidence-recording["Evidence Recording"]:::node
+                            governance-gateway["Governance Gateway"]:::node
+                            human-approval-workflow["Human Approval Workflow"]:::node
+                            semantic-evaluation["Semantic / AI Evaluation"]:::node
+                        end
+                        class governance-runtime boundary
+                end
+                class governance-runtime-k8s boundary
+                subgraph records-object-storage["Records Deployment #40;Object Storage#41;"]
+                direction TB
+                    evidence-record["Decisions and Evidence Record"]:::node
+                end
+                class records-object-storage boundary
+        end
+        class banking-firewall boundary
+
+
+    portfolio-manager -->|Portfolio manager uses the AI Portfolio Assistant as the chat harness, plus other desktop apps.| ai-portfolio-assistant
+    portfolio-manager -->|Portfolio manager uses the AI Portfolio Assistant as the chat harness, plus other desktop apps.| portfolio-app
+    portfolio-manager -->|Portfolio manager uses the AI Portfolio Assistant as the chat harness, plus other desktop apps.| order-entry-app
+    portfolio-manager -->|Portfolio manager uses the AI Portfolio Assistant as the chat harness, plus other desktop apps.| governance-console
+    ai-portfolio-assistant -->|Assistant raises intents and receives returned contexts via the Desktop Agent #40;e.g. raises demo.GetPortfolioRisk with fdc3.portfolio; later receives demo.portfolioRisk#41;.| fdc3-desktop-agent
+    portfolio-app -->|Specialist FDC3 apps connect to the Desktop Agent for context and intents.| fdc3-desktop-agent
+    risk-app -->|Risk App serves deterministic risk intents via the Desktop Agent #40;demo.GetPortfolioRisk → demo.portfolioRisk; demo.RunStressScenario → demo.stressScenarioResult#41;.| fdc3-desktop-agent
+    fdc3-desktop-agent -->|After ALLOW, the Desktop Agent forwards demo.GetPortfolioRisk #40;fdc3.portfolio#41; to the Risk App for deterministic analysis.| risk-app
+    fdc3-desktop-agent -->|Desktop Agent delivers intent results to the AI Portfolio Assistant #40;e.g. demo.portfolioRisk with FDC3 Security provenance after demo.GetPortfolioRisk#41;.| ai-portfolio-assistant
+    ai-portfolio-assistant -->|Assistant presents governed analysis to the portfolio manager #40;explains concentrations and risk contributors from demo.portfolioRisk#41;.| portfolio-manager
+    risk-app -->|Risk App invokes the stress engine for scenario calculation.| stress-engine
+    research-app -->|Research App serves research intents via the Desktop Agent.| fdc3-desktop-agent
+    order-entry-app -->|Order Entry receives proposal intents via the Desktop Agent.| fdc3-desktop-agent
+    execution-app -->|Execution App is reachable for submit intents that governance denies to the assistant.| fdc3-desktop-agent
+    fdc3-desktop-agent -->|Desktop Agent governance enforcement point requests decisions from the Governance Gateway before forwarding sensitive intents.| governance-gateway
+    governance-gateway -->|Gateway invokes deterministic policy evaluation.| deterministic-policy-evaluation
+    governance-gateway -->|Governance Gateway hands the evaluation/enforcement outcome to Evidence Recording for persistence against the Decisions and Evidence Record.| evidence-recording
+    governance-gateway -->|Gateway may invoke semantic evaluation for judgement-bearing requirements.| semantic-evaluation
+    governance-gateway -->|Gateway routes REQUIRE APPROVAL outcomes to the human approval workflow.| human-approval-workflow
+    governance-runtime -->|Governance Runtime is informed by the Governance Model served from the Artifact Repository.| artifact-repository
+    evidence-recording -->|Evidence Recording writes evaluation and enforcement records to the Decisions and Evidence Record.| evidence-record
+    ai-portfolio-assistant -->|AI Portfolio Assistant #40;chat harness#41; submits each chat turn to Governance Gateway agent-ingress guardrails before acting; there is no ungated path from user chat to tools or model #40;AIGF AIR-PREV-003, CCC.MARefArc.CN02.AR01#41;.| governance-gateway
+    ai-portfolio-assistant -->|Assistant issues prompts via Governance Gateway LLM-egress guardrails; there is no direct assistant-to-model path #40;CCC.MARefArc.CN02.AR02, AIR-PREV-003#41;.| governance-gateway
+    governance-gateway -->|Gateway forwards inspected prompts to the in-firewall agentic model and returns inspected completions; prompts do not egress to the supplier #40;apa-ctl-014 / fm-no-train-on-prompts#41;.| agentic-model
+    portfolio-app -->|Portfolio App reads portfolio and position data.| portfolio-position-data
+    market-data-app -->|Market Data App consumes market data feeds.| market-data
+    research-app -->|Research App retrieves research, news and filings.| research-data
+    execution-app -->|Execution App submits authorised orders to the trading service #40;human path only#41;.| trading-execution-service
+    governance-console -->|Governance Console reads decisions and evidence for inspection.| evidence-record

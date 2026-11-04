@@ -1,0 +1,11 @@
+sequenceDiagram
+    Portfolio Manager ->> AI Portfolio Assistant: PM asks: #quot;What are the biggest risks in this portfolio?#quot;
+    AI Portfolio Assistant ->> FDC3 Desktop Agent: Assistant raises demo.GetPortfolioRisk with fdc3.portfolio
+    FDC3 Desktop Agent ->> Governance Gateway: Desktop Agent asks Gateway: ALLOW / DENY / REQUIRE APPROVAL?
+    Governance Gateway ->> Deterministic Policy Evaluation: Deterministic eval: Analyse authority + apa-ctl-001 → ALLOW
+    Governance Gateway ->> Evidence Recording: Gateway sends ALLOW decision to Evidence Recording
+    Evidence Recording ->> Decisions and Evidence Record: Evidence Recording persists the decision to the Evidence Record
+    FDC3 Desktop Agent ->> Risk App: Agent forwards demo.GetPortfolioRisk to Risk App
+    Risk App ->> FDC3 Desktop Agent: Risk App returns signed demo.portfolioRisk
+    FDC3 Desktop Agent ->> AI Portfolio Assistant: Agent delivers demo.portfolioRisk to the Assistant
+    AI Portfolio Assistant ->> Portfolio Manager: Assistant explains concentrations / contributors to the PM

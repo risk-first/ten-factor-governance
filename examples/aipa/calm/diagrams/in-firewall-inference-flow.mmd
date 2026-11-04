@@ -1,0 +1,5 @@
+sequenceDiagram
+    AI Portfolio Assistant ->> Governance Gateway: Assistant submits prompt to LLM-egress guardrails
+    Governance Gateway ->> Agentic Model (Foundation Model): Gateway forwards inspected prompt to in-firewall model
+    Governance Gateway ->> Evidence Recording: Gateway sends decision to Evidence Recording
+    Evidence Recording ->> Decisions and Evidence Record: Evaluation/enforcement evidence recorded when policy requires
