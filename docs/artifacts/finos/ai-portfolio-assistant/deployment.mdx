@@ -8,10 +8,10 @@ description: "Local demo topology and the target CALM deployment (Managed Kubern
 # AI Portfolio Assistant Deployment
 
 Two topologies share the same roles. The **local demo** under
-[`examples/aipa/`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/)
+[`examples/aipa/`](https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/)
 is what `npm run aipa:dev` starts today. The **target production** topology is
 the [FINOS CALM](https://calm.finos.org) model at
-[`examples/aipa/calm/architecture.json`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/calm/architecture.json)
+[`examples/aipa/calm/architecture.json`](https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/calm/architecture.json)
 (`deployed-in` / `composed-of` under the banking-firewall boundary): Managed
 Kubernetes hosts, Artifact Repository, object-storage evidence, and in-firewall
 inference.
@@ -39,7 +39,7 @@ the Sail `sail-governance` host (port **9101**).
 For a Desktop Agent, use **FDC3 Sail v2** from the
 [`pluggable-sail`](https://github.com/finos/FDC3-Sail/tree/pluggable-sail)
 branch (full steps in the
-[AIPA README](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/README.md)):
+[AIPA README](https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/README.md)):
 
 ```bash
 git clone https://github.com/finos/FDC3-Sail.git
@@ -94,7 +94,7 @@ call `exchangeData('sign-context', …)` over the secure-boundary WebSocket.
 Offline **fixtures** under `examples/aipa/common/fixtures/` are used when keys
 are missing or live calls fail. JEV setup (context/batch ≥ 1024 so a real
 order fits) is in
-[`examples/aipa/server-apps/jev-governance/SETUP.md`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/server-apps/jev-governance/SETUP.md).
+[`examples/aipa/server-apps/jev-governance/SETUP.md`](https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/server-apps/jev-governance/SETUP.md).
 
 Sail **Evaluation** (`off` / `direct` / `jev`) and **Approval**
 (`aipa-approvals` / `aipa-fluxnova` / `none`) are desktop settings, not

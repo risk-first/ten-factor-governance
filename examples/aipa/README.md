@@ -1,21 +1,46 @@
-# AIPA FDC3 Assisting Apps
+# AI Portfolio Assistant (AIPA) demo
 
-Runnable FDC3 specialist apps for the
-[AI Portfolio Assistant](../../docs/artifacts/finos/ai-portfolio-assistant/)
-example. Browse the published Gemara catalogs and AIMS docs on
-[tenfactorgovernance.org](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/).
-Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
+This folder is the **runnable demo** for Ten Factor Governance: an FDC3 suite
+in which a portfolio manager’s AI assistant can observe holdings, analyse risk,
+pull research, and propose trades — while **governance decides what the agent
+is allowed to do**.
 
-The Agent UI + harness cover the assistant chat path via
-[`fdc3.ai`](./fdc3-extensions/fdc3.ai/). Sail's `sail-governance` extension
-(`sail-extensions/sail-governance`) is the policy enforcement point: it
-intercepts `demo.SubmitOrder`, asks Direct or JEV for
-`demo.GetGovernanceDecision`, and enforces Allow / Escalate (`GetApproval` +
-`ApprovalRequired` to the raiser) / Deny. Sail
-settings split into **Evaluation** (`off` / `direct` / `jev`) and **Approval**
-(GetApproval app + approver). JEV scores committed rules via LM Studio
-`POST /v1/systemone` with a loaded **decision** model (instance id in `CLEF_MODEL`);
-the harness keeps QWEN on chat completions.
+Deterministic apps (Portfolio, Risk, Market Data, Research, Order Entry,
+Execution) do the numbers. The Agent UI + harness chat with an LLM and raise
+FDC3 intents. A Sail Desktop Agent extension (`sail-governance`) is the policy
+enforcement point: on `demo.SubmitOrder` it asks a PDP (Direct or JEV), then
+**Allow**, **Escalate** to human approval (Approvals / Fluxnova), or **Deny**.
+That is the observe → analyse → explain → recommend → propose → execute arc
+with enforceable authority boundaries.
+
+Layout is modelled on
+[`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
+
+### Browse the story & catalogs (published site)
+
+Start on the website — Gemara twins, architecture, deployment, demo steps, and
+ISO/IEC 42001 AIMS — then come back here to run the code:
+
+| | |
+| --- | --- |
+| **Example overview** | [AI Portfolio Assistant](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/) |
+| Demo walkthrough | [Demo steps](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/demo-steps) |
+| CALM architecture | [Architecture](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/architecture) |
+| How to deploy / ports | [Deployment](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/deployment) |
+| Gemara catalogs | [Gemara tree](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/) |
+| Ten Factor home | [tenfactorgovernance.org](https://tenfactorgovernance.org/) |
+
+In-repo mirrors of those docs live under
+[`docs/artifacts/finos/ai-portfolio-assistant/`](../../docs/artifacts/finos/ai-portfolio-assistant/).
+
+### Runtime sketch
+
+- Chat: Agent UI → harness (`AskAgent` / [`fdc3.ai`](./fdc3-extensions/fdc3.ai/))
+- Sensitive raise: Sail Governance → Direct or JEV (`demo.GetGovernanceDecision`)
+  → Allow / Escalate (`GetApproval` + `ApprovalRequired`) / Deny
+- Sail **Evaluation**: `off` / `direct` / `jev`; **Approval**: Approvals or Fluxnova
+  (+ approver). JEV scores `rules.json` via LM Studio System One (`CLEF_*`);
+  the harness chat model is separate (`DEFAULT_MODEL` / OpenAI-compatible).
 
 ## Apps
 

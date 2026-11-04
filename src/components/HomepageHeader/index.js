@@ -27,7 +27,7 @@ export default function HomepageHeader() {
           </Link>
           <a
             className={styles.secondaryCta}
-            href="https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/README.md"
+            href="https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/README.md"
             target="_blank"
             rel="noopener noreferrer"
           >
