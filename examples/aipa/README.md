@@ -1,18 +1,43 @@
-# AIPA FDC3 Assisting Apps
+# AI Portfolio Assistant (AIPA) demo
 
-Runnable FDC3 specialist apps for the [AI Portfolio Assistant](../../docs/artifacts/finos/ai-portfolio-assistant/)
-example. Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
+This folder is the **runnable demo** for Ten Factor Governance: an FDC3 suite
+in which a portfolio manager’s AI assistant can observe holdings, analyse risk,
+pull research, and propose trades — while **governance decides what the agent
+is allowed to do**.
 
-The Agent UI + harness cover the assistant chat path via
-[`fdc3.ai`](./fdc3-extensions/fdc3.ai/). Sail's `sail-governance` extension
-(`sail-extensions/sail-governance`) is the policy enforcement point: it
-intercepts `demo.SubmitOrder`, asks Direct or JEV for
-`demo.GetGovernanceDecision`, and enforces Allow / Escalate (`GetApproval` +
-`ApprovalRequired` to the raiser) / Deny. Sail
-settings split into **Evaluation** (`off` / `direct` / `jev`) and **Approval**
-(GetApproval app + approver). JEV scores committed rules via LM Studio
-`POST /v1/systemone` with a loaded **decision** model (instance id in `CLEF_MODEL`);
-the harness keeps QWEN on chat completions.
+Deterministic apps (Portfolio, Risk, Market Data, Research, Order Entry,
+Execution) do the numbers. The Agent UI + harness chat with an LLM and raise
+FDC3 intents. A Sail Desktop Agent extension (`sail-governance`) is the policy
+enforcement point: on `demo.SubmitOrder` it asks a PDP (Direct or JEV), then
+**Allow**, **Escalate** to human approval (Approvals / Fluxnova), or **Deny**.
+That is the observe → analyse → explain → recommend → propose → execute arc
+with enforceable authority boundaries.
+
+### Browse the story & catalogs (published site)
+
+Start on the website — Gemara twins, architecture, deployment, demo steps, and
+ISO/IEC 42001 AIMS — then come back here to run the code:
+
+| | |
+| --- | --- |
+| **Example overview** | [AI Portfolio Assistant](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/) |
+| Demo walkthrough | [Demo steps](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/demo-steps) |
+| CALM architecture | [Architecture](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/architecture) |
+| How to deploy / ports | [Deployment](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/deployment) |
+| Gemara catalogs | [Gemara tree](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/gemara/) |
+| Ten Factor home | [tenfactorgovernance.org](https://tenfactorgovernance.org/) |
+
+In-repo mirrors of those docs live under
+[`docs/artifacts/finos/ai-portfolio-assistant/`](../../docs/artifacts/finos/ai-portfolio-assistant/).
+
+### Runtime sketch
+
+- Chat: Agent UI → harness (`AskAgent` / [`fdc3.ai`](./fdc3-extensions/fdc3.ai/))
+- Sensitive raise: Sail Governance → Direct or JEV (`demo.GetGovernanceDecision`)
+  → Allow / Escalate (`GetApproval` + `ApprovalRequired`) / Deny
+- Sail **Evaluation**: `off` / `direct` / `jev`; **Approval**: Approvals or Fluxnova
+  (+ approver). JEV scores `rules.json` via LM Studio System One (`CLEF_*`);
+  the harness chat model is separate (`DEFAULT_MODEL` / OpenAI-compatible).
 
 ## Apps
 
@@ -37,6 +62,8 @@ the harness keeps QWEN on chat completions.
 
 ## Quick start
 
+### 1. Run the AIPA apps + App Directory
+
 ```bash
 cd examples/aipa
 cp .env.example .env   # optional API keys
@@ -50,6 +77,9 @@ From the repo root:
 npm run aipa:dev
 ```
 
+That starts the assisting apps, the combined App Directory on **4099**, and the
+Sail Governance extension host on **9101**.
+
 Combined App Directory:
 
 `http://localhost:4099/static/generated/aipa-fdc3-apps.json`
@@ -59,8 +89,45 @@ The JSON is rewritten at request time: `localhost` / `127.0.0.1` in app
 directory with (e.g. your LAN IP), so phones on the same Wi‑Fi can resolve
 apps. On-disk `directory/static/generated/aipa-fdc3-apps.json` stays localhost.
 
-Point a Desktop Agent (e.g. FDC3 Sail) at that URL. Apps also expose local
-**API** buttons so you can exercise backends without an agent.
+Apps also expose local **API** buttons so you can exercise backends without an
+agent.
+
+### 2. Run FDC3 Sail v2 (pluggable-sail)
+
+Use the **`pluggable-sail`** branch of
+[FINOS FDC3-Sail](https://github.com/finos/FDC3-Sail/tree/pluggable-sail) — that
+is the Desktop Agent build with loadable extensions (including governance).
+
+```bash
+git clone https://github.com/finos/FDC3-Sail.git
+cd FDC3-Sail
+git checkout pluggable-sail
+npm install
+cd packages/sail-v2-web
+npm run dev
+```
+
+Open Sail at `http://localhost:8090`.
+
+`pluggable-sail` already lists `http://localhost:9101/src/index.ts` in
+`SAIL_EXTENSION_URLS`, so with AIPA running the **Sail Governance** extension
+loads automatically (Settings → Sail Governance for Evaluation / Approval).
+
+### 3. Add the AIPA App Directory in Sail
+
+In Sail, open directory / AppD settings and add (or activate) this directory:
+
+| Label | URL |
+| --- | --- |
+| AIPA | `http://localhost:4099/static/generated/aipa-fdc3-apps.json` |
+
+Leave other directories inactive if you want only the demo apps. After refresh
+you should see Portfolio, Risk, Order Entry, Execution, Approvals / Fluxnova,
+governance PDPs, and the rest of the table above.
+
+**Order of startup:** start AIPA first (so **4099** and **9101** are up), then
+Sail. If Sail started earlier, reload the page after AIPA is online so the
+extension import and directory fetch succeed.
 
 ## Data sources
 

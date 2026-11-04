@@ -31,8 +31,9 @@ yarn-error.log*
 *.log
 /local
 
-# Derived CALM diagrams (regenerate: npm run calm:diagrams)
-/static/img/calm/
+# Derived CALM mermaid sources (regenerate: npm run calm:diagrams)
+# SVGs under static/img/calm/ are committed so Docusaurus CI can resolve them.
 /examples/aipa/calm/diagrams/*
 !/examples/aipa/calm/diagrams/README.md
+!/examples/aipa/calm/diagrams/*.mmd
 talk/18-demo/good-demo.mp4

@@ -48,7 +48,7 @@ npm run calm:diagrams:mermaid   # mermaid only (no browser)
 | --- | --- | --- |
 | Mermaid sources | `diagrams/*.mmd` | **No** — derived from docify |
 | Combined docify markdown | `diagrams/docify-output.md` | **No** — derived |
-| SVGs for Docusaurus | `static/img/calm/ai-portfolio-assistant/*.svg` | **No** — derived |
+| SVGs for Docusaurus | `static/img/calm/ai-portfolio-assistant/*.svg` | **Yes** — derived; committed for CI |
 
 Only `diagrams/README.md` is kept under `diagrams/`. Docs pages under
 `docs/artifacts/finos/ai-portfolio-assistant/` reference the SVG paths, so run

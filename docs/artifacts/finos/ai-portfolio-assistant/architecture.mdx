@@ -5,20 +5,20 @@ sidebar_position: 2
 hide_table_of_contents: true
 ---
 
-The [runnable example](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/)
+The [runnable example](https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/)
 under `examples/aipa/` is a local FDC3 desktop: specialist apps, an Agent UI +
 harness, and a Governance Runtime assembled from a Desktop Agent enforcement
 point, interchangeable decision apps, human-approval apps, and an evidence
 console.
 
 The [FINOS CALM](https://calm.finos.org) model at
-[`examples/aipa/calm/architecture.json`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/calm/architecture.json)
+[`examples/aipa/calm/architecture.json`](https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/calm/architecture.json)
 is the **target production architecture**. It places the same roles on Managed
 Kubernetes hosts inside a banking firewall, with a Governance Gateway that
 evaluates FDC3 intents **and** chat / model I/O, an Artifact Repository, a
 Decisions and Evidence Record on object storage, and in-firewall foundation-model
 inference. Gemara / CCC / AIGF / AIMS controls attach via node `controls` and
-[`decorators/`](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/calm/decorators/).
+[`decorators/`](https://github.com/risk-first/ten-factor-governance/blob/main/examples/aipa/calm/decorators/).
 
 ```bash
 npm run calm:validate

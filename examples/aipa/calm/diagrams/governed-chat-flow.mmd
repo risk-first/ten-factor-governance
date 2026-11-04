@@ -1,0 +1,7 @@
+sequenceDiagram
+    Portfolio Manager ->> AI Portfolio Assistant: Portfolio manager sends a chat turn to the AI Portfolio Assistant #40;harness#41;
+    AI Portfolio Assistant ->> Governance Gateway: Assistant submits the turn to agent-ingress guardrails
+    AI Portfolio Assistant ->> Governance Gateway: Assistant requests model inference via LLM-egress guardrails
+    Governance Gateway ->> Agentic Model (Foundation Model): Gateway invokes in-firewall model and inspects completion
+    Governance Gateway ->> Evidence Recording: Gateway sends decision to Evidence Recording
+    Evidence Recording ->> Decisions and Evidence Record: Decision and evidence persisted
