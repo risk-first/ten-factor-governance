@@ -1,7 +1,10 @@
 # AIPA FDC3 Assisting Apps
 
-Runnable FDC3 specialist apps for the [AI Portfolio Assistant](../../docs/artifacts/finos/ai-portfolio-assistant/)
-example. Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
+Runnable FDC3 specialist apps for the
+[AI Portfolio Assistant](../../docs/artifacts/finos/ai-portfolio-assistant/)
+example. Browse the published Gemara catalogs and AIMS docs on
+[tenfactorgovernance.org](https://tenfactorgovernance.org/docs/artifacts/finos/ai-portfolio-assistant/).
+Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
 
 The Agent UI + harness cover the assistant chat path via
 [`fdc3.ai`](./fdc3-extensions/fdc3.ai/). Sail's `sail-governance` extension
@@ -37,6 +40,8 @@ the harness keeps QWEN on chat completions.
 
 ## Quick start
 
+### 1. Run the AIPA apps + App Directory
+
 ```bash
 cd examples/aipa
 cp .env.example .env   # optional API keys
@@ -50,6 +55,9 @@ From the repo root:
 npm run aipa:dev
 ```
 
+That starts the assisting apps, the combined App Directory on **4099**, and the
+Sail Governance extension host on **9101**.
+
 Combined App Directory:
 
 `http://localhost:4099/static/generated/aipa-fdc3-apps.json`
@@ -59,8 +67,45 @@ The JSON is rewritten at request time: `localhost` / `127.0.0.1` in app
 directory with (e.g. your LAN IP), so phones on the same Wi‑Fi can resolve
 apps. On-disk `directory/static/generated/aipa-fdc3-apps.json` stays localhost.
 
-Point a Desktop Agent (e.g. FDC3 Sail) at that URL. Apps also expose local
-**API** buttons so you can exercise backends without an agent.
+Apps also expose local **API** buttons so you can exercise backends without an
+agent.
+
+### 2. Run FDC3 Sail v2 (pluggable-sail)
+
+Use the **`pluggable-sail`** branch of
+[FINOS FDC3-Sail](https://github.com/finos/FDC3-Sail/tree/pluggable-sail) — that
+is the Desktop Agent build with loadable extensions (including governance).
+
+```bash
+git clone https://github.com/finos/FDC3-Sail.git
+cd FDC3-Sail
+git checkout pluggable-sail
+npm install
+cd packages/sail-v2-web
+npm run dev
+```
+
+Open Sail at `http://localhost:8090`.
+
+`pluggable-sail` already lists `http://localhost:9101/src/index.ts` in
+`SAIL_EXTENSION_URLS`, so with AIPA running the **Sail Governance** extension
+loads automatically (Settings → Sail Governance for Evaluation / Approval).
+
+### 3. Add the AIPA App Directory in Sail
+
+In Sail, open directory / AppD settings and add (or activate) this directory:
+
+| Label | URL |
+| --- | --- |
+| AIPA | `http://localhost:4099/static/generated/aipa-fdc3-apps.json` |
+
+Leave other directories inactive if you want only the demo apps. After refresh
+you should see Portfolio, Risk, Order Entry, Execution, Approvals / Fluxnova,
+governance PDPs, and the rest of the table above.
+
+**Order of startup:** start AIPA first (so **4099** and **9101** are up), then
+Sail. If Sail started earlier, reload the page after AIPA is online so the
+extension import and directory fetch succeed.
 
 ## Data sources
 

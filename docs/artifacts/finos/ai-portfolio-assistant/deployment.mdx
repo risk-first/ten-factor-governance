@@ -34,10 +34,26 @@ npm run aipa:dev
 ```
 
 That process starts the Vite multi-app runner, the combined App Directory, and
-the Sail `sail-governance` host (port **9101**). Point a Desktop Agent (FDC3
-Sail) at:
+the Sail `sail-governance` host (port **9101**).
+
+For a Desktop Agent, use **FDC3 Sail v2** from the
+[`pluggable-sail`](https://github.com/finos/FDC3-Sail/tree/pluggable-sail)
+branch (full steps in the
+[AIPA README](https://github.com/finos/ten-factor-governance/blob/main/examples/aipa/README.md)):
+
+```bash
+git clone https://github.com/finos/FDC3-Sail.git
+cd FDC3-Sail && git checkout pluggable-sail
+npm install
+cd packages/sail-v2-web && npm run dev   # http://localhost:8090
+```
+
+In Sail, add the App Directory:
 
 `http://localhost:4099/static/generated/aipa-fdc3-apps.json`
+
+With AIPA already running, Sail loads the governance extension from
+`http://localhost:9101` (listed in `SAIL_EXTENSION_URLS` on `pluggable-sail`).
 
 Apps also expose local **API** buttons so you can exercise backends without an
 agent. Node **≥ 22**. Private signing keys stay on each app’s trusted backend
