@@ -13,10 +13,18 @@ export type GovernanceSettings = {
   approver: string
 }
 
+/** Allowed GetApproval / Fluxnova assignees for the demo. */
+export const APPROVER_OPTIONS = ["rob@finos.org", "olivier@finos.org"] as const
+export type ApproverOption = (typeof APPROVER_OPTIONS)[number]
+
+export function isApproverOption(value: unknown): value is ApproverOption {
+  return APPROVER_OPTIONS.includes(value as ApproverOption)
+}
+
 export const GOVERNANCE_DEFAULT_SETTINGS: GovernanceSettings = {
   mode: "direct",
   approvalAppId: "aipa-approvals",
-  approver: "demo",
+  approver: "rob@finos.org",
 }
 
 export function isGovernanceMode(value: unknown): value is GovernanceMode {
@@ -28,9 +36,11 @@ export function isApprovalAppId(value: unknown): value is ApprovalAppId {
 }
 
 export function resolveApprover(value: unknown): string {
-  return typeof value === "string" && value.trim()
-    ? value.trim()
-    : GOVERNANCE_DEFAULT_SETTINGS.approver
+  if (typeof value === "string" && isApproverOption(value.trim())) {
+    return value.trim()
+  }
+  // Migrate older stored values (e.g. "demo") to the current default.
+  return GOVERNANCE_DEFAULT_SETTINGS.approver
 }
 
 function resolveMode(value: unknown): GovernanceMode {

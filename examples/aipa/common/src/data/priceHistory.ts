@@ -1,6 +1,6 @@
 import type { Fdc3Instrument, Fdc3Portfolio, OhlcBar, PriceHistory } from '../contexts/types.js';
 
-export const DEFAULT_LOOKBACK_DAYS = 60;
+export const DEFAULT_LOOKBACK_DAYS = 90;
 
 type ChartApiBody = {
   symbol: string;

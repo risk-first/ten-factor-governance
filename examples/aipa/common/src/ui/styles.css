@@ -491,6 +491,24 @@ table input[type='number'] {
   flex-wrap: wrap;
   gap: 6px;
   margin: 8px 0;
+  align-items: center;
+}
+
+.chart-toolbar .range-select {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.chart-toolbar .range-select:focus {
+  outline: 2px solid #175cd3;
+  outline-offset: 1px;
 }
 
 .ticker-bar {

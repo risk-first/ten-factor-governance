@@ -41,7 +41,82 @@ import {
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const LOOKBACK_STEPS = [60, 90, 120, 180, 252, 365, 540, 730];
+type RangeKey =
+  | '1D'
+  | '1W'
+  | '1M'
+  | '3M'
+  | '6M'
+  | 'YTD'
+  | '1Y'
+  | '2Y'
+  | '5Y'
+  | '10Y'
+  | 'ALL';
+
+const RANGE_OPTIONS: ReadonlyArray<{ key: RangeKey; label: string }> = [
+  { key: '1D', label: '1D' },
+  { key: '1W', label: '1W' },
+  { key: '1M', label: '1M' },
+  { key: '3M', label: '3M' },
+  { key: '6M', label: '6M' },
+  { key: 'YTD', label: 'YTD' },
+  { key: '1Y', label: '1Y' },
+  { key: '2Y', label: '2Y' },
+  { key: '5Y', label: '5Y' },
+  { key: '10Y', label: '10Y' },
+  { key: 'ALL', label: 'ALL' },
+];
+
+/** Calendar-day lookbacks used by Zoom in/out stepping (YTD resolved at click time). */
+const LOOKBACK_STEPS = [1, 7, 30, 90, 180, 365, 730, 1825, 3650, 15000];
+
+function ytdDays(): number {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  return Math.max(1, Math.ceil((now.getTime() - start.getTime()) / 86_400_000));
+}
+
+function daysForRange(key: RangeKey): number {
+  switch (key) {
+    case '1D':
+      return 1;
+    case '1W':
+      return 7;
+    case '1M':
+      return 30;
+    case '3M':
+      return 90;
+    case '6M':
+      return 180;
+    case 'YTD':
+      return ytdDays();
+    case '1Y':
+      return 365;
+    case '2Y':
+      return 730;
+    case '5Y':
+      return 1825;
+    case '10Y':
+      return 3650;
+    case 'ALL':
+      return 15000;
+  }
+}
+
+function rangeKeyForDays(days: number): RangeKey {
+  let best: RangeKey = '3M';
+  let bestDelta = Infinity;
+  for (const { key } of RANGE_OPTIONS) {
+    const d = daysForRange(key);
+    const delta = Math.abs(d - days);
+    if (delta < bestDelta) {
+      best = key;
+      bestDelta = delta;
+    }
+  }
+  return best;
+}
 const COLORS = [
   '#175cd3',
   '#12b76a',
@@ -132,7 +207,8 @@ let changeBaselineDate: string | null = null;
 /** Preserve zoom after click / rebase instead of fitContent. */
 let pendingVisibleRange: { from: number; to: number } | null = null;
 let activeTicker = 'SHEL';
-let lookbackDays = 60;
+let lookbackDays = daysForRange('3M');
+let rangeKey: RangeKey = '3M';
 let loading = false;
 const seriesByTicker = new Map<string, TickerSeries>();
 
@@ -862,11 +938,41 @@ function rebuildControls(): void {
       ).classList.toggle('primary', mode === 'area');
     }
 
+    const rangeSelect = document.createElement('select');
+    rangeSelect.className = 'range-select';
+    rangeSelect.setAttribute('aria-label', 'Chart range');
+    rangeSelect.title = 'Lookback range';
+    for (const opt of RANGE_OPTIONS) {
+      const o = document.createElement('option');
+      o.value = opt.key;
+      o.textContent = opt.label;
+      if (opt.key === rangeKey) o.selected = true;
+      rangeSelect.appendChild(o);
+    }
+    rangeSelect.addEventListener('change', () => {
+      const next = rangeSelect.value as RangeKey;
+      if (!RANGE_OPTIONS.some(r => r.key === next)) return;
+      rangeKey = next;
+      changeBaselineDate = null;
+      pendingVisibleRange = null;
+      const days = daysForRange(rangeKey);
+      lookbackDays = days;
+      if (seriesByTicker.size === 0) {
+        rebuildControls();
+        setStatus(statusEl(), `Range ${rangeKey} (~${days}d) — Add a ticker`);
+        return;
+      }
+      setStatus(statusEl(), `Range ${rangeKey} — loading ~${days}d…`);
+      void reloadAll(days);
+    });
+    host.appendChild(rangeSelect);
+
     mk('Fit', () => chart?.timeScale().fitContent());
     mk('Reset zoom', () => {
       changeBaselineDate = null;
       pendingVisibleRange = null;
-      lookbackDays = LOOKBACK_STEPS[0]!;
+      rangeKey = '3M';
+      lookbackDays = daysForRange(rangeKey);
       void reloadAll(lookbackDays);
     });
     mk('Zoom in', () => {
@@ -929,6 +1035,7 @@ async function zoomOutFetchMore(): Promise<void> {
     setStatus(statusEl(), `Zoom out — already at max history (~${lookbackDays}d)`);
     return;
   }
+  rangeKey = rangeKeyForDays(next);
   setStatus(statusEl(), `Zoom out — loading ~${next} days…`);
   await reloadAll(next);
 }
@@ -992,6 +1099,7 @@ async function addTicker(
   try {
     const data = await fetchTicker(ticker, days);
     lookbackDays = data.days;
+    rangeKey = rangeKeyForDays(lookbackDays);
     const existing = seriesByTicker.get(ticker);
     const instrument = mergeInstrument(
       existing?.instrument,
@@ -1046,9 +1154,11 @@ async function reloadAll(days: number): Promise<void> {
   loading = true;
   try {
     lookbackDays = days;
+    rangeKey = rangeKeyForDays(days);
     const results = await Promise.all(tickers.map(t => fetchTicker(t, days)));
     for (const data of results) {
       lookbackDays = data.days;
+      rangeKey = rangeKeyForDays(lookbackDays);
       const entry = seriesByTicker.get(data.ticker);
       if (!entry) continue;
       entry.bars = data.bars;
@@ -1061,10 +1171,11 @@ async function reloadAll(days: number): Promise<void> {
     }
     updateMeta();
     renderChips();
+    rebuildControls();
     redrawAll();
     setStatus(
       statusEl(),
-      `Reloaded ${tickers.join(', ')} ≈ ${lookbackDays}d`
+      `Range ${rangeKey}: ${tickers.join(', ')} (${lookbackDays}d)`
     );
   } finally {
     loading = false;
@@ -1100,6 +1211,7 @@ async function handleGetPriceHistory(ctx: unknown): Promise<PriceHistory> {
   setStatus(statusEl(), `GetPriceHistory for ${list.join(', ')} (~${days}d)…`);
   const history = await fetchPriceHistory(list, { days, instruments });
   lookbackDays = history.lookbackDays;
+  rangeKey = rangeKeyForDays(lookbackDays);
   // Mirror into the chart UI so the user sees what Risk requested.
   for (const s of history.series) {
     const inst = asInstrumentContext(s.instrument, s.instrument.id.ticker);

@@ -148,13 +148,15 @@ function render(): void {
   const allowed = canDecide(record);
   approveBtn.disabled = !allowed;
   denyBtn.disabled = !allowed;
+  const assignee = assigneeOf(record) ?? 'nobody';
+  const signedIn = session?.user?.email ?? session?.user?.name;
   const hint = !pending
     ? 'Already decided'
     : !session?.user
       ? 'Sign in to approve or deny'
       : allowed
         ? 'Complete this Fluxnova task'
-        : `Assigned to ${assigneeOf(record) ?? 'nobody'}`;
+        : `Signed in as ${signedIn}; assigned to ${assignee}`;
   approveBtn.title = hint;
   denyBtn.title = hint;
   badge.hidden = false;

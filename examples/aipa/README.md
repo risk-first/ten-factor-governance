@@ -54,6 +54,11 @@ Combined App Directory:
 
 `http://localhost:4099/static/generated/aipa-fdc3-apps.json`
 
+The JSON is rewritten at request time: `localhost` / `127.0.0.1` in app
+`details.url` (and icon/screenshot URLs) become the hostname you called the
+directory with (e.g. your LAN IP), so phones on the same Wi‑Fi can resolve
+apps. On-disk `directory/static/generated/aipa-fdc3-apps.json` stays localhost.
+
 Point a Desktop Agent (e.g. FDC3 Sail) at that URL. Apps also expose local
 **API** buttons so you can exercise backends without an agent.
 

@@ -11,13 +11,14 @@ type OhlcResult = {
   name?: string;
 };
 
-const DEFAULT_DAYS = 60;
-const MAX_DAYS = 730;
+const DEFAULT_DAYS = 90;
+/** Enough for ~max history / “ALL” daily bars from Yahoo. */
+const MAX_DAYS = 15000;
 const OHLC_PREFIX = 'ohlc:';
 
 function clampDays(days: number): number {
   if (!Number.isFinite(days) || days <= 0) return DEFAULT_DAYS;
-  return Math.min(MAX_DAYS, Math.max(15, Math.round(days)));
+  return Math.min(MAX_DAYS, Math.max(1, Math.round(days)));
 }
 
 /** YYYY-MM-DD in America/New_York — avoids UTC day-shift on Yahoo session timestamps. */
@@ -76,7 +77,7 @@ function ohlcKey(symbol: string, days: number): string {
 function sliceFromLongerCache(symbol: string, lookback: number): OhlcResult | undefined {
   const prefix = `${OHLC_PREFIX}${symbol.toUpperCase()}:`;
   let best: OhlcResult | undefined;
-  for (const days of [730, 540, 365, 252, 180, 120, 90, 60, 15]) {
+  for (const days of [15000, 3650, 1825, 730, 365, 180, 90, 30, 7, 1]) {
     if (days < lookback) continue;
     const hit = marketDataCache.get<OhlcResult>(`${prefix}${days}`);
     if (!hit || hit.bars.length < lookback) continue;

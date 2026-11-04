@@ -196,7 +196,7 @@ export function makeFdc3Tools(): ToolSet {
 
     fdc3_get_current_channel_context: tool({
       description:
-        'Read last-seen user-channel contexts cached by the harness (e.g. fdc3.portfolio). Prefer this before raising GetPortfolio when the user may already have shared a portfolio on the channel.',
+        'Read last-seen user-channel contexts cached by the harness (e.g. fdc3.portfolio). Check this first for portfolio/instrument context. If empty for fdc3.portfolio, immediately fdc3_raise_intent GetPortfolio — do not ask the user to paste holdings.',
       inputSchema: z.object({
         contextType: z
           .string()
