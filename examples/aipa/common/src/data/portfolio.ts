@@ -71,8 +71,8 @@ function tickerOf(pos: FixturePosition): string {
 }
 
 function impliedPrice(pos: FixturePosition): number {
-  if (pos.holding > 0 && typeof pos.weight === 'number' && pos.weight > 0) {
-    return pos.weight / pos.holding;
+  if (pos.holding !== 0 && typeof pos.weight === 'number' && pos.weight !== 0) {
+    return Math.abs(pos.weight / pos.holding);
   }
   return 0;
 }
@@ -82,18 +82,25 @@ function reweight(positions: FixturePosition[], priceByTicker: Map<string, numbe
     const px = priceByTicker.get(tickerOf(p)) ?? 0;
     return px > 0 ? p.holding * px : 0;
   });
-  let total = notionals.reduce((s, n) => s + n, 0);
-  if (total <= 0) {
-    total = positions.reduce((s, p) => s + Math.max(0, p.holding), 0);
-    if (total <= 0) return positions.map(p => ({ ...p, weight: 0 }));
-    return positions.map(p => ({
+  const net = notionals.reduce((s, n) => s + n, 0);
+  const gross = notionals.reduce((s, n) => s + Math.abs(n), 0);
+  if (gross > 0 && net !== 0) {
+    return positions.map((p, i) => ({
       ...p,
-      weight: Math.round((Math.max(0, p.holding) / total) * 1e6) / 1e6,
+      weight: Math.round((notionals[i] / net) * 1e6) / 1e6,
     }));
   }
-  return positions.map((p, i) => ({
+  if (gross > 0) {
+    return positions.map((p, i) => ({
+      ...p,
+      weight: Math.round((notionals[i] / gross) * 1e6) / 1e6,
+    }));
+  }
+  const shareGross = positions.reduce((s, p) => s + Math.abs(p.holding), 0);
+  if (shareGross <= 0) return positions.map(p => ({ ...p, weight: 0 }));
+  return positions.map(p => ({
     ...p,
-    weight: Math.round((notionals[i] / total) * 1e6) / 1e6,
+    weight: Math.round((p.holding / shareGross) * 1e6) / 1e6,
   }));
 }
 
@@ -113,8 +120,9 @@ export function applyFillsToPortfolio(
   const applied: PortfolioFill[] = [];
   for (const fill of fills) {
     const idx = positions.findIndex(p => tickerOf(p) === fill.ticker);
+    const delta = Math.round(fill.side === 'buy' ? fill.quantity : -fill.quantity);
+    if (delta === 0) continue;
     if (idx === -1) {
-      if (fill.side !== 'buy') continue;
       if (!priceByTicker.has(fill.ticker)) priceByTicker.set(fill.ticker, fallbackPrice);
       positions.push({
         type: 'fdc3.position',
@@ -123,7 +131,7 @@ export function applyFillsToPortfolio(
           name: fill.name ?? fill.ticker,
           id: { ticker: fill.ticker },
         },
-        holding: Math.round(fill.quantity),
+        holding: delta,
         weight: 0,
         sector: '—',
       });
@@ -131,15 +139,9 @@ export function applyFillsToPortfolio(
       continue;
     }
     const current = positions[idx];
-    const filledQty =
-      fill.side === 'buy' ? fill.quantity : Math.min(fill.quantity, current.holding);
-    if (filledQty <= 0) continue;
-    current.holding = Math.max(
-      0,
-      Math.round(current.holding + (fill.side === 'buy' ? filledQty : -filledQty))
-    );
-    applied.push({ ...fill, quantity: filledQty });
-    if (current.holding <= 0) positions.splice(idx, 1);
+    current.holding = Math.round(current.holding + delta);
+    applied.push(fill);
+    if (current.holding === 0) positions.splice(idx, 1);
   }
 
   return {

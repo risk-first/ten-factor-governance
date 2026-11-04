@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560">
+  <rect width="920" height="560" fill="#217346"/>
+  <rect x="0" y="36" width="920" height="524" fill="#f3f3f3"/>
+  <text x="14" y="24" fill="#fff" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600">ISO-42001-Controls.xlsx</text>
+  <rect x="0" y="36" width="920" height="28" fill="#e6e6e6"/>
+  <text x="12" y="55" fill="#333" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">fx</text>
+  <rect x="40" y="40" width="860" height="20" fill="#fff" stroke="#c6c6c6"/>
+  <text x="48" y="55" fill="#333" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">=IF(E3="Open","Re-audit","Done")</text>
+  <g font-family="Calibri, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+    <rect x="0" y="64" width="36" height="28" fill="#e6e6e6" stroke="#d0d0d0"/>
+    <text x="48" y="83" fill="#333" font-size="12">A</text>
+    <rect x="36" y="64" width="150" height="28" fill="#e6e6e6" stroke="#d0d0d0"/>
+    <text x="92" y="83" fill="#333" font-size="12" text-anchor="middle">A</text>
+    <rect x="186" y="64" width="150" height="28" fill="#e6e6e6" stroke="#d0d0d0"/>
+    <text x="261" y="83" fill="#333" font-size="12" text-anchor="middle">B</text>
+    <rect x="336" y="64" width="210" height="28" fill="#e6e6e6" stroke="#d0d0d0"/>
+    <text x="441" y="83" fill="#333" font-size="12" text-anchor="middle">C</text>
+    <rect x="546" y="64" width="140" height="28" fill="#e6e6e6" stroke="#d0d0d0"/>
+    <text x="616" y="83" fill="#333" font-size="12" text-anchor="middle">D</text>
+    <rect x="686" y="64" width="120" height="28" fill="#e6e6e6" stroke="#d0d0d0"/>
+    <text x="746" y="83" fill="#333" font-size="12" text-anchor="middle">E</text>
+    <rect x="806" y="64" width="114" height="28" fill="#e6e6e6" stroke="#d0d0d0"/>
+    <text x="863" y="83" fill="#333" font-size="12" text-anchor="middle">F</text>
+  </g>
+  <g font-family="Calibri, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+    <rect x="36" y="92" width="150" height="36" fill="#217346"/>
+    <rect x="186" y="92" width="150" height="36" fill="#217346"/>
+    <rect x="336" y="92" width="210" height="36" fill="#217346"/>
+    <rect x="546" y="92" width="140" height="36" fill="#217346"/>
+    <rect x="686" y="92" width="120" height="36" fill="#217346"/>
+    <rect x="806" y="92" width="114" height="36" fill="#217346"/>
+    <text x="48" y="115" fill="#fff" font-weight="700">Control ID</text>
+    <text x="198" y="115" fill="#fff" font-weight="700">ISO 42001</text>
+    <text x="348" y="115" fill="#fff" font-weight="700">Policy pack</text>
+    <text x="558" y="115" fill="#fff" font-weight="700">Owner</text>
+    <text x="698" y="115" fill="#fff" font-weight="700">Status</text>
+    <text x="818" y="115" fill="#fff" font-weight="700">Reviewed</text>
+  </g>
+  <g font-family="Calibri, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#222">
+    <rect x="0" y="128" width="920" height="36" fill="#fff"/>
+    <rect x="0" y="164" width="920" height="36" fill="#e2efda"/>
+    <rect x="0" y="200" width="920" height="36" fill="#fff"/>
+    <rect x="0" y="236" width="920" height="36" fill="#e2efda"/>
+    <rect x="0" y="272" width="920" height="36" fill="#fff"/>
+    <rect x="0" y="308" width="920" height="36" fill="#e2efda"/>
+    <rect x="0" y="344" width="920" height="36" fill="#fff"/>
+    <rect x="0" y="380" width="920" height="36" fill="#e2efda"/>
+    <rect x="0" y="416" width="920" height="36" fill="#fff"/>
+    <rect x="0" y="452" width="920" height="36" fill="#e2efda"/>
+    <g fill="#6b6b6b" font-size="12">
+      <text x="12" y="151">1</text><text x="12" y="187">2</text><text x="12" y="223">3</text>
+      <text x="12" y="259">4</text><text x="12" y="295">5</text><text x="12" y="331">6</text>
+      <text x="12" y="367">7</text><text x="12" y="403">8</text><text x="12" y="439">9</text>
+      <text x="8" y="475">10</text>
+    </g>
+    <text x="48" y="151">APA-CTL-001</text><text x="198" y="151">6.1.2</text><text x="348" y="151">Risk assessment</text><text x="558" y="151">GRC</text><text x="698" y="151">Open</text><text x="818" y="151">2024-11-02</text>
+    <text x="48" y="187">APA-CTL-006</text><text x="198" y="187">8.2</text><text x="348" y="187">Execute prohibit</text><text x="558" y="187">Trading</text><text x="698" y="187">Open</text><text x="818" y="187">2025-03-18</text>
+    <text x="48" y="223">APA-CTL-014</text><text x="198" y="223">7.4</text><text x="348" y="223">Human oversight</text><text x="558" y="223">Risk</text><text x="698" y="223">Partial</text><text x="818" y="223">2025-06-09</text>
+    <text x="48" y="259">APA-CTL-021</text><text x="198" y="259">9.1</text><text x="348" y="259">Evidence pack</text><text x="558" y="259">Audit</text><text x="698" y="259">Open</text><text x="818" y="259">2024-12-14</text>
+    <text x="48" y="295">APA-CTL-033</text><text x="198" y="295">6.1.4</text><text x="348" y="295">Model inventory</text><text x="558" y="295">CTO</text><text x="698" y="295">Late</text><text x="818" y="295">2023-08-01</text>
+    <text x="48" y="331">APA-CTL-040</text><text x="198" y="331">8.4</text><text x="348" y="331">Approval trail</text><text x="558" y="331">Legal</text><text x="698" y="331">Open</text><text x="818" y="331">2025-01-22</text>
+    <text x="48" y="367">APA-CTL-052</text><text x="198" y="367">9.2</text><text x="348" y="367">Internal audit</text><text x="558" y="367">IA</text><text x="698" y="367">Open</text><text x="818" y="367">2024-09-30</text>
+    <text x="48" y="403">APA-CTL-061</text><text x="198" y="403">5.3</text><text x="348" y="403">Roles &amp; RACI</text><text x="558" y="403">HR</text><text x="698" y="403">Partial</text><text x="818" y="403">2025-04-11</text>
+    <text x="48" y="439">APA-CTL-070</text><text x="198" y="439">8.3</text><text x="348" y="439">Data retention</text><text x="558" y="439">CISO</text><text x="698" y="439">Open</text><text x="818" y="439">2024-07-19</text>
+    <text x="48" y="475">APA-CTL-088</text><text x="198" y="475">10.1</text><text x="348" y="475">Nonconformity</text><text x="558" y="475">GRC</text><text x="698" y="475">Open</text><text x="818" y="475">2025-02-03</text>
+  </g>
+  <g stroke="#d0d0d0" stroke-width="1">
+    <line x1="36" y1="92" x2="36" y2="488"/>
+    <line x1="186" y1="92" x2="186" y2="488"/>
+    <line x1="336" y1="92" x2="336" y2="488"/>
+    <line x1="546" y1="92" x2="546" y2="488"/>
+    <line x1="686" y1="92" x2="686" y2="488"/>
+    <line x1="806" y1="92" x2="806" y2="488"/>
+  </g>
+  <rect x="0" y="520" width="920" height="40" fill="#f3f3f3"/>
+  <rect x="8" y="528" width="88" height="24" fill="#217346" rx="2"/>
+  <text x="16" y="545" fill="#fff" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Controls</text>
+  <rect x="100" y="528" width="80" height="24" fill="#dcdcdc" rx="2"/>
+  <text x="108" y="545" fill="#333" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">Register</text>
+</svg>

@@ -1,0 +1,96 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-approvals",
+      "name": "AIPA Approvals",
+      "title": "AIPA Approvals",
+      "description": "Inbox of outstanding fdc3.approval work. Holds GetApproval and opens AIPA Approval View.",
+      "categories": ["AIPA", "Governance"],
+      "icons": [{ "src": "http://localhost:4110/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4110/list.html" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "GetApproval": {
+              "displayName": "Get Approval",
+              "purpose": "Submit an fdc3.action for human approval and, if approved, execute it.",
+              "contexts": ["fdc3.approval"]
+            },
+            "UpdateApproval": {
+              "displayName": "Update Approval",
+              "contexts": ["fdc3.approval"]
+            },
+            "CancelApproval": {
+              "displayName": "Cancel Approval",
+              "contexts": ["fdc3.approval"]
+            },
+            "ReviewApproval": {
+              "displayName": "Review Approval",
+              "contexts": ["fdc3.approval"]
+            }
+          },
+          "raises": {
+            "ViewApproval": {
+              "displayName": "View Approval",
+              "contexts": ["fdc3.approval"]
+            },
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "contexts": ["fdc3.gemara.enforcementLog"]
+            }
+          }
+        },
+        "userChannels": { "broadcasts": [], "listensFor": [] },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": false,
+          "searchable": true
+        }
+      }
+    },
+    {
+      "appId": "aipa-approval-view",
+      "name": "AIPA Approval View",
+      "title": "AIPA Approval View",
+      "description": "Detail view of one fdc3.approval. Signs and raises demo.SubmitOrder on approve.",
+      "categories": ["AIPA", "Governance"],
+      "icons": [{ "src": "http://localhost:4110/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4110/view.html" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "ViewApproval": {
+              "displayName": "View Approval",
+              "purpose": "Open an fdc3.approval to inspect and decide.",
+              "contexts": ["fdc3.approval"]
+            }
+          },
+          "raises": {
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "contexts": ["fdc3.gemara.enforcementLog"]
+            }
+          }
+        },
+        "userChannels": { "broadcasts": [], "listensFor": [] },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "singleton": false,
+          "autostart": false,
+          "searchable": false
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

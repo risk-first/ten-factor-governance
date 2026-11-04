@@ -1,7 +1,7 @@
 import '../../../common/src/ui/styles.css';
 import { connectAppSession, setStatus } from '../../../common/src/fdc3/agent.ts';
 import { INTENTS, ordersFromContext } from '../../../common/src/contexts/types.ts';
-import { toResultContext, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
+import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 
 type LogEntry = {
@@ -111,34 +111,33 @@ async function loadLog(): Promise<void> {
   renderLog();
 }
 
-async function submit(order: unknown, meta?: unknown): Promise<Record<string, unknown>> {
+async function submit(order: unknown, meta?: { signature?: unknown }) {
   const res = await fetch('/api/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ order, __appMeta: meta }),
+    body: JSON.stringify({ order, metadata: meta }),
   });
   const body = (await res.json()) as {
     envelope: SignedEnvelope;
     verify: { ok: boolean; warning?: string };
     entry?: LogEntry;
   };
-  const result = toResultContext(body.envelope);
+  const signed = toSignedResult(body.envelope);
   await loadLog();
   const entry = body.entry?.id
     ? log.find(e => e.id === body.entry!.id)
     : log[0];
   if (entry) showDetail(entry, 'result');
   setStatus(statusEl(), body.verify.warning ?? `Logged ${summarizeOrder(order)}`);
-  return result;
+  return signed;
 }
 
 async function setup(): Promise<void> {
   await loadLog();
   const session = await connectAppSession(statusEl());
   if (!session.fdc3) return;
-  await session.fdc3.addIntentListener(INTENTS.SubmitOrder, async ctx => {
-    const withMeta = ctx as { __appMeta?: unknown };
-    return submit(ctx, withMeta.__appMeta);
+  await session.fdc3.addIntentListener(INTENTS.SubmitOrder, async (ctx, metadata) => {
+    return submit(ctx, metadata);
   });
 }
 

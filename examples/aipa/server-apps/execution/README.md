@@ -10,4 +10,5 @@ Inbound raise signatures are checked when present. No governance denial in this
 phase — any raiser that reaches this app succeeds.
 
 Fills are applied to the Portfolio app's live book
-(`server-apps/portfolio/temp/portfolio.json`).
+(`server-apps/portfolio/temp/portfolio.json`). A sell may reduce a long,
+flatten it, or open a short (negative `holding`). A buy of a short covers it.

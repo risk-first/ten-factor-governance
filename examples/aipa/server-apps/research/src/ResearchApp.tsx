@@ -7,13 +7,11 @@ import {
   type ResearchBundle,
   type ResearchFinding,
 } from '../../../common/src/contexts/types.ts';
-import { toResultContext, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
+import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { BroadcastButton } from '../../../common/src/ui/BroadcastButton.tsx';
 import { StatusDrawer } from '../../../common/src/ui/StatusDrawer.tsx';
 
-type BundleView = ResearchBundle & {
-  __appMeta?: unknown;
-};
+type BundleView = ResearchBundle;
 
 type InstrumentContext = {
   type: 'fdc3.instrument';
@@ -192,7 +190,7 @@ export function ResearchApp() {
     async (
       context?: unknown,
       incomingInstrument?: InstrumentContext | null
-    ): Promise<Record<string, unknown>> => {
+    ) => {
       setLoading(true);
       try {
         const res = await fetch('/api/research', {
@@ -203,7 +201,8 @@ export function ResearchApp() {
           }),
         });
         const envelope = (await res.json()) as SignedEnvelope;
-        const result = toResultContext(envelope) as BundleView;
+        const signed = toSignedResult(envelope);
+        const result = signed.context as BundleView;
         const fromCtx = tickersFromContext(context);
         const fromInput = parseTickerInput(tickersInputRef.current);
         const list =
@@ -217,7 +216,7 @@ export function ResearchApp() {
           asInstrument(context)?.name ||
           list.join(', ');
         setStatus(`Research ready — ${label}`);
-        return result as unknown as Record<string, unknown>;
+        return signed;
       } finally {
         setLoading(false);
       }
@@ -320,7 +319,7 @@ export function ResearchApp() {
       unsubs.push(
         await session.fdc3.addIntentListener(INTENTS.ViewNews, async ctx => {
           const result = await fetchResearch(ctx, asInstrument(ctx));
-          const items = ((result as BundleView).findings ?? []).map(f => `• ${f.title}`);
+          const items = ((result.context as BundleView).findings ?? []).map(f => `• ${f.title}`);
           setDetail(items.join('\n') || 'No news');
           setStatus('ViewNews');
         })

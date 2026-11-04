@@ -1,7 +1,8 @@
+import { spawn, type ChildProcess } from 'node:child_process';
 import express, { type Request } from 'express';
 import rateLimit from 'express-rate-limit';
 import http from 'http';
-import { createServer } from 'vite';
+import { createServer, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -23,6 +24,27 @@ function resolveWithinRoot(root: string, ...segments: string[]): string {
   return resolvedPath;
 }
 
+/** When an app has no index.html (e.g. Approvals inbox at list.html), serve that at `/`. */
+function rewriteRootToListHtml(appRoot: string): Plugin {
+  return {
+    name: 'aipa-rewrite-root-to-list',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const pathOnly = req.url?.split('?')[0] ?? '';
+        if (pathOnly === '/' || pathOnly === '') {
+          const hasIndex = fs.existsSync(path.join(appRoot, 'index.html'));
+          const hasList = fs.existsSync(path.join(appRoot, 'list.html'));
+          if (!hasIndex && hasList) {
+            const query = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+            req.url = `/list.html${query}`;
+          }
+        }
+        next();
+      });
+    },
+  };
+}
+
 function discoverApps(baseDir: string) {
   if (!fs.existsSync(baseDir)) return [];
   return fs
@@ -33,7 +55,7 @@ function discoverApps(baseDir: string) {
         dirent.isDirectory() &&
         dirent.name !== 'node_modules' &&
         dirent.name !== 'dist' &&
-        fs.existsSync(resolveWithinRoot(appPath, 'index.html'))
+        fs.readdirSync(appPath).some(name => name.endsWith('.html'))
       );
     })
     .map(dirent => ({
@@ -74,13 +96,14 @@ type AppDirectoryRecord = {
   screenshots?: Array<{ src?: string }>;
 };
 
+/** Remap localhost URLs to this package's port. Leave other ports (e.g. Fluxnova :8080) alone. */
 function rewriteLocalhostUrl(url: string, port: number): string {
   try {
     const parsed = new URL(url);
-    if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
-      parsed.port = String(port);
-      return parsed.toString();
-    }
+    if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return url;
+    if (parsed.port && parsed.port !== String(port)) return url;
+    parsed.port = String(port);
+    return parsed.toString();
   } catch {
     /* keep original */
   }
@@ -92,16 +115,11 @@ function applyPortToAppDirectoryRecords(applications: AppDirectoryRecord[], port
   return applications.map(app => {
     const next: AppDirectoryRecord = { ...app, details: app.details ? { ...app.details } : {} };
     if (next.details) {
-      let pathAndQuery = '/';
       if (app.details?.url) {
-        try {
-          const parsed = new URL(app.details.url);
-          pathAndQuery = `${parsed.pathname}${parsed.search}`;
-        } catch {
-          pathAndQuery = '/';
-        }
+        next.details.url = rewriteLocalhostUrl(app.details.url, port);
+      } else {
+        next.details.url = `${base}/`;
       }
-      next.details.url = `${base}${pathAndQuery.startsWith('/') ? pathAndQuery : `/${pathAndQuery}`}`;
     }
     if (next.icons) {
       next.icons = next.icons.map(icon => (icon.src ? { ...icon, src: rewriteLocalhostUrl(icon.src, port) } : icon));
@@ -138,6 +156,41 @@ function writeGeneratedAppDirectory(combined: { applications: unknown[]; message
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(generatedAppdPath, `${JSON.stringify(combined, null, 4)}\n`, 'utf-8');
   console.info({ path: generatedAppdPath }, 'Wrote generated app directory');
+}
+
+function watchAppDirectories(appsList: AppWithPort[]): void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const rewrite = () => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      writeGeneratedAppDirectory(buildCombinedAppDirectory(appsList));
+    }, 50);
+  };
+  for (const a of appsList) {
+    const appdPath = resolveWithinRoot(a.root, 'static', 'appd.v2.json');
+    if (!fs.existsSync(appdPath)) continue;
+    fs.watch(appdPath, rewrite);
+  }
+}
+
+function startSailGovernanceHost() {
+  const root = path.join(packageRoot, 'sail-extensions', 'sail-governance');
+  const cli = path.join(root, 'node_modules', '@finos', 'sail-extension-server', 'bin', 'sail-extension-server.mjs');
+  if (!fs.existsSync(cli)) {
+    console.warn('Sail governance host skipped — npm install in sail-extensions/sail-governance');
+    return;
+  }
+  const child: ChildProcess = spawn(process.execPath, [cli, '--port', '9101'], {
+    cwd: root,
+    stdio: 'inherit',
+    env: process.env,
+  });
+  const stop = () => {
+    if (child.exitCode == null && !child.killed) {
+      child.kill();
+    }
+  };
+  process.on('exit', stop);
 }
 
 async function startApp(appName: string, appRoot: string, port: number) {
@@ -180,7 +233,7 @@ async function startApp(appName: string, appRoot: string, port: number) {
       },
     },
     appType: 'spa',
-    plugins: [react()],
+    plugins: [react(), rewriteRootToListHtml(normalizedAppRoot)],
     resolve: {
       alias: {
         '@aipa/common': path.join(commonDir, 'src'),
@@ -201,8 +254,11 @@ async function startApp(appName: string, appRoot: string, port: number) {
   app.get('/{*splat}', spaIndexLimiter, (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/.well-known')) return next();
     const indexPath = resolveWithinRoot(normalizedAppRoot, 'index.html');
+    const listPath = resolveWithinRoot(normalizedAppRoot, 'list.html');
     if (fs.existsSync(indexPath)) {
       res.sendFile('index.html', { root: normalizedAppRoot });
+    } else if (fs.existsSync(listPath)) {
+      res.sendFile('list.html', { root: normalizedAppRoot });
     } else {
       next();
     }
@@ -219,8 +275,11 @@ async function startApp(appName: string, appRoot: string, port: number) {
     return;
   }
 
+  startSailGovernanceHost();
+
   const combinedAppd = buildCombinedAppDirectory(apps);
   writeGeneratedAppDirectory(combinedAppd);
+  watchAppDirectories(apps);
 
   for (const a of apps) {
     try {

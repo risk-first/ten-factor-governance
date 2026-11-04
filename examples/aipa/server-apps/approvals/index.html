@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Approvals</title>
+    <script type="module" src="./src/list.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box execution-log">
+        <div class="toolbar">
+          <button id="login" class="primary" type="button">Sign in with Microsoft</button>
+          <button id="logout" type="button" disabled>Sign out</button>
+          <span id="session" class="badge warn">Not signed in</span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Status</th>
+                <th>Subject</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="work"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

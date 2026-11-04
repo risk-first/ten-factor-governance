@@ -3,8 +3,16 @@
 Runnable FDC3 specialist apps for the [AI Portfolio Assistant](../../docs/artifacts/finos/ai-portfolio-assistant/)
 example. Modelled on [`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
 
-Governance Runtime is **out of scope** here. The Agent UI + harness cover the
-assistant chat path via [`fdc3.ai`](./fdc3-extensions/fdc3.ai/).
+The Agent UI + harness cover the assistant chat path via
+[`fdc3.ai`](./fdc3-extensions/fdc3.ai/). Sail's `sail-governance` extension
+(`sail-extensions/sail-governance`) is the policy enforcement point: it
+intercepts `demo.SubmitOrder`, asks Direct or JEV for
+`demo.GetGovernanceDecision`, and enforces Allow / Escalate (`GetApproval` +
+`ApprovalRequired` to the raiser) / Deny. Sail
+settings split into **Evaluation** (`off` / `direct` / `jev`) and **Approval**
+(GetApproval app + approver). JEV scores committed rules via LM Studio
+`POST /v1/systemone` with a loaded **decision** model (instance id in `CLEF_MODEL`);
+the harness keeps QWEN on chat completions.
 
 ## Apps
 
@@ -20,6 +28,11 @@ assistant chat path via [`fdc3.ai`](./fdc3-extensions/fdc3.ai/).
 | Agent harness | 4107 | listens `AskAgent` | Rita-derived agent loop; generic FDC3 tools; streams `fdc3.ai.*`; LLM via `/api/query` |
 | Markdown Viewer | 4108 | `ViewData` | Front-end; renders `fdc3.data.markdown` (open / replace-in-place) |
 | Discoverability | 4109 | — | Responder on `fdc3.discoverability` (apps / intents / context types) |
+| Approvals | 4110 | inbox: `GetApproval` and siblings; view: `ViewApproval` | Two apps, one origin: invisible singleton inbox + visible singleton view; shared Entra login; view signs and raises `demo.SubmitOrder` |
+| Governance Console | 4111 | `LogEvaluation`, `LogEnforcement` | Invisible autostart; Gemara L5/L6 store |
+| Fluxnova | 4112 | inbox: `GetApproval`, `CreateTask`; view: `ViewTask` | Two apps, one origin: invisible singleton inbox polls Fluxnova; visible singleton task panel for approve/deny. Inbox executes the subject `fdc3.action` after the engine records approval (second-user path). |
+| JEV governance | 4113 | `demo.GetGovernanceDecision` | Invisible singleton PDP; scores rules.json on LM Studio System One |
+| Direct governance | 4114 | `demo.GetGovernanceDecision` | Invisible singleton PDP; unsigned SubmitOrder → human review |
 | App Directory | 4099 | — | Combined AppD JSON |
 
 ## Quick start
@@ -40,6 +53,11 @@ npm run aipa:dev
 Combined App Directory:
 
 `http://localhost:4099/static/generated/aipa-fdc3-apps.json`
+
+The JSON is rewritten at request time: `localhost` / `127.0.0.1` in app
+`details.url` (and icon/screenshot URLs) become the hostname you called the
+directory with (e.g. your LAN IP), so phones on the same Wi‑Fi can resolve
+apps. On-disk `directory/static/generated/aipa-fdc3-apps.json` stays localhost.
 
 Point a Desktop Agent (e.g. FDC3 Sail) at that URL. Apps also expose local
 **API** buttons so you can exercise backends without an agent.
@@ -75,8 +93,8 @@ Signing apps expose:
 - `POST /api/sign`
 - Secure-boundary WebSocket (`exchangeData('sign-context', …)`)
 
-Signed contexts embed `__appMeta` (`signature`, `antiReplay`, `jku`, `kid`) on
-intent results. Contexts that **MUST** be signed:
+Signed intent results return `{ context, metadata }` (`signature`, `antiReplay`
+on `ContextMetadata`). Contexts that **MUST** be signed:
 
 - `demo.portfolioRisk`
 - `demo.researchBundle`
@@ -92,8 +110,10 @@ examples/aipa/
   common/           # contexts, fixtures, signing, data clients
   server-apps/      # apps with a trusted Node backend
   front-end-apps/   # Agent UI, Markdown Viewer (browser-only)
+  fdc3-extensions/  # Proposed context/intent specs (approval, gemara, …)
   directory/        # aggregated AppD
-  main.ts           # Vite multi-app runner
+  sail-extensions/  # Sail Desktop Agent extension (port 9101)
+  main.ts           # Vite multi-app runner + sail-governance host
 ```
 
 CALM: [`calm/`](./calm/) — `npm run calm:validate` / `npm run calm:diagrams`.

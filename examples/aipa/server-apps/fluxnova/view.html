@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Fluxnova Task</title>
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script type="module" src="./src/view.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box execution-log">
+        <div class="toolbar">
+          <button id="login" class="primary" type="button">Sign in with Microsoft</button>
+          <button id="logout" type="button" disabled>Sign out</button>
+          <span id="session" class="badge warn">Not signed in</span>
+          <span id="task-status" class="badge" hidden>Pending</span>
+          <button id="approve" class="primary" type="button" disabled>Approve</button>
+          <button id="deny" type="button" disabled>Deny</button>
+        </div>
+        <div id="detail" class="task-view">
+          <p class="task-view__empty">Waiting for a Fluxnova task…</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

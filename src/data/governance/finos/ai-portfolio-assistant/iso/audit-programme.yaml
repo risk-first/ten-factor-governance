@@ -71,6 +71,12 @@ coverage:
     entry-id: apa-ctl-005-propose-human-approval
   - reference-id: apa-controls
     entry-id: apa-ctl-006-execute-prohibit
+  - reference-id: apa-controls
+    entry-id: apa-ctl-017-order-limit-register
+  - reference-id: apa-controls
+    entry-id: apa-ctl-018-four-eyes-large-orders
+  - reference-id: apa-controls
+    entry-id: apa-ctl-019-hard-reject-oversize
 
 independence:
   requirement: |
@@ -111,8 +117,9 @@ audits:
     title: "Authority-control sampling"
     frequency: Quarterly
     scope: |
-      Sample production sessions for authority ceiling enforcement, propose
-      human-approval coverage and absence of execute paths.
+      Sample production sessions for authority ceiling enforcement, first
+      human-approval coverage, four-eyes on large orders, hard reject of
+      oversized orders, and absence of assistant-originated execute paths.
     subject:
       - reference-id: apa-controls
         entry-id: apa-ctl-001-authority-ceiling
@@ -120,6 +127,12 @@ audits:
         entry-id: apa-ctl-005-propose-human-approval
       - reference-id: apa-controls
         entry-id: apa-ctl-006-execute-prohibit
+      - reference-id: apa-controls
+        entry-id: apa-ctl-017-order-limit-register
+      - reference-id: apa-controls
+        entry-id: apa-ctl-018-four-eyes-large-orders
+      - reference-id: apa-controls
+        entry-id: apa-ctl-019-hard-reject-oversize
     method: "Session-log sampling and control configuration review"
     auditor:
       id: internal-audit

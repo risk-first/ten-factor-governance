@@ -3,27 +3,75 @@ title: APA Governance Runtime Threats
 metadata:
   id: apa-governance-runtime-threats
   type: ThreatCatalog
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-11T00:00:00Z"
+  date: "2026-11-01T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: >
-    Threats against the Governance Runtime evaluation API and evidence
-    record/report/aggregate behaviours.
+    Threats against the Governance Runtime: evaluation of sensitive
+    activities, inspection of raise identity, scoring of declared rules,
+    hold and first-human-decision, performance of an approved action,
+    enforcement of the evaluation result at the Desktop Agent, and
+    record / report / aggregate of evidence. Concrete applications may
+    implement these capabilities in different combinations; this catalog
+    names the failure modes, not those applications.
   mapping-references:
     - id: apa-governance-runtime-capabilities
       title: APA Governance Runtime Capabilities
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://capability.yaml
+    - id: CCC.MARefArc.TH
+      title: CCC Multi-Agent Reference Architecture Threats
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-ma-refarch/threats.yaml
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
+      version: "1.0.0-dev"
+      url: file://../../../../ccc-ma-refarch/capabilities.yaml
+
+extends:
+  - reference-id: CCC.MARefArc.TH
+    remarks: >
+      Runtime-specific threats sit on top of Multi-Agent Reference
+      Architecture threats that apply to imported human-in-the-loop,
+      ingress-guardrail, supervision, and runtime-protection capabilities.
+
+imports:
+  - reference-id: CCC.MARefArc.TH
+    entries:
+      - reference-id: CCC.MARefArc.TH14
+        remarks: Evaluation or enforcement overreach beyond the loaded model
+      - reference-id: CCC.MARefArc.TH25
+        remarks: Non-compliant outcomes when evaluation or hold is skipped
+      - reference-id: CCC.MARefArc.TH27
+        remarks: Authorization bypass of evaluation-caller or reviewer authentication
+      - reference-id: CCC.MARefArc.TH31
+        remarks: Compromise of the evaluation, hold, and enforcement collaboration path
 
 groups:
   - id: evaluation
     title: Evaluation
-    description: Threats to correct evaluation of sensitive activities.
+    description: >
+      Threats to correct evaluation of sensitive activities, including
+      raise-identity inspection and scoring of declared rules.
+
+  - id: pending-approval
+    title: Pending Approval
+    description: >
+      Threats to holding work, authenticating the reviewer, recording the
+      first human decision, and performing the approved action as that
+      reviewer.
+
+  - id: enforcement
+    title: Enforcement
+    description: >
+      Threats to intercepting a sensitive raise and applying the
+      evaluation result without substituting a local policy decision.
+
   - id: evidence
     title: Evidence
     description: Threats to evidence integrity and availability.
@@ -32,33 +80,217 @@ threats:
   - id: apa-runtime-bypass-evaluation
     title: Evaluation Bypass or Spoofed Decision
     description: >
-      An attacker or misconfigured Desktop Agent may bypass the evaluation API,
-      spoof ALLOW outcomes, or call the runtime without authenticating, enabling
-      consequential intents to proceed without policy checks.
+      An attacker or misconfigured enforcement point may skip evaluation,
+      spoof a Passed result, or call the evaluation API without
+      authenticating, enabling a consequential raise to proceed without
+      policy checks.
     group: evaluation
     capabilities:
       - reference-id: apa-governance-runtime-capabilities
         entries:
           - reference-id: apa-runtime-evaluate
           - reference-id: apa-runtime-authenticate-caller
+          - reference-id: apa-runtime-enforce-evaluation-result
+    actors:
+      - id: attacker
+        name: Attacker
+        type: Human
+        description: >
+          A party that spoofs an evaluation result or impersonates the
+          enforcement-point caller.
+      - id: enforcement-point
+        name: Enforcement Point
+        type: System
+        description: >
+          The Desktop Agent (or equivalent) that must request and apply
+          evaluation before forwarding a sensitive raise.
 
   - id: apa-runtime-stale-or-wrong-model
     title: Stale or Wrong Governance Model Applied
     description: >
       The runtime may evaluate against outdated, incomplete, or unintended
-      Governance Model artifacts, producing incorrect ALLOW / DENY /
-      REQUIRE APPROVAL decisions.
+      Governance Model artifacts or declared questions, producing incorrect
+      Passed / Needs Review / Failed results.
     group: evaluation
     capabilities:
       - reference-id: apa-governance-runtime-capabilities
         entries:
           - reference-id: apa-runtime-informed-by-model
           - reference-id: apa-runtime-evaluate
+          - reference-id: apa-runtime-score-declared-rules
+    actors:
+      - id: operator
+        name: Runtime Operator
+        type: Human
+        description: >
+          A party who loads or fails to refresh Governance Model artifacts
+          used at evaluation time.
+
+  - id: apa-runtime-forged-or-missed-attestation
+    title: Forged or Missed Raise Attestation
+    description: >
+      Raise-identity inspection may treat an unattested or forged raise as
+      a trusted reviewer source (Passed) or fail to recognise a genuine
+      attested raise (Needs Review or Failed), so the wrong party is
+      treated as having already approved.
+    group: evaluation
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-inspect-raise-identity
+          - reference-id: apa-runtime-evaluate
+          - reference-id: apa-runtime-perform-approved-action
+    actors:
+      - id: attacker
+        name: Attacker
+        type: Human
+        description: >
+          A party that forges or strips attestation on a consequential
+          raise.
+      - id: reviewer
+        name: Human Reviewer
+        type: Human
+        description: >
+          The authenticated reviewer whose attested raise should evaluate
+          to Passed.
+
+  - id: apa-runtime-scoring-fail-open
+    title: Rule Scoring Fails Open
+    description: >
+      Declared-rule scoring may be unavailable, incomplete, or aggregated
+      incorrectly and still return Passed instead of the fail-safe Needs
+      Review, so a consequential raise is forwarded without review.
+    group: evaluation
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-score-declared-rules
+          - reference-id: apa-runtime-evaluate
+          - reference-id: apa-runtime-informed-by-model
+    actors:
+      - id: scoring-service
+        name: Scoring Service
+        type: System
+        description: >
+          The component that answers declared evaluation questions and
+          must fail safe when it cannot complete.
+
+  - id: apa-runtime-self-approval
+    title: Requester Records the Human Decision
+    description: >
+      The original requester, an unauthenticated party, or a subsequent
+      actor may record approve or refuse on a held item, defeating
+      four-eyes. The first recorded decision must be bound to an
+      authenticated reviewer other than the requester.
+    group: pending-approval
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-authenticate-reviewer
+          - reference-id: apa-runtime-record-human-decision
+          - reference-id: apa-runtime-hold-pending-approval
+          - reference-id: apa-runtime-reviewer-worklist
+    actors:
+      - id: requester
+        name: Requesting Party
+        type: Human
+        description: >
+          The party who originated the held activity and must not also
+          record the first human decision.
+      - id: reviewer
+        name: Human Reviewer
+        type: Human
+
+  - id: apa-runtime-worklist-disclosure
+    title: Reviewer Worklist Disclosure
+    description: >
+      The worklist may present another party's held action, context, or
+      evaluation evidence to an unauthenticated or unauthorized viewer,
+      or omit an item the assigned reviewer must see.
+    group: pending-approval
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-reviewer-worklist
+          - reference-id: apa-runtime-authenticate-reviewer
+          - reference-id: apa-runtime-hold-pending-approval
+    actors:
+      - id: unauthorized-viewer
+        name: Unauthorized Viewer
+        type: Human
+        description: >
+          A party who sees a held item they are not entitled to review.
+
+  - id: apa-runtime-unbound-approved-action
+    title: Approved Action Raised Without a Binding Decision
+    description: >
+      The original consequential action may be raised as if a reviewer
+      had approved — without a recorded first approve, as the wrong
+      identity, or after a refuse — so a later evaluation inspects a
+      raise that was never a trusted reviewer source.
+    group: pending-approval
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-perform-approved-action
+          - reference-id: apa-runtime-record-human-decision
+          - reference-id: apa-runtime-inspect-raise-identity
+          - reference-id: apa-runtime-authenticate-reviewer
+    actors:
+      - id: attacker
+        name: Attacker
+        type: Human
+      - id: reviewer
+        name: Human Reviewer
+        type: Human
+
+  - id: apa-runtime-lost-or-skipped-hold
+    title: Held Item Lost or Never Created
+    description: >
+      A Needs Review result may fail to create or retain a hold, so the
+      original action proceeds, getResult never completes, or the
+      reviewer never sees the item.
+    group: pending-approval
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-hold-pending-approval
+          - reference-id: apa-runtime-enforce-evaluation-result
+          - reference-id: apa-runtime-reviewer-worklist
+    actors:
+      - id: enforcement-point
+        name: Enforcement Point
+        type: System
+      - id: reviewer
+        name: Human Reviewer
+        type: Human
+
+  - id: apa-runtime-enforcement-mismatch
+    title: Enforcement Does Not Apply the Evaluation Result
+    description: >
+      The enforcement point may apply its own rules, map Passed to
+      hold, map Needs Review to forward, or refuse a Failed result
+      inconsistently, so the Desktop Agent outcome diverges from
+      evaluation.
+    group: enforcement
+    capabilities:
+      - reference-id: apa-governance-runtime-capabilities
+        entries:
+          - reference-id: apa-runtime-enforce-evaluation-result
+          - reference-id: apa-runtime-evaluate
+    actors:
+      - id: enforcement-point
+        name: Enforcement Point
+        type: System
+        description: >
+          The Desktop Agent (or equivalent) that must map the evaluation
+          result and must not re-decide policy.
 
   - id: apa-runtime-evidence-gap
     title: Evidence Not Recorded or Incomplete
     description: >
-      Evaluation or enforcement outcomes may fail to be recorded, reported, or
+      Evaluation, hold, first-human-decision, perform-approved-action, or
+      enforcement outcomes may fail to be recorded, reported, or
       aggregated, leaving gaps in audit trails for authority decisions.
     group: evidence
     capabilities:
@@ -67,3 +299,12 @@ threats:
           - reference-id: apa-runtime-record-evidence
           - reference-id: apa-runtime-report-evidence
           - reference-id: apa-runtime-aggregate-evidence
+          - reference-id: apa-runtime-record-human-decision
+          - reference-id: apa-runtime-perform-approved-action
+    actors:
+      - id: operator
+        name: Runtime Operator
+        type: Human
+        description: >
+          A party responsible for the Decisions and Evidence Record
+          remaining complete and reportable.

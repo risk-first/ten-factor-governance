@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Fluxnova</title>
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script type="module" src="./src/list.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box execution-log">
+        <div class="toolbar">
+          <button id="login" class="primary" type="button">Sign in with Microsoft</button>
+          <button id="logout" type="button" disabled>Sign out</button>
+          <span id="session" class="badge warn">Not signed in</span>
+          <span id="engine" class="badge">Engine…</span>
+        </div>
+        <div class="table-scroll table-scroll--fill">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Status</th>
+                <th>Task</th>
+                <th>Assignee</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="work"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

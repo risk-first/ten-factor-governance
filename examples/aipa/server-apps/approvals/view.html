@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AIPA Approval View</title>
+    <script type="module" src="./src/view.ts"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box execution-log">
+        <div class="toolbar">
+          <button id="login" class="primary" type="button">Sign in with Microsoft</button>
+          <button id="logout" type="button" disabled>Sign out</button>
+          <span id="session" class="badge warn">Not signed in</span>
+          <button id="approve" class="primary" type="button" disabled>Approve</button>
+          <button id="deny" type="button" disabled>Deny</button>
+        </div>
+        <pre id="detail" class="code">Waiting for ViewApproval…</pre>
+      </div>
+    </div>
+  </body>
+</html>

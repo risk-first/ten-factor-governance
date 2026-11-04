@@ -1,4 +1,8 @@
-# Ten Factor Governance: Deep Architectural Review
+---
+sidebar_position: 3
+title: Deep Architectural Review
+description: "An assessment of Ten Factor Governance as an architectural pattern: fidelity, usefulness, completeness, novelty and maturity."
+---
 
 ## Executive assessment
 

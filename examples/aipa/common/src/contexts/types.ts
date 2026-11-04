@@ -17,6 +17,17 @@ export const INTENTS = {
   CreateOrder: 'demo.CreateOrder',
   ViewOrders: 'ViewOrders',
   SubmitOrder: 'demo.SubmitOrder',
+  /** Policy decision point — Direct or JEV fills demo.governanceDecision.log */
+  GetGovernanceDecision: 'demo.GetGovernanceDecision',
+  GetApproval: 'GetApproval',
+  UpdateApproval: 'UpdateApproval',
+  CancelApproval: 'CancelApproval',
+  ViewApproval: 'ViewApproval',
+  ReviewApproval: 'ReviewApproval',
+  ViewTask: 'ViewTask',
+  /** fdc3.gemara — append Gemara L5 / L6 receipts to Governance Console */
+  LogEvaluation: 'LogEvaluation',
+  LogEnforcement: 'LogEnforcement',
   /** fdc3.data — pull one advertised dataset from a data app */
   GetAppData: 'GetAppData',
   /** Standard FDC3 — seed / replace-in-place display context */
@@ -38,6 +49,10 @@ export const CONTEXT_TYPES = {
   stressScenarioResult: 'demo.stressScenarioResult',
   demoOrder: 'demo.order',
   demoOrderList: 'demo.orderList',
+  governanceDecision: 'demo.governanceDecision',
+  approval: 'fdc3.approval',
+  gemaraEvaluationLog: 'fdc3.gemara.evaluationLog',
+  gemaraEnforcementLog: 'fdc3.gemara.enforcementLog',
   priceHistory: 'demo.priceHistory',
   /** fdc3.data extension */
   advertiseDatasets: 'fdc3.data.advertiseDatasets',
@@ -326,6 +341,8 @@ export type DemoOrder = {
   instrument: Fdc3Instrument;
   side: 'buy' | 'sell';
   quantity: number;
+  /** RFC 3339 timestamp when the order was created or last materialised. */
+  date: string;
   orderType?: 'market';
 };
 

@@ -20,7 +20,7 @@ import type { WebSocket } from 'ws';
 import type { AntiReplay, DetachedSignature, SignedEnvelope } from './envelope.js';
 
 export type { AntiReplay, DetachedSignature, SignedEnvelope } from './envelope.js';
-export { toResultContext } from './envelope.js';
+export { toSignedResult } from './envelope.js';
 
 export const SIGN_CONTEXT = 'sign-context';
 

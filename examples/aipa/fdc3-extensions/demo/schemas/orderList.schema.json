@@ -47,6 +47,7 @@
           "instrument": { "type": "fdc3.instrument", "id": { "ticker": "SHEL" } },
           "side": "sell",
           "quantity": 1000,
+          "date": "2026-10-26T12:00:00Z",
           "orderType": "market"
         },
         {
@@ -55,6 +56,7 @@
           "instrument": { "type": "fdc3.instrument", "id": { "ticker": "NVDA" } },
           "side": "buy",
           "quantity": 200,
+          "date": "2026-10-26T12:00:00Z",
           "orderType": "market"
         }
       ]

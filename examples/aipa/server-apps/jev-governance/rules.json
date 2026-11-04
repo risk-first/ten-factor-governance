@@ -1,0 +1,29 @@
+{
+  "name": "AIPA SubmitOrder (trusted approver signature)",
+  "watch": {
+    "sourceAppIds": [
+      "aipa-agent-harness",
+      "aipa-order-entry",
+      "aipa-approvals",
+      "aipa-fluxnova"
+    ],
+    "intents": [
+      "demo.SubmitOrder"
+    ],
+    "contextTypes": [
+      "demo.order",
+      "demo.orderList"
+    ]
+  },
+  "rules": [
+    {
+      "id": "apa-ctl-005-propose-human-approval.ar01",
+      "controlId": "apa-ctl-005-propose-human-approval",
+      "question": "Does this FDC3 action break the rule below? Answer no when the rule does not apply to it.\nRule apa-ctl-005-propose-human-approval.ar01: demo.SubmitOrder may execute only when it is raised by the AIPA Approvals app (aipa-approvals) or the Fluxnova approval app (aipa-fluxnova), or when it is signed with that app's JWKS (http://localhost:4110/.well-known/jwks.json or http://localhost:4112/.well-known/jwks.json). The signature object on this action (state.signature) records that inspection: trusted true means one of those apps signed or raised it. If signature.trusted is true, the rule does not apply — answer no. Otherwise the action is unsigned or from another identity and needs human review — answer yes.",
+      "thresholds": {
+        "block": 1,
+        "review": 0.5
+      }
+    }
+  ]
+}

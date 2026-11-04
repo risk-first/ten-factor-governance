@@ -1,0 +1,138 @@
+import { useEffect, useState } from "react"
+import { createRoot } from "react-dom/client"
+import {
+  SAIL_CONFIG_UI,
+  type SailExtensionConfigProps,
+  type SailExtensionUI,
+} from "@finos/sail-extension/ui"
+
+import {
+  APPROVAL_APP_IDS,
+  APPROVER_OPTIONS,
+  GOVERNANCE_DEFAULT_SETTINGS,
+  GOVERNANCE_MODES,
+  GOVERNANCE_SETTINGS_KEY,
+  resolveSettings,
+  type ApprovalAppId,
+  type ApproverOption,
+  type GovernanceMode,
+  type GovernanceSettings,
+} from "./settings.js"
+
+const MODE_LABELS: Record<GovernanceMode, string> = {
+  off: "Off — no evaluation; forward every raise unchanged",
+  direct: "Direct — aipa-direct-governance (unsigned SubmitOrder → human review)",
+  jev: "JEV — aipa-jev-governance (Clef / Jev rules via LM Studio System One)",
+}
+
+const APPROVAL_APP_LABELS: Record<ApprovalAppId, string> = {
+  none: "none — platform decides (any GetApproval listener)",
+  "aipa-approvals": "aipa-approvals — Approvals stub inbox",
+  "aipa-fluxnova": "aipa-fluxnova — Fluxnova bridge / Tasklist",
+}
+
+export function ConfigScreen({ storage }: SailExtensionConfigProps) {
+  const [settings, setSettings] = useState<GovernanceSettings>(GOVERNANCE_DEFAULT_SETTINGS)
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    void storage.get<GovernanceSettings>(GOVERNANCE_SETTINGS_KEY).then(stored => {
+      setSettings(resolveSettings(stored))
+      setReady(true)
+    })
+  }, [storage])
+
+  async function persist(next: GovernanceSettings): Promise<void> {
+    setSettings(next)
+    await storage.set(GOVERNANCE_SETTINGS_KEY, next)
+  }
+
+  if (!ready) {
+    return <p>Loading…</p>
+  }
+
+  return (
+    <form
+      style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxWidth: "32rem" }}
+      onSubmit={event => event.preventDefault()}
+    >
+      <p style={{ margin: 0 }}>
+        Desktop Agent governance. <strong>Evaluation</strong> chooses which policy
+        decision point Sail asks. <strong>Approval</strong> settings apply if that
+        app escalates (<code>Needs Review</code> → <code>GetApproval</code>).
+      </p>
+
+      <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>Evaluation</p>
+      {GOVERNANCE_MODES.map((value: GovernanceMode) => (
+        <label key={value} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <input
+            type="radio"
+            name="governance-mode"
+            checked={settings.mode === value}
+            onChange={() => {
+              void persist({ ...settings, mode: value })
+            }}
+          />
+          {MODE_LABELS[value]}
+        </label>
+      ))}
+
+      <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>Approval</p>
+      <p style={{ margin: 0, fontSize: "0.9rem", color: "#475467" }}>
+        Where evaluation <code>Escalates</code> posts <code>GetApproval</code>. Unused when
+        evaluation is Off.
+      </p>
+      <p style={{ margin: 0, fontWeight: 600 }}>GetApproval app</p>
+      {APPROVAL_APP_IDS.map((value: ApprovalAppId) => (
+        <label key={value} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <input
+            type="radio"
+            name="approval-app"
+            checked={settings.approvalAppId === value}
+            onChange={() => {
+              void persist({ ...settings, approvalAppId: value })
+            }}
+          />
+          {APPROVAL_APP_LABELS[value]}
+        </label>
+      ))}
+
+      <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>Approver</p>
+      <p style={{ margin: 0, fontSize: "0.9rem", color: "#475467" }}>
+        Written onto <code>GetApproval</code> as the Fluxnova task assignee. Sign in to Fluxnova
+        with that Entra account (or an equivalent) to Approve / Deny.
+      </p>
+      {APPROVER_OPTIONS.map((value: ApproverOption) => (
+        <label key={value} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <input
+            type="radio"
+            name="approver"
+            checked={settings.approver === value}
+            onChange={() => {
+              void persist({ ...settings, approver: value })
+            }}
+          />
+          <code>{value}</code>
+        </label>
+      ))}
+    </form>
+  )
+}
+
+export function mount(el: HTMLElement, props: SailExtensionConfigProps): () => void {
+  const root = createRoot(el)
+  root.render(<ConfigScreen {...props} />)
+  return () => {
+    root.unmount()
+  }
+}
+
+export const governanceExtensionUI: SailExtensionUI = {
+  id: "sail-governance",
+  title: "Sail Governance",
+  type: SAIL_CONFIG_UI,
+  ConfigScreen,
+  mount,
+}
+
+export default governanceExtensionUI

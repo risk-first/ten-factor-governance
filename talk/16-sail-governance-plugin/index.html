@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>16 — Sail governance plugin</title>
+  <link rel="stylesheet" href="../css/talk.css">
+</head>
+<body>
+  <main class="stage">
+    <article class="slide packed">
+      <h1>The Sail FDC3 governance plugin</h1>
+      <svg class="bus-diagram" viewBox="0 0 1100 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FDC3 bus with the Sail governance plugin on the bus, Agent and Order Entry above, Policy and Approvals below">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1.2 L 10 5 L 0 8.8 Z" fill="#f3efe4"/>
+          </marker>
+          <marker id="arrow-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1.2 L 10 5 L 0 8.8 Z" fill="#8f9e92"/>
+          </marker>
+        </defs>
+
+        <line x1="145" y1="248" x2="418" y2="248" stroke="#3d9a5c" stroke-width="6" stroke-linecap="round"/>
+        <line x1="682" y1="248" x2="955" y2="248" stroke="#3d9a5c" stroke-width="6" stroke-linecap="round"/>
+        <text x="280" y="232" text-anchor="middle" fill="#8f9e92" font-family="Source Sans 3, sans-serif" font-size="13" letter-spacing="0.22em">FDC3 BUS</text>
+
+        <line x1="145" y1="198" x2="145" y2="248" stroke="rgba(243,239,228,0.28)" stroke-width="2"/>
+        <line x1="955" y1="198" x2="955" y2="248" stroke="rgba(243,239,228,0.28)" stroke-width="2"/>
+        <line x1="345" y1="248" x2="345" y2="318" stroke="rgba(243,239,228,0.28)" stroke-width="2"/>
+        <line x1="755" y1="248" x2="755" y2="318" stroke="rgba(243,239,228,0.28)" stroke-width="2"/>
+
+        <rect x="50" y="28" width="190" height="170" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(243,239,228,0.14)" stroke-width="1.5"/>
+        <image href="agent.svg" x="86" y="40" width="118" height="108"/>
+        <text x="145" y="172" text-anchor="middle" fill="#f3efe4" font-family="Source Serif 4, Georgia, serif" font-size="22">Agent</text>
+
+        <rect x="860" y="28" width="190" height="170" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(243,239,228,0.14)" stroke-width="1.5"/>
+        <image href="order-entry.svg" x="896" y="40" width="118" height="108"/>
+        <text x="955" y="172" text-anchor="middle" fill="#f3efe4" font-family="Source Serif 4, Georgia, serif" font-size="20">Order Entry</text>
+
+        <rect x="418" y="198" width="264" height="100" rx="12" fill="rgba(61,154,92,0.22)" stroke="#3d9a5c" stroke-width="2"/>
+        <image href="shield.svg" x="440" y="214" width="56" height="56"/>
+        <text x="590" y="244" text-anchor="middle" fill="#f3efe4" font-family="Source Serif 4, Georgia, serif" font-size="22">Plugin</text>
+        <text x="590" y="270" text-anchor="middle" fill="#b8c4b8" font-family="Source Sans 3, sans-serif" font-size="14">allow · deny · escalate</text>
+
+        <rect x="250" y="318" width="190" height="158" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(243,239,228,0.14)" stroke-width="1.5"/>
+        <image href="policy.svg" x="298" y="332" width="94" height="94"/>
+        <text x="345" y="452" text-anchor="middle" fill="#f3efe4" font-family="Source Serif 4, Georgia, serif" font-size="22">Policy</text>
+
+        <rect x="660" y="318" width="190" height="158" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(243,239,228,0.14)" stroke-width="1.5"/>
+        <image href="approvals.svg" x="708" y="332" width="94" height="94"/>
+        <text x="755" y="452" text-anchor="middle" fill="#f3efe4" font-family="Source Serif 4, Georgia, serif" font-size="22">Approvals</text>
+
+        <line x1="250" y1="88" x2="850" y2="88" stroke="#f3efe4" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="550" y="76" text-anchor="middle" fill="#b8c4b8" font-family="Source Sans 3, sans-serif" font-size="14">demo.SubmitOrder</text>
+
+        <line x1="850" y1="148" x2="250" y2="148" stroke="#8f9e92" stroke-width="1.75" marker-end="url(#arrow-dim)"/>
+        <text x="550" y="168" text-anchor="middle" fill="#8f9e92" font-family="Source Sans 3, sans-serif" font-size="13">result</text>
+      </svg>
+      <footer class="chrome">
+        <nav class="nav">
+          <a class="prev" rel="prev" aria-label="Previous">←</a>
+          <span class="num"></span>
+          <a class="next" rel="next" aria-label="Next">→</a>
+        </nav>
+      </footer>
+    </article>
+  </main>
+  <script src="../js/talk.js"></script>
+</body>
+</html>

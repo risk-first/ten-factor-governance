@@ -47,10 +47,10 @@ systems:
   - id: ai-portfolio-assistant
     name: "AIPA"
     description: |
-      Retrieval-augmented AI system that operates across FDC3 applications to
-      observe portfolio context, invoke deterministic risk and exposure tools,
-      retrieve investment research, explain results, and optionally recommend
-      or propose actions within an authorised authority level.
+      Retrieval-augmented AI system that observes portfolio context, invokes
+      deterministic risk and exposure tools, retrieves investment research,
+      explains results, and optionally recommends or proposes actions within
+      an authorised authority level.
     version: "1.0.0"
     role: [Deployer, Developer]
     stage: Operation
@@ -78,7 +78,9 @@ systems:
       subjects: ["Investment clients whose portfolios are observed or influenced"]
       prohibited:
         - "Autonomous trade execution or unsupervised order submission"
-        - "Submitting orders without recorded human approval of the proposal"
+        - "Submitting orders without recorded first human approval"
+        - "Four-eyes self-approval on large orders"
+        - "Approving or executing orders at or above the hard-reject ceiling"
         - "Inventing numerical exposures, stress results or prices instead of using deterministic tools"
         - "Cross-portfolio access outside the manager's entitlement"
       foreseeable-misuse:
@@ -96,25 +98,30 @@ systems:
       level: "Human In The Loop"
       description: |
         Observe/analyse/explain may run with human-on-the-loop monitoring.
-        Recommend is gated; propose requires human-in-the-loop approval before
-        any path toward execution. Autonomous execute is prohibited.
+        Recommend is gated. Every agent-initiated execution path requires a
+        first recorded human approval. Large orders require a second
+        independent human. Oversized orders are hard-rejected. Autonomous
+        execute by the assistant is prohibited.
       intervention: |
         Portfolio managers may discard, edit or refuse recommendations and
-        proposals; compliance may suspend AIPA for a desk.
+        proposals; a second reviewer may reject large orders; compliance may
+        suspend AIPA for a desk.
       override: |
-        Humans retain exclusive authority to approve proposals and to execute
-        orders through approved trading channels.
+        Humans retain exclusive authority to approve in-band orders. The
+        hard-reject ceiling cannot be overridden through this assistant path.
 
     techniques:
       - "Retrieval-augmented generation over investment research"
       - "Hosted foundation model accessed as a service"
-      - "FDC3 intents and context sharing with deterministic specialist applications"
+      - "Context sharing with deterministic specialist applications"
 
     datasets:
       - reference-id: apa-dataset-register
         entry-id: portfolio-holdings-snapshots
       - reference-id: apa-dataset-register
         entry-id: investment-research-corpus
+      - reference-id: apa-dataset-register
+        entry-id: order-limit-register
       - reference-id: apa-dataset-register
         entry-id: historical-recommendations-eval
 

@@ -3,31 +3,34 @@ title: AI Portfolio Assistant Threat Catalog
 metadata:
   id: apa-threats
   type: ThreatCatalog
-  version: "0.2.0"
+  version: "0.3.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-11T00:00:00Z"
+  date: "2026-11-01T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: >
     Threat catalog describing opportunities for negative impact arising from
-    the Financial AI Portfolio Assistant across FDC3 applications and the
-    observe-to-execute authority ladder. Composes relevant CCC Multi-Agent
-    Reference Architecture threats for the agent/LLM/knowledge layers the
-    assistant depends on.
+    the Financial AI Portfolio Assistant specialist applications (Portfolio,
+    Risk, Research, Market Data, Order Entry, Execution, Agent UI, Agent
+    harness, Markdown Viewer, Discoverability) across the observe-to-execute
+    authority ladder. Evaluation, human approval, enforcement, and evidence
+    recording are analysed on the Governance Runtime. Composes relevant CCC
+    Multi-Agent Reference Architecture threats for the agent and model
+    layers the harness depends on.
   mapping-references:
     - id: apa-capabilities
       title: AI Portfolio Assistant Capability Catalog
-      version: "0.3.0"
+      version: "0.4.0"
       url: file://capability.yaml
       description: >
         Scope-specific capabilities for AI Portfolio Assistant threat
         assessment.
     - id: apa-vectors
       title: AI Portfolio Assistant Vector Catalog
-      version: "0.1.0"
+      version: "0.2.0"
       url: file://../../vector.yaml
       description: >
         Attack and failure vectors through which AI Portfolio Assistant
@@ -56,51 +59,47 @@ imports:
   - reference-id: CCC.MARefArc.TH
     entries:
       - reference-id: CCC.MARefArc.TH01
-        remarks: Model memorization leaks sensitive data across sessions
+        remarks: Model memorization leaks sensitive data across harness sessions
       - reference-id: CCC.MARefArc.TH02
-        remarks: Hosted-provider data-handling exposure
-      - reference-id: CCC.MARefArc.TH03
-        remarks: Embedding inversion and membership inference on the vector store
-      - reference-id: CCC.MARefArc.TH04
-        remarks: Embedding-store poisoning degrades retrieved context
-      - reference-id: CCC.MARefArc.TH05
-        remarks: Vector-store access-control, encryption, and audit gaps
+        remarks: Hosted-provider data-handling exposure via harness inference
       - reference-id: CCC.MARefArc.TH08
-        remarks: Denial of Wallet via token-expensive or unthrottled agentic calls
+        remarks: Denial of Wallet via token-expensive or unthrottled harness calls
+      - reference-id: CCC.MARefArc.TH09
+        remarks: Market-data, filings, or news vendor outage degrades specialist apps
       - reference-id: CCC.MARefArc.TH11
-        remarks: Direct prompt injection overrides guardrails
+        remarks: Direct prompt injection via the Agent UI query
       - reference-id: CCC.MARefArc.TH12
-        remarks: Indirect prompt injection via retrieved or processed content
+        remarks: Indirect prompt injection via research, news, or attached files
       - reference-id: CCC.MARefArc.TH13
-        remarks: Model profiling and system-prompt extraction
+        remarks: Model profiling and system-prompt extraction from the harness
       - reference-id: CCC.MARefArc.TH14
-        remarks: Model overreach and scope creep beyond validated use
+        remarks: Model overreach and scope creep beyond the demo intent allowlist
       - reference-id: CCC.MARefArc.TH15
-        remarks: Reputational harm from offensive or misleading outputs
+        remarks: Reputational harm from offensive or misleading Agent UI output
       - reference-id: CCC.MARefArc.TH16
-        remarks: Confident hallucination and fabricated facts
+        remarks: Confident hallucination not grounded in signed specialist results
       - reference-id: CCC.MARefArc.TH17
-        remarks: Non-deterministic and non-reproducible outputs
-      - reference-id: CCC.MARefArc.TH18
-        remarks: RAG grounding failures
+        remarks: Non-deterministic and non-reproducible harness explanations
       - reference-id: CCC.MARefArc.TH19
-        remarks: Silent model version, prompt, and deployment drift
+        remarks: Silent model version, prompt, and deployment drift in the harness
       - reference-id: CCC.MARefArc.TH20
-        remarks: Model supply-chain tampering
+        remarks: Model supply-chain tampering of the configured inference endpoint
       - reference-id: CCC.MARefArc.TH22
-        remarks: Poor-quality, drifting, and bias-amplifying data
+        remarks: Poor-quality, drifting vendor market data or research content
       - reference-id: CCC.MARefArc.TH24
-        remarks: Lack of explainability and traceable rationale
+        remarks: Lack of explainability when citations omit specialist results
       - reference-id: CCC.MARefArc.TH25
         remarks: Non-compliant outputs and model-risk-management gaps
       - reference-id: CCC.MARefArc.TH26
-        remarks: Intellectual-property leakage and licensing violations
+        remarks: Intellectual-property leakage via research or attached files
       - reference-id: CCC.MARefArc.TH27
         remarks: Authorization bypass and tool-chain privilege escalation
       - reference-id: CCC.MARefArc.TH28
         remarks: Tool selection, parameter, and sequencing manipulation
       - reference-id: CCC.MARefArc.TH30
-        remarks: Agent memory and state poisoning
+        remarks: Agent memory and state poisoning across AskAgent turns
+      - reference-id: CCC.MARefArc.TH31
+        remarks: Compromise of specialist-app collaboration or shared desktop context
       - reference-id: CCC.MARefArc.TH32
         remarks: Credential harvesting via agent tools and storage
 
@@ -109,13 +108,14 @@ groups:
     title: Confidentiality
     description: >
       Threats involving unauthorized disclosure or mixing of client portfolio
-      or session information.
+      or session information across specialist apps, the Agent UI, or the
+      harness.
 
   - id: decision-integrity
     title: Decision Integrity
     description: >
       Threats involving misleading explanations, unsuitable recommendations,
-      or other corruption of investment decision support.
+      untrusted renders, or other corruption of investment decision support.
 
   - id: unauthorized-action
     title: Unauthorized Action
@@ -132,36 +132,40 @@ groups:
   - id: supply-chain
     title: Supply Chain
     description: >
-      Threats involving third-party models, tools, or content that undermine
-      confidentiality or integrity of the assistant.
+      Threats involving third-party models, vendor data, attached files, or
+      a poisoned workspace catalog that undermine confidentiality or integrity.
 
 threats:
   - id: unauthorized-portfolio-disclosure
     title: Unauthorized Portfolio Disclosure
     description: >
-      The assistant may disclose portfolio holdings, client attributes, or
-      related non-public information to unauthorized parties, channels, or
-      model providers.
+      The Portfolio app, Agent UI, or harness may disclose holdings, client
+      attributes, or related non-public information to unauthorized parties,
+      channels, model providers, or other desktop applications sharing
+      fdc3.portfolio context.
     group: confidentiality
     capabilities:
       - reference-id: apa-capabilities
         entries:
           - reference-id: portfolio-read
-          - reference-id: session-context-retention
           - reference-id: multi-app-context-broadcast
+          - reference-id: session-context-retention
+          - reference-id: agent-query-session
+          - reference-id: agent-file-attach
           - reference-id: research-retrieval
     vectors:
       - reference-id: apa-vectors
         entries:
           - reference-id: cross-portfolio-context-bleed
-          - reference-id: unintended-fdc3-broadcast
+          - reference-id: unintended-context-sharing
           - reference-id: model-provider-data-exfiltration
     actors:
       - id: ai-agent
         name: AI Portfolio Assistant
         type: AI
         description: >
-          The assistant agent that reads and may redisclose portfolio context.
+          The harness and Agent UI that read and may redisclose portfolio
+          context.
       - id: model-provider
         name: Foundation Model Provider
         type: Organisation
@@ -169,12 +173,38 @@ threats:
           A third-party provider that may receive prompts containing portfolio
           data.
 
+  - id: cross-client-data-contamination
+    title: Cross-Client Data Contamination
+    description: >
+      Harness session memory, an AskAgent PrivateChannel reused across
+      follow-ups, or shared desktop context may mix holdings, attachments,
+      or research from one client or portfolio into another user's session.
+    group: confidentiality
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: session-context-retention
+          - reference-id: agent-query-session
+          - reference-id: agent-file-attach
+          - reference-id: portfolio-read
+          - reference-id: multi-app-context-broadcast
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: cross-portfolio-context-bleed
+          - reference-id: unintended-context-sharing
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
   - id: misleading-risk-explanation
     title: Misleading Risk Explanation
     description: >
-      The assistant may produce an explanation of exposures, stress results,
+      The harness may produce an explanation of exposures, stress results,
       or risk that is inaccurate, incomplete, overconfident, or not grounded
-      in deterministic application outputs.
+      in signed Risk and Market Data outputs, while the Risk analysis view
+      or a chart still appears authoritative.
     group: decision-integrity
     capabilities:
       - reference-id: apa-capabilities
@@ -182,30 +212,101 @@ threats:
           - reference-id: explanation-generation
           - reference-id: exposure-calculation-consume
           - reference-id: stress-scenario-consume
+          - reference-id: market-data-price-history
+          - reference-id: risk-analysis-view
+          - reference-id: fdc3-app-invocation
     vectors:
       - reference-id: apa-vectors
         entries:
           - reference-id: hallucinated-financial-claim
           - reference-id: overconfident-explanation
           - reference-id: stale-or-incorrect-market-data
+          - reference-id: forged-specialist-attestation
     actors:
       - id: ai-agent
         name: AI Portfolio Assistant
         type: AI
 
+  - id: stale-or-poisoned-market-data
+    title: Stale or Poisoned Market Data
+    description: >
+      The Market Data app may serve outdated, incomplete, or incorrect
+      price history or charts. Risk then computes exposures or stress
+      from those series, and the harness or chart view presents the
+      result as current.
+    group: decision-integrity
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: market-data-price-history
+          - reference-id: market-data-chart-view
+          - reference-id: exposure-calculation-consume
+          - reference-id: stress-scenario-consume
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: stale-or-incorrect-market-data
+    actors:
+      - id: market-data-vendor
+        name: Market Data Vendor
+        type: Organisation
+        description: >
+          A quote or history provider whose feed is stale, incomplete, or
+          manipulated.
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
+  - id: forged-or-unsigned-specialist-result
+    title: Forged or Unsigned Specialist Result
+    description: >
+      The harness may treat an unsigned, replayed, or forged
+      demo.portfolioRisk, demo.stressScenarioResult, demo.researchBundle,
+      or demo.order as signed specialist output when generating
+      explanations, recommendations, or order proposals.
+    group: decision-integrity
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: exposure-calculation-consume
+          - reference-id: stress-scenario-consume
+          - reference-id: research-intent-consume
+          - reference-id: order-proposal-construction
+          - reference-id: explanation-generation
+          - reference-id: recommendation-generation
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: forged-specialist-attestation
+          - reference-id: hallucinated-financial-claim
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+      - id: hostile-desktop-app
+        name: Hostile Desktop Application
+        type: Organisation
+        description: >
+          An application that returns or broadcasts a specialist-shaped
+          context without a verifiable attestation.
+
   - id: unsuitable-recommendation
     title: Unsuitable Investment Recommendation
     description: >
-      The assistant may recommend position changes or other investment actions
-      that are unsuitable for the client mandate, risk profile, or prevailing
-      market and portfolio facts.
+      The harness may recommend position changes that are unsuitable for
+      the client mandate, risk profile, or prevailing market and portfolio
+      facts, including when research or risk inputs are incomplete or
+      manipulated.
     group: decision-integrity
     capabilities:
       - reference-id: apa-capabilities
         entries:
           - reference-id: recommendation-generation
           - reference-id: research-retrieval
+          - reference-id: research-intent-consume
           - reference-id: portfolio-read
+          - reference-id: exposure-calculation-consume
+          - reference-id: market-data-price-history
     vectors:
       - reference-id: apa-vectors
         entries:
@@ -229,18 +330,49 @@ threats:
           An author who plants manipulative content in research or other
           retrieved material.
 
+  - id: misleading-rendered-artifact
+    title: Misleading Rendered Artifact
+    description: >
+      The Agent UI or Markdown Viewer may render streamed HTML, suggestion
+      chips, or replace-in-place markdown that the portfolio manager treats
+      as specialist output, including attacker-controlled or uncited content.
+    group: decision-integrity
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: agent-response-render
+          - reference-id: markdown-view
+          - reference-id: explanation-generation
+          - reference-id: research-instrument-view
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: untrusted-desktop-render
+          - reference-id: overconfident-explanation
+    actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+      - id: malicious-content-author
+        name: Malicious Content Author
+        type: Human
+
   - id: unauthorized-order-proposal
     title: Unauthorized Order Proposal
     description: >
-      The assistant may construct proposed orders or trade tickets without
-      required human approval, without entitlement to propose authority, or
-      through manipulated tool arguments.
+      The harness may raise demo.CreateOrder, or Order Entry may emit a
+      signed draft, without required human approval, without entitlement
+      to propose authority, or through manipulated tool arguments. The
+      blotter may then present that draft as a normal ticket.
     group: unauthorized-action
     capabilities:
       - reference-id: apa-capabilities
         entries:
           - reference-id: order-proposal-construction
+          - reference-id: order-blotter-view
           - reference-id: tool-calling
+          - reference-id: fdc3-app-invocation
+          - reference-id: recommendation-generation
     vectors:
       - reference-id: apa-vectors
         entries:
@@ -255,9 +387,10 @@ threats:
   - id: unauthorized-trade-execution
     title: Unauthorized Trade Execution
     description: >
-      The assistant may submit orders or otherwise execute trades
-      autonomously, bypassing the prohibition on execute authority for the
-      AI system.
+      The harness may raise demo.SubmitOrder, or discover a path to the
+      Execution app, despite the prohibition on execute authority and the
+      requirement that SubmitOrder must not appear on any assistant
+      allowlist.
     group: unauthorized-action
     capabilities:
       - reference-id: apa-capabilities
@@ -265,36 +398,79 @@ threats:
           - reference-id: trade-execution
           - reference-id: tool-calling
           - reference-id: fdc3-app-invocation
+          - reference-id: workspace-discoverability
     vectors:
       - reference-id: apa-vectors
         entries:
           - reference-id: execution-bypass
           - reference-id: authority-escalation
           - reference-id: tool-argument-injection
+          - reference-id: discoverability-poisoning
     actors:
       - id: ai-agent
         name: AI Portfolio Assistant
         type: AI
 
-  - id: cross-client-data-contamination
-    title: Cross-Client Data Contamination
+  - id: limit-policy-bypass
+    title: Order Limit Policy Bypass
     description: >
-      Session memory or FDC3 context may mix holdings, preferences, or
-      research context from one client or portfolio into another user's
-      session.
-    group: confidentiality
+      An agent-initiated CreateOrder or SubmitOrder may skip the first
+      human approval, skip the required second reviewer on a large order,
+      or enter an approval path when it is above the hard-reject ceiling.
+      Evaluation and hold of those raises is analysed on the Governance
+      Runtime; this threat is the assistant constructing or submitting
+      the oversize or unreviewed order.
+    group: unauthorized-action
     capabilities:
       - reference-id: apa-capabilities
         entries:
-          - reference-id: session-context-retention
-          - reference-id: portfolio-read
-          - reference-id: multi-app-context-broadcast
+          - reference-id: order-proposal-construction
+          - reference-id: trade-execution
+          - reference-id: tool-calling
+          - reference-id: fdc3-app-invocation
     vectors:
       - reference-id: apa-vectors
         entries:
-          - reference-id: cross-portfolio-context-bleed
-          - reference-id: unintended-fdc3-broadcast
+          - reference-id: four-eyes-bypass
+          - reference-id: oversize-order-without-reject
+          - reference-id: order-proposal-without-approval
     actors:
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+      - id: requester
+        name: Requesting Portfolio Manager
+        type: Human
+        description: >
+          The human who originated the proposal and must not also record
+          the four-eyes decision.
+
+  - id: discoverability-catalog-poisoning
+    title: Discoverability Catalog Poisoning
+    description: >
+      The Discoverability catalog may omit allowed specialist apps, invent
+      intents, or advertise demo.SubmitOrder so the harness resolves and
+      raises an unintended application or an intent outside the allowlist.
+    group: unauthorized-action
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: workspace-discoverability
+          - reference-id: fdc3-app-invocation
+          - reference-id: tool-calling
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: discoverability-poisoning
+          - reference-id: authority-escalation
+          - reference-id: tool-argument-injection
+    actors:
+      - id: hostile-desktop-app
+        name: Hostile Desktop Application
+        type: Organisation
+        description: >
+          A source that answers catalog requests with a falsified app,
+          intent, or schema list.
       - id: ai-agent
         name: AI Portfolio Assistant
         type: AI
@@ -302,20 +478,23 @@ threats:
   - id: regulatory-advice-without-authorisation
     title: Regulatory Advice Without Authorisation
     description: >
-      The assistant may present outputs as regulated advice or otherwise
-      influence investment decisions in a manner that exceeds authorised
-      advice permissions or firm conduct boundaries.
+      The harness or a rendered artifact may present outputs as regulated
+      advice or otherwise influence investment decisions in a manner that
+      exceeds authorised advice permissions or firm conduct boundaries.
     group: decision-integrity
     capabilities:
       - reference-id: apa-capabilities
         entries:
           - reference-id: recommendation-generation
           - reference-id: explanation-generation
+          - reference-id: agent-response-render
+          - reference-id: markdown-view
     vectors:
       - reference-id: apa-vectors
         entries:
           - reference-id: unsupervised-recommendation-acceptance
           - reference-id: overconfident-explanation
+          - reference-id: untrusted-desktop-render
     actors:
       - id: ai-agent
         name: AI Portfolio Assistant
@@ -327,28 +506,62 @@ threats:
   - id: tool-misuse-manipulation
     title: Tool Misuse Through Manipulation
     description: >
-      Adversarial or untrusted content may induce the assistant to call tools
-      with unsafe arguments, invoke unintended FDC3 apps, or escalate beyond
-      permitted tool allowlists.
+      Adversarial research, an attached file, or a poisoned catalog may
+      induce the harness to call tools with unsafe arguments, invoke
+      unintended specialist apps, or escalate beyond the demo intent
+      allowlist.
     group: supply-chain
     capabilities:
       - reference-id: apa-capabilities
         entries:
           - reference-id: tool-calling
           - reference-id: fdc3-app-invocation
+          - reference-id: workspace-discoverability
           - reference-id: research-retrieval
+          - reference-id: research-intent-consume
+          - reference-id: agent-file-attach
     vectors:
       - reference-id: apa-vectors
         entries:
           - reference-id: prompt-injection-via-research
+          - reference-id: prompt-injection-via-attachment
           - reference-id: tool-argument-injection
+          - reference-id: discoverability-poisoning
     actors:
       - id: malicious-content-author
         name: Malicious Content Author
         type: Human
         description: >
-          An author who embeds instructions or payloads in research or other
-          retrieved content.
+          An author who embeds instructions or payloads in research,
+          news, or an attached file.
+      - id: ai-agent
+        name: AI Portfolio Assistant
+        type: AI
+
+  - id: malicious-agent-attachment
+    title: Malicious Agent Attachment
+    description: >
+      A file attached on the Agent UI may inject instructions or
+      untrusted data into the harness session, causing unsafe tool
+      calls or a misleading explanation without the user treating the
+      file as a research source.
+    group: supply-chain
+    capabilities:
+      - reference-id: apa-capabilities
+        entries:
+          - reference-id: agent-file-attach
+          - reference-id: agent-query-session
+          - reference-id: session-context-retention
+          - reference-id: tool-calling
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: prompt-injection-via-attachment
+          - reference-id: tool-argument-injection
+    actors:
+      - id: malicious-content-author
+        name: Malicious Content Author
+        type: Human
       - id: ai-agent
         name: AI Portfolio Assistant
         type: AI
@@ -357,8 +570,9 @@ threats:
     title: Loss of Human Oversight
     description: >
       Consequential recommendations, order proposals, or executions may
-      proceed without meaningful human review, approval, or the ability to
-      intervene.
+      proceed without meaningful human review of the Agent UI, Risk
+      analysis view, research views, or order blotter, or without the
+      ability to intervene.
     group: oversight-failure
     capabilities:
       - reference-id: apa-capabilities
@@ -366,6 +580,10 @@ threats:
           - reference-id: recommendation-generation
           - reference-id: order-proposal-construction
           - reference-id: trade-execution
+          - reference-id: agent-response-render
+          - reference-id: order-blotter-view
+          - reference-id: risk-analysis-view
+          - reference-id: research-instrument-view
     vectors:
       - reference-id: apa-vectors
         entries:
@@ -387,16 +605,19 @@ threats:
   - id: third-party-model-leakage
     title: Third-Party Model Data Leakage
     description: >
-      Portfolio, client, or session data sent to a foundation-model provider
-      may be retained, reused, or otherwise exposed outside the firm's
-      control boundary.
+      Portfolio, client, session, attachment, or specialist-result data
+      sent by the harness to a foundation-model provider may be retained,
+      reused, or otherwise exposed outside the firm's control boundary.
     group: supply-chain
     capabilities:
       - reference-id: apa-capabilities
         entries:
           - reference-id: portfolio-read
           - reference-id: session-context-retention
+          - reference-id: agent-query-session
+          - reference-id: agent-file-attach
           - reference-id: tool-calling
+          - reference-id: explanation-generation
     vectors:
       - reference-id: apa-vectors
         entries:

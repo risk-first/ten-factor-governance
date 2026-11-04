@@ -39,7 +39,7 @@
         "appChannels": []
       },
       "hostManifests": {
-        "sail": { "injectApi": "2.0" }
+        "sail": { "injectApi": "3.0" }
       }
     }
   ],

@@ -9,7 +9,7 @@ import {
   saveLivePortfolio,
 } from '../../../common/src/data/portfolio.js';
 import { appendExecutionLog, loadExecutionLog } from '../../../common/src/data/execution-log.js';
-import { toResultContext } from '../../../common/src/security/envelope.js';
+import { toSignedResult } from '../../../common/src/security/envelope.js';
 
 export default async function backend(
   app: Application,
@@ -25,7 +25,7 @@ export default async function backend(
 
   app.post('/api/submit', async (req, res) => {
     const order = req.body?.order ?? req.body;
-    const meta = req.body?.__appMeta as { signature?: string } | undefined;
+    const meta = req.body?.metadata as { signature?: string } | undefined;
     let verify: { ok: boolean; warning?: string } = { ok: true };
     if (!meta?.signature) {
       verify = {
@@ -62,7 +62,7 @@ export default async function backend(
       id: result.id.transactionId,
       at: new Date().toISOString(),
       order,
-      result: toResultContext(envelope),
+      result: toSignedResult(envelope).context,
     };
     appendExecutionLog(entry);
     res.json({ envelope, verify, entry });

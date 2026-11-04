@@ -12,10 +12,9 @@ metadata:
     name: AI Governance Office
     type: Human
   description: >
-    Machine-readable guidance for governing the AI Portfolio Assistant
-    across FDC3 applications, enforcing the authority ladder from observe
-    through execute, naming demo intents/contexts, and composing FINOS AIGF
-    mitigations.
+    Machine-readable guidance for governing the AI Portfolio Assistant,
+    enforcing the authority ladder from observe through execute, and
+    composing FINOS AIGF mitigations.
   lexicon:
     reference-id: apa-lexicon
   mapping-references:
@@ -67,11 +66,11 @@ imports:
 type: Framework
 
 front-matter: |
-  These guidelines govern an AI Portfolio Assistant that operates across a
-  suite of FDC3 applications used by portfolio managers. Deterministic
-  applications perform portfolio, risk, and market calculations. The
-  assistant interprets those results, retrieves relevant investment research,
-  and helps the portfolio manager understand positions and risks.
+  These guidelines govern an AI Portfolio Assistant used by portfolio
+  managers. Deterministic applications perform portfolio, risk, and market
+  calculations. The assistant interprets those results, retrieves relevant
+  investment research, and helps the portfolio manager understand positions
+  and risks.
 
   As capability increases, so does consequence. Governance therefore
   controls how much authority is delegated to the AI and under what
@@ -81,9 +80,11 @@ front-matter: |
 
   An organisation may allow the assistant to analyse and explain
   autonomously, permit recommendations only when specified controls are
-  satisfied, require human approval for proposed orders, and prohibit
-  autonomous trade execution entirely. These guidelines make those
-  boundaries explicit, enforceable, and auditable.
+  satisfied, and require human approval before any agent-initiated order
+  can execute. Published order limits decide whether that approval is
+  one human, two independent humans, or a hard reject. The assistant
+  must not initiate execution. These guidelines make those boundaries
+  explicit, enforceable, and auditable.
 
 groups:
   - id: authority-ladder
@@ -101,14 +102,14 @@ groups:
   - id: data-protection
     title: Data Protection
     description: >
-      Confidentiality, FDC3 context boundaries, and model-provider data
+      Confidentiality, session context boundaries, and model-provider data
       handling.
 
   - id: tool-use
     title: Tool Use
     description: >
-      Requirements for deterministic applications, research retrieval, demo
-      FDC3 intents, provenance, and safe tool invocation.
+      Requirements for deterministic applications, research retrieval,
+      provenance, and safe tool invocation.
 
   - id: assurance
     title: Assurance
@@ -155,6 +156,7 @@ guidelines:
       - apa-guidance-observe-only
       - apa-guidance-recommend-controls
       - apa-guidance-propose-approval
+      - apa-guidance-order-limits
       - apa-guidance-execute-prohibited
 
   - id: apa-guidance-observe-only
@@ -169,8 +171,8 @@ guidelines:
     statements:
       - id: apa-guidance-observe-only.1
         text: >
-          At observe, the assistant may read FDC3 context and approved
-          portfolio views for the active user and portfolio only.
+          At observe, the assistant may read approved portfolio views for
+          the active user and portfolio only.
       - id: apa-guidance-observe-only.2
         text: >
           At observe, the assistant must not invoke analysis tools, produce
@@ -185,7 +187,7 @@ guidelines:
         entries:
           - reference-id: authority-escalation
           - reference-id: cross-portfolio-context-bleed
-          - reference-id: unintended-fdc3-broadcast
+          - reference-id: unintended-context-sharing
 
   - id: apa-guidance-analyse-explain
     title: Analyse and Explain Authority Controls
@@ -270,10 +272,11 @@ guidelines:
     group: authority-ladder
     state: Active
     objective: >
-      Require recorded human approval before any order proposal proceeds
-      toward trading workflows.
+      Require a recorded first human approval before any agent-initiated
+      order proceeds toward execution.
     applicability:
       - propose
+      - execute
     statements:
       - id: apa-guidance-propose-approval.1
         text: >
@@ -281,15 +284,18 @@ guidelines:
           proposal for the active portfolio based on deterministic analytics
           and approved inputs.
       - id: apa-guidance-propose-approval.2
-        title: Mandatory approval
+        title: First human approval
         text: >
-          An order proposal must not leave the assistant's controlled
-          workspace or enter trading systems until an authorized portfolio
-          manager records explicit approval.
+          Every agent-initiated path toward execution must request human
+          approval for the action to perform. The assistant must not submit
+          the order itself. A first authorised human must record the
+          decision through the approving application.
       - id: apa-guidance-propose-approval.3
         text: >
           Approval evidence must identify the approver, timestamp, proposal
-          identifier, and material assumptions.
+          identifier, reviewed action version, and material assumptions.
+          Self-approval by the assistant or by an unauthenticated identity
+          is a control failure.
     principles:
       - reference-id: apa-principles
         entries:
@@ -302,8 +308,71 @@ guidelines:
           - reference-id: order-proposal-without-approval
           - reference-id: authority-escalation
     see-also:
+      - apa-guidance-order-limits
       - apa-guidance-human-oversight
       - apa-guidance-logging
+
+  - id: apa-guidance-order-limits
+    title: Order Size Limits and Escalation
+    group: authority-ladder
+    state: Active
+    objective: >
+      Evaluate every agent-initiated order against a published Order Limit
+      Register so first approval, four-eyes review, or hard reject is
+      applied consistently.
+    applicability:
+      - propose
+      - execute
+    statements:
+      - id: apa-guidance-order-limits.1
+        title: Published limits
+        text: >
+          Trading Controls must maintain a versioned Order Limit Register
+          stating notional and NAV thresholds. The governance runtime and
+          approving application must evaluate the authoritative register,
+          not values supplied by the assistant.
+      - id: apa-guidance-order-limits.2
+        title: First approval band
+        text: >
+          Any agent-initiated order below the four-eyes threshold still
+          requires one recorded human approval before the approving
+          application may perform the subject action.
+      - id: apa-guidance-order-limits.3
+        title: Four-eyes band
+        text: >
+          An order at or above the four-eyes threshold (desk default:
+          GBP 100,000 notional or 5 percent of portfolio NAV, whichever is
+          reached first) requires a second authenticated reviewer who is
+          not the requester. The approving application must prevent
+          self-approval.
+      - id: apa-guidance-order-limits.4
+        title: Hard reject
+        text: >
+          An order at or above the hard-reject ceiling (desk default:
+          GBP 5,000,000 notional or 25 percent of portfolio NAV, whichever
+          is reached first) must be denied immediately. An approval request
+          must not be accepted and no execution path may open.
+      - id: apa-guidance-order-limits.5
+        text: >
+          Size and NAV used for banding must come from deterministic
+          portfolio or order-entry calculations, not from model-invented
+          figures.
+    principles:
+      - reference-id: apa-principles
+        entries:
+          - reference-id: proportional-authority
+          - reference-id: human-oversight-of-consequence
+          - reference-id: prohibited-autonomous-execution
+    vectors:
+      - reference-id: apa-vectors
+        entries:
+          - reference-id: four-eyes-bypass
+          - reference-id: oversize-order-without-reject
+          - reference-id: order-proposal-without-approval
+    see-also:
+      - apa-guidance-propose-approval
+      - apa-guidance-execute-prohibited
+      - apa-guidance-human-oversight
 
   - id: apa-guidance-execute-prohibited
     title: Autonomous Execution Prohibited
@@ -318,17 +387,18 @@ guidelines:
       - id: apa-guidance-execute-prohibited.1
         title: Hard prohibition
         text: >
-          The AI Portfolio Assistant must not submit orders, trigger
-          execution intents, or otherwise effect portfolio changes
-          autonomously under any authority grant.
+          The AI Portfolio Assistant must not submit orders or otherwise
+          effect portfolio changes autonomously under any authority grant.
       - id: apa-guidance-execute-prohibited.2
         text: >
-          Execution may occur only through approved human-operated trading
-          workflows after a separately authorized human decision.
+          Execution may occur only when the approving application performs
+          the approved action after the required human decision or
+          decisions, and only when the order is within published limits.
+          Hard-rejected sizes must never execute.
       - id: apa-guidance-execute-prohibited.3
         text: >
-          Technical controls must block FDC3 intents, APIs, and tools that
-          would enable autonomous execution by the assistant.
+          Technical controls must block APIs and tools that would enable
+          autonomous execution by the assistant.
     principles:
       - reference-id: apa-principles
         entries:
@@ -354,8 +424,9 @@ guidelines:
           informed or proposed by the assistant.
       - id: apa-guidance-human-oversight.2
         text: >
-          Human review is mandatory for propose-level outputs and for any
-          path that could lead to execution.
+          Human review is mandatory for any path that could lead to
+          execution. Large orders require a second independent human.
+          Oversized orders are rejected rather than approved.
       - id: apa-guidance-human-oversight.3
         text: >
           Oversight interfaces must present supporting evidence,
@@ -439,27 +510,27 @@ guidelines:
           - reference-id: tool-argument-injection
           - reference-id: overconfident-explanation
 
-  - id: apa-guidance-fdc3-boundaries
-    title: FDC3 Context and Broadcast Boundaries
+  - id: apa-guidance-session-boundaries
+    title: Session Context Boundaries
     group: data-protection
     state: Active
     objective: >
-      Confine FDC3 context sharing to authorized applications, users, and
+      Confine shared context to authorized applications, users, and
       portfolios for the current session.
     statements:
-      - id: apa-guidance-fdc3-boundaries.1
+      - id: apa-guidance-session-boundaries.1
         text: >
-          The assistant may consume and emit FDC3 context only for the
-          active portfolio manager session and authorized application set.
-      - id: apa-guidance-fdc3-boundaries.2
+          The assistant may consume and emit context only for the active
+          portfolio manager session and authorized application set.
+      - id: apa-guidance-session-boundaries.2
         text: >
           Portfolio context from one client must not be mixed into prompts,
-          tool calls, or broadcasts for another client.
-      - id: apa-guidance-fdc3-boundaries.3
+          tool calls, or shared state for another client.
+      - id: apa-guidance-session-boundaries.3
         text: >
           Sensitive explanations, recommendations, and order proposals must
-          not be broadcast on FDC3 channels beyond applications explicitly
-          authorized to receive them.
+          not be shared beyond applications explicitly authorized to receive
+          them.
     principles:
       - reference-id: apa-principles
         entries:
@@ -468,7 +539,7 @@ guidelines:
       - reference-id: apa-vectors
         entries:
           - reference-id: cross-portfolio-context-bleed
-          - reference-id: unintended-fdc3-broadcast
+          - reference-id: unintended-context-sharing
 
   - id: apa-guidance-model-providers
     title: Model Provider Data Controls
@@ -571,41 +642,40 @@ guidelines:
           - reference-id: prompt-injection-via-research
           - reference-id: model-provider-data-exfiltration
 
-  - id: apa-guidance-demo-intents
-    title: Demo FDC3 Intent Allowlist
+  - id: apa-guidance-tool-allowlist
+    title: Tool Allowlist
     group: tool-use
     state: Active
     objective: >
-      Bind the assistant's FDC3 surface to the named demo intents and map
-      each intent to an authority level on the ladder.
+      Bind the assistant's tools to an approved set and map each tool to an
+      authority level on the ladder.
     statements:
-      - id: apa-guidance-demo-intents.1
+      - id: apa-guidance-tool-allowlist.1
         title: Core allowlist
         text: >
-          The assistant may raise demo.GetPortfolioRisk and
-          demo.RunStressScenario at analyse, demo.GetResearch at explain,
-          and demo.CreateOrder at propose when the session
-          entitlement and related controls are satisfied.
-      - id: apa-guidance-demo-intents.2
+          The assistant may invoke approved risk-analysis and stress tools
+          at analyse, research retrieval at explain, and order-construction
+          tools at propose when the session entitlement and related
+          controls are satisfied.
+      - id: apa-guidance-tool-allowlist.2
         title: Execute ban
         text: >
-          The assistant must not successfully raise demo.SubmitOrders.
-          Governance must return DENY and the Desktop Agent must not
-          forward the intent.
-      - id: apa-guidance-demo-intents.3
+          The assistant must not successfully invoke execution tools.
+          Governance must deny those calls. In-band execution is requested
+          only through an approval request; the approving application
+          performs the approved action if the human decision and size
+          bands allow it.
+      - id: apa-guidance-tool-allowlist.3
         title: Responders
         text: >
-          Risk App responds to GetPortfolioRisk and RunStressScenario;
-          Research App to GetResearch; Order Entry to CreateOrder;
-          Execution / Order Entry would respond to SubmitOrders if it were
-          permitted.
-      - id: apa-guidance-demo-intents.4
-        title: Optional View intents
+          Specialist applications respond to their own functions. The
+          approving application records human decisions. Execution responds
+          to the approved action, not to an assistant-initiated submit.
+      - id: apa-guidance-tool-allowlist.4
+        title: Optional view helpers
         text: >
-          Supporting View* intents (ViewInstrument, ViewChart, ViewNews,
-          ViewResearch, ViewAnalysis, ViewHoldings, ViewOrders) may be
-          allowlisted as low-authority UI helpers and must not grant propose
-          or execute authority.
+          Supporting view helpers may be allowlisted as low-authority UI
+          aids and must not grant propose or execute authority.
     principles:
       - reference-id: apa-principles
         entries:
@@ -621,31 +691,31 @@ guidelines:
           - reference-id: execution-bypass
           - reference-id: tool-argument-injection
 
-  - id: apa-guidance-fdc3-security
-    title: FDC3 Security for Demo Contexts
+  - id: apa-guidance-output-provenance
+    title: Specialist Output Provenance
     group: tool-use
     state: Active
     objective: >
-      Require cryptographic provenance on demo suite contexts used as
-      evidence for analysis, explanation, recommendation, and proposal.
+      Require verifiable provenance on specialist outputs used as evidence
+      for analysis, explanation, recommendation, and proposal.
     statements:
-      - id: apa-guidance-fdc3-security.1
-        title: Signed contexts
+      - id: apa-guidance-output-provenance.1
+        title: Attributed outputs
         text: >
-          demo.portfolioRisk, demo.researchBundle, demo.stressScenarioResult,
-          demo.portfolioRecommendation, and demo.orderProposal must be
-          broadcast with FDC3 Security signatures.
-      - id: apa-guidance-fdc3-security.2
-        title: Unsigned handling
+          Risk results, research bundles, stress results, recommendations,
+          and order proposals used as evidence must carry verifiable
+          provenance from the originating application.
+      - id: apa-guidance-output-provenance.2
+        title: Unattributed handling
         text: >
-          The assistant must not treat unsigned instances of those contexts
-          as authoritative grounding for explain, recommend, or propose
-          outputs.
-      - id: apa-guidance-fdc3-security.3
+          The assistant must not treat unattributed instances of those
+          outputs as authoritative grounding for explain, recommend, or
+          propose outputs.
+      - id: apa-guidance-output-provenance.3
         title: Evidence chain
         text: >
-          Session logs should retain signature verification outcomes alongside
-          the intent that produced or consumed the context.
+          Session logs should retain provenance verification outcomes
+          alongside the tool call that produced or consumed the output.
     principles:
       - reference-id: apa-principles
         entries:

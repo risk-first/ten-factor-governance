@@ -41,7 +41,7 @@
       },
       "hostManifests": {
         "sail": {
-          "injectApi": "2.0",
+          "injectApi": "3.0",
           "invisible": true,
           "singleton": true,
           "autostart": true,

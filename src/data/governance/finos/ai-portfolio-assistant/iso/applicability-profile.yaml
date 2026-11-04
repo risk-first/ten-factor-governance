@@ -128,7 +128,7 @@ decisions:
       reference-id: apa-controls
       entry-id: apa-ctl-005-propose-human-approval
     applicable: true
-    justification: "Load-bearing HITL gate for order proposals."
+    justification: "Load-bearing first recorded human approval for every agent-initiated execution path."
     state: Implemented
     risks:
       - reference-id: apa-risks
@@ -202,7 +202,7 @@ decisions:
       reference-id: apa-controls
       entry-id: apa-ctl-010-tool-allowlist
     applicable: true
-    justification: "Restricts FDC3 intents and tools to approved specialist applications."
+    justification: "Restricts tools to approved specialist applications."
     state: Implemented
     owner:
       name: "AIPA Engineering"
@@ -293,8 +293,8 @@ decisions:
       entry-id: apa-ctl-016-fdc3-security-provenance
     applicable: true
     justification: >
-      Demo suite contexts used as evidence must carry FDC3 Security signatures
-      so explain/recommend/propose grounding is provenance-verified.
+      Specialist outputs used as evidence must carry verifiable provenance
+      so explain/recommend/propose grounding is origin-checked.
     state: "Partially Implemented"
     risks:
       - reference-id: apa-risks
@@ -305,9 +305,69 @@ decisions:
       name: "AIPA Engineering"
     due: "2026-11-30T00:00:00Z"
     implementation: |
-      Signature verification hooked for demo.portfolioRisk and
-      demo.researchBundle; remaining demo contexts and reject-on-unsigned
-      path still rolling out.
+      Provenance verification hooked for risk results and research;
+      remaining specialist outputs and reject-on-unattributed path still
+      rolling out.
+
+  - id: soa-apa-ctl-017
+    control:
+      reference-id: apa-controls
+      entry-id: apa-ctl-017-order-limit-register
+    applicable: true
+    justification: >
+      Published size bands are the source of first-approval, four-eyes and
+      hard-reject decisions; they must be owned and versioned.
+    state: Implemented
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-order-limits
+    owner:
+      name: "Trading Controls"
+
+  - id: soa-apa-ctl-018
+    control:
+      reference-id: apa-controls
+      entry-id: apa-ctl-018-four-eyes-large-orders
+    applicable: true
+    justification: >
+      Large agent-initiated orders need a second independent human before
+      the approving application may execute the subject action.
+    state: Implemented
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+      - reference-id: apa-risks
+        entry-id: operational-overreliance
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-order-limits
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-human-oversight
+    owner:
+      name: "AI Governance Office"
+
+  - id: soa-apa-ctl-019
+    control:
+      reference-id: apa-controls
+      entry-id: apa-ctl-019-hard-reject-oversize
+    applicable: true
+    justification: >
+      Orders above the size ceiling must be refused rather than approved;
+      approval is not a waiver of the hard reject.
+    state: Implemented
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+      - reference-id: apa-risks
+        entry-id: market-conduct-breach
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-order-limits
+    owner:
+      name: "Trading Controls"
 
   - id: soa-host-ccc-k8s-cn02
     control:

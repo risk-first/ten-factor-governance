@@ -98,11 +98,58 @@ objectives:
         name: "Propose human-approval coverage"
         method: |
           Percentage of propose-level outputs that either were discarded or have
-          a recorded human approval before any execution path.
+          a recorded first human approval before any execution path.
         unit: "percent"
         frequency: Monthly
         target:
           value: 100
+          comparator: "="
+    status: Active
+    period:
+      start: "2026-01-01T00:00:00Z"
+      end: "2026-12-31T23:59:59Z"
+
+  - id: order-limit-compliance
+    title: "Order-limit banding compliance"
+    description: |
+      Agent-initiated orders are banded against the published Order Limit
+      Register: first approval, four-eyes, or hard reject. Oversized orders
+      are never approved through this path.
+    owner:
+      responsible:
+        - name: "Trading Controls"
+          affiliation: "Investment Management"
+      accountable:
+        - name: "AI Governance Office"
+      consulted:
+        - name: "Compliance"
+    policy:
+      reference-id: apa-policy
+    requirements:
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-order-limits
+      - reference-id: apa-stakeholder-requirements
+        entry-id: req-no-autonomous-trading
+    metrics:
+      - id: four-eyes-coverage
+        name: "Four-eyes coverage for large orders"
+        method: |
+          Percentage of orders at or above the four-eyes threshold that have
+          two distinct authenticated human reviewers before execution.
+        unit: "percent"
+        frequency: Monthly
+        target:
+          value: 100
+          comparator: "="
+      - id: hard-reject-rate
+        name: "Hard-reject enforcement"
+        method: |
+          Count of orders at or above the hard-reject ceiling that were
+          accepted into approval or executed, divided by such orders.
+        unit: "percent"
+        frequency: Monthly
+        target:
+          value: 0
           comparator: "="
     status: Active
     period:

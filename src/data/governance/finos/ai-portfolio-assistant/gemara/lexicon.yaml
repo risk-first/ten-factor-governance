@@ -13,32 +13,19 @@ metadata:
     type: Human
   description: >
     Controlled vocabulary for the AI Portfolio Assistant Gemara example,
-    covering FDC3 integration, demo intents and contexts, authority levels,
-    and related governance terms.
+    covering authority levels and related governance terms.
 
 terms:
-  - id: fdc3
-    title: Financial Desktop Connectivity and Collaboration Consortium
-    synonyms:
-      - FDC3
-    definition: >
-      An open standard for interoperability between financial desktop
-      applications, enabling context sharing and intents so applications can
-      work together without custom point-to-point integrations.
-    references:
-      - citation: FDC3 Standard
-        url: https://fdc3.finos.org
-
   - id: portfolio-assistant
     title: AI Portfolio Assistant
     synonyms:
       - Portfolio Assistant
       - APA
     definition: >
-      An AI system that assists portfolio managers across FDC3-enabled
-      applications by observing portfolio context, invoking deterministic
-      tools, interpreting results, and optionally recommending or proposing
-      actions within an authorized authority level.
+      An AI system that assists portfolio managers by observing portfolio
+      context, invoking deterministic tools, interpreting results, and
+      optionally recommending or proposing actions within an authorized
+      authority level.
 
   - id: authority-level
     title: Authority Level
@@ -54,8 +41,8 @@ terms:
     title: Observe
     definition: >
       The lowest authority level. The assistant may read portfolio context,
-      market data, and application state exposed through FDC3 or approved
-      tools, but must not analyse, explain, recommend, propose, or execute.
+      market data, and application state exposed through approved tools, but
+      must not analyse, explain, recommend, propose, or execute.
 
   - id: analyse
     title: Analyse
@@ -90,8 +77,47 @@ terms:
     title: Execute
     definition: >
       The highest authority level on the ladder. Submitting or otherwise
-      effecting orders or portfolio changes. Autonomous AI execution is
-      prohibited in this example; only a human may authorize execution.
+      effecting orders or portfolio changes. The assistant must not initiate
+      execution. Execution may occur only after a recorded human approval,
+      and only when the order is within published size limits.
+
+  - id: order-limit-register
+    title: Order Limit Register
+    synonyms:
+      - Trading Limits
+      - Approval Thresholds
+    definition: >
+      The governed record of notional and NAV thresholds that decide whether
+      an agent-initiated order is approved by one human, requires a second
+      independent reviewer, or is rejected without an approval path. Trading
+      Controls owns the register; the governance runtime evaluates it.
+
+  - id: four-eyes
+    title: Four Eyes
+    synonyms:
+      - Dual Control
+      - Second Human
+    definition: >
+      A separation-of-duties rule requiring a second authenticated human,
+      who is not the requester, to review an approval before a large order
+      may proceed. Enforced by the approving application, not by the
+      assistant.
+
+  - id: hard-reject
+    title: Hard Reject
+    synonyms:
+      - Flat Reject
+      - Size Ceiling
+    definition: >
+      A limit above which an order is refused immediately. No approval
+      workflow is started and no execution path is opened.
+
+  - id: approval-request
+    title: Approval Request
+    definition: >
+      A request that an agent-initiated action be reviewed by an authorised
+      human. The approving application records the decision and, if approved,
+      performs the action signed as itself.
 
   - id: human-in-the-loop
     title: Human in the Loop
@@ -110,10 +136,10 @@ terms:
       - Deterministic Tool
       - Specialist Application
     definition: >
-      An FDC3 or internal application that performs portfolio, risk, or market
-      calculations using fixed algorithms and verified data sources. The AI
-      interprets outputs from these applications rather than inventing
-      numerical results itself.
+      An application that performs portfolio, risk, or market calculations
+      using fixed algorithms and verified data sources. The AI interprets
+      outputs from these applications rather than inventing numerical results
+      itself.
 
   - id: investment-research
     title: Investment Research
@@ -155,101 +181,14 @@ terms:
     definition: >
       The declared purpose and operating envelope of the AI Portfolio
       Assistant: assisting portfolio managers with observation, analysis,
-      explanation, and controlled recommendation or proposal across FDC3
-      applications, without autonomous trade execution.
+      explanation, and controlled recommendation or proposal, without
+      autonomous trade execution.
 
-  - id: demo-get-portfolio-risk
-    title: demo.GetPortfolioRisk
+  - id: output-provenance
+    title: Output Provenance
     synonyms:
-      - GetPortfolioRisk
+      - Signed Specialist Output
     definition: >
-      Analyse-authority FDC3 intent raised by the assistant with an
-      fdc3.portfolio context. The Risk app responds with demo.portfolioRisk.
-
-  - id: demo-get-research
-    title: demo.GetResearch
-    synonyms:
-      - GetResearch
-    definition: >
-      Explain-authority FDC3 intent raised by the assistant with instrument,
-      instrumentList, or portfolio context. The Research app responds with
-      demo.researchBundle.
-
-  - id: demo-run-stress-scenario
-    title: demo.RunStressScenario
-    synonyms:
-      - RunStressScenario
-    definition: >
-      Analyse-authority FDC3 intent raised by the assistant with a
-      demo.stressScenarioRequest. The Risk app responds with
-      demo.stressScenarioResult.
-
-  - id: demo-create-order
-    title: demo.CreateOrder
-    synonyms:
-      - CreateOrder
-    definition: >
-      Propose-authority FDC3 intent raised by the assistant with a
-      demo.portfolioRecommendation. Order Entry responds with
-      demo.orderProposal for human review.
-
-  - id: demo-submit-orders
-    title: demo.SubmitOrders
-    synonyms:
-      - SubmitOrders
-    definition: >
-      Execute-authority FDC3 intent raised with an fdc3.orderList. Governance
-      must prevent the AI Portfolio Assistant from successfully exercising
-      this intent.
-
-  - id: demo-portfolio-risk
-    title: demo.portfolioRisk
-    definition: >
-      Structured risk analysis context returned by demo.GetPortfolioRisk,
-      including concentration, exposures, major contributors, and provenance
-      identifying the portfolio and analysis. Must carry an FDC3 Security
-      signature when broadcast.
-
-  - id: demo-research-bundle
-    title: demo.researchBundle
-    definition: >
-      Structured research findings and source references returned by
-      demo.GetResearch, including provenance and timestamps. Must carry an
-      FDC3 Security signature when broadcast.
-
-  - id: demo-stress-scenario-request
-    title: demo.stressScenarioRequest
-    definition: >
-      Request context identifying a portfolio and the hypothetical market
-      changes to apply when raising demo.RunStressScenario.
-
-  - id: demo-stress-scenario-result
-    title: demo.stressScenarioResult
-    definition: >
-      Calculated stress outcome returned by demo.RunStressScenario. Must
-      carry an FDC3 Security signature when broadcast.
-
-  - id: demo-portfolio-recommendation
-    title: demo.portfolioRecommendation
-    definition: >
-      Assistant-produced recommendation describing proposed portfolio
-      changes, rationale, and supporting evidence. Input to
-      demo.CreateOrder. Must carry an FDC3 Security signature when
-      broadcast.
-
-  - id: demo-order-proposal
-    title: demo.orderProposal
-    definition: >
-      Draft order basket returned by demo.CreateOrder for human
-      review before becoming an fdc3.orderList. Must carry an FDC3 Security
-      signature when broadcast.
-
-  - id: fdc3-security
-    title: FDC3 Security
-    synonyms:
-      - Signed FDC3 Context
-    definition: >
-      FDC3 mechanism for attaching cryptographic signatures to context
-      broadcasts so receivers can verify provenance. Required for demo
-      suite contexts that convey risk results, research, recommendations,
-      and order proposals.
+      Verifiable attribution on specialist outputs used as evidence for
+      analysis, explanation, recommendation, or proposal, so receivers can
+      confirm origin before treating the output as authoritative.

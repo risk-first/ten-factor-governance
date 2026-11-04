@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>17b — Threat</title>
+  <link rel="stylesheet" href="../css/talk.css?v=17ccols1">
+</head>
+<body>
+  <main class="stage">
+    <article class="slide packed yaml-fit fill-cards">
+      <p class="kicker">How it decides · Threat</p>
+      <h1>What can go wrong</h1>
+      <div class="chain yaml-chain yaml-two">
+        <div class="node">
+          <span class="kind">apa-threats</span>
+          <pre><code>- id: unauthorized-trade-execution
+  title: Unauthorized Trade Execution
+  description: >
+    Orders may be submitted erroneously or
+    without authority — an agent or app
+    raising demo.SubmitOrder, or finding a
+    path to Execution, when it has no
+    execute mandate.
+  group: unauthorized-action</code></pre>
+        </div>
+        <div class="node">
+          <span class="kind">continued</span>
+          <pre><code>  capabilities:
+    - reference-id: apa-capabilities
+      entries:
+        - reference-id: trade-execution
+        - reference-id: tool-calling
+        - reference-id: fdc3-app-invocation
+        - reference-id: workspace-discoverability
+  </code></pre>
+        </div>
+      </div>
+      <footer class="chrome">
+        <p class="cite">AIPA Gemara threat catalog. Joined to trade-execution via reference-id.</p>
+        <nav class="nav">
+          <a class="prev" rel="prev" aria-label="Previous">←</a>
+          <span class="num"></span>
+          <a class="next" rel="next" aria-label="Next">→</a>
+        </nav>
+      </footer>
+    </article>
+  </main>
+  <script src="../js/talk.js"></script>
+</body>
+</html>

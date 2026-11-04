@@ -46,6 +46,7 @@ sequenceDiagram
 | View portfolio | `GetPortfolio` | — | `fdc3.portfolio` |
 | Create order | `demo.CreateOrder` | `demo.order` or `demo.orderList` | same type, signed |
 | Execute | `demo.SubmitOrder` (Order Entry) | `demo.order` or `demo.orderList` | `fdc3.transactionResult` (signed) |
+| Governance decision | `demo.GetGovernanceDecision` | `demo.governanceDecision` (skeleton `log`) | same type, `log.result` / `log.evaluations` filled |
 
 `demo.order` is one name. `demo.orderList` is the multi-row / basket form
 (mirroring `fdc3.orderList`). Portfolio reloads `temp/portfolio.json` on a
@@ -60,3 +61,29 @@ timer, so the holdings UI refreshes after Execution writes fills.
 | [`schemas/stressScenarioRequest.schema.json`](schemas/stressScenarioRequest.schema.json) | `demo.stressScenarioRequest` |
 | [`schemas/stressScenarioResult.schema.json`](schemas/stressScenarioResult.schema.json) | `demo.stressScenarioResult` |
 | [`schemas/priceHistory.schema.json`](schemas/priceHistory.schema.json) | `demo.priceHistory` |
+| [`schemas/governanceDecision.schema.json`](schemas/governanceDecision.schema.json) | `demo.governanceDecision` |
+
+## Governance decision
+
+Sail intercepts `demo.SubmitOrder` and raises `demo.GetGovernanceDecision` at Direct
+or JEV (see Sail settings). One context type, same pattern as `fdc3.approval`: the
+raise is a skeleton Gemara EvaluationLog; the IntentResult is that log with
+`result` filled (`Passed` / `Needs Review` / `Failed`). The decision app also
+raises `LogEvaluation` with the same `log` wrapped as `fdc3.gemara.evaluationLog`,
+and `LogEnforcement` when the result is Allow or Deny.
+
+```mermaid
+sequenceDiagram
+    participant Sail as sail-governance
+    participant Pdp as DirectOrJev
+    participant Console as GovernanceConsole
+    Sail->>Pdp: demo.GetGovernanceDecision
+    Pdp->>Console: LogEvaluation
+    alt Allow or Deny
+        Pdp->>Console: LogEnforcement
+    end
+    Pdp-->>Sail: demo.governanceDecision
+```
+
+Sail maps `log.result`: Passed → Allow, Needs Review → Escalate (`GetApproval`),
+Failed → Deny.

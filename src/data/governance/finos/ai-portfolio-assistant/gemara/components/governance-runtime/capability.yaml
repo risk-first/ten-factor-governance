@@ -3,38 +3,81 @@ title: APA Governance Runtime Capabilities
 metadata:
   id: apa-governance-runtime-capabilities
   type: CapabilityCatalog
-  version: "0.1.0"
+  version: "0.2.0"
   gemara-version: "1.2.0"
   draft: true
-  date: "2026-09-11T00:00:00Z"
+  date: "2026-11-01T00:00:00Z"
   author:
     id: ai-governance-office
     name: AI Governance Office
     type: Human
   description: >
-    Capabilities of the Portfolio Assistant Governance Runtime: evaluation API
-    for the FDC3 Desktop Agent, and record / report / aggregate behaviours
-    against the Decisions and Evidence Record.
+    Capabilities of the Portfolio Assistant Governance Runtime: evaluate a
+    proposed sensitive activity, inspect the raise identity, hold work for a
+    human reviewer, record the first human decision, perform an approved
+    action as that reviewer, enforce the evaluation result at the Desktop
+    Agent, and record / report / aggregate evidence. Concrete applications
+    may implement these capabilities in different combinations; this catalog
+    names the behaviours, not those applications.
   mapping-references:
-    - id: CCC.ObjStor.CP
-      title: CCC Object Storage Capabilities
+    - id: CCC.MARefArc.CP
+      title: CCC Multi-Agent Reference Architecture Capabilities
       version: "1.0.0-dev"
-      url: file://../../../../ccc-object-storage/capabilities.yaml
-    - id: CCC.K8S.CP
-      title: CCC Managed Kubernetes Capabilities
-      version: "v2026.07-rc"
-      url: file://../../../../ccc-k8s/capabilities.yaml
+      url: file://../../../../ccc-ma-refarch/capabilities.yaml
+      description: >
+        Human-in-the-loop, ingress guardrails, supervision, and runtime
+        protection imported as architectural dependencies of the governance
+        runtime.
+
+imports:
+  - reference-id: CCC.MARefArc.CP
+    entries:
+      - reference-id: CCC.MARefArc.CP02
+        remarks: Human review of a proposed consequential action before it is performed
+      - reference-id: CCC.MARefArc.CP05
+        remarks: Treat every intercepted raise as untrusted until evaluation returns a result
+      - reference-id: CCC.MARefArc.CP21
+        remarks: Reviewer worklist, authenticated decision, and override of the original raise
+      - reference-id: CCC.MARefArc.CP22
+        remarks: Enforce Allow, escalate to review, or Deny at the Desktop Agent
+      - reference-id: CCC.MARefArc.CP23
+        remarks: Persist and present evaluation and enforcement receipts
 
 groups:
   - id: evaluation-api
     title: Evaluation API
     description: >
-      Desktop Agent calls the runtime to evaluate sensitive activities before
-      forwarding consequential intents.
+      The enforcement point asks the runtime to evaluate a proposed
+      sensitive activity and authenticates that caller before accepting
+      the request.
+
+  - id: decision-inputs
+    title: Decision Inputs
+    description: >
+      How an evaluation is reached: inspect who raised the activity and
+      whether the raise is attested, then apply declared rules or scored
+      questions. Implementations may be a fixed rule table, a scored
+      questionnaire, or a composition of both.
+
+  - id: pending-approval
+    title: Pending Approval
+    description: >
+      Hold a consequential activity for a human, present a worklist,
+      authenticate the reviewer, record the first decision, and — on
+      approve — perform the original action as that reviewer.
+
+  - id: enforcement
+    title: Enforcement
+    description: >
+      Intercept the sensitive raise at the Desktop Agent and map the
+      evaluation result to forward, park pending review, or refuse.
+
   - id: evidence-behaviours
     title: Evidence Behaviours
     description: >
-      Runtime-owned write, report, and aggregate paths against the Evidence Record.
+      Write, present, and aggregate evaluation and enforcement receipts
+      against the Decisions and Evidence Record.
+
   - id: model-binding
     title: Model Binding
     description: Runtime is informed by Governance Model artifacts.
@@ -43,41 +86,114 @@ capabilities:
   - id: apa-runtime-evaluate
     title: Evaluate Sensitive Activity
     description: >
-      Ability to evaluate a proposed sensitive activity against the loaded
-      Governance Model and return ALLOW, DENY, or REQUIRE APPROVAL.
+      Ability to evaluate a proposed sensitive activity (including the
+      original context, raise identity, and any attestation) and return
+      Passed / Needs Review / Failed, mapped by the enforcement point to
+      ALLOW, REQUIRE APPROVAL, or DENY.
     group: evaluation-api
 
   - id: apa-runtime-authenticate-caller
-    title: Authenticate Desktop Agent Caller
+    title: Authenticate Evaluation Caller
     description: >
-      Ability to authenticate and authorise the FDC3 Desktop Agent (or equivalent
-      enforcement-point caller) before accepting evaluation requests.
+      Ability to authenticate and authorise the Desktop Agent (or
+      equivalent enforcement-point caller) before accepting evaluation
+      requests.
     group: evaluation-api
+
+  - id: apa-runtime-inspect-raise-identity
+    title: Inspect Raise Identity
+    description: >
+      Ability to inspect the identity and attestation of the party that
+      raised the activity — including whether the raise carries a
+      verifiable signature from a trusted reviewer source — and to treat
+      that inspection as an input to evaluation. A trusted attested raise
+      may evaluate to Passed; an unattested raise of the same activity
+      may evaluate to Needs Review.
+    group: decision-inputs
+
+  - id: apa-runtime-score-declared-rules
+    title: Score Declared Rules
+    description: >
+      Ability to apply a committed set of evaluation questions or rules
+      to the proposed activity (and to the raise-identity inspection),
+      combining answers by a declared aggregation (for example
+      worst-wins) with a fail-safe of Needs Review when scoring cannot
+      complete.
+    group: decision-inputs
+
+  - id: apa-runtime-hold-pending-approval
+    title: Hold Pending Approval
+    description: >
+      Ability to accept a pending-approval request for a consequential
+      activity, retain the original action and context, and keep that
+      work item until the first human decision is recorded.
+    group: pending-approval
+
+  - id: apa-runtime-reviewer-worklist
+    title: Reviewer Worklist
+    description: >
+      Ability to present held work to a reviewer — including the
+      original action, context, and any evaluation evidence — so the
+      reviewer can approve or refuse.
+    group: pending-approval
+
+  - id: apa-runtime-authenticate-reviewer
+    title: Authenticate Reviewer
+    description: >
+      Ability to authenticate the human reviewer before they see a
+      work item or record a decision, and to bind the recorded decision
+      to that identity.
+    group: pending-approval
+
+  - id: apa-runtime-record-human-decision
+    title: Record First Human Decision
+    description: >
+      Ability to record the first approve or refuse on a held item and
+      to ignore subsequent decisions on the same item.
+    group: pending-approval
+
+  - id: apa-runtime-perform-approved-action
+    title: Perform Approved Action
+    description: >
+      Ability, after an approve is recorded, to raise the original
+      consequential action as the authenticated reviewer so that a
+      subsequent evaluation can inspect that raise as a trusted
+      attested source.
+    group: pending-approval
+
+  - id: apa-runtime-enforce-evaluation-result
+    title: Enforce Evaluation Result
+    description: >
+      Ability to intercept a sensitive raise at the Desktop Agent,
+      request an evaluation: Passed / Needs Review / Failed.
+    group: enforcement
 
   - id: apa-runtime-record-evidence
     title: Record Decision Evidence
     description: >
-      Ability to write evaluation and enforcement evidence objects to the
-      Decisions and Evidence Record object store.
+      Ability to append evaluation and enforcement receipts (including
+      hold and perform-approved-action events) to the Decisions and
+      Evidence Record.
     group: evidence-behaviours
 
   - id: apa-runtime-report-evidence
     title: Report Evidence
     description: >
-      Ability to retrieve and present previously recorded decision evidence for
-      operators, auditors, and AIMS review.
+      Ability to retrieve and present previously recorded decision
+      evidence for operators, auditors, and AIMS review.
     group: evidence-behaviours
 
   - id: apa-runtime-aggregate-evidence
     title: Aggregate Evidence
     description: >
-      Ability to aggregate recorded evaluations and enforcement outcomes for
-      assurance, trend, and management-review use.
+      Ability to aggregate recorded evaluations and enforcement
+      outcomes for assurance, trend, and management-review use.
     group: evidence-behaviours
 
   - id: apa-runtime-informed-by-model
     title: Informed by Governance Model
     description: >
-      Ability to load and apply Governance Model catalogs (policy, controls,
-      guidance) from the Artifact Repository when making evaluation decisions.
+      Ability to load and apply Governance Model artifacts (policy,
+      controls, assessment requirements, and declared evaluation
+      questions) when making evaluation decisions.
     group: model-binding

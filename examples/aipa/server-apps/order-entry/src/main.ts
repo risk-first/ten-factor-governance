@@ -7,7 +7,8 @@ import {
   type DemoOrder,
   type DemoOrderOrList,
 } from '../../../common/src/contexts/types.ts';
-import { toResultContext, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
+import { isApprovalRequiredError, submitOrderErrorMessage } from '../../../common/src/governance/refs.ts';
+import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { createBroadcastButton } from '../../../common/src/ui/broadcast-icon.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { DesktopAgent } from '@finos/fdc3';
@@ -37,6 +38,7 @@ function syncEmptyState(): void {
 }
 
 function toOrders(): DemoOrder[] {
+  const date = new Date().toISOString();
   return blotter
     .filter(r => r.ticker.trim())
     .map(r => ({
@@ -45,6 +47,7 @@ function toOrders(): DemoOrder[] {
       instrument: { type: 'fdc3.instrument' as const, id: { ticker: r.ticker.toUpperCase() } },
       side: r.side,
       quantity: r.qty,
+      date,
       orderType: 'market' as const,
     }));
 }
@@ -165,26 +168,24 @@ function showOrders(orders: DemoOrder[]): void {
   renderBlotter();
 }
 
-async function createOrder(
-  incoming?: DemoOrderOrList,
-  meta?: unknown
-): Promise<Record<string, unknown>> {
+async function createOrder(incoming?: DemoOrderOrList, meta?: { signature?: unknown }) {
   const res = await fetch('/api/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ order: incoming, __appMeta: meta }),
+    body: JSON.stringify({ order: incoming, metadata: meta }),
   });
   const body = (await res.json()) as {
     envelope: SignedEnvelope;
     verify: { ok: boolean; warning?: string };
   };
-  const result = toResultContext(body.envelope) as DemoOrderOrList;
+  const signed = toSignedResult(body.envelope);
+  const result = signed.context as DemoOrderOrList;
   showOrders(ordersFromContext(result));
   const verifyEl = document.getElementById('verify')!;
   verifyEl.textContent = body.verify.warning ?? 'Inbound signature ok / not required';
   verifyEl.className = body.verify.ok ? 'badge' : 'badge warn';
   setStatus(statusEl(), `Signed ${result.type}`);
-  return result as unknown as Record<string, unknown>;
+  return signed;
 }
 
 async function approve(): Promise<void> {
@@ -193,6 +194,7 @@ async function approve(): Promise<void> {
     setStatus(statusEl(), 'No complete orders to approve (need ticker on each row).');
     return;
   }
+  const submittedIds = new Set(orders.map(order => order.id?.orderId).filter((id): id is string => Boolean(id)));
   blotter = blotter.filter(r => r.ticker.trim()).map(b => ({ ...b, status: 'approved' }));
   renderBlotter();
   const payload = asOrderOrList(orders);
@@ -200,20 +202,31 @@ async function approve(): Promise<void> {
     setStatus(statusEl(), 'Approved locally (no agent to raise demo.SubmitOrder).');
     return;
   }
-  const resolution = await fdc3.raiseIntent(
-    INTENTS.SubmitOrder,
-    payload as Parameters<DesktopAgent['raiseIntent']>[1],
-    { appId: 'aipa-execution' }
-  );
-  const result = await resolution.getResult();
-  const resultType =
-    result && typeof result === 'object' ? (result as { type?: string }).type : undefined;
-  setStatus(
-    statusEl(),
-    resultType
-      ? `demo.SubmitOrder → ${resultType}`
-      : `Raised demo.SubmitOrder (${payload.type})`
-  );
+  try {
+    const resolution = await fdc3.raiseIntent(
+      INTENTS.SubmitOrder,
+      payload as Parameters<DesktopAgent['raiseIntent']>[1],
+      { appId: 'aipa-execution' }
+    );
+    const result = await resolution.getResult();
+    const resultType =
+      result && typeof result === 'object' ? (result as { type?: string }).type : undefined;
+    setStatus(
+      statusEl(),
+      resultType
+        ? `demo.SubmitOrder → ${resultType}`
+        : `Raised demo.SubmitOrder (${payload.type})`
+    );
+  } catch (error) {
+    const awaiting = isApprovalRequiredError(error);
+    blotter = blotter.map(row =>
+      submittedIds.has(row.id)
+        ? { ...row, status: awaiting ? 'awaiting approval' : 'blocked' }
+        : row
+    );
+    renderBlotter();
+    setStatus(statusEl(), submitOrderErrorMessage(error));
+  }
 }
 
 async function setup(): Promise<void> {
@@ -222,9 +235,8 @@ async function setup(): Promise<void> {
   fdc3 = session.fdc3;
   if (!fdc3) return;
 
-  await fdc3.addIntentListener(INTENTS.CreateOrder, async ctx => {
-    const incoming = ctx as DemoOrderOrList & { __appMeta?: unknown };
-    return createOrder(incoming, incoming.__appMeta);
+  await fdc3.addIntentListener(INTENTS.CreateOrder, async (ctx, metadata) => {
+    return createOrder(ctx as DemoOrderOrList, metadata);
   });
 
   await fdc3.addIntentListener(INTENTS.ViewOrders, async ctx => {

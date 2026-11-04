@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/gemara.enforcementLog.schema.json",
+  "type": "object",
+  "title": "Gemara Enforcement Log",
+  "description": "FDC3 wrapper for one OpenSSF Gemara Enforcement Log (layer 6). Input to `LogEnforcement`. The Gemara document is in `log`; `id.logId` may mirror `log.metadata.id`.",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "fdc3.gemara.enforcementLog"
+        },
+        "id": {
+          "type": "object",
+          "title": "Identifiers",
+          "description": "Optional FDC3 context `id` map. `logId` should match `log.metadata.id` when known.",
+          "properties": {
+            "logId": {
+              "type": "string",
+              "title": "logId",
+              "description": "Identifier of the Enforcement Log document."
+            }
+          },
+          "unevaluatedProperties": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Optional short display label."
+        },
+        "log": {
+          "type": "object",
+          "title": "Enforcement Log",
+          "description": "Gemara Enforcement Log document. See https://gemara.openssf.org/schema/. `metadata.type` must be `EnforcementLog`.",
+          "required": ["metadata"],
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "const": "EnforcementLog"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["type", "log"],
+      "additionalProperties": true
+    },
+    {
+      "$ref": "context.schema.json#/definitions/BaseContext"
+    }
+  ]
+}

@@ -10,7 +10,7 @@ import {
   type StressScenarioResult,
 } from '../../../common/src/contexts/types.ts';
 import { tickersFromPortfolio } from '../../../common/src/data/priceHistory.ts';
-import { toResultContext, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
+import { toSignedResult, type SignedEnvelope } from '../../../common/src/security/envelope.ts';
 import { mountStatusDrawer } from '../../../common/src/ui/status-drawer.ts';
 import type { DesktopAgent } from '@finos/fdc3';
 import * as echarts from 'echarts/core';
@@ -504,7 +504,7 @@ async function obtainPriceHistory(portfolio: Fdc3Portfolio): Promise<PriceHistor
   throw new Error('demo.GetPriceHistory did not return demo.priceHistory');
 }
 
-async function analyseApi(portfolio?: Fdc3Portfolio): Promise<Record<string, unknown>> {
+async function analyseApi(portfolio?: Fdc3Portfolio) {
   const pf = await resolvePortfolio(portfolio);
   setStatus(statusEl(), 'Raising demo.GetPriceHistory on Market Data…');
   const priceHistory = await obtainPriceHistory(pf);
@@ -525,13 +525,13 @@ async function analyseApi(portfolio?: Fdc3Portfolio): Promise<Record<string, unk
     throw new Error(err);
   }
   const envelope = body as SignedEnvelope;
-  const result = toResultContext(envelope);
-  show(result);
+  const signed = toSignedResult(envelope);
+  show(signed.context);
   setStatus(statusEl(), `Signed ${CONTEXT_TYPES.portfolioRisk} (jku=${envelope.jku})`);
-  return result;
+  return signed;
 }
 
-async function stressApi(req: StressScenarioRequest): Promise<Record<string, unknown>> {
+async function stressApi(req: StressScenarioRequest) {
   const pf = await resolvePortfolio(req.portfolio ?? currentPortfolio);
   setStatus(statusEl(), 'Raising demo.GetPriceHistory for stress…');
   const priceHistory = await obtainPriceHistory(pf);
@@ -548,10 +548,10 @@ async function stressApi(req: StressScenarioRequest): Promise<Record<string, unk
     throw new Error(err);
   }
   const envelope = body as SignedEnvelope;
-  const result = toResultContext(envelope);
-  show(result);
+  const signed = toSignedResult(envelope);
+  show(signed.context);
   setStatus(statusEl(), `Signed ${CONTEXT_TYPES.stressScenarioResult}`);
-  return result;
+  return signed;
 }
 
 async function setup(): Promise<void> {

@@ -1,0 +1,43 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-governance-console",
+      "name": "Governance Console",
+      "title": "Governance Console",
+      "description": "Gemara evaluation and enforcement log store. Listens for LogEvaluation and LogEnforcement (fdc3.gemara).",
+      "categories": ["AIPA", "Governance"],
+      "icons": [{ "src": "http://localhost:4111/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4111/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "LogEvaluation": {
+              "displayName": "Log Evaluation",
+              "purpose": "Append one Gemara Evaluation Log receipt.",
+              "contexts": ["fdc3.gemara.evaluationLog"]
+            },
+            "LogEnforcement": {
+              "displayName": "Log Enforcement",
+              "purpose": "Append one Gemara Enforcement Log receipt.",
+              "contexts": ["fdc3.gemara.enforcementLog"]
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": { "broadcasts": [], "listensFor": [] },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "singleton": true,
+          "autostart": true,
+          "searchable": false,
+          "invisible": true
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

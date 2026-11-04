@@ -101,9 +101,10 @@ requirements:
   - id: req-no-autonomous-trading
     title: "No autonomous trading or unsupervised order submission"
     statement: |
-      AIPA must not submit orders or otherwise effect portfolio changes
-      without an authorised human approving execution. Propose-level outputs
-      require human approval before any path toward execution.
+      AIPA must not submit orders or otherwise effect portfolio changes.
+      Every agent-initiated path toward execution requires a first recorded
+      human approval. Large orders require a second independent human.
+      Oversized orders are rejected without an approval path.
     source: Organisational
     level: Mandatory
     party:
@@ -118,6 +119,12 @@ requirements:
         entry-id: apa-ctl-006-execute-prohibit
       - reference-id: apa-controls
         entry-id: apa-ctl-001-authority-ceiling
+      - reference-id: apa-controls
+        entry-id: apa-ctl-017-order-limit-register
+      - reference-id: apa-controls
+        entry-id: apa-ctl-018-four-eyes-large-orders
+      - reference-id: apa-controls
+        entry-id: apa-ctl-019-hard-reject-oversize
     risks:
       - reference-id: apa-risks
         entry-id: unauthorized-trading
@@ -148,6 +155,8 @@ requirements:
         entry-id: apa-ctl-004-recommend-gating
       - reference-id: apa-controls
         entry-id: apa-ctl-005-propose-human-approval
+      - reference-id: apa-controls
+        entry-id: apa-ctl-018-four-eyes-large-orders
     objectives:
       - reference-id: apa-management-objectives
         entry-id: human-approval-coverage
@@ -195,6 +204,42 @@ requirements:
       - reference-id: apa-management-objectives
         entry-id: impact-assessment-currency
     identified: "2026-07-01T00:00:00Z"
+
+  - id: req-order-limits
+    title: "Published order limits with four-eyes and hard reject"
+    statement: |
+      Agent-initiated orders must be evaluated against a published Order
+      Limit Register. One human approval is required in the first instance.
+      Orders at or above the four-eyes threshold need a second independent
+      reviewer. Orders at or above the hard-reject ceiling must be denied
+      and must not enter an approval or execution path.
+    source: Organisational
+    level: Mandatory
+    party:
+      reference-id: apa-party-register
+      entry-id: compliance
+    authority: "Investment Management trading authority policy; firm AI policy"
+    in-scope: true
+    controls:
+      - reference-id: apa-controls
+        entry-id: apa-ctl-017-order-limit-register
+      - reference-id: apa-controls
+        entry-id: apa-ctl-018-four-eyes-large-orders
+      - reference-id: apa-controls
+        entry-id: apa-ctl-019-hard-reject-oversize
+      - reference-id: apa-controls
+        entry-id: apa-ctl-005-propose-human-approval
+    risks:
+      - reference-id: apa-risks
+        entry-id: unauthorized-trading
+    policies:
+      - reference-id: apa-policy
+    objectives:
+      - reference-id: apa-management-objectives
+        entry-id: human-approval-coverage
+      - reference-id: apa-management-objectives
+        entry-id: order-limit-compliance
+    identified: "2026-10-25T00:00:00Z"
 
 review:
   cadence: Annual

@@ -35,3 +35,4 @@ yarn-error.log*
 /static/img/calm/
 /examples/aipa/calm/diagrams/*
 !/examples/aipa/calm/diagrams/README.md
+talk/18-demo/good-demo.mp4
