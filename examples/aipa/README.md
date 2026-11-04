@@ -13,9 +13,6 @@ enforcement point: on `demo.SubmitOrder` it asks a PDP (Direct or JEV), then
 That is the observe → analyse → explain → recommend → propose → execute arc
 with enforceable authority boundaries.
 
-Layout is modelled on
-[`@finos/fdc3-example-apps`](https://github.com/finos/FDC3/tree/main/toolbox/fdc3-example-apps).
-
 ### Browse the story & catalogs (published site)
 
 Start on the website — Gemara twins, architecture, deployment, demo steps, and
