@@ -6,7 +6,7 @@ import { createAppSigner, mountSigningRoutes } from '../../../common/src/securit
 import { ordersFromContext } from '../../../common/src/contexts/types.js';
 import { loadEntraConfig } from './config.js';
 import { JWTValidator } from './jwt-validator.js';
-import { resolveRequester, sessionMatchesAssignee, supervisorOf } from './org.js';
+import { resolveRequester, sessionMatchesAssignee } from './org.js';
 import {
   BRIDGE_APP_ID,
   CONTEXT_TYPES,
@@ -235,11 +235,12 @@ export default async function backend(
         requester: typeof incoming.requester === 'string' ? incoming.requester : undefined,
         raiserAppId,
       });
-      const configured =
-        typeof incoming.approver === 'string' && incoming.approver.trim()
-          ? incoming.approver.trim()
-          : undefined;
-      const approver = configured ?? supervisorOf(requester);
+      const approver =
+        typeof incoming.approver === 'string' ? incoming.approver.trim() : '';
+      if (!approver) {
+        res.status(400).json({ error: 'approval.approver required (set Sail Governance Approver)' });
+        return;
+      }
       const subjectContext = incoming.subject?.context;
       const summary = summarizeOrders(subjectContext);
       const name =

@@ -62,16 +62,43 @@ In-repo mirrors of those docs live under
 
 ## Quick start
 
-### 1. Run the AIPA apps + App Directory
+### 1. Configure `.env`
 
 ```bash
 cd examples/aipa
-cp .env.example .env   # optional API keys
+cp .env.example .env
+```
+
+Edit `.env` before the first run. Template comments live in
+[`.env.example`](./.env.example).
+
+Without market-data keys the apps still run on fixtures. Without an LLM key,
+chat (`AskAgent`) will fail; without CLEF, only **Direct** Sail evaluation
+works (not **JEV**). See [Data sources](#data-sources) for provider links.
+
+
+#### Data sources
+
+| Need | Source | Env |
+| --- | --- | --- |
+| Quotes | [Finnhub](https://finnhub.io/) | `FINNHUB_API_KEY` (personal-use free tier) |
+| Charts | [`yahoo-finance2`](https://www.npmjs.com/package/yahoo-finance2) + [Lightweight Charts](https://github.com/tradingview/lightweight-charts) | none |
+| Macro (stress) | [FRED](https://fred.stlouisfed.org/docs/api/fred/) | `FRED_API_KEY` |
+| Filings | [SEC EDGAR](https://www.sec.gov/search-filings/edgar-application-programming-interfaces) | `SEC_USER_AGENT` |
+| News | Finnhub company-news | same Finnhub key |
+
+Offline **fixtures** under `common/fixtures/` are used when keys are missing or
+live calls fail.
+
+### 2. Run the AIPA apps + App Directory
+
+```bash
+cd examples/aipa
 npm install
 npm start
 ```
 
-From the repo root:
+From the repo root (after `.env` exists under `examples/aipa/`):
 
 ```bash
 npm run aipa:dev
@@ -84,15 +111,7 @@ Combined App Directory:
 
 `http://localhost:4099/static/generated/aipa-fdc3-apps.json`
 
-The JSON is rewritten at request time: `localhost` / `127.0.0.1` in app
-`details.url` (and icon/screenshot URLs) become the hostname you called the
-directory with (e.g. your LAN IP), so phones on the same Wi‑Fi can resolve
-apps. On-disk `directory/static/generated/aipa-fdc3-apps.json` stays localhost.
-
-Apps also expose local **API** buttons so you can exercise backends without an
-agent.
-
-### 2. Run FDC3 Sail v2 (pluggable-sail)
+### 3. Run FDC3 Sail v2 (pluggable-sail)
 
 Use the **`pluggable-sail`** branch of
 [FINOS FDC3-Sail](https://github.com/finos/FDC3-Sail/tree/pluggable-sail) — that
@@ -113,7 +132,7 @@ Open Sail at `http://localhost:8090`.
 `SAIL_EXTENSION_URLS`, so with AIPA running the **Sail Governance** extension
 loads automatically (Settings → Sail Governance for Evaluation / Approval).
 
-### 3. Add the AIPA App Directory in Sail
+### 4. Add the AIPA App Directory in Sail
 
 In Sail, open directory / AppD settings and add (or activate) this directory:
 
@@ -129,18 +148,34 @@ governance PDPs, and the rest of the table above.
 Sail. If Sail started earlier, reload the page after AIPA is online so the
 extension import and directory fetch succeed.
 
-## Data sources
+### 5. Chrome flags for localhost
 
-| Need | Source | Env |
-| --- | --- | --- |
-| Quotes | [Finnhub](https://finnhub.io/) | `FINNHUB_API_KEY` (personal-use free tier) |
-| Charts | [`yahoo-finance2`](https://www.npmjs.com/package/yahoo-finance2) + [Lightweight Charts](https://github.com/tradingview/lightweight-charts) | none |
-| Macro (stress) | [FRED](https://fred.stlouisfed.org/docs/api/fred/) | `FRED_API_KEY` |
-| Filings | [SEC EDGAR](https://www.sec.gov/search-filings/edgar-application-programming-interfaces) | `SEC_USER_AGENT` |
-| News | Finnhub company-news | same Finnhub key |
+Because the demo is running on localhost using HTTP rather than HTTP/S, we need to make some changes to chrome's flags - Chrome rightly disapproves of HTTP sites and we need to get it to allow them.
 
-Offline **fixtures** under `common/fixtures/` are used when keys are missing or
-live calls fail.
+Open [chrome://flags](chrome://flags), then:
+
+1. **Insecure origins treated as secure**
+   (`#unsafely-treat-insecure-origin-as-secure`) — set to **Enabled** and put
+   this comma-separated list in the text box:
+
+   ```text
+   http://localhost:8090,http://localhost:3002
+   ```
+
+   Add further `http://localhost:<port>` origins if you hit secure-context
+   errors on other AIPA ports.
+
+2. **Local Network Access Checks** (`#local-network-access-check`) — set to
+   **Disabled** so Sail can load the AIPA iframes / call other localhost ports
+   without Local Network Access prompts or blocks.
+
+Relaunch Chrome when it prompts. These are local-dev only; reset both flags
+afterward.
+
+**Also:** Approvals / Fluxnova Sign-in uses MSAL popups. If the login window is
+blocked, allow **Pop-ups and redirects** for `http://localhost:8090` (and
+`http://localhost:4110` / `4112` if needed) via the padlock → **Site settings**.
+
 
 ## FDC3 Security (trusted backend)
 
