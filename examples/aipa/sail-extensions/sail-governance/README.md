@@ -37,7 +37,7 @@ Controls stay visible when evaluation is `off` (they are unused).
 | Setting | Values | Default |
 | --- | --- | --- |
 | GetApproval app | `none` / `aipa-approvals` / `aipa-fluxnova` | `aipa-approvals` |
-| Approver | Fluxnova Tasklist assignee written onto `GetApproval` | `demo` |
+| Approver | Free-text Entra email written onto `GetApproval` as the Fluxnova assignee | _(empty — set before Fluxnova approvals)_ |
 
 - **none** — post `GetApproval` to any connected listener (prefer fluxnova, then approvals); does not force-open an app.
 - **aipa-approvals** — open/post to the Approvals stub inbox.

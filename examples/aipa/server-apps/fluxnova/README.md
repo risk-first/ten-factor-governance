@@ -41,10 +41,10 @@ registration (Approvals already uses `http://localhost:4110` on the same client)
 
 Sign in on either page; MSAL uses `localStorage` and `/api/session` is
 process-wide (one AIPA process = one signed-in Entra user). **Approve / Deny**
-require that session, and the signed-in email (or its local part) must match the
-task assignee. Set Sail Governance’s **Approver** to the reviewer’s Entra email
-so the four-eyes check lines up. The Fluxnova engine stays open REST — it does
-not talk to Entra.
+require that session, and the signed-in email must match the task assignee.
+Set Sail Governance’s **Approver** to the reviewer’s Entra email so the
+four-eyes check lines up. The Fluxnova engine stays open REST — it does not
+talk to Entra.
 
 ## Flow
 
@@ -56,10 +56,9 @@ inbox polls `/api/tasks`.
    with an `fdc3.approval` whose `subject` is the `fdc3.action` to run if approved,
    and fails the original raise with `ApprovalRequired`.
 2. The **requester’s** inbox starts `aipa-order-approval`, assigns Sail
-   Governance’s **Approver** setting (default Tasklist user `demo`), and **holds**
-   `GetApproval`. If the signed-in Entra user is that assignee, it opens
-   `ViewTask` immediately. Otherwise it leaves the view closed — the approver
-   may be on another desktop.
+   Governance’s **Approver** email, and **holds** `GetApproval`. If the
+   signed-in Entra user is that assignee, it opens `ViewTask` immediately.
+   Otherwise it leaves the view closed — the approver may be on another desktop.
 3. If the view was not opened on the raise, the **approver’s** inbox sees the
    new open task on the next poll and
    `raiseIntent('ViewTask', task, { appId: 'aipa-fluxnova-view' })` so Sail opens
@@ -92,7 +91,6 @@ from the local worklist (the engine history remains).
 
 The result is `{ "type": "demo.taskResult", "processInstanceId": "…", "taskId": "…" }`.
 
-Sail Governance’s **Approver** setting is written onto `GetApproval` and becomes
-the Fluxnova task assignee (default `demo`). For Entra four-eyes, set it to the
-reviewer’s email. If that field is missing, `src/org.ts` maps the requester to a
-supervisor (`rob@finos.org` / `demo` → `demo`).
+Sail Governance’s **Approver** email is written onto `GetApproval` and becomes
+the Fluxnova task assignee. Starting an approval without that field returns
+`400`.

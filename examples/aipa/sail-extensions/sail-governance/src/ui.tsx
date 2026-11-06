@@ -8,13 +8,11 @@ import {
 
 import {
   APPROVAL_APP_IDS,
-  APPROVER_OPTIONS,
   GOVERNANCE_DEFAULT_SETTINGS,
   GOVERNANCE_MODES,
   GOVERNANCE_SETTINGS_KEY,
   resolveSettings,
   type ApprovalAppId,
-  type ApproverOption,
   type GovernanceMode,
   type GovernanceSettings,
 } from "./settings.js"
@@ -99,22 +97,20 @@ export function ConfigScreen({ storage }: SailExtensionConfigProps) {
 
       <p style={{ margin: "0.5rem 0 0", fontWeight: 600 }}>Approver</p>
       <p style={{ margin: 0, fontSize: "0.9rem", color: "#475467" }}>
-        Written onto <code>GetApproval</code> as the Fluxnova task assignee. Sign in to Fluxnova
-        with that Entra account (or an equivalent) to Approve / Deny.
+        Entra email written onto <code>GetApproval</code> as the Fluxnova task
+        assignee. Sign in to Fluxnova with that account to Approve / Deny.
       </p>
-      {APPROVER_OPTIONS.map((value: ApproverOption) => (
-        <label key={value} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <input
-            type="radio"
-            name="approver"
-            checked={settings.approver === value}
-            onChange={() => {
-              void persist({ ...settings, approver: value })
-            }}
-          />
-          <code>{value}</code>
-        </label>
-      ))}
+      <input
+        type="email"
+        name="approver"
+        value={settings.approver}
+        placeholder="approver@example.com"
+        autoComplete="off"
+        style={{ padding: "0.4rem 0.5rem", font: "inherit" }}
+        onChange={event => {
+          void persist({ ...settings, approver: event.target.value })
+        }}
+      />
     </form>
   )
 }
