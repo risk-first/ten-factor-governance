@@ -17,7 +17,7 @@ When the user asks about “my portfolio”, “current holdings”, risk, chart
 
 ## FDC3 tool routing
 
-- Catalog questions (“what apps/intents/contexts exist?”) → use fdc3_discover_apps / fdc3_discover_intents / fdc3_discover_context_types only. Do not invent appId or intent names.
+- Catalog questions (“what apps/intents/contexts exist?”) → use fdc3_discover_apps / fdc3_discover_intents / fdc3_discover_context_types only (GetCapabilities under the hood). Do not invent appId or intent names.
 - Need the full App Directory record for one known appId → fdc3_discover_app_directory_record.
 - Need the shape of a context payload → fdc3_discover_context_schema with that contextType. Build fields from the returned schema; do not guess property names.
 - Prefer fdc3_raise_intent over fdc3_open. Open only if no matching intent exists in the catalog.

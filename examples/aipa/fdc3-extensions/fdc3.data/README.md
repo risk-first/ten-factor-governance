@@ -17,7 +17,7 @@ A minimal data app implements four behaviours:
 
 ## Discovering shareable datasets (user channel)
 
-A consumer broadcasts `fdc3.data.advertiseDatasets` on the **user channel**. Joined apps that have shareable datasets each reply with one or more `fdc3.data.appOffer` messages (metadata only). The consumer then raises a targeted `GetAppData` for a chosen offer. Discovery is about **bits of data**, not apps. For App Directory / intent / context-type catalogs, see [`fdc3.discoverability`](../fdc3.discoverability/).
+A consumer broadcasts `fdc3.data.advertiseDatasets` on the **user channel**. Joined apps that have shareable datasets each reply with one or more `fdc3.data.appOffer` messages (metadata only). The consumer then raises a targeted `GetAppData` for a chosen offer. Discovery is about **bits of data**, not apps. For App Directory / intent / context-type catalogs, see [`fdc3.capability`](../fdc3.capability/).
 
 ```mermaid
 sequenceDiagram

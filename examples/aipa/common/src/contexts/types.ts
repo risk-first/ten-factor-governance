@@ -34,6 +34,8 @@ export const INTENTS = {
   ViewData: 'ViewData',
   /** fdc3.ai — Agent UI → Agent harness; IntentResult is a PrivateChannel */
   AskAgent: 'AskAgent',
+  /** fdc3.capability — catalog slice selected by fdc3.capability.request.capability */
+  GetCapabilities: 'GetCapabilities',
 } as const;
 
 export const CONTEXT_TYPES = {
@@ -66,29 +68,30 @@ export const CONTEXT_TYPES = {
   agentDelta: 'fdc3.ai.agentDelta',
   agentAnswer: 'fdc3.ai.agentAnswer',
   agentCancel: 'fdc3.ai.agentCancel',
-  /** fdc3.discoverability extension — app channel catalog discovery */
-  discoverApps: 'fdc3.discoverability.discoverApps',
-  appDirectory: 'fdc3.discoverability.appDirectory',
-  discoverIntents: 'fdc3.discoverability.discoverIntents',
-  intentList: 'fdc3.discoverability.intentList',
-  discoverContextTypes: 'fdc3.discoverability.discoverContextTypes',
-  contextTypeList: 'fdc3.discoverability.contextTypeList',
-  discoverContextSchema: 'fdc3.discoverability.discoverContextSchema',
-  contextSchema: 'fdc3.discoverability.contextSchema',
-  discoverAppDirectoryRecord: 'fdc3.discoverability.discoverAppDirectoryRecord',
-  appDirectoryRecord: 'fdc3.discoverability.appDirectoryRecord',
+  /** fdc3.capability extension — catalog via GetCapabilities */
+  capabilityRequest: 'fdc3.capability.request',
+  appDirectory: 'fdc3.capability.appDirectory',
+  intentList: 'fdc3.capability.intentList',
+  contextTypeList: 'fdc3.capability.contextTypeList',
+  contextSchema: 'fdc3.capability.contextSchema',
+  appDirectoryRecord: 'fdc3.capability.appDirectoryRecord',
 } as const;
 
-/** Dedicated app channel for fdc3.discoverability request/reply. */
-export const DISCOVERABILITY_CHANNEL = 'fdc3.discoverability';
+/** Selects which catalog slice `GetCapabilities` returns. */
+export type CapabilityKind =
+  | 'apps'
+  | 'intents'
+  | 'contextTypes'
+  | 'contextSchema'
+  | 'appDirectoryRecord';
 
-export type DiscoverabilityAppEntry = {
+export type CapabilityAppEntry = {
   appId: string;
   title?: string;
   description?: string;
 };
 
-export type DiscoverabilityIntentEntry = {
+export type CapabilityIntentEntry = {
   name: string;
   /** When / why to raise this intent (from AppD `listensFor.*.purpose`). */
   purpose: string;
@@ -97,43 +100,37 @@ export type DiscoverabilityIntentEntry = {
   resultType?: string;
 };
 
-export type DiscoverabilityContextTypeEntry = {
+export type CapabilityContextTypeEntry = {
   contextType: string;
   schemaUrl?: string;
   name?: string;
   description?: string;
 };
 
-export type DiscoverApps = { type: 'fdc3.discoverability.discoverApps' };
-export type DiscoverIntents = { type: 'fdc3.discoverability.discoverIntents' };
-export type DiscoverContextTypes = { type: 'fdc3.discoverability.discoverContextTypes' };
-export type DiscoverContextSchema = {
-  type: 'fdc3.discoverability.discoverContextSchema';
-  contextType: string;
-};
-
-export type DiscoverAppDirectoryRecord = {
-  type: 'fdc3.discoverability.discoverAppDirectoryRecord';
-  appId: string;
-};
+export type CapabilityRequest =
+  | { type: 'fdc3.capability.request'; capability: 'apps' }
+  | { type: 'fdc3.capability.request'; capability: 'intents' }
+  | { type: 'fdc3.capability.request'; capability: 'contextTypes' }
+  | { type: 'fdc3.capability.request'; capability: 'contextSchema'; contextType: string }
+  | { type: 'fdc3.capability.request'; capability: 'appDirectoryRecord'; appId: string };
 
 export type AppDirectoryReply = {
-  type: 'fdc3.discoverability.appDirectory';
-  apps: DiscoverabilityAppEntry[];
+  type: 'fdc3.capability.appDirectory';
+  apps: CapabilityAppEntry[];
 };
 
 export type IntentListReply = {
-  type: 'fdc3.discoverability.intentList';
-  intents: DiscoverabilityIntentEntry[];
+  type: 'fdc3.capability.intentList';
+  intents: CapabilityIntentEntry[];
 };
 
 export type ContextTypeListReply = {
-  type: 'fdc3.discoverability.contextTypeList';
-  contextTypes: DiscoverabilityContextTypeEntry[];
+  type: 'fdc3.capability.contextTypeList';
+  contextTypes: CapabilityContextTypeEntry[];
 };
 
 export type ContextSchemaReply = {
-  type: 'fdc3.discoverability.contextSchema';
+  type: 'fdc3.capability.contextSchema';
   contextType: string;
   schemaUrl?: string;
   /** JSON Schema document when resolved. */
@@ -150,7 +147,7 @@ export type AppDirectoryApplicationRecord = Record<string, unknown> & {
 };
 
 export type AppDirectoryRecordReply = {
-  type: 'fdc3.discoverability.appDirectoryRecord';
+  type: 'fdc3.capability.appDirectoryRecord';
   appId: string;
   /** Full App Directory Application when found. */
   record?: AppDirectoryApplicationRecord;

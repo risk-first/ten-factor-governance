@@ -2,7 +2,7 @@
 
 Proposed FDC3 extension for agentic apps hosted by a **Desktop Agent**.
 
-**Agent UI** and **Agent harness** are FDC3 apps. They talk over a session **PrivateChannel** using `fdc3.ai.*` contexts. LLM providers sit off the bus as ordinary HTTP. Data apps are covered in [`fdc3.data`](../fdc3.data/). Capability discovery (apps / intents / context types) lives in [`fdc3.discoverability`](../fdc3.discoverability/).
+**Agent UI** and **Agent harness** are FDC3 apps. They talk over a session **PrivateChannel** using `fdc3.ai.*` contexts. LLM providers sit off the bus as ordinary HTTP. Data apps are covered in [`fdc3.data`](../fdc3.data/). Capability catalogs (apps / intents / context types) live in [`fdc3.capability`](../fdc3.capability/).
 
 ## Where things live
 
@@ -31,7 +31,7 @@ flowchart TB
 | Dashboard / in-chat apps | Data apps — see [`fdc3.data`](../fdc3.data/). |
 | **P** | Session PrivateChannel: `fdc3.ai.agentQuery` (follow-ups), `agentDelta`, `agentAnswer`, `agentCancel`. |
 | **A** | `raiseIntent("AskAgent", fdc3.ai.agentQuery)` → IntentResult = PrivateChannel (opens the session). |
-| **X** | App channel `fdc3.discoverability` — see [`fdc3.discoverability`](../fdc3.discoverability/). |
+| **X** | Intent `GetCapabilities` + `fdc3.capability.request` — see [`fdc3.capability`](../fdc3.capability/). |
 | **D** | Harness ↔ data apps — [`fdc3.data`](../fdc3.data/). |
 | **L / F** | Ordinary fetch (not FDC3): harness → LLM; apps → data backends. |
 
@@ -41,7 +41,7 @@ FDC3 hops for the agentic loop always go via the Desktop Agent. The harness is a
 
 | Job | From | To | FDC3 mechanism | Purpose |
 | --- | --- | --- | --- | --- |
-| Discover capabilities | Any app | Responder on `fdc3.discoverability` | App-channel broadcast → reply — see [`fdc3.discoverability`](../fdc3.discoverability/) | Learn available AppD records, intents, or context types. |
+| Discover capabilities | Any app | Responder for `GetCapabilities` | `raiseIntent` + IntentResult — see [`fdc3.capability`](../fdc3.capability/) | Learn available AppD records, intents, or context types. |
 | Open session / first turn | Agent UI | Agent harness | `raiseIntent("AskAgent", fdc3.ai.agentQuery)` → PrivateChannel | Open shared channel; optional first utterance. |
 | Stage files | Agent UI | Agent harness | PrivateChannel `broadcast(fdc3.data.file)` | Deliver file bytes; reference later via `fileIds`. |
 | Follow-up turn | Agent UI | Agent harness | PrivateChannel `broadcast(fdc3.ai.agentQuery)` | Later turns on the same channel (`fileIds` optional). |
@@ -59,7 +59,7 @@ FDC3 hops for the agentic loop always go via the Desktop Agent. The harness is a
 | [`fdc3.ai.agentAnswer`](schemas/agentAnswer.schema.json) | Agent harness | Agent UI | Final markdown + citations + artifacts + suggestions. |
 | [`fdc3.ai.agentCancel`](schemas/agentCancel.schema.json) | Agent UI | Agent harness | Stop the turn. |
 
-Tool / data-app calls do **not** ride this PrivateChannel. The harness raises those intents separately (see [`fdc3.data`](../fdc3.data/)) and awaits `getResult()`. Capability discovery uses [`fdc3.discoverability`](../fdc3.discoverability/), not this channel.
+Tool / data-app calls do **not** ride this PrivateChannel. The harness raises those intents separately (see [`fdc3.data`](../fdc3.data/)) and awaits `getResult()`. Capability catalogs use [`fdc3.capability`](../fdc3.capability/) (`GetCapabilities`), not this channel.
 
 Agent UI and Agent harness are both FDC3 apps on the Desktop Agent; their conversation is a PrivateChannel under `fdc3.ai.*`.
 

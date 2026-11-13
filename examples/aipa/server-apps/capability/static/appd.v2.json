@@ -1,0 +1,41 @@
+{
+  "applications": [
+    {
+      "appId": "aipa-capability",
+      "name": "AIPA Capability",
+      "title": "AIPA Capability",
+      "description": "Handles GetCapabilities for fdc3.capability.request — App Directory, intent, context-type, schema, and AppD-record catalogs.",
+      "categories": ["AIPA", "Discovery"],
+      "icons": [{ "src": "http://localhost:4109/icon.svg" }],
+      "type": "web",
+      "details": { "url": "http://localhost:4109/" },
+      "interop": {
+        "intents": {
+          "listensFor": {
+            "GetCapabilities": {
+              "displayName": "Get Capabilities",
+              "purpose": "Return a catalog slice selected by fdc3.capability.request.capability (apps, intents, contextTypes, contextSchema, or appDirectoryRecord).",
+              "contexts": ["fdc3.capability.request"]
+            }
+          },
+          "raises": {}
+        },
+        "userChannels": {
+          "broadcasts": [],
+          "listensFor": []
+        },
+        "appChannels": []
+      },
+      "hostManifests": {
+        "sail": {
+          "injectApi": "3.0",
+          "invisible": true,
+          "singleton": true,
+          "autostart": true,
+          "searchable": false
+        }
+      }
+    }
+  ],
+  "message": "OK"
+}

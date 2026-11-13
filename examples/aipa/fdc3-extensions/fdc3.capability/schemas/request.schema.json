@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/capability.request.schema.json",
+  "type": "object",
+  "title": "Capability Request",
+  "description": "Context raised with intent `GetCapabilities`. The `capability` enum selects which catalog slice to return as the IntentResult.",
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "fdc3.capability.request" },
+            "capability": {
+              "const": "apps",
+              "title": "Capability",
+              "description": "Ask for the slim app catalog. IntentResult is `fdc3.capability.appDirectory`."
+            }
+          },
+          "required": ["type", "capability"],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "fdc3.capability.request" },
+            "capability": {
+              "const": "intents",
+              "title": "Capability",
+              "description": "Ask for the intent catalog. IntentResult is `fdc3.capability.intentList`."
+            }
+          },
+          "required": ["type", "capability"],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "fdc3.capability.request" },
+            "capability": {
+              "const": "contextTypes",
+              "title": "Capability",
+              "description": "Ask for the context-type catalog. IntentResult is `fdc3.capability.contextTypeList`."
+            }
+          },
+          "required": ["type", "capability"],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "fdc3.capability.request" },
+            "capability": {
+              "const": "contextSchema",
+              "title": "Capability",
+              "description": "Ask for the JSON Schema for one context type. IntentResult is `fdc3.capability.contextSchema`."
+            },
+            "contextType": {
+              "type": "string",
+              "title": "Context type",
+              "description": "FDC3 context `type` string whose JSON Schema should be returned, e.g. `fdc3.instrument` or `fdc3.data.markdown`."
+            }
+          },
+          "required": ["type", "capability", "contextType"],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "fdc3.capability.request" },
+            "capability": {
+              "const": "appDirectoryRecord",
+              "title": "Capability",
+              "description": "Ask for the full App Directory record for one appId. IntentResult is `fdc3.capability.appDirectoryRecord`."
+            },
+            "appId": {
+              "type": "string",
+              "title": "App id",
+              "description": "FDC3 App Directory `appId` whose full record should be returned."
+            }
+          },
+          "required": ["type", "capability", "appId"],
+          "additionalProperties": true
+        }
+      ]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.capability.request",
+      "capability": "apps"
+    },
+    {
+      "type": "fdc3.capability.request",
+      "capability": "intents"
+    },
+    {
+      "type": "fdc3.capability.request",
+      "capability": "contextTypes"
+    },
+    {
+      "type": "fdc3.capability.request",
+      "capability": "contextSchema",
+      "contextType": "fdc3.data.markdown"
+    },
+    {
+      "type": "fdc3.capability.request",
+      "capability": "appDirectoryRecord",
+      "appId": "aipa-capability"
+    }
+  ]
+}

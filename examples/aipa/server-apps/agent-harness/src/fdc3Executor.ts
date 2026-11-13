@@ -1,75 +1,51 @@
 /**
  * Browser-side executor for deferred fdc3_* tools.
  */
-import type { Channel, Context, DesktopAgent, Listener } from '@finos/fdc3';
+import type { AppMetadata, Channel, Context, DesktopAgent } from '@finos/fdc3';
 import {
   CONTEXT_TYPES,
-  DISCOVERABILITY_CHANNEL,
+  INTENTS,
+  type CapabilityRequest,
 } from '../../../common/src/contexts/types.ts';
 import { isApprovalRequiredError, submitOrderErrorMessage } from '../../../common/src/governance/refs.ts';
 import { summarizeDiscoverApps } from './agent/discover-summary.ts';
 
 export type ContextCache = Map<string, Context>;
 
-const DEFAULT_DISCOVER_TIMEOUT_MS = 8000;
+/** Per-intent round-robin cursor for multi-app GetCapabilities (and similar). */
+const roundRobinByIntent = new Map<string, number>();
 
-async function discoverabilityRequest(
+function pickRoundRobin(intent: string, apps: AppMetadata[]): AppMetadata {
+  if (!apps.length) throw new Error(`No apps for ${intent}`);
+  const next = roundRobinByIntent.get(intent) ?? 0;
+  const target = apps[next % apps.length]!;
+  roundRobinByIntent.set(intent, next + 1);
+  return target;
+}
+
+async function getCapabilities(
   fdc3: DesktopAgent,
-  channelCache: Map<string, Channel>,
-  opts: {
-    requestType: string;
-    replyType: string;
-    timeoutMs?: number;
-    /** Extra fields on the request context (e.g. contextType). */
-    request?: Record<string, unknown>;
-    /** Accept only matching replies (e.g. same contextType). */
-    matchReply?: (ctx: Context) => boolean;
-  }
+  request: CapabilityRequest
 ): Promise<Context> {
-  const timeoutMs =
-    typeof opts.timeoutMs === 'number' && opts.timeoutMs > 0
-      ? opts.timeoutMs
-      : DEFAULT_DISCOVER_TIMEOUT_MS;
-
-  let ch = channelCache.get(DISCOVERABILITY_CHANNEL);
-  if (!ch) {
-    ch = await fdc3.getOrCreateChannel(DISCOVERABILITY_CHANNEL);
-    channelCache.set(ch.id, ch);
-    channelCache.set(DISCOVERABILITY_CHANNEL, ch);
+  const intent = INTENTS.GetCapabilities;
+  const appIntent = await fdc3.findIntent(intent, request as Context);
+  const apps = appIntent.apps ?? [];
+  if (!apps.length) {
+    throw new Error(`No apps handle ${intent} for capability=${request.capability}`);
   }
-
-  const hold: { listener: Listener | null; timer?: ReturnType<typeof setTimeout> } = {
-    listener: null,
-  };
-  try {
-    const replyPromise = new Promise<Context>((resolve, reject) => {
-      hold.timer = setTimeout(() => {
-        reject(
-          new Error(
-            `Timed out after ${timeoutMs}ms waiting for ${opts.replyType} on ${DISCOVERABILITY_CHANNEL}`
-          )
-        );
-      }, timeoutMs);
-      void ch!
-        .addContextListener(opts.replyType, (ctx: Context) => {
-          if (opts.matchReply && !opts.matchReply(ctx)) return;
-          if (hold.timer) clearTimeout(hold.timer);
-          resolve(ctx);
-        })
-        .then(async l => {
-          hold.listener = l;
-          await ch!.broadcast({ type: opts.requestType, ...(opts.request ?? {}) } as Context);
-        })
-        .catch(err => {
-          if (hold.timer) clearTimeout(hold.timer);
-          reject(err instanceof Error ? err : new Error(String(err)));
-        });
-    });
-    return await replyPromise;
-  } finally {
-    if (hold.timer) clearTimeout(hold.timer);
-    void hold.listener?.unsubscribe();
+  const target = pickRoundRobin(intent, apps);
+  const appTarget = target.instanceId
+    ? { appId: target.appId, instanceId: target.instanceId }
+    : { appId: target.appId };
+  const resolution = await fdc3.raiseIntent(intent, request as Context, appTarget);
+  const result = await resolution.getResult();
+  if (!result || typeof result !== 'object' || typeof (result as Context).type !== 'string') {
+    throw new Error(`${intent} did not return a context for capability=${request.capability}`);
   }
+  if (result && typeof result === 'object' && 'broadcast' in result && 'id' in result) {
+    throw new Error(`${intent} returned a channel; expected a catalog context`);
+  }
+  return result as Context;
 }
 
 function asAppId(raw: unknown): { appId: string; instanceId?: string } {
@@ -243,54 +219,43 @@ export async function executeFdc3Tool(
     }
 
     case 'fdc3_discover_apps': {
-      const reply = await discoverabilityRequest(fdc3, channelCache, {
-        requestType: CONTEXT_TYPES.discoverApps,
-        replyType: CONTEXT_TYPES.appDirectory,
-        timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
+      const reply = await getCapabilities(fdc3, {
+        type: CONTEXT_TYPES.capabilityRequest,
+        capability: 'apps',
       });
       // Full AppD stays on the wire; LLM gets a compact catalog.
       return summarizeDiscoverApps(reply);
     }
 
     case 'fdc3_discover_intents':
-      return discoverabilityRequest(fdc3, channelCache, {
-        requestType: CONTEXT_TYPES.discoverIntents,
-        replyType: CONTEXT_TYPES.intentList,
-        timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
+      return getCapabilities(fdc3, {
+        type: CONTEXT_TYPES.capabilityRequest,
+        capability: 'intents',
       });
 
     case 'fdc3_discover_context_types':
-      return discoverabilityRequest(fdc3, channelCache, {
-        requestType: CONTEXT_TYPES.discoverContextTypes,
-        replyType: CONTEXT_TYPES.contextTypeList,
-        timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
+      return getCapabilities(fdc3, {
+        type: CONTEXT_TYPES.capabilityRequest,
+        capability: 'contextTypes',
       });
 
     case 'fdc3_discover_context_schema': {
       const contextType = String(args.contextType ?? '').trim();
       if (!contextType) throw new Error('contextType required');
-      return discoverabilityRequest(fdc3, channelCache, {
-        requestType: CONTEXT_TYPES.discoverContextSchema,
-        replyType: CONTEXT_TYPES.contextSchema,
-        request: { contextType },
-        matchReply: ctx =>
-          typeof (ctx as { contextType?: unknown }).contextType === 'string' &&
-          (ctx as { contextType: string }).contextType === contextType,
-        timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
+      return getCapabilities(fdc3, {
+        type: CONTEXT_TYPES.capabilityRequest,
+        capability: 'contextSchema',
+        contextType,
       });
     }
 
     case 'fdc3_discover_app_directory_record': {
       const appId = String(args.appId ?? '').trim();
       if (!appId) throw new Error('appId required');
-      return discoverabilityRequest(fdc3, channelCache, {
-        requestType: CONTEXT_TYPES.discoverAppDirectoryRecord,
-        replyType: CONTEXT_TYPES.appDirectoryRecord,
-        request: { appId },
-        matchReply: ctx =>
-          typeof (ctx as { appId?: unknown }).appId === 'string' &&
-          (ctx as { appId: string }).appId === appId,
-        timeoutMs: typeof args.timeoutMs === 'number' ? args.timeoutMs : undefined,
+      return getCapabilities(fdc3, {
+        type: CONTEXT_TYPES.capabilityRequest,
+        capability: 'appDirectoryRecord',
+        appId,
       });
     }
 

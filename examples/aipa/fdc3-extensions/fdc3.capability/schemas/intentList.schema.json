@@ -1,15 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.intentList.schema.json",
+  "$id": "https://fdc3.finos.org/schemas/next/context/capability.intentList.schema.json",
   "type": "object",
   "title": "Intent List",
-  "description": "Reply to `fdc3.discoverability.discoverIntents` on app channel `fdc3.discoverability`. Catalog of intent names the caller may raise, with purpose, display, and result-type hints.",
+  "description": "IntentResult of `GetCapabilities` when raised with `fdc3.capability.request` and `capability: \"intents\"`. Catalog of intent names the caller may raise, with purpose, display, and result-type hints.",
   "allOf": [
     {
       "type": "object",
       "properties": {
         "type": {
-          "const": "fdc3.discoverability.intentList"
+          "const": "fdc3.capability.intentList"
         },
         "intents": {
           "type": "array",
@@ -55,7 +55,7 @@
   ],
   "examples": [
     {
-      "type": "fdc3.discoverability.intentList",
+      "type": "fdc3.capability.intentList",
       "intents": [
         {
           "name": "AskAgent",

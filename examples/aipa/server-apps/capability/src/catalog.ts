@@ -1,11 +1,11 @@
 /**
- * Build discoverability catalogs from the combined AIPA App Directory.
+ * Build capability catalogs from the combined AIPA App Directory.
  */
 import {
   CONTEXT_TYPES,
-  type DiscoverabilityAppEntry,
-  type DiscoverabilityContextTypeEntry,
-  type DiscoverabilityIntentEntry,
+  type CapabilityAppEntry,
+  type CapabilityContextTypeEntry,
+  type CapabilityIntentEntry,
 } from '../../../common/src/contexts/types.ts';
 import type { ContextTypeCatalogMeta } from './schemaLookup.ts';
 
@@ -20,7 +20,7 @@ export type AppDirectoryApplication = Record<string, unknown> & {
         string,
         {
           displayName?: string;
-          /** Non-standard AppD extension used by fdc3.discoverability. */
+          /** Non-standard AppD extension used by fdc3.capability. */
           purpose?: string;
           contexts?: string[];
           resultType?: string;
@@ -40,9 +40,9 @@ export type AppDirectoryApplication = Record<string, unknown> & {
 };
 
 export type DiscoveryCatalog = {
-  apps: DiscoverabilityAppEntry[];
-  intents: DiscoverabilityIntentEntry[];
-  contextTypes: DiscoverabilityContextTypeEntry[];
+  apps: CapabilityAppEntry[];
+  intents: CapabilityIntentEntry[];
+  contextTypes: CapabilityContextTypeEntry[];
 };
 
 const KNOWN_CONTEXT_LABELS: Record<string, string> = {
@@ -62,12 +62,12 @@ const KNOWN_CONTEXT_LABELS: Record<string, string> = {
   [CONTEXT_TYPES.priceHistory]: 'Price history',
 };
 
-function intentEntriesFromApp(app: AppDirectoryApplication): DiscoverabilityIntentEntry[] {
+function intentEntriesFromApp(app: AppDirectoryApplication): CapabilityIntentEntry[] {
   const listens = app.interop?.intents?.listensFor ?? {};
   return Object.entries(listens).flatMap(([name, meta]) => {
     const purpose = typeof meta?.purpose === 'string' ? meta.purpose.trim() : '';
     if (!purpose) return [];
-    const entry: DiscoverabilityIntentEntry = { name, purpose };
+    const entry: CapabilityIntentEntry = { name, purpose };
     if (meta?.displayName) entry.displayName = meta.displayName;
     if (meta?.contexts?.length) entry.contexts = [...meta.contexts];
     if (meta?.resultType) entry.resultType = meta.resultType;
@@ -87,9 +87,9 @@ function contextsFromApp(app: AppDirectoryApplication): string[] {
   return out;
 }
 
-function appEntryFromApp(app: AppDirectoryApplication): DiscoverabilityAppEntry | null {
+function appEntryFromApp(app: AppDirectoryApplication): CapabilityAppEntry | null {
   if (typeof app.appId !== 'string' || !app.appId) return null;
-  const entry: DiscoverabilityAppEntry = { appId: app.appId };
+  const entry: CapabilityAppEntry = { appId: app.appId };
   const title =
     typeof app.title === 'string' ? app.title : typeof app.name === 'string' ? app.name : undefined;
   if (title) entry.title = title;
@@ -113,9 +113,9 @@ export function buildCatalog(
   const sourceApps = applications.filter(a => typeof a.appId === 'string' && a.appId);
   const apps = sourceApps
     .map(appEntryFromApp)
-    .filter((a): a is DiscoverabilityAppEntry => a != null)
+    .filter((a): a is CapabilityAppEntry => a != null)
     .sort((a, b) => a.appId.localeCompare(b.appId));
-  const intentByName = new Map<string, DiscoverabilityIntentEntry>();
+  const intentByName = new Map<string, CapabilityIntentEntry>();
   for (const app of sourceApps) {
     for (const entry of intentEntriesFromApp(app)) {
       const prev = intentByName.get(entry.name);
@@ -142,14 +142,14 @@ export function buildCatalog(
   for (const app of sourceApps) {
     for (const c of contextsFromApp(app)) contextSet.add(c);
   }
-  // Always include suite context types (including discoverability itself).
+  // Always include suite context types (including fdc3.capability itself).
   for (const c of Object.values(CONTEXT_TYPES)) contextSet.add(c);
 
-  const contextTypes: DiscoverabilityContextTypeEntry[] = [...contextSet]
+  const contextTypes: CapabilityContextTypeEntry[] = [...contextSet]
     .sort()
     .map(contextType => {
       const meta = schemaMeta.get(contextType);
-      const entry: DiscoverabilityContextTypeEntry = { contextType };
+      const entry: CapabilityContextTypeEntry = { contextType };
       const name = meta?.name ?? KNOWN_CONTEXT_LABELS[contextType];
       if (name) entry.name = name;
       if (meta?.description) entry.description = meta.description;

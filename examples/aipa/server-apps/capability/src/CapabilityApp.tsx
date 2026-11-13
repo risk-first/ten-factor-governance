@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Channel, Context, Listener } from '@finos/fdc3';
+import type { Context, Listener } from '@finos/fdc3';
 import { connectAgent, setStatus } from '../../../common/src/fdc3/agent.ts';
 import {
   CONTEXT_TYPES,
-  DISCOVERABILITY_CHANNEL,
+  INTENTS,
   type AppDirectoryRecordReply,
   type AppDirectoryReply,
+  type CapabilityRequest,
   type ContextSchemaReply,
   type ContextTypeListReply,
   type IntentListReply,
@@ -72,7 +73,29 @@ function countForTab(tab: CatalogTab, catalog: DiscoveryCatalog): number | null 
   return null;
 }
 
-export function DiscoverabilityApp() {
+function asCapabilityRequest(ctx: Context): CapabilityRequest | null {
+  if (ctx.type !== CONTEXT_TYPES.capabilityRequest) return null;
+  const raw = ctx as Context & {
+    capability?: unknown;
+    contextType?: unknown;
+    appId?: unknown;
+  };
+  const capability = raw.capability;
+  if (capability === 'apps' || capability === 'intents' || capability === 'contextTypes') {
+    return { type: CONTEXT_TYPES.capabilityRequest, capability };
+  }
+  if (capability === 'contextSchema') {
+    const contextType = typeof raw.contextType === 'string' ? raw.contextType : '';
+    return { type: CONTEXT_TYPES.capabilityRequest, capability, contextType };
+  }
+  if (capability === 'appDirectoryRecord') {
+    const appId = typeof raw.appId === 'string' ? raw.appId : '';
+    return { type: CONTEXT_TYPES.capabilityRequest, capability, appId };
+  }
+  return null;
+}
+
+export function CapabilityApp() {
   const drawer = useRef(mountStatusDrawer());
   const [catalog, setCatalog] = useState<DiscoveryCatalog | null>(null);
   const [activeTab, setActiveTab] = useState<CatalogTab>('apps');
@@ -144,7 +167,6 @@ export function DiscoverabilityApp() {
 
   useEffect(() => {
     let cancelled = false;
-    let channel: Channel | null = null;
     let refreshTimer: number | undefined;
     const listeners: Listener[] = [];
 
@@ -161,70 +183,65 @@ export function DiscoverabilityApp() {
       const fdc3 = await connectAgent(drawer.current.statusEl);
       if (cancelled || !fdc3) return;
 
-      channel = await fdc3.getOrCreateChannel(DISCOVERABILITY_CHANNEL);
-      log(`Listening on app channel ${DISCOVERABILITY_CHANNEL}`);
+      const handleGetCapabilities = async (ctx: Context) => {
+        const request = asCapabilityRequest(ctx);
+        if (!request) {
+          log(`Ignore GetCapabilities — invalid request context (${ctx.type})`);
+          return;
+        }
 
-      const reply = async (ctx: Context) => {
-        if (!channel) return;
-
-        if (ctx.type === CONTEXT_TYPES.discoverApps) {
+        if (request.capability === 'apps') {
           const current = catalogRef.current;
           if (!current) {
-            log('Ignore discover request — catalog not ready');
+            log('Ignore GetCapabilities(apps) — catalog not ready');
             return;
           }
           const payload: AppDirectoryReply = {
             type: CONTEXT_TYPES.appDirectory,
             apps: current.apps,
           };
-          await channel.broadcast(payload as Context);
-          log(`Replied appDirectory (${current.apps.length} apps)`);
-          return;
+          log(`Returned appDirectory (${current.apps.length} apps)`);
+          return payload;
         }
 
-        if (ctx.type === CONTEXT_TYPES.discoverIntents) {
+        if (request.capability === 'intents') {
           const current = catalogRef.current;
           if (!current) {
-            log('Ignore discover request — catalog not ready');
+            log('Ignore GetCapabilities(intents) — catalog not ready');
             return;
           }
           const payload: IntentListReply = {
             type: CONTEXT_TYPES.intentList,
             intents: current.intents,
           };
-          await channel.broadcast(payload as Context);
-          log(`Replied intentList (${current.intents.length} intents)`);
-          return;
+          log(`Returned intentList (${current.intents.length} intents)`);
+          return payload;
         }
 
-        if (ctx.type === CONTEXT_TYPES.discoverContextTypes) {
+        if (request.capability === 'contextTypes') {
           const current = catalogRef.current;
           if (!current) {
-            log('Ignore discover request — catalog not ready');
+            log('Ignore GetCapabilities(contextTypes) — catalog not ready');
             return;
           }
           const payload: ContextTypeListReply = {
             type: CONTEXT_TYPES.contextTypeList,
             contextTypes: current.contextTypes,
           };
-          await channel.broadcast(payload as Context);
-          log(`Replied contextTypeList (${current.contextTypes.length} types)`);
-          return;
+          log(`Returned contextTypeList (${current.contextTypes.length} types)`);
+          return payload;
         }
 
-        if (ctx.type === CONTEXT_TYPES.discoverContextSchema) {
-          const contextType =
-            typeof (ctx as { contextType?: unknown }).contextType === 'string'
-              ? (ctx as { contextType: string }).contextType
-              : '';
+        if (request.capability === 'contextSchema') {
+          const { contextType } = request;
           try {
             const payload = await loadContextSchema(contextType);
-            await channel.broadcast(payload as Context);
             log(
               payload.error
-                ? `Replied contextSchema error for ${contextType}: ${payload.error}`
-                : `Replied contextSchema for ${contextType}`
+                ? `Returned contextSchema error for ${contextType}: ${payload.error}`
+                : `Returned contextSchema for ${contextType}`
             );
+            return payload;
           } catch (e) {
             const error = e instanceof Error ? e.message : String(e);
             const payload: ContextSchemaReply = {
@@ -232,47 +249,36 @@ export function DiscoverabilityApp() {
               contextType,
               error,
             };
-            await channel.broadcast(payload as Context);
-            log(`Replied contextSchema error for ${contextType}: ${error}`);
+            log(`Returned contextSchema error for ${contextType}: ${error}`);
+            return payload;
           }
-          return;
         }
 
-        if (ctx.type === CONTEXT_TYPES.discoverAppDirectoryRecord) {
-          const appId =
-            typeof (ctx as { appId?: unknown }).appId === 'string'
-              ? (ctx as { appId: string }).appId
-              : '';
-          try {
-            const payload = await loadAppDirectoryRecord(appId);
-            await channel.broadcast(payload as Context);
-            log(
-              payload.error
-                ? `Replied appDirectoryRecord error for ${appId}: ${payload.error}`
-                : `Replied appDirectoryRecord for ${appId}`
-            );
-          } catch (e) {
-            const error = e instanceof Error ? e.message : String(e);
-            const payload: AppDirectoryRecordReply = {
-              type: CONTEXT_TYPES.appDirectoryRecord,
-              appId,
-              error,
-            };
-            await channel.broadcast(payload as Context);
-            log(`Replied appDirectoryRecord error for ${appId}: ${error}`);
-          }
+        const { appId } = request;
+        try {
+          const payload = await loadAppDirectoryRecord(appId);
+          log(
+            payload.error
+              ? `Returned appDirectoryRecord error for ${appId}: ${payload.error}`
+              : `Returned appDirectoryRecord for ${appId}`
+          );
+          return payload;
+        } catch (e) {
+          const error = e instanceof Error ? e.message : String(e);
+          const payload: AppDirectoryRecordReply = {
+            type: CONTEXT_TYPES.appDirectoryRecord,
+            appId,
+            error,
+          };
+          log(`Returned appDirectoryRecord error for ${appId}: ${error}`);
+          return payload;
         }
       };
 
-      for (const type of [
-        CONTEXT_TYPES.discoverApps,
-        CONTEXT_TYPES.discoverIntents,
-        CONTEXT_TYPES.discoverContextTypes,
-        CONTEXT_TYPES.discoverContextSchema,
-        CONTEXT_TYPES.discoverAppDirectoryRecord,
-      ]) {
-        listeners.push(await channel.addContextListener(type, ctx => void reply(ctx)));
-      }
+      listeners.push(
+        await fdc3.addIntentListener(INTENTS.GetCapabilities, ctx => handleGetCapabilities(ctx))
+      );
+      log(`Listening for intent ${INTENTS.GetCapabilities}`);
 
       refreshTimer = window.setInterval(() => {
         void loadCatalog()
@@ -302,17 +308,17 @@ export function DiscoverabilityApp() {
   return (
     <div className="container">
       <div className="box" style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }}>
-        <h2 style={{ margin: '0 0 8px', fontSize: 16 }}>Discoverability</h2>
+        <h2 style={{ margin: '0 0 8px', fontSize: 16 }}>Capability</h2>
         <p className="note" style={{ marginTop: 0 }}>
-          Responder on app channel <code>{DISCOVERABILITY_CHANNEL}</code>. Catalog from combined App
-          Directory. Tab to preview reply JSON (refetched on every tab). Schema tab looks up the
-          JSON Schema for one context type. AppD record tab looks up the full Application record
-          for one appId.
+          Handles intent <code>{INTENTS.GetCapabilities}</code> with{' '}
+          <code>{CONTEXT_TYPES.capabilityRequest}</code>. Catalog from combined App Directory. Tab
+          to preview reply JSON (refetched on every tab). Schema tab looks up the JSON Schema for
+          one context type. AppD record tab looks up the full Application record for one appId.
         </p>
 
         <div
           role="tablist"
-          aria-label="Discoverability reply previews"
+          aria-label="Capability reply previews"
           style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}
         >
           {TABS.map(tab => {
@@ -449,7 +455,7 @@ export function DiscoverabilityApp() {
           }}
         >
           {lines.length === 0 ? (
-            <span style={{ color: '#667085' }}>Waiting for discover requests…</span>
+            <span style={{ color: '#667085' }}>Waiting for GetCapabilities…</span>
           ) : (
             lines.map(l => (
               <div key={l.t + l.msg}>

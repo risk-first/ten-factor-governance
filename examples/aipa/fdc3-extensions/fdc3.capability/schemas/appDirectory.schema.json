@@ -1,15 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.appDirectory.schema.json",
+  "$id": "https://fdc3.finos.org/schemas/next/context/capability.appDirectory.schema.json",
   "type": "object",
   "title": "App Directory",
-  "description": "Reply to `fdc3.discoverability.discoverApps` on app channel `fdc3.discoverability`. Carries a slim catalog of available apps (appId, title, description) the caller may open or raise intents against.",
+  "description": "IntentResult of `GetCapabilities` when raised with `fdc3.capability.request` and `capability: \"apps\"`. Carries a slim catalog of available apps (appId, title, description) the caller may open or raise intents against.",
   "allOf": [
     {
       "type": "object",
       "properties": {
         "type": {
-          "const": "fdc3.discoverability.appDirectory"
+          "const": "fdc3.capability.appDirectory"
         },
         "apps": {
           "type": "array",
@@ -45,7 +45,7 @@
   ],
   "examples": [
     {
-      "type": "fdc3.discoverability.appDirectory",
+      "type": "fdc3.capability.appDirectory",
       "apps": [
         {
           "appId": "aipa.agent-harness",

@@ -143,7 +143,7 @@ export function makeFdc3Tools(): ToolSet {
 
     fdc3_broadcast: tool({
       description:
-        'Broadcast context on the joined user channel (peers listening). Not for discoverability catalogs — use fdc3_discover_*. Not for raising intents.',
+        'Broadcast context on the joined user channel (peers listening). Not for capability catalogs — use fdc3_discover_* (GetCapabilities). Not for raising intents.',
       inputSchema: z.object({ context: contextSchema }),
     }),
 
@@ -172,13 +172,13 @@ export function makeFdc3Tools(): ToolSet {
 
     fdc3_get_or_create_channel: tool({
       description:
-        'Get/create a named app channel by id. Advanced. Do not use for fdc3.discoverability — use fdc3_discover_* which already owns that channel loop.',
+        'Get/create a named app channel by id. Advanced. Do not use for capability catalogs — use fdc3_discover_* (GetCapabilities).',
       inputSchema: z.object({ channelId: z.string() }),
     }),
 
     fdc3_channel_broadcast: tool({
       description:
-        'Broadcast on a named/app channel by id. Advanced. Do not use for discoverability catalogs — use fdc3_discover_*.',
+        'Broadcast on a named/app channel by id. Advanced. Do not use for capability catalogs — use fdc3_discover_* (GetCapabilities).',
       inputSchema: z.object({
         channelId: z.string(),
         context: contextSchema,
@@ -207,71 +207,38 @@ export function makeFdc3Tools(): ToolSet {
 
     fdc3_discover_apps: tool({
       description:
-        'Catalog: list App Directory apps in this environment (fdc3.discoverability). Use for “what apps do you know?” / planning. Requires Discoverability app running. Not for resolving who handles a specific intent (use fdc3_find_intent) and not for invoking apps (use raise/open).',
-      inputSchema: z.object({
-        timeoutMs: z
-          .number()
-          .int()
-          .positive()
-          .optional()
-          .describe('Max wait for reply (default 8000).'),
-      }),
+        'Catalog via GetCapabilities (fdc3.capability.request capability=apps). Lists App Directory apps for planning. Requires Capability app (aipa-capability) running. Not for resolving who handles a specific intent (use fdc3_find_intent) and not for invoking apps (use raise/open).',
+      inputSchema: z.object({}),
     }),
 
     fdc3_discover_intents: tool({
       description:
-        'Catalog: list raisable intents with purpose, accepted context types, and optional IntentResult type. Use purpose to pick the intent, then raise with a context whose type is listed under that intent’s contexts (e.g. ViewChart → fdc3.instrument, fdc3.instrumentList, or fdc3.portfolio).',
-      inputSchema: z.object({
-        timeoutMs: z
-          .number()
-          .int()
-          .positive()
-          .optional()
-          .describe('Max wait for reply (default 8000).'),
-      }),
+        'Catalog via GetCapabilities (capability=intents): list raisable intents with purpose, accepted context types, and optional IntentResult type. Use purpose to pick the intent, then raise with a context whose type is listed under that intent’s contexts (e.g. ViewChart → fdc3.instrument, fdc3.instrumentList, or fdc3.portfolio).',
+      inputSchema: z.object({}),
     }),
 
     fdc3_discover_context_types: tool({
       description:
-        'Catalog: list known context types (contextType, name, description, optional schemaUrl) used across the applications available.',
-      inputSchema: z.object({
-        timeoutMs: z
-          .number()
-          .int()
-          .positive()
-          .optional()
-          .describe('Max wait for reply (default 8000).'),
-      }),
+        'Catalog via GetCapabilities (capability=contextTypes): list known context types (contextType, name, description, optional schemaUrl) used across the applications available.',
+      inputSchema: z.object({}),
     }),
 
     fdc3_discover_context_schema: tool({
       description:
-        'Catalog: fetch the JSON Schema for one context type (fdc3.discoverability). Call this before building a context payload (e.g. fdc3.data.markdown) and copy property names from the schema — do not guess fields. Also use after fdc3_discover_context_types. Pass an exact contextType string (e.g. fdc3.instrument, fdc3.data.markdown).',
+        'Catalog via GetCapabilities (capability=contextSchema). Fetch the JSON Schema for one context type. Call this before building a context payload (e.g. fdc3.data.markdown) and copy property names from the schema — do not guess fields. Also use after fdc3_discover_context_types. Pass an exact contextType string (e.g. fdc3.instrument, fdc3.data.markdown).',
       inputSchema: z.object({
         contextType: z
           .string()
           .min(1)
           .describe('Exact FDC3 context type string, e.g. fdc3.portfolio or fdc3.data.markdown.'),
-        timeoutMs: z
-          .number()
-          .int()
-          .positive()
-          .optional()
-          .describe('Max wait for reply (default 8000).'),
       }),
     }),
 
     fdc3_discover_app_directory_record: tool({
       description:
-        'Catalog: fetch the full FDC3 App Directory Application record for one appId (fdc3.discoverability). Use after fdc3_discover_apps when you need launch details, declared intents, or hostManifests. Not the slim {appId,title,description} list, and not runtime getAppMetadata.',
+        'Catalog via GetCapabilities (capability=appDirectoryRecord). Fetch the full FDC3 App Directory Application record for one appId. Use after fdc3_discover_apps when you need launch details, declared intents, or hostManifests. Not the slim {appId,title,description} list, and not runtime getAppMetadata.',
       inputSchema: z.object({
         appId: z.string().min(1).describe('Exact App Directory appId from fdc3_discover_apps.'),
-        timeoutMs: z
-          .number()
-          .int()
-          .positive()
-          .optional()
-          .describe('Max wait for reply (default 8000).'),
       }),
     }),
   };

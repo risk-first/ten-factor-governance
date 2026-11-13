@@ -1,5 +1,5 @@
 /**
- * Normalize fdc3.discoverability.appDirectory replies for the LLM.
+ * Normalize fdc3.capability.appDirectory replies for the LLM.
  * Wire payload is already slim (appId / title / description).
  */
 
@@ -46,7 +46,7 @@ export function summarizeDiscoverApps(reply: unknown): {
   }
 
   return {
-    type: typeof raw.type === 'string' ? raw.type : 'fdc3.discoverability.appDirectory',
+    type: typeof raw.type === 'string' ? raw.type : 'fdc3.capability.appDirectory',
     apps,
   };
 }

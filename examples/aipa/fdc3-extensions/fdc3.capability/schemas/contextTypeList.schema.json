@@ -1,15 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.contextTypeList.schema.json",
+  "$id": "https://fdc3.finos.org/schemas/next/context/capability.contextTypeList.schema.json",
   "type": "object",
   "title": "Context Type List",
-  "description": "Reply to `fdc3.discoverability.discoverContextTypes` on app channel `fdc3.discoverability`. Catalog of context types (`contextType`, optional `name` / `description` / schema URL) known in this environment.",
+  "description": "IntentResult of `GetCapabilities` when raised with `fdc3.capability.request` and `capability: \"contextTypes\"`. Catalog of context types (`contextType`, optional `name` / `description` / schema URL) known in this environment.",
   "allOf": [
     {
       "type": "object",
       "properties": {
         "type": {
-          "const": "fdc3.discoverability.contextTypeList"
+          "const": "fdc3.capability.contextTypeList"
         },
         "contextTypes": {
           "type": "array",
@@ -50,7 +50,7 @@
   ],
   "examples": [
     {
-      "type": "fdc3.discoverability.contextTypeList",
+      "type": "fdc3.capability.contextTypeList",
       "contextTypes": [
         {
           "contextType": "fdc3.instrument",

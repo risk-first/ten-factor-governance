@@ -1,7 +1,7 @@
 # `demo.*` — AIPA suite context types
 
 Local JSON Schemas for AIPA `demo.*` contexts (not standard FDC3 types). Indexed by
-the Discoverability app from this folder so `fdc3_discover_context_schema` can
+the Capability app from this folder so `fdc3_discover_context_schema` can
 return field shapes for agents.
 
 ## View, create, execute

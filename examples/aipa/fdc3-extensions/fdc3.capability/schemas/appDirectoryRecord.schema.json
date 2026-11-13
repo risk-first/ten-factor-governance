@@ -1,15 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.appDirectoryRecord.schema.json",
+  "$id": "https://fdc3.finos.org/schemas/next/context/capability.appDirectoryRecord.schema.json",
   "type": "object",
   "title": "App Directory Record",
-  "description": "Reply to `fdc3.discoverability.discoverAppDirectoryRecord` on app channel `fdc3.discoverability`. Embeds one FDC3 App Directory `Application` record (imported from the App Directory specification), or an error when `appId` is unknown.",
+  "description": "IntentResult of `GetCapabilities` when raised with `fdc3.capability.request` and `capability: \"appDirectoryRecord\"`. Embeds one FDC3 App Directory `Application` record (imported from the App Directory specification), or an error when `appId` is unknown.",
   "allOf": [
     {
       "type": "object",
       "properties": {
         "type": {
-          "const": "fdc3.discoverability.appDirectoryRecord"
+          "const": "fdc3.capability.appDirectoryRecord"
         },
         "appId": {
           "type": "string",
@@ -37,19 +37,19 @@
   ],
   "examples": [
     {
-      "type": "fdc3.discoverability.appDirectoryRecord",
-      "appId": "aipa-discoverability",
+      "type": "fdc3.capability.appDirectoryRecord",
+      "appId": "aipa-capability",
       "record": {
-        "appId": "aipa-discoverability",
-        "name": "AIPA Discoverability",
-        "title": "AIPA Discoverability",
-        "description": "Responds on app channel fdc3.discoverability.",
+        "appId": "aipa-capability",
+        "name": "AIPA Capability",
+        "title": "AIPA Capability",
+        "description": "Handles GetCapabilities for fdc3.capability.request.",
         "type": "web",
         "details": { "url": "http://localhost:4109/" }
       }
     },
     {
-      "type": "fdc3.discoverability.appDirectoryRecord",
+      "type": "fdc3.capability.appDirectoryRecord",
       "appId": "unknown.app",
       "error": "No App Directory record for appId unknown.app"
     }

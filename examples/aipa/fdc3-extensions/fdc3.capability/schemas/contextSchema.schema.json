@@ -1,15 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://fdc3.finos.org/schemas/next/context/discoverability.contextSchema.schema.json",
+  "$id": "https://fdc3.finos.org/schemas/next/context/capability.contextSchema.schema.json",
   "type": "object",
   "title": "Context Schema",
-  "description": "Reply to `fdc3.discoverability.discoverContextSchema` on app channel `fdc3.discoverability`. Carries the JSON Schema for one context type, or an error when no schema is available.",
+  "description": "IntentResult of `GetCapabilities` when raised with `fdc3.capability.request` and `capability: \"contextSchema\"`. Carries the JSON Schema for one context type, or an error when no schema is available.",
   "allOf": [
     {
       "type": "object",
       "properties": {
         "type": {
-          "const": "fdc3.discoverability.contextSchema"
+          "const": "fdc3.capability.contextSchema"
         },
         "contextType": {
           "type": "string",
@@ -39,7 +39,7 @@
   ],
   "examples": [
     {
-      "type": "fdc3.discoverability.contextSchema",
+      "type": "fdc3.capability.contextSchema",
       "contextType": "fdc3.data.markdown",
       "schemaUrl": "https://fdc3.finos.org/schemas/next/context/data.markdown.schema.json",
       "schema": {
@@ -50,7 +50,7 @@
       }
     },
     {
-      "type": "fdc3.discoverability.contextSchema",
+      "type": "fdc3.capability.contextSchema",
       "contextType": "org.example.unknown",
       "error": "No JSON Schema registered for context type org.example.unknown"
     }
