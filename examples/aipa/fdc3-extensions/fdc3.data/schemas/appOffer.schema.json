@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/data.appOffer.schema.json",
   "type": "object",
   "title": "App Offer",
-  "description": "Metadata-only advertisement of a shareable dataset in response to `fdc3.data.advertiseDatasets`. Identifies the offering instance, the context type that can be retrieved, where its JSON Schema lives (so custom types resolve), FDC3 DisplayMetadata for UI chrome, and Dublin Core metadata describing the offered resource. The BaseContext `id` MUST include `dataId`, which consumers echo in `fdc3.data.dataRequest` when raising `GetAppData`. Does not carry the dataset.",
+  "description": "IntentResult of `QueryData`: metadata-only advertisement of a shareable dataset. Identifies the offering instance, the context type that can be retrieved, where its JSON Schema lives (so custom types resolve), FDC3 DisplayMetadata for UI chrome, and Dublin Core metadata describing the offered resource. The BaseContext `id` MUST include `dataId`, which consumers echo in `fdc3.data.dataRequest` when raising `GetData`. Does not carry the dataset.",
   "allOf": [
     {
       "type": "object",
@@ -13,13 +13,13 @@
         },
         "id": {
           "title": "Offer identifiers",
-          "description": "FDC3 context `id` map for this offer. `dataId` is required and is the opaque handle consumers pass back in `fdc3.data.dataRequest` (via `GetAppData`) to select this specific offered dataset when an app instance advertises more than one.",
+          "description": "FDC3 context `id` map for this offer. `dataId` is required and is the opaque handle consumers pass back in `fdc3.data.dataRequest` (via `GetData`) to select this specific offered dataset when an app instance advertises more than one.",
           "type": "object",
           "properties": {
             "dataId": {
               "type": "string",
               "title": "dataId",
-              "description": "Stable identifier for this offered dataset within the offering app instance. Minted by the data app; unique among that instance's concurrent offers. Consumers copy this value into `fdc3.data.dataRequest.id.dataId` when raising `GetAppData`."
+              "description": "Stable identifier for this offered dataset within the offering app instance. Minted by the data app; unique among that instance's concurrent offers. Consumers copy this value into `fdc3.data.dataRequest.id.dataId` when raising `GetData`."
             }
           },
           "required": ["dataId"],
@@ -29,7 +29,7 @@
         },
         "source": {
           "title": "Source",
-          "description": "FDC3 AppIdentifier of the offering app instance. Both `appId` and `instanceId` are required so the consumer can target `GetAppData` / `raiseIntent` at this instance.",
+          "description": "FDC3 AppIdentifier of the offering app instance. Both `appId` and `instanceId` are required so the consumer can target `GetData` / `raiseIntent` at this instance.",
           "type": "object",
           "properties": {
             "appId": {
@@ -49,7 +49,7 @@
         "contextType": {
           "type": "string",
           "title": "Context type",
-          "description": "FDC3 context `type` string that this offer can supply when `GetAppData` succeeds — e.g. `fdc3.instrument`, `fdc3.data.tabularData`, or an org-specific type such as `myorg.riskBook`."
+          "description": "FDC3 context `type` string that this offer can supply when `GetData` succeeds — e.g. `fdc3.instrument`, `fdc3.data.tabularData`, or an org-specific type such as `myorg.riskBook`."
         },
         "schemaUrl": {
           "type": "string",

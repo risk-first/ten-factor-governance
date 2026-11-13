@@ -7,7 +7,7 @@ An app raises the standard-shaped intent **`GetCapabilities`** with a single con
 This is separate from:
 
 - Session conversation under [`fdc3.ai`](../fdc3.ai/) (PrivateChannel streaming)
-- Dataset advertising under [`fdc3.data`](../fdc3.data/) (user-channel offers)
+- Dataset advertising under [`fdc3.data`](../fdc3.data/) (`QueryData` → `appOffer`)
 - Runtime resolution via Desktop Agent `findIntent` / `findIntentsByContext` (also exposed as `fdc3_*` tools)
 
 ## Flow
@@ -183,7 +183,7 @@ Do not rely on the Desktop Agent resolver UI for catalog queries.
 | Mechanism | Discovers | Channel / API |
 | --- | --- | --- |
 | `fdc3.capability` (this package) | Apps / intents / context types / context schemas / full AppD records for planning | Intent `GetCapabilities` + `fdc3.capability.request` |
-| [`fdc3.data` advertiseDatasets](../fdc3.data/) | Shareable **datasets** (not apps) | User channel |
+| [`fdc3.data` QueryData](../fdc3.data/) | Shareable **datasets** (not apps) | Intent `QueryData` → `appOffer` |
 | Desktop Agent `findIntent` / `findIntentsByContext` | Runtime handlers for a specific intent or context | Direct API |
 
 Discovery here is catalog-oriented (what exists / what can I call / what shape does a context have). `findIntent` for *other* intents remains the right tool when you already know an intent or context and need a live resolution.

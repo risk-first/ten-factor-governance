@@ -1,6 +1,6 @@
 /**
  * fdc3.data extension wiring for Market Data:
- * advertiseDatasets → appOffer, GetAppData → tabularData, ViewData ← tabularData.
+ * QueryData → appOffer, GetData → tabularData, ViewData ← tabularData.
  */
 import type { DesktopAgent } from '@finos/fdc3';
 import type { Chart } from '@finos/fdc3-context';
@@ -205,16 +205,16 @@ export async function setupFdc3DataExtension(opts: Fdc3DataExtensionOpts): Promi
   const identity = await resolveAppIdentity(fdc3);
   await ensureUserChannel(fdc3);
 
-  await fdc3.addContextListener(CONTEXT_TYPES.advertiseDatasets, async () => {
+  await fdc3.addIntentListener(INTENTS.QueryData, async () => {
     const offer = buildAppOffer({
       ...identity,
       series: opts.getSeries(),
     });
-    await fdc3.broadcast(offer as Parameters<DesktopAgent['broadcast']>[0]);
-    setStatus(statusEl, `Advertised dataset ${MARKET_DATA_DATA_ID} (${offer.displayMetadata.name})`);
+    setStatus(statusEl, `QueryData → appOffer ${MARKET_DATA_DATA_ID} (${offer.displayMetadata.name})`);
+    return offer;
   });
 
-  await fdc3.addIntentListener(INTENTS.GetAppData, async ctx => {
+  await fdc3.addIntentListener(INTENTS.GetData, async ctx => {
     const dataId =
       ctx && typeof ctx === 'object' && 'id' in ctx
         ? (ctx as { id?: { dataId?: string } }).id?.dataId
@@ -227,7 +227,7 @@ export async function setupFdc3DataExtension(opts: Fdc3DataExtensionOpts): Promi
     });
     setStatus(
       statusEl,
-      `GetAppData → tabularData (${tabular.columns.length - 1} series, ${tabular.rows.length} rows)`
+      `GetData → tabularData (${tabular.columns.length - 1} series, ${tabular.rows.length} rows)`
     );
     return tabular;
   });

@@ -4,7 +4,7 @@
       "appId": "aipa-market-data",
       "name": "AIPA Market Data",
       "title": "AIPA Market Data",
-      "description": "Quotes and charts for ViewChart; GetPriceHistory for peer apps; fdc3.data data app (advertiseDatasets / GetAppData / ViewData with tabularData); proxies Finnhub and yahoo-finance2.",
+      "description": "Quotes and charts for ViewChart; GetPriceHistory for peer apps; fdc3.data data app (QueryData / GetData / ViewData with tabularData); proxies Finnhub and yahoo-finance2.",
       "categories": ["AIPA", "Market Data"],
       "icons": [{ "src": "http://localhost:4103/icon.svg" }],
       "type": "web",
@@ -27,8 +27,14 @@
                 "fdc3.chart"
               ]
             },
-            "GetAppData": {
-              "displayName": "Get App Data",
+            "QueryData": {
+              "displayName": "Query Data",
+              "purpose": "Return metadata for this app’s shareable dataset as fdc3.data.appOffer.",
+              "contexts": ["fdc3.nothing"],
+              "resultType": "fdc3.data.appOffer"
+            },
+            "GetData": {
+              "displayName": "Get Data",
               "purpose": "Pull an advertised market-data dataset as fdc3.data.tabularData.",
               "contexts": ["fdc3.data.dataRequest"]
             },
@@ -41,8 +47,8 @@
           "raises": {}
         },
         "userChannels": {
-          "broadcasts": ["fdc3.instrument", "fdc3.data.appOffer"],
-          "listensFor": ["fdc3.instrument", "fdc3.data.advertiseDatasets"]
+          "broadcasts": ["fdc3.instrument"],
+          "listensFor": ["fdc3.instrument"]
         },
         "appChannels": []
       },

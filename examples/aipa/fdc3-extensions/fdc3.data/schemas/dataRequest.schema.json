@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/data.dataRequest.schema.json",
   "type": "object",
   "title": "Data Request",
-  "description": "Intent context for `GetAppData`. Requests a single advertised dataset — FDC3 IntentResults are one context, so this type addresses exactly one offer. Targeting is via the Desktop Agent (`raiseIntent` target); this context carries `id.dataId`. `id.dataId` MUST match `id.dataId` from a prior `fdc3.data.appOffer`. The IntentResult type is that offer’s `contextType`.",
+  "description": "Intent context for `GetData`. Requests a single advertised dataset — FDC3 IntentResults are one context, so this type addresses exactly one offer. Targeting is via the Desktop Agent (`raiseIntent` target); this context carries `id.dataId`. `id.dataId` MUST match `id.dataId` from a prior `fdc3.data.appOffer`. The IntentResult type is that offer’s `contextType`.",
   "allOf": [
     {
       "type": "object",

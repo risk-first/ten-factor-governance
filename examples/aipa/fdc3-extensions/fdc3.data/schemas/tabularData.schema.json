@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/data.tabularData.schema.json",
   "type": "object",
   "title": "Tabular Data",
-  "description": "Tabular payload (columns + rows) for a data app. A common IntentResult of `GetAppData` when the offer’s `contextType` is `fdc3.data.tabularData` (other offers may return other FDC3 context types). Also used as the context for `fdc3.open` / `ViewData` (seed or replace-in-place). Optionally embeds a standard `fdc3.chart` when the consumer should display the same data as a chart. Prefer targeted intents over user-channel broadcast.",
+  "description": "Tabular payload (columns + rows) for a data app. A common IntentResult of `GetData` when the offer’s `contextType` is `fdc3.data.tabularData` (other offers may return other FDC3 context types). Also used as the context for `fdc3.open` / `ViewData` (seed or replace-in-place). Optionally embeds a standard `fdc3.chart` when the consumer should display the same data as a chart. Prefer targeted intents over user-channel broadcast.",
   "allOf": [
     {
       "type": "object",

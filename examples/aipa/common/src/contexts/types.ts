@@ -28,8 +28,10 @@ export const INTENTS = {
   /** fdc3.gemara — append Gemara L5 / L6 receipts to Governance Console */
   LogEvaluation: 'LogEvaluation',
   LogEnforcement: 'LogEnforcement',
+  /** fdc3.data — advertise shareable dataset metadata as appOffer */
+  QueryData: 'QueryData',
   /** fdc3.data — pull one advertised dataset from a data app */
-  GetAppData: 'GetAppData',
+  GetData: 'GetData',
   /** Standard FDC3 — seed / replace-in-place display context */
   ViewData: 'ViewData',
   /** fdc3.ai — Agent UI → Agent harness; IntentResult is a PrivateChannel */
@@ -57,7 +59,6 @@ export const CONTEXT_TYPES = {
   gemaraEnforcementLog: 'fdc3.gemara.enforcementLog',
   priceHistory: 'demo.priceHistory',
   /** fdc3.data extension */
-  advertiseDatasets: 'fdc3.data.advertiseDatasets',
   appOffer: 'fdc3.data.appOffer',
   dataRequest: 'fdc3.data.dataRequest',
   tabularData: 'fdc3.data.tabularData',
@@ -219,7 +220,7 @@ export type TabularData = {
   chart?: Chart;
 };
 
-/** Metadata-only advertisement from `fdc3.data.appOffer`. */
+/** Metadata-only advertisement — IntentResult of `QueryData`. */
 export type AppOffer = {
   type: 'fdc3.data.appOffer';
   id: { dataId: string };
