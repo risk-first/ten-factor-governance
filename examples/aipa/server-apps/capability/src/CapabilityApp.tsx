@@ -302,7 +302,7 @@ export function CapabilityApp() {
 
   const schemaOptions =
     catalog?.contextTypes.map(c => c.contextType) ??
-    ['fdc3.instrument', 'fdc3.data.markdown', 'fdc3.ai.agentQuery'];
+    ['fdc3.instrument', 'fdc3.data.markdown', 'fdc3.ai.agui.run'];
   const appdOptions = catalog?.apps.map(a => a.appId) ?? [];
 
   return (

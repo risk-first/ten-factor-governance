@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/data.markdown.schema.json",
   "type": "object",
   "title": "Markdown",
-  "description": "Markdown payload for a data app. Used as the context for `fdc3.open` / `ViewData` (seed or replace-in-place), parallel to `fdc3.data.tabularData`. Distinct from `fdc3.ai.agentAnswer.markdown`, which is chat-turn transcript.",
+  "description": "Markdown payload for a data app. Used as the context for `fdc3.open` / `ViewData` (seed or replace-in-place), parallel to `fdc3.data.tabularData`. Distinct from AG-UI assistant text on the chat PrivateChannel.",
   "allOf": [
     {
       "type": "object",

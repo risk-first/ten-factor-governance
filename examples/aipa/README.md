@@ -49,8 +49,8 @@ In-repo mirrors of those docs live under
 | Market Data | 4103 | `ViewChart`, `demo.GetPriceHistory`, `QueryData`, `GetData`, `ViewData` | Finnhub / yahoo-finance2; `fdc3.data` data app |
 | Order Entry | 4104 | `demo.CreateOrder`, `ViewOrders` | Signs `demo.order` / `demo.orderList`; blotter |
 | Execution | 4105 | `demo.SubmitOrder` | Signs `fdc3.transactionResult` |
-| Agent UI | 4106 | raises `AskAgent` | Front-end chat; `fdc3.ai` PrivateChannel; file attach (`fdc3.data.file`) |
-| Agent harness | 4107 | listens `AskAgent` | Rita-derived agent loop; generic FDC3 tools; streams `fdc3.ai.*`; LLM via `/api/query` |
+| Agent UI | 4106 | raises `AskAgent` | CopilotKit chat; AG-UI over `fdc3.ai.agui.*` PrivateChannel; file attach (`fdc3.data.file`) |
+| Agent harness | 4107 | listens `AskAgent` | Bridges AG-UI ↔ CopilotRuntime; generic FDC3 tools under harness identity |
 | Markdown Viewer | 4108 | `ViewData` | Front-end; renders `fdc3.data.markdown` (open / replace-in-place) |
 | Capability | 4109 | `GetCapabilities` | Responder for `fdc3.capability.request` (apps / intents / context types / schemas / AppD records) |
 | Approvals | 4110 | inbox: `GetApproval` and siblings; view: `ViewApproval` | Two apps, one origin: invisible singleton inbox + visible singleton view; shared Entra login; view signs and raises `demo.SubmitOrder` |

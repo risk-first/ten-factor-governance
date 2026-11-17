@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/ai.agui.run.schema.json",
+  "type": "object",
+  "title": "AG-UI Run",
+  "description": "UI → harness. Wraps one AG-UI RunAgentInput verbatim. Starts or continues a run on the session PrivateChannel. The input shape is the published AG-UI 1.0 schema (not redefined here).",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "fdc3.ai.agui.run" },
+        "input": {
+          "title": "RunAgentInput",
+          "description": "AG-UI RunAgentInput (https://ag-ui.com/spec/1.0/schema.json#RunAgentInput).",
+          "allOf": [
+            { "$ref": "https://ag-ui.com/spec/1.0/schema.json#RunAgentInput" }
+          ]
+        }
+      },
+      "required": ["type", "input"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.ai.agui.run",
+      "input": {
+        "threadId": "t-1",
+        "runId": "r-1",
+        "messages": [
+          { "id": "m-1", "role": "user", "content": "Risk on my portfolio" }
+        ],
+        "tools": [],
+        "context": [],
+        "forwardedProps": { "fileIds": ["file-1"] }
+      }
+    }
+  ]
+}

@@ -31,9 +31,9 @@ When the user asks about “my portfolio”, “current holdings”, risk, chart
    → fdc3_discover_intents; pick the risk intent from the catalog by purpose (expect demo.GetPortfolioRisk). Do not invent intent names.
    → Resolve fdc3.portfolio in this order (do not ask the user between steps):
      1. fdc3_get_current_channel_context with contextType fdc3.portfolio
-     2. If empty: fdc3_raise_intent GetPortfolio (no portfolio context required; Portfolio app returns fdc3.portfolio)
+     2. If empty: fdc3_raise_intent GetPortfolio (no context or target needed — Desktop Agent resolves/launches the Portfolio app; IntentResult is fdc3.portfolio)
      3. Only if GetPortfolio fails or returns nothing: then ask the user for holdings
-   → fdc3_raise_intent demo.GetPortfolioRisk (or the catalog match) with that fdc3.portfolio.
+   → fdc3_raise_intent demo.GetPortfolioRisk (or the catalog match) with that fdc3.portfolio. Omit target unless you must hit a specific instance — the Desktop Agent resolves the Risk app.
    → Explain numbers from the IntentResult; do not claim trades were executed.
 
 3. Research on a ticker
@@ -50,4 +50,8 @@ When the user asks about “my portfolio”, “current holdings”, risk, chart
 5. Show markdown / open a viewer
    → fdc3_discover_intents first; pick ViewData from the catalog.
    → fdc3_discover_context_schema with contextType fdc3.data.markdown. Use the returned schema’s required/optional properties (do not invent fields such as text).
-   → fdc3_raise_intent ViewData with that context.`
+   → fdc3_raise_intent ViewData with that context.
+
+6. Attached / staged files
+   → When the turn notes session files (or the user refers to an attachment / memo / document), call list_documents then query_documents before answering.
+   → Do not claim you cannot see an attachment if list_documents returns files — read them with query_documents.`

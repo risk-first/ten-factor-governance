@@ -6,6 +6,21 @@ Contexts and intents for that contract live under `fdc3.data.*` (plus unprefixed
 
 A data app may sit on a dashboard tile or inside a chat bubble; the wire contract is the same. The host platform is the **Desktop Agent**.
 
+## Use cases
+
+| Use case | How `fdc3.data` helps |
+| --- | --- |
+| **AI agents querying other apps** | An agent harness (see [`fdc3.ai`](../fdc3.ai/)) `findIntent`s `QueryData`, fans out for `appOffer`s, picks by purpose / Dublin Core metadata, then `GetData`s the payload into the tool loop — without hard-coding app APIs or scraping UIs. |
+| **Peer analytics / risk** | A Risk or research app pulls live series or books from Market Data (or similar) via `GetData` instead of a private REST contract; `schemaUrl` tells it the IntentResult shape. |
+| **Dashboard composition** | A workspace host seeds tiles with `fdc3.open(appId, context)` or refreshes them with targeted `ViewData` after the user (or agent) chose an offer. |
+| **In-chat data apps** | Agent UI opens a chart / table / markdown viewer *inside* the transcript with the same open / `ViewData` contract used on the dashboard. |
+| **Cross-app handoff** | Pull from app A (`GetData`), then show or edit in app B (`ViewData` / open) — e.g. prices → markdown note, tabular risk → blotter preview. |
+| **Opt-in sharing** | Apps only answer `QueryData` for datasets the user marked shareable; unshared books and drafts stay silent. |
+| **Schema-aware consumers** | Offers carry `schemaUrl` (and agents can further resolve schemas via [`fdc3.capability`](../fdc3.capability/)) so callers validate or generate context before `GetData` / `ViewData`. |
+| **Sensitive pulls** | Same discovery path; `GetData` returns `fdc3.security.encryptedContext` to the requester’s key when the dataset is confidential (see [Information security](#information-security)). |
+
+Not every cross-app fetch must use this package: domain intents such as `demo.GetPriceHistory` remain fine when both sides already agree on a typed RPC. Prefer `QueryData` / `GetData` when the consumer does **not** know the dataset name or owning app up front, or when many apps may offer interchangeable bits of data.
+
 ## What a data app does
 
 A minimal data app implements four behaviours:
@@ -53,8 +68,8 @@ App Directory records declare `listensFor.QueryData` with `contexts: ["fdc3.noth
 | [`fdc3.data.appOffer`](schemas/appOffer.schema.json) | Data app | Consumer | IntentResult of `QueryData`: `id.dataId`, `source` (`appId` + `instanceId`), `contextType`, `schemaUrl`, `displayMetadata`, optional Dublin Core `metadata`. |
 | [`fdc3.data.dataRequest`](schemas/dataRequest.schema.json) | Consumer | Data app | `{ type, id: { dataId } }` — one dataset per raise (IntentResult is a single context). Instance targeting is the `raiseIntent` target, not fields on this context. |
 | [`fdc3.data.tabularData`](schemas/tabularData.schema.json) | Data app / host | Consumer / data app | Optional helper type: `columns` + `rows`, optional embedded `fdc3.chart`. Used when an offer’s `contextType` is tabular — not required for every `GetData` / `ViewData`. |
-| [`fdc3.data.markdown`](schemas/markdown.schema.json) | Host / agent | Markdown viewer / data app | Helper type: `markdown` body + optional `title`. Used with `fdc3.open` / `ViewData` (distinct from chat `fdc3.ai.agentAnswer.markdown`). |
-| [`fdc3.data.file`](schemas/file.schema.json) | Agent UI / host | Harness / data apps | File bytes (`content_b64` or `url`) identified by `id.fileId`; referenced from `fdc3.ai.agentQuery.fileIds`. |
+| [`fdc3.data.markdown`](schemas/markdown.schema.json) | Host / agent | Markdown viewer / data app | Helper type: `markdown` body + optional `title`. Used with `fdc3.open` / `ViewData` (distinct from chat transcript text). |
+| [`fdc3.data.file`](schemas/file.schema.json) | Agent UI / host | Harness / data apps | File bytes (`content_b64` or `url`) identified by `id.fileId`; referenced from AG-UI `forwardedProps.fileIds`. |
 
 Example offer → request pairing:
 

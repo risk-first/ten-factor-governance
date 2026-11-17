@@ -99,11 +99,16 @@ export async function runHarnessTurn(opts: RunHarnessTurnOpts): Promise<void> {
   const latest = [...messages].reverse().find(m => m.role === 'user')?.content?.trim() || 'Hello';
 
   if (!model) {
+    const fileNote = fileInputs?.length
+      ? `\n\nReceived ${fileInputs.length} attachment(s): ${fileInputs.map(f => f.name).join(', ')}. ` +
+        `Configure an LLM provider to analyse them.`
+      : '';
     const fallback =
       'No LLM provider is configured on the Agent harness.\n\n' +
       'Set `OPENAI_API_KEY`, `OPENROUTER_API_KEY`, `GROQ_API_KEY`, or `OLLAMA_BASE_URL` ' +
       'in the AIPA `.env` (see `server-apps/agent-harness/.env.example`).\n\n' +
-      `You asked: “${latest}”.`;
+      `You asked: “${latest}”.` +
+      fileNote;
     handlers.onStatus('Using offline fallback (no provider keys)');
     for (const chunk of fallback.match(/.{1,24}/gs) ?? [fallback]) {
       if (handlers.signal?.aborted) break;
@@ -127,6 +132,7 @@ export async function runHarnessTurn(opts: RunHarnessTurnOpts): Promise<void> {
       const staged = await stageFile(f);
       if (staged) stagedFiles.set(staged.id, staged);
     }
+    saveSession(sessionId, { messages: session?.messages ?? [], files: stagedFiles });
   }
 
   let modelMessages: ModelMessage[];
@@ -134,6 +140,31 @@ export async function runHarnessTurn(opts: RunHarnessTurnOpts): Promise<void> {
     modelMessages = session.messages;
   } else {
     modelMessages = toModelMessages(messages);
+    // Tell the model which files are available this turn (tools still do the read).
+    if (stagedFiles.size > 0) {
+      const listing = [...stagedFiles.values()]
+        .map(f => `- ${f.name} (fileId=${f.id}, format=${f.format})`)
+        .join('\n');
+      const note =
+        `\n\n[Session has ${stagedFiles.size} staged file(s). ` +
+        `Use list_documents / query_documents to read them before answering about attachments.]\n` +
+        listing;
+      const lastUserIdx = [...modelMessages]
+        .map((m, i) => ({ m, i }))
+        .reverse()
+        .find(({ m }) => m.role === 'user')?.i;
+      if (lastUserIdx != null) {
+        const prev = modelMessages[lastUserIdx]!;
+        const content = typeof prev.content === 'string' ? prev.content : '';
+        modelMessages = [
+          ...modelMessages.slice(0, lastUserIdx),
+          { role: 'user', content: `${content}${note}` },
+          ...modelMessages.slice(lastUserIdx + 1),
+        ];
+      } else {
+        modelMessages = [...modelMessages, { role: 'user', content: note.trim() }];
+      }
+    }
   }
 
   await runAgentLoop(

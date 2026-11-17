@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fdc3.finos.org/schemas/next/context/ai.agui.event.schema.json",
+  "type": "object",
+  "title": "AG-UI Event",
+  "description": "Primarily harness → UI. One AG-UI Event plus a monotonic seq for channel ordering. May also travel UI → harness for mid-run TOOL_CALL_RESULT if required by the chat library. The event shape is the published AG-UI 1.0 schema (not redefined here).",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "fdc3.ai.agui.event" },
+        "seq": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Sequence",
+          "description": "Monotonic per PrivateChannel session. Consumers apply in order; ignore duplicates; buffer gaps briefly."
+        },
+        "event": {
+          "title": "AG-UI Event",
+          "description": "One AG-UI Event (https://ag-ui.com/spec/1.0/schema.json#Event).",
+          "allOf": [
+            { "$ref": "https://ag-ui.com/spec/1.0/schema.json#Event" }
+          ]
+        }
+      },
+      "required": ["type", "seq", "event"]
+    },
+    { "$ref": "context.schema.json#/definitions/BaseContext" }
+  ],
+  "examples": [
+    {
+      "type": "fdc3.ai.agui.event",
+      "seq": 42,
+      "event": {
+        "type": "TEXT_MESSAGE_CONTENT",
+        "messageId": "a-1",
+        "delta": "VaR "
+      }
+    }
+  ]
+}

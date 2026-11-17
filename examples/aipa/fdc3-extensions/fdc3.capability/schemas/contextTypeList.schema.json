@@ -62,7 +62,7 @@
           "description": "Markdown payload for a data app. Used as the context for fdc3.open / ViewData."
         },
         {
-          "contextType": "fdc3.ai.agentQuery"
+          "contextType": "fdc3.ai.agui.run"
         }
       ]
     }

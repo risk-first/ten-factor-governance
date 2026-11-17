@@ -64,11 +64,11 @@ export const CONTEXT_TYPES = {
   tabularData: 'fdc3.data.tabularData',
   markdown: 'fdc3.data.markdown',
   file: 'fdc3.data.file',
-  /** fdc3.ai extension — UI ↔ harness PrivateChannel */
+  /** fdc3.ai — AskAgent bootstrap (connection setup, not AG-UI) */
   agentQuery: 'fdc3.ai.agentQuery',
-  agentDelta: 'fdc3.ai.agentDelta',
-  agentAnswer: 'fdc3.ai.agentAnswer',
-  agentCancel: 'fdc3.ai.agentCancel',
+  /** fdc3.ai — AG-UI envelopes on UI ↔ harness PrivateChannel */
+  aguiRun: 'fdc3.ai.agui.run',
+  aguiEvent: 'fdc3.ai.agui.event',
   /** fdc3.capability extension — catalog via GetCapabilities */
   capabilityRequest: 'fdc3.capability.request',
   appDirectory: 'fdc3.capability.appDirectory',
@@ -158,7 +158,7 @@ export type AppDirectoryRecordReply = {
 
 export type FileFormat = 'pdf' | 'docx' | 'txt' | 'md' | 'html';
 
-/** Shareable file payload — referenced by id from agentQuery.fileIds. */
+/** Shareable file payload — referenced by id from RunAgentInput.forwardedProps.fileIds. */
 export type Fdc3DataFile = {
   type: 'fdc3.data.file';
   id: { fileId: string };
@@ -168,7 +168,7 @@ export type Fdc3DataFile = {
   url?: string;
 };
 
-/** Markdown payload for open / ViewData (distinct from agentAnswer.markdown). */
+/** Markdown payload for open / ViewData. */
 export type Fdc3DataMarkdown = {
   type: 'fdc3.data.markdown';
   markdown: string;
@@ -176,31 +176,13 @@ export type Fdc3DataMarkdown = {
   instanceId?: string;
 };
 
+/** FDC3 AskAgent bootstrap (not an AG-UI type). IntentResult = PrivateChannel. */
 export type AgentQuery = {
   type: 'fdc3.ai.agentQuery';
+  threadId?: string;
   text?: string | null;
   model?: string;
-  /** Refs to fdc3.data.file ids already on the session channel. */
   fileIds?: string[];
-};
-
-export type AgentDelta = {
-  type: 'fdc3.ai.agentDelta';
-  kind: 'text' | 'status' | 'artifact' | 'citation' | 'suggestion';
-  payload: Record<string, unknown>;
-};
-
-export type AgentAnswer = {
-  type: 'fdc3.ai.agentAnswer';
-  markdown: string;
-  citations?: Array<Record<string, unknown>>;
-  artifacts?: Array<Record<string, unknown>>;
-  suggestions?: string[];
-};
-
-export type AgentCancel = {
-  type: 'fdc3.ai.agentCancel';
-  reason?: string;
 };
 
 export type Fdc3Instrument = {

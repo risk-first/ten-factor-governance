@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/data.file.schema.json",
   "type": "object",
   "title": "File",
-  "description": "A file payload for data apps and agent sessions. Identified by `id.fileId` so other contexts (e.g. `fdc3.ai.agentQuery.fileIds`) can reference it without embedding bytes. Carry content via `content_b64` or `url` (mutually exclusive). Prefer targeted intents / PrivateChannel delivery over user-channel broadcast for large payloads.",
+  "description": "A file payload for data apps and agent sessions. Identified by `id.fileId` so other contexts (e.g. `RunAgentInput.forwardedProps.fileIds` / AG-UI runs) can reference it without embedding bytes. Carry content via `content_b64` or `url` (mutually exclusive). Prefer targeted intents / PrivateChannel delivery over user-channel broadcast for large payloads.",
   "allOf": [
     {
       "type": "object",

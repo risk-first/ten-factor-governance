@@ -3,7 +3,7 @@
   "$id": "https://fdc3.finos.org/schemas/next/context/ai.agentQuery.schema.json",
   "type": "object",
   "title": "Agent Query",
-  "description": "Payload for `AskAgent`. Starts a turn; the IntentResult is typically a PrivateChannel used for subsequent `fdc3.ai.agentDelta` / `agentAnswer` / `agentCancel` traffic. `text` may be null or omitted for session-open.",
+  "description": "AskAgent bootstrap (FDC3). Opens a session; IntentResult is a PrivateChannel. Not an AG-UI type — conversation turns after ready use fdc3.ai.agui.run / agui.event. Optional text may seed the first turn; otherwise the first utterance is sent later as agui.run.",
   "allOf": [
     {
       "type": "object",
@@ -11,10 +11,15 @@
         "type": {
           "const": "fdc3.ai.agentQuery"
         },
+        "threadId": {
+          "type": "string",
+          "title": "Thread ID hint",
+          "description": "Optional client-suggested thread id; harness may ignore and issue its own in ready."
+        },
         "text": {
           "type": ["string", "null"],
           "title": "Text",
-          "description": "User utterance for this turn. Null/omitted for session-start."
+          "description": "Optional user utterance for this turn. Null/omitted for session-start only."
         },
         "model": {
           "type": "string",
@@ -33,6 +38,9 @@
     { "$ref": "context.schema.json#/definitions/BaseContext" }
   ],
   "examples": [
+    {
+      "type": "fdc3.ai.agentQuery"
+    },
     {
       "type": "fdc3.ai.agentQuery",
       "text": "Compare AAPL vs MSFT revenue",
